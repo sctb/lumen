@@ -29,7 +29,7 @@ function read(s) {
     var c = peekChar(s);
 
     switch (c) {
-        case ';': return readComment(s);
+        case ';': readComment(s); return read(s);
         case '(': return readList(s);
         case ')': throw new Error("Unexpected ) at " + s.pos);
         default: return readAtom(s);
@@ -56,7 +56,9 @@ function readAtom(s) {
 
     c && unreadChar(s);
 
-    return str;
+    var n = parseFloat(str);
+
+    return isNaN(n) ? str : n;
 }
 
 function readList(s) {
@@ -83,4 +85,19 @@ function readComment(s) {
 
 function readFromString(str) {
     return read(makeStream(str));
+}
+
+function test(actual, expected) {
+    if (expected !== actual) {
+        throw new Error("Expected '" + expected + "', was '" + actual + "'");
+    }
+}
+
+function runTests() {
+    test(readFromString('()').length, [].length);
+    test(readFromString('a'), 'a');
+    test(readFromString('(a b c)').length, 3);
+    test(readFromString('(a b c) ; blaz').length, 3);
+    test(readFromString('; blaz\n(a b c)').length, 3);
+    test(readFromString('( 1  b delta)').length, 3);
 }
