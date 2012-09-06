@@ -1,5 +1,9 @@
-var delimiters = ['(', ')', ';', '\n'];
-var whitespace = [' ', '\t', '\n'];
+var delimiters = {};
+delimiters["("] = true; delimiters[")"] = true;
+delimiters[";"] = true; delimiters["\n"] = true;
+
+var whitespace = {};
+whitespace[" "] = true; whitespace["\t"] = true; whitespace["\n"] = true;
 
 function makeStream(str) {
     return { pos: 0, string: str, len: str.length };
@@ -19,8 +23,77 @@ function readChar(s) {
     }
 }
 
-function unreadChar(s) {
-    s.pos > 0 && --s.pos;
+function readWhitespace (s) {
+    var c;
+
+    while (true) {
+        c = peekChar(s);
+        if (c && whitespace[c])
+            readChar(s);
+        else break;
+    }
+}
+
+function readAtom(s) {
+    var c, str = "";
+
+    while (true) {
+        c = peekChar(s);
+        if (c && !whitespace[c] && !delimiters[c]) {
+            str += c;
+            readChar(s);
+        } else break;
+    }
+
+    return str;
+}
+
+function readList(s) {
+    readChar(s); // (
+
+    var c, l = [];
+
+    while (true) {
+        readWhitespace(s);
+        c = peekChar(s)
+        if (c && c != ")") {
+            l.push(read(s));
+        } else if (c) {
+            readChar(s); // )
+            break;
+        } else {
+            throw new Error("Expected ) at " + s.pos);
+        }
+    }
+
+    return l;
+}
+
+function readComment(s) {
+    var c;
+    do { c = readChar(s); } while (c && c != "\n");
+}
+
+function readString(s) {
+    readChar(s); // "
+
+    var c, str = "";
+
+    while (true) {
+        c = peekChar(s);
+        if (c && c != "\"") {
+            if (c == "\\")
+                str += readChar(s);
+            str += readChar(s);
+        } else if (c) {
+            readChar(s); // "
+            break;
+        } else {
+            throw new Error("Expected \" at " + s.pos);
+        }
+    }
+
+    return str;
 }
 
 function read(s) {
@@ -29,58 +102,12 @@ function read(s) {
     var c = peekChar(s);
 
     switch (c) {
-        case ';': readComment(s); return read(s);
-        case '(': return readList(s);
-        case ')': throw new Error("Unexpected ) at " + s.pos);
+        case ";": readComment(s); return read(s);
+        case "(": return readList(s);
+        case ")": throw new Error("Unexpected ) at " + s.pos);
+        case "\"": return readString(s);
         default: return readAtom(s);
     }
-}
-
-function readWhitespace (s) {
-    var c;
-
-    do {
-        c = readChar(s);
-    } while (c && whitespace.indexOf(c) >= 0);
-
-    c && unreadChar(s);
-}
-
-function readAtom(s) {
-    var c = readChar(s), str = '';
-
-    while (c && whitespace.indexOf(c) < 0 && delimiters.indexOf(c) < 0) {
-        str += c;
-        c = readChar(s);
-    }
-
-    c && unreadChar(s);
-
-    var n = parseFloat(str);
-
-    return isNaN(n) ? str : n;
-}
-
-function readList(s) {
-    readChar(s); // (
-
-    var c, l = [];
-
-    while ((c = peekChar(s)) && c != ')') {
-        l.push(read(s));
-    }
-
-    if (c)
-        readChar(s);
-    else
-        throw new Error('Expected ) at ' + s.pos);
-
-    return l;
-}
-
-function readComment(s) {
-    var c;
-    do { c = readChar(s); } while (c && c != '\n');
 }
 
 function readFromString(str) {
@@ -89,15 +116,19 @@ function readFromString(str) {
 
 function test(actual, expected) {
     if (expected !== actual) {
-        throw new Error("Expected '" + expected + "', was '" + actual + "'");
+        throw new Error("Expected " + expected + ", was " + actual);
     }
 }
 
 function runTests() {
-    test(readFromString('()').length, [].length);
-    test(readFromString('a'), 'a');
-    test(readFromString('(a b c)').length, 3);
-    test(readFromString('(a b c) ; blaz').length, 3);
-    test(readFromString('; blaz\n(a b c)').length, 3);
-    test(readFromString('( 1  b delta)').length, 3);
+    test(readFromString("()").length, [].length);
+    test(readFromString("a"), "a");
+    test(readFromString("(a b c)").length, 3);
+    test(readFromString("(a b c) ; blaz").length, 3);
+    test(readFromString("; blaz\n(a b c)").length, 3);
+    test(readFromString("( 1  b delta)").length, 3);
+    test(readFromString(""), "");
+    test(readFromString("\"foo\""), "foo");
+    test(readFromString("\"foo\n\""), "foo\n");
+    test(readFromString("(\"a\" b c)")[0], "a");
 }
