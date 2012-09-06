@@ -55,20 +55,47 @@ end
 
 function read_list (s)
   read_char(s) -- (
-  local c = peek_char(s)
   local l = {}
-  while c and c ~= ")" do
-    table.insert(l, c)
-    read_char(s) -- change to read!
+  local c
+  while true do
+    -- read_whitespace(s)
     c = peek_char(s)
+    if c and c ~= ")" then
+      table.insert(l, read(s))
+    elseif not c then
+      print("Expected ) at ", s.pos)
+      error()
+    else
+      read_char(s) -- )
+      break
+    end
   end
-
-  if c then
-    read_char(s)
-  else
-    print("Expected ) at ", s.pos)
-    error()
-  end
-
   return l
+end
+
+function read_comment (s)
+  local c
+  repeat
+    c = read_char (s)
+  until c == "\n" or not c
+end
+
+function read_from_string (str)
+  return read(make_stream(str))
+end
+
+function read (s)
+  read_whitespace(s)
+  local c = peek_char(s)
+  if c == ";" then
+    read_comment(s)
+    return read(s)
+  elseif c == "(" then
+    return read_list(s)
+  elseif c == ")" then
+    print("Unexpected ) at", s.pos)
+    error()
+  else
+    return read_atom(s)
+  end
 end
