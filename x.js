@@ -16,11 +16,12 @@ special["set"] = compileSet;
 special["if"] = compileIf;
 special["function"] = compileFunction;
 special["get"] = compileGet;
-special["define"] = compileDefine;
+special["declare"] = compileDeclare;
 special["while"] = compileWhile;
+special["not"] = compileNot;
 
 function error(msg) {
-    throw new Error(msg);
+    throw msg;
 }
 
 function makeStream(str) {
@@ -99,7 +100,7 @@ function readComment(s) {
 function readString(s) {
     readChar(s); // "
 
-    var c, str = "";
+    var c, str = "\"";
 
     while (true) {
         c = peekChar(s);
@@ -115,7 +116,7 @@ function readString(s) {
         }
     }
 
-    return str;
+    return str + "\"";
 }
 
 function read(s) {
@@ -217,7 +218,7 @@ function compileIf(form, isStatement) {
             str += "else ";
         ++i;
     }
-    return str + ";";
+    return str;
 }
 
 function compileFunction(form, isStatement) {
@@ -229,16 +230,16 @@ function compileFunction(form, isStatement) {
 }
 
 function compileGet(form, isStatement) {
-    return form[1] + "[" + form[2] + "]" + (isStatement ? ";" : "");
+    return form[1] + "[" + compile(form[2], false) + "]" + (isStatement ? ";" : "");
 }
 
-function compileDefine(form, isStatement) {
+function compileDeclare(form, isStatement) {
     if (!isStatement)
         error("Cannot compile definition as an expression");
 
     if (typeof form[2] == "undefined")
         return "var " + form[1] + ";";
-    else return "var " + form[1] + "=" + form[2] + ";";
+    else return "var " + form[1] + "=" + compile(form[2], false) + ";";
 }
 
 function compileWhile(form, isStatement) {
@@ -246,7 +247,11 @@ function compileWhile(form, isStatement) {
         error("Cannot compile while loop as an expression");
     var condition = compile(form[1], false);
     var body = compileBody(form.slice(2));
-    return "while(" + condition + ")" + body + ";";
+    return "while(" + condition + ")" + body;
+}
+
+function compileNot(form, isStatement) {
+    return "!(" + compile(form[1], false) + ")" + (isStatement ? ";" : "");
 }
 
 function compile(form, isStatement) {
