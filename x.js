@@ -6,8 +6,13 @@ var whitespace = {};
 whitespace[" "] = true; whitespace["\t"] = true; whitespace["\n"] = true;
 
 var operators = {};
-operators["+"] = "+"; operators["<"] = "<";
+operators["+"] = "+"; operators["<"] = "<"; operators["="] = "==";
 operators["and"] = "&&"; operators["or"] = "||";
+
+var special = {};
+special["set"] = compileSet;
+special["if"] = compileIf;
+special["function"] = compileFunction;
 
 function makeStream(str) {
     return { pos: 0, string: str, len: str.length };
@@ -130,6 +135,10 @@ function isOperator(form) {
     return operators[form[0]] != null;
 }
 
+function isSpecial(form) {
+    return special[form[0]] != null;
+}
+
 function compileAtom(form, isStatement) {
     return form.toString() + (isStatement ? ";" : "");
 }
@@ -153,39 +162,78 @@ function compileOperator(form) {
     return "(" + a + operators[form[0]] + b + ")";
 }
 
+function compileSet(form, isStatement) {
+    if (!isStatement)
+        error("Cannot compile assignment as an expression")
+    if (!isAtom(form[0]))
+        error("Invalid left-hand side of assignment")
+    return form[1] + "=" + compile(form[2], false) + ";";
+}
+
+function compileBranch(branch) {
+    var i = 1, str = "if(" + compile(branch[0], false) + "){";
+    while (i < branch.length) {
+        str += compile(branch[i], true);
+        ++i;
+    }
+    return str + "}";
+}
+
+function compileIf(form, isStatement) {
+    if (!isStatement)
+        error("Cannot compile if as an expression")
+    var i = 1, str = "";
+    while (i < form.length) {
+        str += compileBranch(form[i]);
+        if (i < form.length - 1)
+            str += "else ";
+        ++i;
+    }
+    return str + ";";
+}
+
+function compileFunction(form, isStatement) {
+    // ignoring isStatement for now
+    var name = form[1];
+    var args = form[2];
+    var body = form.slice(3);
+    str = "function " + name + "(";
+
+    var i = 0;
+    while (i < args.length) {
+        str += args[i];
+        if (i < args.length - 1)
+            str += ",";
+        ++i;
+    }
+
+    str += "){"
+
+    i = 0;
+    while (i < body.length) {
+        str += compile(body[i], true);
+        ++i;
+    }
+
+    return str + "}";
+}
+
 function compile(form, isStatement) {
     isStatement = typeof isStatement == "undefined" ? true : isStatement;
 
     if (isAtom(form))
         return compileAtom(form, isStatement);
-    else if (isCall(form))
+    else if (isCall(form)) {
         if (isOperator(form)) {
             if (isStatement)
                 error("Cannot compile use of operator " + form[0] + " as a statement");
             return compileOperator(form);
-        } else return compileCall(form, isStatement);
-    else error("Unexpected form " + form.toString());
+        } else if (isSpecial(form)) {
+            return special[form[0]](form, isStatement);
+        } else return compilecall(form, isStatement);
+    } else error("Unexpected form " + form.toString());
 }
 
 function error(msg) {
     throw new Error(msg);
-}
-
-function test(actual, expected) {
-    if (expected !== actual) {
-        error("Expected " + expected + ", was " + actual);
-    }
-}
-
-function runTests() {
-    test(readFromString("()").length, [].length);
-    test(readFromString("a"), "a");
-    test(readFromString("(a b c)").length, 3);
-    test(readFromString("(a b c) ; blaz").length, 3);
-    test(readFromString("; blaz\n(a b c)").length, 3);
-    test(readFromString("( 1  b delta)").length, 3);
-    test(readFromString(""), "");
-    test(readFromString("\"foo\""), "foo");
-    test(readFromString("\"foo\n\""), "foo\n");
-    test(readFromString("(\"a\" b c)")[0], "a");
 }
