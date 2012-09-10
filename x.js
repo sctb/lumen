@@ -1,3 +1,5 @@
+fs = require('fs');
+
 var delimiters = {};
 delimiters["("] = true; delimiters[")"] = true;
 delimiters[";"] = true; delimiters["\n"] = true;
@@ -13,9 +15,20 @@ var special = {};
 special["set"] = compileSet;
 special["if"] = compileIf;
 special["function"] = compileFunction;
+special["get"] = compileGet;
+special["define"] = compileDefine;
+special["while"] = compileWhile;
+
+function error(msg) {
+    throw new Error(msg);
+}
 
 function makeStream(str) {
     return { pos: 0, string: str, len: str.length };
+}
+
+function readFile(filename) {
+    return fs.readFileSync(filename, "utf8");
 }
 
 function peekChar(s) {
@@ -144,13 +157,7 @@ function compileAtom(form, isStatement) {
 }
 
 function compileCall(form, isStatement) {
-    var i = 1, args = "";
-    while (i < form.length) {
-        var a = compile(form[i], false);
-        args += a + (i < form.length - 1 ? "," : "");
-        ++i;
-    }
-    return form[0] + "(" + args + ")" + (isStatement ? ";" : "");
+    return form[0] + compileArgs(form.slice(1)) + (isStatement ? ";" : "");
 }
 
 function compileOperator(form) {
@@ -164,24 +171,45 @@ function compileOperator(form) {
 
 function compileSet(form, isStatement) {
     if (!isStatement)
-        error("Cannot compile assignment as an expression")
+        error("Cannot compile assignment as an expression");
     if (!isAtom(form[0]))
-        error("Invalid left-hand side of assignment")
-    return form[1] + "=" + compile(form[2], false) + ";";
+        error("Invalid left-hand side of assignment");
+    if (form.length < 3)
+        error("Missing right-hand side in assignment");
+    return compile(form[1], false) + "=" + compile(form[2], false) + ";";
 }
 
-function compileBranch(branch) {
-    var i = 1, str = "if(" + compile(branch[0], false) + "){";
-    while (i < branch.length) {
-        str += compile(branch[i], true);
+function compileArgs(forms, areLiteral) {
+    var i = 0, str = "(";
+    while (i < forms.length) {
+        if (areLiteral)
+            str += forms[i];
+        else
+            str += compile(forms[i], false);
+        if (i < forms.length - 1)
+            str += ",";
+        ++i;
+    }
+    return str + ")";
+}
+
+function compileBody(forms) {
+    var i = 0, str = "{";
+    while (i < forms.length) {
+        str += compile(forms[i], true);
         ++i;
     }
     return str + "}";
 }
 
+function compileBranch(branch) {
+    var body = branch.slice(1);
+    return "if(" + compile(branch[0], false) + ")" + compileBody(body);
+}
+
 function compileIf(form, isStatement) {
     if (!isStatement)
-        error("Cannot compile if as an expression")
+        error("Cannot compile if as an expression");
     var i = 1, str = "";
     while (i < form.length) {
         str += compileBranch(form[i]);
@@ -195,27 +223,30 @@ function compileIf(form, isStatement) {
 function compileFunction(form, isStatement) {
     // ignoring isStatement for now
     var name = form[1];
-    var args = form[2];
-    var body = form.slice(3);
-    str = "function " + name + "(";
+    var args = compileArgs(form[2], true);
+    var body = compileBody(form.slice(3));
+    return "function " + name + args + body + ";";
+}
 
-    var i = 0;
-    while (i < args.length) {
-        str += args[i];
-        if (i < args.length - 1)
-            str += ",";
-        ++i;
-    }
+function compileGet(form, isStatement) {
+    return form[1] + "[" + form[2] + "]" + (isStatement ? ";" : "");
+}
 
-    str += "){"
+function compileDefine(form, isStatement) {
+    if (!isStatement)
+        error("Cannot compile definition as an expression");
 
-    i = 0;
-    while (i < body.length) {
-        str += compile(body[i], true);
-        ++i;
-    }
+    if (typeof form[2] == "undefined")
+        return "var " + form[1] + ";";
+    else return "var " + form[1] + "=" + form[2] + ";";
+}
 
-    return str + "}";
+function compileWhile(form, isStatement) {
+    if (!isStatement)
+        error("Cannot compile while loop as an expression");
+    var condition = compile(form[1], false);
+    var body = compileBody(form.slice(2));
+    return "while(" + condition + ")" + body + ";";
 }
 
 function compile(form, isStatement) {
@@ -230,10 +261,19 @@ function compile(form, isStatement) {
             return compileOperator(form);
         } else if (isSpecial(form)) {
             return special[form[0]](form, isStatement);
-        } else return compilecall(form, isStatement);
+        } else return compileCall(form, isStatement);
     } else error("Unexpected form " + form.toString());
 }
 
-function error(msg) {
-    throw new Error(msg);
+function compileFile(filename) {
+    var s = makeStream(readFile(filename));
+    var form, output = "";
+    while (true) {
+        form = read(s);
+        if (form)
+            output += compile(form, true);
+        else
+            break;
+    }
+    return output;
 }
