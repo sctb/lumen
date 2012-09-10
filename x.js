@@ -5,6 +5,10 @@ delimiters[";"] = true; delimiters["\n"] = true;
 var whitespace = {};
 whitespace[" "] = true; whitespace["\t"] = true; whitespace["\n"] = true;
 
+var operators = {};
+operators["+"] = "+"; operators["<"] = "<";
+operators["and"] = "&&"; operators["or"] = "||";
+
 function makeStream(str) {
     return { pos: 0, string: str, len: str.length };
 }
@@ -112,6 +116,40 @@ function read(s) {
 
 function readFromString(str) {
     return read(makeStream(str));
+}
+
+function isAtom(form) {
+    return typeof form == "string";
+}
+
+function isCall(form) {
+    return Array.isArray(form) && typeof form[0] == "string";
+}
+
+function isOperator(form) {
+    return operators[form];
+}
+
+function compileAtom(form, isStatement) {
+    return form.toString() + (isStatement ? ";" : "");
+}
+
+function compileCall(form, isStatement) {
+    var args = "";
+    for (var i = 1; i < form.length; i++)
+        args += compile(form[i], false);
+    return form[0] + "(" + args + ")" + (isStatement ? ";" : "");
+}
+
+function compile(form, isStatement) {
+    isStatement = typeof isStatement == "undefined" ? true : isStatement;
+
+    if (isAtom(form))
+        return compileAtom(form, isStatement);
+    else if (isCall(form))
+        return compileCall(form, isStatement);
+    else
+        throw new Error("Unexpected form " + form.toString());
 }
 
 function test(actual, expected) {
