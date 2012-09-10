@@ -66,7 +66,7 @@ function readList(s) {
             readChar(s); // )
             break;
         } else {
-            throw new Error("Expected ) at " + s.pos);
+            error("Expected ) at " + s.pos);
         }
     }
 
@@ -93,7 +93,7 @@ function readString(s) {
             readChar(s); // "
             break;
         } else {
-            throw new Error("Expected \" at " + s.pos);
+            error("Expected \" at " + s.pos);
         }
     }
 
@@ -108,7 +108,7 @@ function read(s) {
     switch (c) {
         case ";": readComment(s); return read(s);
         case "(": return readList(s);
-        case ")": throw new Error("Unexpected ) at " + s.pos);
+        case ")": error("Unexpected ) at " + s.pos);
         case "\"": return readString(s);
         default: return readAtom(s);
     }
@@ -127,7 +127,7 @@ function isCall(form) {
 }
 
 function isOperator(form) {
-    return operators[form];
+    return operators[form[0]] != null;
 }
 
 function compileAtom(form, isStatement) {
@@ -135,10 +135,22 @@ function compileAtom(form, isStatement) {
 }
 
 function compileCall(form, isStatement) {
-    var args = "";
-    for (var i = 1; i < form.length; i++)
-        args += compile(form[i], false);
+    var i = 1, args = "";
+    while (i < form.length) {
+        var a = compile(form[i], false);
+        args += a + (i < form.length - 1 ? "," : "");
+        ++i;
+    }
     return form[0] + "(" + args + ")" + (isStatement ? ";" : "");
+}
+
+function compileOperator(form) {
+    if (form.length > 3)
+        error("Too many arguments to operator " + form[0]);
+
+    var a = compile(form[1], false);
+    var b = compile(form[2], false);
+    return "(" + a + operators[form[0]] + b + ")";
 }
 
 function compile(form, isStatement) {
@@ -147,14 +159,21 @@ function compile(form, isStatement) {
     if (isAtom(form))
         return compileAtom(form, isStatement);
     else if (isCall(form))
-        return compileCall(form, isStatement);
-    else
-        throw new Error("Unexpected form " + form.toString());
+        if (isOperator(form)) {
+            if (isStatement)
+                error("Cannot compile use of operator " + form[0] + " as a statement");
+            return compileOperator(form);
+        } else return compileCall(form, isStatement);
+    else error("Unexpected form " + form.toString());
+}
+
+function error(msg) {
+    throw new Error(msg);
 }
 
 function test(actual, expected) {
     if (expected !== actual) {
-        throw new Error("Expected " + expected + ", was " + actual);
+        error("Expected " + expected + ", was " + actual);
     }
 }
 
