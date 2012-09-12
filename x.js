@@ -79,7 +79,9 @@ function readList(s) {
     while (true) {
         readWhitespace(s);
         c = peekChar(s)
-        if (c && c != ")") {
+        if (c && c == ";") {
+            readComment(s);
+        } else if (c && c != ")") {
             l.push(read(s));
         } else if (c) {
             readChar(s); // )
