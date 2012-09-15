@@ -8,8 +8,10 @@ var whitespace = {};
 whitespace[" "] = true; whitespace["\t"] = true; whitespace["\n"] = true;
 
 var operators = {};
-operators["+"] = "+"; operators["<"] = "<"; operators["="] = "==";
+operators["+"] = "+"; operators["-"] = "-";
+operators["<"] = "<"; operators[">"] = ">";
 operators["and"] = "&&"; operators["or"] = "||";
+operators["="] = "==";
 
 var special = {};
 special["set"] = compileSet;
@@ -30,6 +32,10 @@ function makeStream(str) {
 
 function readFile(filename) {
     return fs.readFileSync(filename, "utf8");
+}
+
+function writeFile(filename, data) {
+    return fs.writeFileSync(filename, data, "utf8");
 }
 
 function peekChar(s) {
