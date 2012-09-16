@@ -13,7 +13,7 @@
 (set (get operators "+") "+") (set (get operators "-") "-")
 (set (get operators "<") "<") (set (get operators ">") ">")
 (set (get operators "and") "&&") (set (get operators "or") "||")
-(set (get operators "=") "==")
+(set (get operators "cat") "+") (set (get operators "=") "==")
 
 (declare special {})
 (set (get special "set") compile_set)
