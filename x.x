@@ -1,4 +1,4 @@
-(require "fs")
+(set fs (require "fs"))
 
 (declare delimiters {})
 (set (get delimiters "(") true) (set (get delimiters ")") true)
@@ -14,6 +14,15 @@
 (set (get operators "<") "<") (set (get operators ">") ">")
 (set (get operators "and") "&&") (set (get operators "or") "||")
 (set (get operators "=") "==")
+
+(declare special {})
+(set (get special "set") compile_set)
+(set (get special "get") compile_get)
+(set (get special "not") compile_not)
+(set (get special "if") compile_if)
+(set (get special "function") compile_function)
+(set (get special "declare") compile_declare)
+(set (get special "while") compile_while)
 
 (function error (msg) (throw msg))
 
@@ -159,7 +168,7 @@
   (declare rh (compile (get form 2) false))
   (return (+ lh (+ "=" (+ rh (terminator true))))))
 
-(function compile_branch (form is_statement)
+(function compile_branch (branch)
   (declare conditional (compile (get branch 0) false))
   (declare body (compile_body (branch.slice 1)))
   (return (+ "if(" (+ conditional (+ ")" body)))))
