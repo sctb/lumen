@@ -1,10 +1,8 @@
 (require "fs")
 
 (declare delimiters {})
-(set (get delimiters "(") true)
-(set (get delimiters ")") true)
-(set (get delimiters ";") true)
-(set (get delimiters "\n") true)
+(set (get delimiters "(") true) (set (get delimiters ")") true)
+(set (get delimiters ";") true) (set (get delimiters "\n") true)
 
 (declare whitespace {})
 (set (get whitespace " ") true)
@@ -12,13 +10,10 @@
 (set (get whitespace "\n") true)
 
 (declare operators {})
-(set (get operators "+") "+")
-(set (get operators "-") "-")
-(set (get operators "<") "<")
-(set (get operators ">") ">")
+(set (get operators "+") "+") (set (get operators "-") "-")
+(set (get operators "<") "<") (set (get operators ">") ">")
+(set (get operators "and") "&&") (set (get operators "or") "||")
 (set (get operators "=") "==")
-(set (get operators "and") "&&")
-(set (get operators "or") "||")
 
 (function error (msg) (throw msg))
 
@@ -31,6 +26,9 @@
 
 (function read_file (filename)
   (return (fs.readFileSync filename "utf8")))
+
+(function write_file (filename data)
+  (return (fs.writeFileSync filename data "utf8")))
 
 (function peek_char (s)
   (if ((< s.pos s.len) (return (s.string.charAt s.pos)))))
