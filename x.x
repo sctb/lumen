@@ -1,3 +1,5 @@
+;; -*- mode: lisp -*-
+
 (set fs (require "fs"))
 
 (declare delimiters {})
@@ -46,13 +48,17 @@
   (declare c (peek_char s))
   (if (c (set s.pos (+ s.pos 1)) (return c))))
 
-(function read_whitespace (s)
+(function skip_non_code (s)
   (declare c)
   (while true
     (set c (peek_char s))
-    (if ((and c (get whitespace c))
-         (read_char s))
-        (true break))))
+    (if ((not c) break)
+	((get whitespace c) (read_char s))
+        ((= c ";")
+	 (while (and c (not (= c "\n")))
+	   (set c (read_char s)))
+	 (skip_non_code s))
+	(true break))))
 
 (function read_atom (s)
   (declare c)
@@ -71,18 +77,12 @@
   (declare c)
   (declare l [])
   (while true
-    (read_whitespace s)
+    (skip_non_code s)
     (set c (peek_char s))
-    (if ((and c (= c ";")) (read_comment s))
-        ((and c (not (= c ")"))) (l.push (read s)))
+    (if ((and c (not (= c ")"))) (l.push (read s)))
         (c (read_char s) break) ; )
         (true (error (cat "Expected ) at " s.pos)))))
   (return l))
-
-(function read_comment (s)
-  (declare c (read_char s)) ;
-  (while (and c (not (= c "\n")))
-    (set c (read_char s))))
 
 (function read_string (s)
   (read_char s) ; "
@@ -98,10 +98,9 @@
   (return (cat str "\"")))
 
 (function read (s)
-  (read_whitespace s)
+  (skip_non_code s)
   (declare c (peek_char s))
-  (if ((= c ";") (read_comment s) (return (read s)))
-      ((= c "(") (return (read_list s)))
+  (if ((= c "(") (return (read_list s)))
       ((= c ")") (error (cat "Unexpected ) at " s.pos)))
       ((= c "\"") (return (read_string s)))
       (true (return (read_atom s)))))
