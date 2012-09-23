@@ -196,6 +196,10 @@
   (declare key (compile (get form 2) false))
   (return (cat (get form 1) "[" key "]" (terminator is_statement))))
 
+(function compile_not (form is_statement)
+  (declare expr (compile (get form 1) false))
+  (return (cat "!(" expr ")" (terminator is_statement))))
+
 (function compile_declare (form is_statement)
   (if ((not is_statement)
        (error "Cannot compile declaration as an expression")))
@@ -213,10 +217,6 @@
   (declare condition (compile (get form 1) false))
   (declare body (compile_body (form.slice 2)))
   (return (cat "while(" condition ")" body)))
-
-(function compile_not (form is_statement)
-  (declare expr (compile (get form 1) false))
-  (return (cat "!(" expr ")" (terminator is_statement))))
 
 (function compile (form is_statement)
   (if ((is_atom form) (return (compile_atom form is_statement)))
