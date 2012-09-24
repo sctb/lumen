@@ -70,7 +70,9 @@
          (set str (cat str c))
          (read_char s))
         (true break)))
-  (return str))
+  (declare n (parseFloat str))
+  (if ((isNaN n) (return str))
+      (true (return n))))
 
 (function read_list (s)
   (read_char s) ; (
@@ -108,7 +110,7 @@
 ;; compiler
 
 (function is_atom (form)
-  (return (= (typeof form) "string")))
+  (return (or (= (typeof form) "string") (= (typeof form) "number"))))
 
 (function is_call (form)
   (return (and (Array.isArray form) (= (typeof (get form 0)) "string"))))
