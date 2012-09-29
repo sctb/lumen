@@ -25,6 +25,7 @@
 (set (get special "function") compile_function)
 (set (get special "declare") compile_declare)
 (set (get special "while") compile_while)
+(set (get special "list") compile_list)
 
 (function error (msg) (throw msg))
 
@@ -219,6 +220,19 @@
   (declare condition (compile (get form 1) false))
   (declare body (compile_body (form.slice 2)))
   (return (cat "while(" condition ")" body)))
+
+(function compile_list (form is_statement is_quoted) ; is_quoted ignored
+  (declare i 1)
+  (declare str "[")
+  (while (< i form.length)
+    (declare x (get form i))
+    (if ((is_atom x) (set str (cat str x)))
+	(true
+	 (declare x1 (compile x false))
+	 (set str (cat str x1))))
+    (if ((< i (- form.length 1)) (set str (cat str ","))))
+    (set i (+ i 1)))
+  (return (cat str "]")))
 
 (function compile (form is_statement)
   (if ((is_atom form) (return (compile_atom form is_statement)))
