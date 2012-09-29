@@ -33,6 +33,13 @@
 
 (function error (msg) (throw msg))
 
+;; library
+
+(function string (form)
+  (return (cat "\"" (form.toString) "\"")))
+
+;; reader
+
 (function make_stream (str)
   (declare s {})
   (set s.pos 0)
@@ -247,9 +254,6 @@
     (if ((< i (- forms.length 1)) (set str (cat str ","))))
     (set i (+ i 1)))
   (return (cat str "]")))
-
-(function string (form)
-  (return (cat "\"" (form.toString) "\"")))
 
 (function quote_form (form)
   (if ((= (typeof form) "number") (return (form.toString)))
