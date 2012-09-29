@@ -18,6 +18,7 @@
 (set (get operators "cat") "+") (set (get operators "=") "==")
 
 (declare special {})
+(set (get special "do") compile_do)
 (set (get special "set") compile_set)
 (set (get special "get") compile_get)
 (set (get special "not") compile_not)
@@ -169,6 +170,11 @@
     (if ((< i (- form.length 1)) (set str (cat str op))))
     (set i (+ i 1)))
   (return (cat str ")")))
+
+(function compile_do (forms is_statement)
+  (if ((not is_statement)
+       (error "Cannot compile DO as an expression")))
+  (return (compile_body forms)))
 
 (function compile_set (form is_statement)
   (if ((not is_statement)
