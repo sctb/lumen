@@ -241,6 +241,8 @@
        (return form))
       ((= (typeof form) "string")
        (return (cat "\"" form "\"")))
+      ((= (get form 0) "unquote")
+       (return (compile (get form 1) false)))
       (true (return (compile_list form false true)))))
 
 (function compile_quote (forms is_statement)
