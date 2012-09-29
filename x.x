@@ -26,6 +26,7 @@
 (set (get special "declare") compile_declare)
 (set (get special "while") compile_while)
 (set (get special "list") compile_list)
+(set (get special "quote") compile_quote)
 
 (function error (msg) (throw msg))
 
@@ -221,18 +222,36 @@
   (declare body (compile_body (form.slice 2)))
   (return (cat "while(" condition ")" body)))
 
-(function compile_list (form is_statement is_quoted) ; is_quoted ignored
-  (declare i 1)
+(function compile_list1 (forms is_quoted)
+  (declare i 0)
   (declare str "[")
-  (while (< i form.length)
-    (declare x (get form i))
-    (if ((is_atom x) (set str (cat str x)))
-	(true
-	 (declare x1 (compile x false))
-	 (set str (cat str x1))))
-    (if ((< i (- form.length 1)) (set str (cat str ","))))
+  (while (< i forms.length)
+    (declare x)
+    (if (is_quoted (set x (compile_quote1 (get forms i))))
+	(true (set x (compile (get forms i) false))))
+    (set str (cat str x))
+    (if ((< i (- forms.length 1)) (set str (cat str ","))))
     (set i (+ i 1)))
   (return (cat str "]")))
+
+(function compile_list (form is_statement is_quoted) ; is_quoted ignored
+  (if (is_statement
+       (error "Cannot compile list as a statement")))
+  (return (compile_list1 (form.slice 1) is_quoted)))
+
+(function compile_quote1 (form)
+  (if ((= (typeof form) "number") (return (form.toString)))
+      ((and (= (typeof form) "string")
+	    (= (form.charAt 0) "\""))
+       (return form))
+      ((= (typeof form) "string")
+       (return (cat "\"" form "\"")))
+      (true (return (compile_list1 form true)))))
+
+(function compile_quote (form is_statement)
+  (if (is_statement
+       (error "Cannot compile quoted form as a statement")))
+  (return (compile_quote1 (get form 1))))
 
 (function compile (form is_statement)
   (if ((is_atom form) (return (compile_atom form is_statement)))
