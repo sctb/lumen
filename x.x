@@ -28,6 +28,8 @@
 (set (get special "list") compile_list)
 (set (get special "quote") compile_quote)
 
+(declare macros {})
+
 (function error (msg) (throw msg))
 
 (function make_stream (str)
@@ -122,6 +124,12 @@
 
 (function is_special (form)
   (return (not (= (get special (get form 0)) null))))
+
+(function is_macro_call (form)
+  (return (not (= (get macros (get form 0)) null))))
+
+(function is_macro_definition (form)
+  (return (and (is_call form) (= (get form 0) "macro"))))
 
 (function terminator (is_statement)
   (if (is_statement (return ";")) (true (return ""))))
@@ -234,13 +242,16 @@
     (set i (+ i 1)))
   (return (cat str "]")))
 
+(function string (form)
+  (return (cat "\"" (form.toString) "\"")))
+
 (function quote_form (form)
   (if ((= (typeof form) "number") (return (form.toString)))
       ((and (= (typeof form) "string")
 	    (= (form.charAt 0) "\""))
        (return form))
       ((= (typeof form) "string")
-       (return (cat "\"" form "\"")))
+       (return (string form)))
       ((= (get form 0) "unquote")
        (return (compile (get form 1) false)))
       (true (return (compile_list form false true)))))
@@ -252,6 +263,15 @@
        (error "Must supply at least one argument to QUOTE")))
   (return (quote_form (get forms 0))))	; first arg only
 
+(function compile_macro (form is_statement)
+  (if ((not is_statement)
+       (error "Cannot compile macro definition as an expression")))
+  (eval (compile_function form true))
+  (declare name (get form 0))
+  (declare register
+    (quote (set (get macros (unquote (string name))) (unquote name))))
+  (eval (compile register true)))
+
 (function compile (form is_statement)
   (if ((is_atom form) (return (compile_atom form is_statement)))
       ((is_call form)
@@ -259,9 +279,16 @@
             (error (cat "Cannot compile operator application as a statement")))
            ((is_operator form)
             (return (compile_operator form)))
+	   ((is_macro_definition form)
+	    (compile_macro (form.slice 1) is_statement)
+	    (return ""))
            ((is_special form)
-            (declare compiler (get special (get form 0)))
-            (return (compiler (form.slice 1) is_statement)))
+            (declare fn (get special (get form 0)))
+            (return (fn (form.slice 1) is_statement)))
+	   ((is_macro_call form)
+	    (declare fn (get macros (get form 0)))
+	    (declare form (fn.apply fn (form.slice 1)))
+	    (return (compile form is_statement)))
            (true (return (compile_call form is_statement)))))
       (true (error (cat "Unexpected form: " (form.toString))))))
 
