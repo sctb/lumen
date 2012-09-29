@@ -26,6 +26,7 @@
 (set (get special "function") compile_function)
 (set (get special "declare") compile_declare)
 (set (get special "while") compile_while)
+(set (get special "each") compile_each)
 (set (get special "list") compile_list)
 (set (get special "quote") compile_quote)
 
@@ -237,14 +238,25 @@
 
 (function compile_while (form is_statement)
   (if ((not is_statement)
-       (error "Cannot compile while loop as an expression")))
+       (error "Cannot compile WHILE as an expression")))
   (declare condition (compile (get form 0) false))
   (declare body (compile_body (form.slice 1)))
   (return (cat "while(" condition ")" body)))
 
+(function compile_each (form is_statement)
+  (if ((not is_statement)
+       (error "Cannot compile EACH as an expression")))
+  (declare key (get (get form 0) 0))
+  (declare value (get (get form 0) 1))
+  (declare object (get form 1))
+  (declare body (form.slice 2))
+  (body.unshift 
+   (quote (set (unquote value) (get (unquote object) (unquote key)))))
+  (return (cat "for(" key " in " object ")" (compile_body body))))
+
 (function compile_list (forms is_statement is_quoted)
   (if (is_statement
-       (error "Cannot compile list as a statement")))
+       (error "Cannot compile LIST as a statement")))
   (declare i 0)
   (declare str "[")
   (while (< i forms.length)
