@@ -216,8 +216,9 @@
   (return (cat "function " name args body)))
 
 (function compile_get (form is_statement)
+  (declare object (compile (get form 0) false))
   (declare key (compile (get form 1) false))
-  (return (cat (get form 0) "[" key "]" (terminator is_statement))))
+  (return (cat object "[" key "]" (terminator is_statement))))
 
 (function compile_not (form is_statement)
   (declare expr (compile (get form 0) false))
