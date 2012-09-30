@@ -310,10 +310,10 @@
             (return (fn (form.slice 1) is_statement)))
 	   ((is_macro_call form)
 	    (declare fn (get macros (get form 0)))
-	    (declare form (fn.apply fn (form.slice 1)))
+	    (declare form (fn (form.slice 1)))
 	    (return (compile form is_statement)))
            (true (return (compile_call form is_statement)))))
-      (true (error (cat "Unexpected form: " (form.toString))))))
+      (true (error (cat "Unexpected form: " form)))))
 
 (function compile_file (filename)
   (declare form)
