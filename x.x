@@ -38,7 +38,7 @@
 ;; library
 
 (function string (form)
-  (return (cat "\"" (form.toString) "\"")))
+  (return (cat "\"" form "\"")))
 
 ;; reader
 
@@ -163,7 +163,7 @@
   (return (cat str "}")))
 
 (function compile_atom (form is_statement)
-  (return (cat (form.toString) (terminator is_statement))))
+  (return (cat form (terminator is_statement))))
 
 (function compile_call (form is_statement)
   (declare fn (compile (get form 0) false))
