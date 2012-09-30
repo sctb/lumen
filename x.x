@@ -38,7 +38,9 @@
 ;; library
 
 (function string (form)
-  (return (cat "\"" form "\"")))
+  (if ((= (typeof form) "string")
+       (return (cat "\"" form "\"")))
+      (true (return (cat form "")))))
 
 ;; reader
 
@@ -275,12 +277,10 @@
   (return (cat str "]")))
 
 (function quote_form (form)
-  (if ((= (typeof form) "number") (return (form.toString)))
-      ((and (= (typeof form) "string")
+  (if ((and (= (typeof form) "string")
 	    (= (form.charAt 0) "\""))
        (return form))
-      ((= (typeof form) "string")
-       (return (string form)))
+      ((is_atom form) (return (string form)))
       ((= (get form 0) "unquote")
        (return (compile (get form 1) false)))
       (true (return (compile_list form false true)))))
