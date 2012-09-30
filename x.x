@@ -21,6 +21,7 @@
 (set (get special "do") compile_do)
 (set (get special "set") compile_set)
 (set (get special "get") compile_get)
+(set (get special "dot") compile_dot)
 (set (get special "not") compile_not)
 (set (get special "if") compile_if)
 (set (get special "function") compile_function)
@@ -220,6 +221,11 @@
   (declare object (compile (get form 0) false))
   (declare key (compile (get form 1) false))
   (return (cat object "[" key "]" (terminator is_statement))))
+
+(function compile_dot (form is_statement)
+  (declare object (compile (get form 0) false))
+  (declare key (get form 1))
+  (return (cat object "." key (terminator is_statement))))
 
 (function compile_not (form is_statement)
   (declare expr (compile (get form 0) false))
