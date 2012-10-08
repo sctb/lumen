@@ -121,10 +121,7 @@
 
 (function read_unquote (s)
   (read_char s) ; ,
-  (if ((= (peek_char s) "@") 
-       (read_char s)
-       (return (list "unquote-splicing" (read s))))
-      (true (return (list "unquote" (read s))))))
+  (return (list "unquote" (read s))))
 
 (function read (s)
   (skip_non_code s)
@@ -278,26 +275,20 @@
    '(set ,value (get ,object ,key)))
   (return (cat "for(" key " in " object ")" (compile_body body))))
 
-(function compile_list (forms is_statement is_quoted is_splicing)
+(function compile_list (forms is_statement is_quoted)
   (if (is_statement
        (error "Cannot compile LIST as a statement")))
   (declare i 0)
-  (declare str "")
-  (if ((not is_splicing) (set str "[")))
+  (declare str "[")
   (while (< i forms.length)
     (declare x (get forms i))
     (declare x1)
-    (if ((and is_quoted (is_list x) (= (get x 0) "unquote-splicing"))
-	 (if ((not (is_list (get x 1)))
-	      (error "Argument to UNQUOTE-SPLICING must be a list")))
-	 (set x1 (compile_list (get x 1) false false true)))
-	(is_quoted (set x1 (quote_form x)))
+    (if (is_quoted (set x1 (quote_form x)))
 	(true (set x1 (compile x false))))
     (set str (cat str x1))
     (if ((< i (- forms.length 1)) (set str (cat str ","))))
     (set i (+ i 1)))
-  (if (is_splicing (return str))
-      (true (return (cat str "]")))))
+  (return (cat str "]")))
 
 (function quote_form (form)
   (if ((and (= (typeof form) "string")
