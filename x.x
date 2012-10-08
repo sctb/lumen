@@ -115,12 +115,17 @@
         (true (error (cat "Expected \" at " s.pos)))))
   (return (cat str "\"")))
 
+(function read_quote (s)
+  (read_char s) ; '
+  (return (list "quote" (read s))))
+
 (function read (s)
   (skip_non_code s)
   (declare c (peek_char s))
   (if ((= c "(") (return (read_list s)))
       ((= c ")") (error (cat "Unexpected ) at " s.pos)))
       ((= c "\"") (return (read_string s)))
+      ((= c "'") (return (read_quote s)))
       (true (return (read_atom s)))))
 
 ;; compiler
