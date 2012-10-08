@@ -121,7 +121,10 @@
 
 (function read_unquote (s)
   (read_char s) ; ,
-  (return (list "unquote" (read s))))
+  (if ((= (peek_char s) "@") 
+       (read_char s)
+       (return (list "unquote-splicing" (read s))))
+      (true (return (list "unquote" (read s))))))
 
 (function read (s)
   (skip_non_code s)
