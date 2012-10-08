@@ -267,7 +267,7 @@
   (declare object (get form 1))
   (declare body (form.slice 2))
   (body.unshift 
-   (quote (set (unquote value) (get (unquote object) (unquote key)))))
+   '(set (unquote value) (get (unquote object) (unquote key))))
   (return (cat "for(" key " in " object ")" (compile_body body))))
 
 (function compile_list (forms is_statement is_quoted is_splicing)
@@ -313,7 +313,7 @@
   (eval (compile_function form true))
   (declare name (get form 0))
   (declare register
-    (quote (set (get macros (unquote (string name))) (unquote name))))
+    '(set (get macros (unquote (string name))) (unquote name)))
   (eval (compile register true)))
 
 (function compile (form is_statement)
