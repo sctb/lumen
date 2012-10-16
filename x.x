@@ -42,13 +42,22 @@
        (return (cat "\"" form "\"")))
       (true (return (cat form "")))))
 
+(function string_length (str)
+  (return str.length))
+
+(function string_ref (str n)
+  (return (str.charAt n)))
+
+(function substring (str start end)
+  (return (str.substring start end)))
+
 ;; reader
 
 (function make_stream (str)
   (declare s {})
   (set s.pos 0)
   (set s.string str)
-  (set s.len str.length)
+  (set s.len (string_length str))
   (return s))
 
 (function read_file (filename)
@@ -58,7 +67,7 @@
   (return (fs.writeFileSync filename data "utf8")))
 
 (function peek_char (s)
-  (if ((< s.pos s.len) (return (s.string.charAt s.pos)))))
+  (if ((< s.pos s.len) (return (string_ref s.string s.pos)))))
 
 (function read_char (s)
   (declare c (peek_char s))
@@ -295,7 +304,7 @@
 
 (function quote_form (form)
   (if ((and (= (typeof form) "string")
-	    (= (form.charAt 0) "\""))
+	    (= (string_ref form 0) "\""))
        (return form))
       ((is_atom form) (return (string form)))
       ((= (get form 0) "unquote")
