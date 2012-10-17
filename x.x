@@ -187,7 +187,17 @@
   (return (cat str "}")))
 
 (function compile_atom (form is_statement)
-  (return (cat form (terminator is_statement))))
+  (declare atom form)
+  (if ((and (= (typeof form) "string")
+	    (not (= (string_ref form 0) "\"")))
+       (set atom (string_ref form 0))
+       (declare i 1) ; skip leading -
+       (while (< i (string_length form))
+	 (declare c (string_ref form i))
+	 (if ((= c "-") (set c "_")))
+	 (set atom (cat atom c))
+	 (set i (+ i 1)))))
+  (return (cat atom (terminator is_statement))))
 
 (function compile_call (form is_statement)
   (declare fn (compile (get form 0) false))
