@@ -196,7 +196,10 @@
 	 (declare c (string_ref form i))
 	 (if ((= c "-") (set c "_")))
 	 (set atom (cat atom c))
-	 (set i (+ i 1)))))
+	 (set i (+ i 1)))
+       (declare last (- (string_length form) 1))
+       (if ((= (string_ref form last) "?")
+	    (set atom (cat "is_" (substring atom 0 last)))))))
   (return (cat atom (terminator is_statement))))
 
 (function compile_call (form is_statement)
@@ -249,7 +252,7 @@
   (return str))
 
 (function compile_function (form is_statement)
-  (declare name (get form 0))
+  (declare name (compile (get form 0)))
   (declare args (compile_args (get form 1) true))
   (declare body (compile_body (form.slice 2)))
   (return (cat "function " name args body)))
