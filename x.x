@@ -168,12 +168,11 @@
 (function terminator (is_statement)
   (if (is_statement (return ";")) (true (return ""))))
 
-(function compile_args (forms are_literal)
+(function compile_args (forms)
   (declare i 0)
   (declare str "(")
   (while (< i forms.length)
-    (if (are_literal (set str (cat str (get forms i))))
-        (true (set str (cat str (compile (get forms i) false)))))
+    (set str (cat str (compile (get forms i) false)))
     (if ((< i (- forms.length 1)) (set str (cat str ","))))
     (set i (+ i 1)))
   (return (cat str ")")))
@@ -253,7 +252,7 @@
 
 (function compile_function (form is_statement)
   (declare name (compile (get form 0)))
-  (declare args (compile_args (get form 1) true))
+  (declare args (compile_args (get form 1)))
   (declare body (compile_body (form.slice 2)))
   (return (cat "function " name args body)))
 
