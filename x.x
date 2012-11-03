@@ -382,15 +382,16 @@
 (function usage ()
   (console.log "usage: x input [-o output]"))
 
-(if ((< process.argv.length 3) (usage))
-    ((= (get process.argv 2) "--help") (usage))
+(if ((< process.argv.length 3)
+     (usage)
+     (process.exit)))
+
+(declare input (get process.argv 2))
+(declare output)
+(if ((and (> process.argv.length 4)
+	  (= (get process.argv 3) "-o"))
+     (set output (get process.argv 4)))
     (true
-     (declare input (get process.argv 2))
-     (declare output)
-     (if ((and (> process.argv.length 4)
-               (= (get process.argv 3) "-o"))
-         (set output (get process.argv 4)))
-         (true
-          (declare name (input.slice 0 (input.indexOf ".")))
-          (set output (cat name ".js"))))
-     (write-file output (compile-file input))))
+     (declare name (input.slice 0 (input.indexOf ".")))
+     (set output (cat name ".js"))))
+(write-file output (compile-file input))
