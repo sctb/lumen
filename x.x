@@ -33,6 +33,8 @@
 
 (declare macros {})
 
+(declare current-target 'js)
+
 (function error (msg) (throw msg))
 
 ;; library
@@ -143,6 +145,14 @@
       (true (return (read-atom s)))))
 
 ;; compiler
+
+(macro target (args)
+  (declare i 0)
+  (while (< i args.length)
+    (if ((= (get (get args i) 0) current-target)
+	 (return (get (get args i) 1))))
+    (set i (+ i 1)))
+  (error (cat "No case for current target: " current-target)))
 
 (function atom? (form)
   (return (or (= (typeof form) "string") (= (typeof form) "number"))))
