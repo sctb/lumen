@@ -273,7 +273,7 @@
 (function compile-declare (form stmt?)
   (if ((not stmt?)
        (error "Cannot compile declaration as an expression")))
-  (declare lh (get form 0))
+  (declare lh (compile (get form 0)))
   (declare tr (terminator true))
   (if ((= (typeof (get form 1)) "undefined")
        (return (cat "var " lh tr)))
