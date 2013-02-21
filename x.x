@@ -380,18 +380,25 @@
   (return output))
 
 (function usage ()
-  (console.log "usage: x input [-o output]"))
+  (console.log "usage: x input [-o output] [-t target]")
+  (process.exit))
 
-(if ((< process.argv.length 3)
-     (usage)
-     (process.exit)))
+(if ((< process.argv.length 3) (usage)))
 
 (declare input (get process.argv 2))
-(declare output)
-(if ((and (> process.argv.length 4)
-	  (= (get process.argv 3) "-o"))
-     (set output (get process.argv 4)))
-    (true
-     (declare name (input.slice 0 (input.indexOf ".")))
-     (set output (cat name ".js"))))
+(declare output (cat (input.slice 0 (input.indexOf ".")) ".js"))
+(declare i 3)
+
+(while (< i process.argv.length)
+  (declare arg (get process.argv i))
+  (if ((or (= arg "-o") (= arg "-t"))
+       (if ((> process.argv.length (+ i 1))
+	    (set i (+ i 1))
+	    (declare arg2 (get process.argv i))
+	    (if ((= arg "-o") (set output arg2))
+		(true (console.log "target:" arg2))))
+	   (true (console.log "missing argument for" arg) (usage))))
+      (true (console.log "unrecognized option:" arg) (usage)))
+  (set i (+ i 1)))
+
 (write-file output (compile-file input))
