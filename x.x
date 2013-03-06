@@ -33,25 +33,47 @@
 
 (declare macros {})
 
+;; multi-target
+
 (declare current-target 'js)
 
-(function error (msg) (throw msg))
+(macro target (args)
+  (declare i 0)
+  (while (< i args.length)
+    (if ((= (get (get args i) 0) current-target)
+	 (return (get (get args i) 1))))
+    (set i (+ i 1)))
+  (error (cat "No case for current target: " current-target)))
+
+(declare current-language
+  (target (js "js") (lua "lua")))
 
 ;; library
 
+(function error (msg) (throw msg))
+
+(function type (x)
+  (return (target (js (typeof x)) (lua (type x)))))
+
 (function string (form)
-  (if ((= (typeof form) "string")
+  (if ((= (type form) "string")
        (return (cat "\"" form "\"")))
       (true (return (cat form "")))))
 
 (function string-length (str)
-  (return str.length))
+  (return (target (js str.length) (lua str.len))))
 
 (function string-ref (str n)
   (return (str.charAt n)))
 
 (function substring (str start end)
   (return (str.substring start end)))
+
+(function read-file (filename)
+  (return (fs.readFileSync filename "utf8")))
+
+(function write-file (filename data)
+  (return (fs.writeFileSync filename data "utf8")))
 
 ;; reader
 
@@ -61,12 +83,6 @@
   (set s.string str)
   (set s.len (string-length str))
   (return s))
-
-(function read-file (filename)
-  (return (fs.readFileSync filename "utf8")))
-
-(function write-file (filename data)
-  (return (fs.writeFileSync filename data "utf8")))
 
 (function peek-char (s)
   (if ((< s.pos s.len) (return (string-ref s.string s.pos)))))
@@ -146,22 +162,14 @@
 
 ;; compiler
 
-(macro target (args)
-  (declare i 0)
-  (while (< i args.length)
-    (if ((= (get (get args i) 0) current-target)
-	 (return (get (get args i) 1))))
-    (set i (+ i 1)))
-  (error (cat "No case for current target: " current-target)))
-
 (function atom? (form)
-  (return (or (= (typeof form) "string") (= (typeof form) "number"))))
+  (return (or (= (type form) "string") (= (type form) "number"))))
 
 (function list? (form)
   (return (Array.isArray form)))
 
 (function call? (form)
-  (return (and (list? form) (= (typeof (get form 0)) "string"))))
+  (return (and (list? form) (= (type (get form 0)) "string"))))
 
 (function operator? (form)
   (return (not (= (get operators (get form 0)) null))))
@@ -197,7 +205,7 @@
 
 (function compile-atom (form stmt?)
   (declare atom form)
-  (if ((and (= (typeof form) "string")
+  (if ((and (= (type form) "string")
 	    (not (= (string-ref form 0) "\"")))
        (set atom (string-ref form 0))
        (declare i 1) ; skip leading -
@@ -285,7 +293,7 @@
        (error "Cannot compile declaration as an expression")))
   (declare lh (compile (get form 0)))
   (declare tr (terminator true))
-  (if ((= (typeof (get form 1)) "undefined")
+  (if ((= (type (get form 1)) "undefined")
        (return (cat "var " lh tr)))
       (true
        (declare rh (compile (get form 1) false))
@@ -325,7 +333,7 @@
   (return (cat str "]")))
 
 (function quote-form (form)
-  (if ((and (= (typeof form) "string")
+  (if ((and (= (type form) "string")
 	    (= (string-ref form 0) "\""))
        (return form))
       ((atom? form) (return (string form)))
@@ -343,11 +351,14 @@
 (function compile-macro (form stmt?)
   (if ((not stmt?)
        (error "Cannot compile macro definition as an expression")))
+  (declare tmp current-target)
+  (set current-target current-language)
   (eval (compile-function form true))
   (declare name (get form 0))
   (declare register
     '(set (get macros ,(string name)) ,name))
-  (eval (compile register true)))
+  (eval (compile register true))
+  (set current-target tmp))
 
 (function compile (form stmt?)
   (if ((atom? form) (return (compile-atom form stmt?)))
@@ -396,7 +407,7 @@
 	    (set i (+ i 1))
 	    (declare arg2 (get process.argv i))
 	    (if ((= arg "-o") (set output arg2))
-		(true (console.log "target:" arg2))))
+		(true (set current-target arg2))))
 	   (true (console.log "missing argument for" arg) (usage))))
       (true (console.log "unrecognized option:" arg) (usage)))
   (set i (+ i 1)))
