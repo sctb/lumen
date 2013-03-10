@@ -33,7 +33,7 @@
 
 (declare macros {})
 
-;; multi-target
+;;; language targets
 
 (declare current-target 'js)
 
@@ -48,6 +48,7 @@
 (declare current-language
   (target (js "js") (lua "lua")))
 
+
 ;;; library
 
 (function error (msg) (throw msg))
@@ -58,13 +59,23 @@
 ;; strings
 
 (function string-length (str)
-  (return (target (js str.length) (lua str.len))))
+  (return (target (js str.length) (lua (string.len str)))))
+
+(function string-start ()
+  (return (target (js 0) (lua 1))))
+
+(function string-end (str) ; last valid position
+  (return (target (js (- (string-length str) 1)) 
+		  (lua (string-length str)))))
 
 (function string-ref (str n)
-  (return (str.charAt n)))
+  (return (target (js (str.charAt n)) (lua (string.sub str n n)))))
 
 (function substring (str start end)
-  (return (str.substring start end)))
+  (return (target (js (str.substring start end))
+		  (lua (string.sub str start end)))))
+
+;; io
 
 (function read-file (filename)
   (return (fs.readFileSync filename "utf8")))
@@ -72,7 +83,8 @@
 (function write-file (filename data)
   (return (fs.writeFileSync filename data "utf8")))
 
-;; reader
+
+;;; reader
 
 (function make-stream (str)
   (declare s {})
@@ -157,7 +169,8 @@
       ((= c ",") (return (read-unquote s)))
       (true (return (read-atom s)))))
 
-;; compiler
+
+;;; compiler
 
 (function atom? (form)
   (return (or (= (type form) "string") (= (type form) "number"))))
