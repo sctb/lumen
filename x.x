@@ -48,17 +48,14 @@
 (declare current-language
   (target (js "js") (lua "lua")))
 
-;; library
+;;; library
 
 (function error (msg) (throw msg))
 
 (function type (x)
   (return (target (js (typeof x)) (lua (type x)))))
 
-(function string (form)
-  (if ((= (type form) "string")
-       (return (cat "\"" form "\"")))
-      (true (return (cat form "")))))
+;; strings
 
 (function string-length (str)
   (return (target (js str.length) (lua str.len))))
@@ -332,11 +329,16 @@
     (set i (+ i 1)))
   (return (cat str "]")))
 
+(function compile-to-string (form)
+  (if ((= (type form) "string")
+       (return (cat "\"" form "\"")))
+      (true (return (cat form "")))))
+
 (function quote-form (form)
   (if ((and (= (type form) "string")
 	    (= (string-ref form 0) "\""))
        (return form))
-      ((atom? form) (return (string form)))
+      ((atom? form) (return (compile-to-string form)))
       ((= (get form 0) "unquote")
        (return (compile (get form 1) false)))
       (true (return (compile-list form false true)))))
@@ -356,7 +358,7 @@
   (eval (compile-function form true))
   (declare name (get form 0))
   (declare register
-    '(set (get macros ,(string name)) ,name))
+    '(set (get macros ,(compile-to-string name)) ,name))
   (eval (compile register true))
   (set current-target tmp))
 
