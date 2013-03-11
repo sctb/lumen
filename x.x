@@ -39,7 +39,7 @@
 
 (macro target (args)
   (declare i 0)
-  (while (< i args.length)
+  (while (< i (array-length args))
     (if ((= (get (get args i) 0) current-target)
 	 (return (get (get args i) 1))))
     (set i (+ i 1)))
@@ -56,6 +56,24 @@
 (function type (x)
   (return (target (js (typeof x)) (lua (type x)))))
 
+;; arrays
+
+(function array-length (arr)
+  (return (target (js arr.length) (lua (+ #arr 1)))))
+
+(function array-sub (arr start end)
+  (target
+    (js (return (arr.slice start end)))
+    (lua
+     (do (set end (or end (array-length arr)))
+	 (declare i start)
+	 (declare j 0)
+	 (declare arr2 {})
+	 (while (< i end)
+	   (set (get arr2 j) (get arr i))
+	   (set i (+ i 1))
+	   (set j (+ j 1)))))))
+
 ;; strings
 
 (function string-length (str)
@@ -71,17 +89,23 @@
 (function string-ref (str n)
   (return (target (js (str.charAt n)) (lua (string.sub str n n)))))
 
-(function substring (str start end)
+(function string-sub (str start end)
   (return (target (js (str.substring start end))
 		  (lua (string.sub str start end)))))
 
 ;; io
 
 (function read-file (filename)
-  (return (fs.readFileSync filename "utf8")))
+  (target
+    (js (return (fs.readFileSync filename "utf8")))
+    (lua (do (declare f (io.open filename))
+	     (return (f:read "*a"))))))
 
 (function write-file (filename data)
-  (return (fs.writeFileSync filename data "utf8")))
+  (target
+    (js (fs.writeFileSync filename data "utf8"))
+    (lua (do (declare f (io.open filename "w"))
+	     (f:write data)))))
 
 
 ;;; reader
@@ -199,16 +223,16 @@
 (function compile-args (forms)
   (declare i 0)
   (declare str "(")
-  (while (< i forms.length)
+  (while (< i (array-length forms))
     (set str (cat str (compile (get forms i) false)))
-    (if ((< i (- forms.length 1)) (set str (cat str ","))))
+    (if ((< i (- (array-length forms) 1)) (set str (cat str ","))))
     (set i (+ i 1)))
   (return (cat str ")")))
 
 (function compile-body (forms)
   (declare i 0)
   (declare str "{")
-  (while (< i forms.length)
+  (while (< i (array-length forms))
     (set str (cat str (compile (get forms i) true)))
     (set i (+ i 1)))
   (return (cat str "}")))
@@ -226,21 +250,21 @@
 	 (set i (+ i 1)))
        (declare last (- (string-length form) 1))
        (if ((= (string-ref form last) "?")
-	    (set atom (cat "is_" (substring atom 0 last)))))))
+	    (set atom (cat "is_" (string-sub atom 0 last)))))))
   (return (cat atom (terminator stmt?))))
 
 (function compile-call (form stmt?)
   (declare fn (compile (get form 0) false))
-  (declare args (compile-args (form.slice 1)))
+  (declare args (compile-args (array-sub form 1)))
   (return (cat fn args (terminator stmt?))))
 
 (function compile-operator (form)
   (declare i 1)
   (declare str "(")
   (declare op (get operators (get form 0)))
-  (while (< i form.length)
+  (while (< i (array-length form))
     (set str (cat str (compile (get form i) false)))
-    (if ((< i (- form.length 1)) (set str (cat str op))))
+    (if ((< i (- (array-length form) 1)) (set str (cat str op))))
     (set i (+ i 1)))
   (return (cat str ")")))
 
@@ -252,7 +276,7 @@
 (function compile-set (form stmt?)
   (if ((not stmt?)
        (error "Cannot compile assignment as an expression")))
-  (if ((< form.length 2)
+  (if ((< (array-length form) 2)
        (error "Missing right-hand side in assignment")))
   (declare lh (compile (get form 0) false))
   (declare rh (compile (get form 1) false))
@@ -260,7 +284,7 @@
 
 (function compile-branch (branch last?)
   (declare condition (compile (get branch 0) false))
-  (declare body (compile-body (branch.slice 1)))
+  (declare body (compile-body (array-sub branch 1)))
   (if ((and last? (= condition "true"))
        (return body))
       (true (return (cat "if(" condition ")" body)))))
@@ -270,10 +294,11 @@
        (error "Cannot compile if as an expression")))
   (declare i 0)
   (declare str "")
-  (while (< i form.length)
-    (declare branch (compile-branch (get form i) (= i (- form.length 1))))
+  (while (< i (array-length form))
+    (declare last? (= i (- (array-length form) 1)))
+    (declare branch (compile-branch (get form i) last?))
     (set str (cat str branch))
-    (if ((< i (- form.length 1))
+    (if ((< i (- (array-length form) 1))
          (set str (cat str "else "))))
     (set i (+ i 1)))
   (return str))
@@ -281,7 +306,7 @@
 (function compile-function (form stmt?)
   (declare name (compile (get form 0)))
   (declare args (compile-args (get form 1)))
-  (declare body (compile-body (form.slice 2)))
+  (declare body (compile-body (array-sub form 2)))
   (return (cat "function " name args body)))
 
 (function compile-get (form stmt?)
@@ -313,7 +338,7 @@
   (if ((not stmt?)
        (error "Cannot compile WHILE as an expression")))
   (declare condition (compile (get form 0) false))
-  (declare body (compile-body (form.slice 1)))
+  (declare body (compile-body (array-sub form 1)))
   (return (cat "while(" condition ")" body)))
 
 (function compile-each (form stmt?)
@@ -322,7 +347,7 @@
   (declare key (get (get form 0) 0))
   (declare value (get (get form 0) 1))
   (declare object (get form 1))
-  (declare body (form.slice 2))
+  (declare body (array-sub form 2))
   (body.unshift 
    '(set ,value (get ,object ,key)))
   (return (cat "for(" key " in " object ")" (compile-body body))))
@@ -332,13 +357,13 @@
        (error "Cannot compile LIST as a statement")))
   (declare i 0)
   (declare str "[")
-  (while (< i forms.length)
+  (while (< i (array-length forms))
     (declare x (get forms i))
     (declare x1)
     (if (quoted? (set x1 (quote-form x)))
 	(true (set x1 (compile x false))))
     (set str (cat str x1))
-    (if ((< i (- forms.length 1)) (set str (cat str ","))))
+    (if ((< i (- (array-length forms) 1)) (set str (cat str ","))))
     (set i (+ i 1)))
   (return (cat str "]")))
 
@@ -359,7 +384,7 @@
 (function compile-quote (forms stmt?)
   (if (stmt?
        (error "Cannot compile quoted form as a statement")))
-  (if ((< forms.length 1)
+  (if ((< (array-length forms) 1)
        (error "Must supply at least one argument to QUOTE")))
   (return (quote-form (get forms 0))))	; first arg only
 
@@ -383,14 +408,14 @@
            ((operator? form)
             (return (compile-operator form)))
 	   ((macro-definition? form)
-	    (compile-macro (form.slice 1) stmt?)
+	    (compile-macro (array-sub form 1) stmt?)
 	    (return ""))
            ((special? form)
             (declare fn (get special (get form 0)))
-            (return (fn (form.slice 1) stmt?)))
+            (return (fn (array-sub form 1) stmt?)))
 	   ((macro-call? form)
 	    (declare fn (get macros (get form 0)))
-	    (declare form (fn (form.slice 1)))
+	    (declare form (fn (array-sub form 1)))
 	    (return (compile form stmt?)))
            (true (return (compile-call form stmt?)))))
       (true (error (cat "Unexpected form: " form)))))
@@ -409,16 +434,16 @@
   (console.log "usage: x input [-o output] [-t target]")
   (process.exit))
 
-(if ((< process.argv.length 3) (usage)))
+(if ((< (array-length process.argv) 3) (usage)))
 
 (declare input (get process.argv 2))
-(declare output (cat (input.slice 0 (input.indexOf ".")) ".js"))
+(declare output (cat (array-sub input 0 (input.indexOf ".")) ".js"))
 (declare i 3)
 
-(while (< i process.argv.length)
+(while (< i (array-length process.argv))
   (declare arg (get process.argv i))
   (if ((or (= arg "-o") (= arg "-t"))
-       (if ((> process.argv.length (+ i 1))
+       (if ((> (array-length process.argv) (+ i 1))
 	    (set i (+ i 1))
 	    (declare arg2 (get process.argv i))
 	    (if ((= arg "-o") (set output arg2))
