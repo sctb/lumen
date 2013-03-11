@@ -41,8 +41,7 @@
   (while (< i (array-length args))
     (if ((= (get (get args i) 0) current-target)
 	 (return (get (get args i) 1))))
-    (set i (+ i 1)))
-  (error (cat "No case for current target: " current-target)))
+    (set i (+ i 1))))
 
 (declare current-language
   (target (js "js") (lua "lua")))
@@ -389,7 +388,8 @@
   (set current-target tmp))
 
 (function compile (form stmt?)
-  (if ((atom? form) (return (compile-atom form stmt?)))
+  (if ((= form undefined) (return ""))
+      ((atom? form) (return (compile-atom form stmt?)))
       ((call? form)
        (if ((and (operator? form) stmt?)
             (error (cat "Cannot compile operator application as a statement")))
