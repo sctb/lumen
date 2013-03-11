@@ -1,7 +1,5 @@
 ;; -*- mode: lisp -*-
 
-(set fs (require "fs"))
-
 (declare delimiters {})
 (set (get delimiters "(") true) (set (get delimiters ")") true)
 (set (get delimiters ";") true) (set (get delimiters "\n") true)
@@ -93,6 +91,8 @@
 
 ;; io
 
+(target (js (set fs (require "fs"))))
+
 (function read-file (filename)
   (target
     (js (return (fs.readFileSync filename "utf8")))
@@ -105,6 +105,7 @@
     (lua (do (declare f (io.open filename "w"))
 	     (f:write data)))))
 
+(target (js (function print (x) (console.log x))))
 
 ;;; reader
 
@@ -420,7 +421,7 @@
   (return output))
 
 (function usage ()
-  (console.log "usage: x input [-o output] [-t target]")
+  (print "usage: x input [-o output] [-t target]")
   (process.exit))
 
 (if ((< (array-length process.argv) 3) (usage)))
@@ -437,8 +438,8 @@
 	    (declare arg2 (get process.argv i))
 	    (if ((= arg "-o") (set output arg2))
 		(true (set current-target arg2))))
-	   (true (console.log "missing argument for" arg) (usage))))
-      (true (console.log "unrecognized option:" arg) (usage)))
+	   (true (print "missing argument for" arg) (usage))))
+      (true (print "unrecognized option:" arg) (usage)))
   (set i (+ i 1)))
 
 (write-file output (compile-file input))
