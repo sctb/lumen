@@ -227,13 +227,14 @@
     (set i (+ i 1)))
   (return (cat str ")")))
 
-(function compile-body (forms)
+(function compile-body (forms do?)
   (declare i 0)
-  (declare str "{")
+  (declare str (target (js "{") (lua "")))
+  (target (lua (if (do? (set str "do ")))))
   (while (< i (array-length forms))
     (set str (cat str (compile (get forms i) true)))
     (set i (+ i 1)))
-  (return (cat str "}")))
+  (return (cat str (target (js "}") (lua " end ")))))
 
 (function compile-atom (form stmt?)
   (declare atom form)
@@ -269,7 +270,7 @@
 (function compile-do (forms stmt?)
   (if ((not stmt?)
        (error "Cannot compile DO as an expression")))
-  (return (compile-body forms)))
+  (return (compile-body forms true)))
 
 (function compile-set (form stmt?)
   (if ((not stmt?)
@@ -336,7 +337,7 @@
   (if ((not stmt?)
        (error "Cannot compile WHILE as an expression")))
   (declare condition (compile (get form 0) false))
-  (declare body (compile-body (array-sub form 1)))
+  (declare body (compile-body (array-sub form 1) true))
   (return (cat "while(" condition ")" body)))
 
 (function compile-list (forms stmt? quoted?)
