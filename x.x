@@ -79,7 +79,7 @@
   (return (target (js 0) (lua 1))))
 
 (function string-end (str) ; last valid position
-  (return (target (js (- (string-length str) 1)) 
+  (return (target (js (- (string-length str) 1))
 		  (lua (string-length str)))))
 
 (function string-ref (str n)
@@ -228,14 +228,16 @@
     (set i (+ i 1)))
   (return (cat str ")")))
 
-(function compile-body (forms do?)
+(function compile-body (forms)
   (declare i 0)
-  (declare str (target (js "{") (lua "")))
-  (target (lua (if (do? (set str "do ")))))
+  (declare str "")
+  (if ((= current-target "js") (set str "{")))
   (while (< i (array-length forms))
     (set str (cat str (compile (get forms i) true)))
     (set i (+ i 1)))
-  (return (cat str (target (js "}") (lua " end ")))))
+  (if ((= current-target "js")
+       (return (cat str "}")))
+      (true (return str))))
 
 (function compile-atom (form stmt?)
   (declare atom form)
@@ -271,7 +273,9 @@
 (function compile-do (forms stmt?)
   (if ((not stmt?)
        (error "Cannot compile DO as an expression")))
-  (return (compile-body forms true)))
+  (declare body (compile-body forms))
+  (if ((= current-target "js") (return body))
+      (true (return (cat "do " body " end ")))))
 
 (function compile-set (form stmt?)
   (if ((not stmt?)
@@ -282,12 +286,23 @@
   (declare rh (compile (get form 1) false))
   (return (cat lh "=" rh (terminator true))))
 
-(function compile-branch (branch last?)
+(function compile-branch (branch first? last?)
   (declare condition (compile (get branch 0) false))
   (declare body (compile-body (array-sub branch 1)))
-  (if ((and last? (= condition "true"))
-       (return body))
-      (true (return (cat "if(" condition ")" body)))))
+  (declare end "")
+  (if ((and last? (= current-target "lua")) (set end " end ")))
+  (if (first?
+       (if ((= current-target "js")
+	    (return (cat "if(" condition ")" body)))
+	   (true (return (cat "if " condition " then " body end)))))
+      ((and last? (= condition "true"))
+       (if ((= current-target "js") (return (cat "else" body)))
+	   (true (return (cat " else " body " end ")))))
+      (true
+       (if ((= current-target "js")
+	    (return (cat "else if(" condition ")" body)))
+	   (true
+	    (return (cat " elseif " condition " then " body end)))))))
 
 (function compile-if (form stmt?)
   (if ((not stmt?)
@@ -296,10 +311,9 @@
   (declare str "")
   (while (< i (array-length form))
     (declare last? (= i (- (array-length form) 1)))
-    (declare branch (compile-branch (get form i) last?))
+    (declare first? (= i 0))
+    (declare branch (compile-branch (get form i) first? last?))
     (set str (cat str branch))
-    (if ((< i (- (array-length form) 1))
-         (set str (cat str "else "))))
     (set i (+ i 1)))
   (return str))
 
@@ -307,7 +321,9 @@
   (declare name (compile (get form 0)))
   (declare args (compile-args (get form 1)))
   (declare body (compile-body (array-sub form 2)))
-  (return (cat "function " name args body)))
+  (declare end "")
+  (if ((= current-target "lua") (set end " end ")))
+  (return (cat "function " name args body end)))
 
 (function compile-get (form stmt?)
   (declare object (compile (get form 0) false))
@@ -338,8 +354,10 @@
   (if ((not stmt?)
        (error "Cannot compile WHILE as an expression")))
   (declare condition (compile (get form 0) false))
-  (declare body (compile-body (array-sub form 1) true))
-  (return (cat "while(" condition ")" body)))
+  (declare body (compile-body (array-sub form 1)))
+  (if ((= current-target "js")
+       (return (cat "while(" condition ")" body)))
+      (true (return (cat "while " condition " do " body " end ")))))
 
 (function compile-list (forms stmt? quoted?)
   (if (stmt?
