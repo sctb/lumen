@@ -27,7 +27,6 @@
 (set (get special "function") compile-function)
 (set (get special "declare") compile-declare)
 (set (get special "while") compile-while)
-(set (get special "each") compile-each)
 (set (get special "list") compile-list)
 (set (get special "quote") compile-quote)
 
@@ -340,17 +339,6 @@
   (declare condition (compile (get form 0) false))
   (declare body (compile-body (array-sub form 1)))
   (return (cat "while(" condition ")" body)))
-
-(function compile-each (form stmt?)
-  (if ((not stmt?)
-       (error "Cannot compile EACH as an expression")))
-  (declare key (get (get form 0) 0))
-  (declare value (get (get form 0) 1))
-  (declare object (get form 1))
-  (declare body (array-sub form 2))
-  (body.unshift 
-   '(set ,value (get ,object ,key)))
-  (return (cat "for(" key " in " object ")" (compile-body body))))
 
 (function compile-list (forms stmt? quoted?)
   (if (stmt?
