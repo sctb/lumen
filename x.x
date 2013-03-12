@@ -359,11 +359,13 @@
        (error "Cannot compile declaration as an expression")))
   (declare lh (compile (get form 0)))
   (declare tr (terminator true))
+  (declare keyword "local ")
+  (if ((= current-target "js") (set keyword "var ")))
   (if ((= (type (get form 1)) "undefined")
-       (return (cat "var " lh tr)))
+       (return (cat keyword lh tr)))
       (true
        (declare rh (compile (get form 1) false))
-       (return (cat "var " lh "=" rh tr)))))
+       (return (cat keyword lh "=" rh tr)))))
 
 (function compile-while (form stmt?)
   (if ((not stmt?)
