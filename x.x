@@ -1,35 +1,5 @@
 ;; -*- mode: lisp -*-
 
-(declare delimiters {})
-(set (get delimiters "(") true) (set (get delimiters ")") true)
-(set (get delimiters ";") true) (set (get delimiters "\n") true)
-
-(declare whitespace {})
-(set (get whitespace " ") true)
-(set (get whitespace "\t") true)
-(set (get whitespace "\n") true)
-
-(declare operators {})
-(set (get operators "+") "+") (set (get operators "-") "-")
-(set (get operators "<") "<") (set (get operators ">") ">")
-(set (get operators "and") "&&") (set (get operators "or") "||")
-(set (get operators "cat") "+") (set (get operators "=") "==")
-
-(declare special {})
-(set (get special "do") compile-do)
-(set (get special "set") compile-set)
-(set (get special "get") compile-get)
-(set (get special "dot") compile-dot)
-(set (get special "not") compile-not)
-(set (get special "if") compile-if)
-(set (get special "function") compile-function)
-(set (get special "declare") compile-declare)
-(set (get special "while") compile-while)
-(set (get special "list") compile-list)
-(set (get special "quote") compile-quote)
-
-(declare macros {})
-
 ;;; language targets
 
 (declare current-target 'js)
@@ -108,6 +78,15 @@
 (target (js (function print (x) (console.log x))))
 
 ;;; reader
+
+(declare delimiters {})
+(set (get delimiters "(") true) (set (get delimiters ")") true)
+(set (get delimiters ";") true) (set (get delimiters "\n") true)
+
+(declare whitespace {})
+(set (get whitespace " ") true)
+(set (get whitespace "\t") true)
+(set (get whitespace "\n") true)
 
 (function make-stream (str)
   (declare s {})
@@ -194,6 +173,40 @@
 
 
 ;;; compiler
+
+(declare operators {})
+
+(function define-operators ()
+  (set (get operators "+") "+") (set (get operators "-") "-")
+  (set (get operators "<") "<") (set (get operators ">") ">")
+  (set (get operators "=") "==")
+
+  (if ((= current-target "js")
+       (set (get operators "and") "&&"))
+      (true (set (get operators "and") " and ")))
+
+  (if ((= current-target "js")
+       (set (get operators "or") "||"))
+      (true (set (get operators "or") " or ")))
+
+  (if ((= current-target "js")
+       (set (get operators "cat") "+"))
+      (true (set (get operators "cat") ".."))))
+
+(declare special {})
+(set (get special "do") compile-do)
+(set (get special "set") compile-set)
+(set (get special "get") compile-get)
+(set (get special "dot") compile-dot)
+(set (get special "not") compile-not)
+(set (get special "if") compile-if)
+(set (get special "function") compile-function)
+(set (get special "declare") compile-declare)
+(set (get special "while") compile-while)
+(set (get special "list") compile-list)
+(set (get special "quote") compile-quote)
+
+(declare macros {})
 
 (function atom? (form)
   (return (or (= (type form) "string") (= (type form) "number"))))
@@ -337,7 +350,9 @@
 
 (function compile-not (form stmt?)
   (declare expr (compile (get form 0) false))
-  (return (cat "!(" expr ")" (terminator stmt?))))
+  (if ((= current-target "js")
+       (return (cat "!(" expr ")" (terminator stmt?))))
+      (true (return (cat "(not " expr ")" (terminator stmt?))))))
 
 (function compile-declare (form stmt?)
   (if ((not stmt?)
@@ -460,4 +475,5 @@
       (true (print "unrecognized option:" arg) (usage)))
   (set i (+ i 1)))
 
+(define-operators)
 (write-file output (compile-file input))
