@@ -1,7 +1,6 @@
 ;; -*- mode: lisp -*-
 
 ;;; TODO
-;; fix ARRAY-LENGTH in Lua (check for element at [0])
 ;; implement ERROR for Lua
 ;; implement [] for Lua
 ;; implement Array.push for Lua
@@ -33,7 +32,10 @@
 ;; arrays
 
 (function array-length (arr)
-  (return (target (js arr.length) (lua (+ #arr 1)))))
+  (target
+    (js (return arr.length))
+    (lua (if ((= (get arr 0) nil) (return 0))
+	     (true (return (+ #arr 1)))))))
 
 (function array-sub (arr start end)
   (target
