@@ -2,7 +2,6 @@
 
 ;;; TODO
 ;; nil -> nil in Lua, nil -> undefined in JS
-;; use STRING-END over STRING-LENGTH
 ;; fix ARRAY-LENGTH in Lua (check for element at [0])
 ;; isNaN and parseFloat equivalents in Lua (add to library)
 ;; implement ERROR for Lua
@@ -264,17 +263,17 @@
 (function compile-atom (form stmt?)
   (declare atom form)
   (if ((and (= (type form) "string")
-	    (not (= (string-ref form 0) "\"")))
-       (set atom (string-ref form 0))
-       (declare i 1) ; skip leading -
-       (while (< i (string-length form))
+	    (not (= (string-ref form (string-start)) "\"")))
+       (set atom (string-ref form (string-start)))
+       (declare i (+ (string-start) 1)) ; skip leading -
+       (while (<= i (string-end form))
 	 (declare c (string-ref form i))
 	 (if ((= c "-") (set c "_")))
 	 (set atom (cat atom c))
 	 (set i (+ i 1)))
-       (declare last (- (string-length form) 1))
-       (if ((= (string-ref form last) "?")
-	    (set atom (cat "is_" (string-sub atom 0 last)))))))
+       (declare end (string-end form))
+       (if ((= (string-ref form end) "?")
+	    (set atom (cat "is_" (string-sub atom 0 end)))))))
   (return (cat atom (terminator stmt?))))
 
 (function compile-call (form stmt?)
