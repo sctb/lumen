@@ -1,7 +1,6 @@
 ;; -*- mode: lisp -*-
 
 ;;; TODO
-;; get rid of LIST?
 ;; nil -> nil in Lua, nil -> undefined in JS
 ;; use STRING-END over STRING-LENGTH
 ;; fix ARRAY-LENGTH in Lua (check for element at [0])
@@ -224,11 +223,8 @@
 (function atom? (form)
   (return (or (= (type form) "string") (= (type form) "number"))))
 
-(function list? (form)
-  (return (Array.isArray form)))
-
 (function call? (form)
-  (return (and (list? form) (= (type (get form 0)) "string"))))
+  (return (= (type (get form 0)) "string")))
 
 (function operator? (form)
   (return (not (= (get operators (get form 0)) null))))
