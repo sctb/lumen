@@ -3,7 +3,6 @@
 ;;; TODO
 ;; nil -> nil in Lua, nil -> undefined in JS
 ;; fix ARRAY-LENGTH in Lua (check for element at [0])
-;; isNaN and parseFloat equivalents in Lua (add to library)
 ;; implement ERROR for Lua
 ;; implement [] for Lua
 ;; implement Array.push for Lua
@@ -87,6 +86,15 @@
 
 (target (js (function print (x) (console.log x))))
 
+;; numbers
+
+(function parse-number (str)
+  (target
+    (js (do (declare n (parseFloat str))
+	    (if ((not (isNaN n)) (return n)))))
+    (lua (return (tonumber str)))))
+
+
 ;;; reader
 
 (declare delimiters {})
@@ -134,8 +142,8 @@
          (set str (cat str c))
          (read-char s))
         (true break)))
-  (declare n (parseFloat str))
-  (if ((isNaN n) (return str))
+  (declare n (parse-number str))
+  (if ((= n undefined) (return str))
       (true (return n))))
 
 (function read-list (s)
