@@ -2,7 +2,6 @@
 
 ;;; TODO
 ;; implement ERROR for Lua
-;; implement [] for Lua
 ;; implement Array.push for Lua
 ;; implement argument processing for Lua
 
@@ -273,7 +272,10 @@
 
 (function compile-atom (form stmt?)
   (declare atom form)
-  (if ((= form "nil")
+  (if ((= form "[]")
+       (if ((= current-target 'lua) (return "{}"))
+	   (true (return form))))
+      ((= form "nil")
        (if ((= current-target 'js) (return "undefined"))
 	   (true (return form))))
       ((and (= (type form) "string")
