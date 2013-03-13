@@ -1,5 +1,18 @@
 ;; -*- mode: lisp -*-
 
+;;; TODO
+;; get rid of LIST?
+;; replace some string literals with symbols
+;; nil -> nil in Lua, nil -> undefined in JS
+;; use STRING-END over STRING-LENGTH
+;; fix ARRAY-LENGTH in Lua (check for element at [0])
+;; isNaN and parseFloat equivalents in Lua (add to library)
+;; implement ERROR for Lua
+;; implement [] for Lua
+;; implement Array.push for Lua
+;; implement argument processing for Lua
+;; implement process.exit() for Lua or get rid of the call
+
 ;;; language targets
 
 (declare current-target 'js)
