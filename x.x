@@ -90,13 +90,13 @@
 
 (function make-stream (str)
   (declare s {})
-  (set s.pos 0)
+  (set s.pos (string-start))
   (set s.string str)
-  (set s.len (string-length str))
+  (set s.end (string-end str))
   (return s))
 
 (function peek-char (s)
-  (if ((< s.pos s.len) (return (string-ref s.string s.pos)))))
+  (if ((<= s.pos s.end) (return (string-ref s.string s.pos)))))
 
 (function read-char (s)
   (declare c (peek-char s))
