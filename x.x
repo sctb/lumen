@@ -2,7 +2,6 @@
 
 ;;; TODO
 ;; implement ERROR for Lua
-;; implement Array.push for Lua
 ;; implement argument processing for Lua
 
 ;;; language targets
@@ -47,6 +46,10 @@
 	   (set (get arr2 j) (get arr i))
 	   (set i (+ i 1))
 	   (set j (+ j 1)))))))
+
+(function array-push (arr x)
+  (set (get arr (array-length arr)) x))
+
 
 ;; strings
 
@@ -155,7 +158,7 @@
   (while true
     (skip-non-code s)
     (set c (peek-char s))
-    (if ((and c (not (= c ")"))) (l.push (read s)))
+    (if ((and c (not (= c ")"))) (array-push l (read s)))
         (c (read-char s) break) ; )
         (true (error (cat "Expected ) at " s.pos)))))
   (return l))
