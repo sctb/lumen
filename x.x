@@ -1,8 +1,7 @@
 ;; -*- mode: lisp -*-
 
 ;;; TODO
-;; implement ERROR for Lua
-;; implement argument processing for Lua
+;; Lua indexOf
 
 ;;; language targets
 
@@ -21,7 +20,7 @@
 
 ;;; library
 
-(function error (msg) (throw msg))
+(target (js (function error (msg) (throw msg))))
 
 (function type (x)
   (return (target (js (typeof x)) (lua (type x)))))
@@ -486,18 +485,21 @@
   (print "usage: x input [-o output] [-t target]")
   (exit))
 
-(if ((< (array-length process.argv) 3) (usage)))
+(declare args
+  (target (js process.argv) (lua arg)))
 
-(declare input (get process.argv 2))
+(if ((< (array-length args) 3) (usage)))
+
+(declare input (get args 2))
 (declare output (cat (array-sub input 0 (input.indexOf ".")) ".js"))
 (declare i 3)
 
-(while (< i (array-length process.argv))
-  (declare arg (get process.argv i))
+(while (< i (array-length args))
+  (declare arg (get args i))
   (if ((or (= arg "-o") (= arg "-t"))
-       (if ((> (array-length process.argv) (+ i 1))
+       (if ((> (array-length args) (+ i 1))
 	    (set i (+ i 1))
-	    (declare arg2 (get process.argv i))
+	    (declare arg2 (get args i))
 	    (if ((= arg "-o") (set output arg2))
 		(true (set current-target arg2))))
 	   (true (print "missing argument for" arg) (usage))))
