@@ -1,7 +1,6 @@
 ;; -*- mode: lisp -*-
 
 ;;; TODO
-;; nil -> nil in Lua, nil -> undefined in JS
 ;; fix ARRAY-LENGTH in Lua (check for element at [0])
 ;; implement ERROR for Lua
 ;; implement [] for Lua
@@ -143,7 +142,7 @@
          (read-char s))
         (true break)))
   (declare n (parse-number str))
-  (if ((= n undefined) (return str))
+  (if ((= n nil) (return str))
       (true (return n))))
 
 (function read-list (s)
@@ -234,13 +233,13 @@
   (return (= (type (get form 0)) "string")))
 
 (function operator? (form)
-  (return (not (= (get operators (get form 0)) null))))
+  (return (not (= (get operators (get form 0)) nil))))
 
 (function special? (form)
-  (return (not (= (get special (get form 0)) null))))
+  (return (not (= (get special (get form 0)) nil))))
 
 (function macro-call? (form)
-  (return (not (= (get macros (get form 0)) null))))
+  (return (not (= (get macros (get form 0)) nil))))
 
 (function macro-definition? (form)
   (return (and (call? form) (= (get form 0) "macro"))))
@@ -270,7 +269,10 @@
 
 (function compile-atom (form stmt?)
   (declare atom form)
-  (if ((and (= (type form) "string")
+  (if ((= form "nil")
+       (if ((= current-target 'js) (return "undefined"))
+	   (true (return form))))
+      ((and (= (type form) "string")
 	    (not (= (string-ref form (string-start)) "\"")))
        (set atom (string-ref form (string-start)))
        (declare i (+ (string-start) 1)) ; skip leading -
@@ -377,7 +379,7 @@
   (declare tr (terminator true))
   (declare keyword "local ")
   (if ((= current-target 'js) (set keyword "var ")))
-  (if ((= (type (get form 1)) "undefined")
+  (if ((= (get form 1) nil)
        (return (cat keyword lh tr)))
       (true
        (declare rh (compile (get form 1) false))
@@ -441,7 +443,7 @@
   (set current-target tmp))
 
 (function compile (form stmt?)
-  (if ((= form undefined) (return ""))
+  (if ((= form nil) (return ""))
       ((atom? form) (return (compile-atom form stmt?)))
       ((call? form)
        (if ((and (operator? form) stmt?)
