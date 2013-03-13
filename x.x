@@ -192,6 +192,7 @@
 (function define-operators ()
   (set (get operators "+") "+") (set (get operators "-") "-")
   (set (get operators "<") "<") (set (get operators ">") ">")
+  (set (get operators "<=") "<=") (set (get operators ">=") ">=")
   (set (get operators "=") "==")
 
   (if ((= current-target "js")
