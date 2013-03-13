@@ -5,7 +5,6 @@
 ;; implement [] for Lua
 ;; implement Array.push for Lua
 ;; implement argument processing for Lua
-;; implement process.exit() for Lua or get rid of the call
 
 ;;; language targets
 
@@ -86,6 +85,9 @@
 	     (f:write data)))))
 
 (target (js (function print (x) (console.log x))))
+
+(function exit (code)
+  (target (js (process.exit code)) (lua (os.exit code))))
 
 ;; numbers
 
@@ -477,7 +479,7 @@
 
 (function usage ()
   (print "usage: x input [-o output] [-t target]")
-  (process.exit))
+  (exit))
 
 (if ((< (array-length process.argv) 3) (usage)))
 
