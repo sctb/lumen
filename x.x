@@ -2,7 +2,6 @@
 
 ;;; TODO
 ;; get rid of LIST?
-;; replace some string literals with symbols
 ;; nil -> nil in Lua, nil -> undefined in JS
 ;; use STRING-END over STRING-LENGTH
 ;; fix ARRAY-LENGTH in Lua (check for element at [0])
@@ -25,7 +24,7 @@
     (set i (+ i 1))))
 
 (declare current-language
-  (target (js "js") (lua "lua")))
+  (target (js 'js) (lua 'lua)))
 
 
 ;;; library
@@ -195,15 +194,15 @@
   (set (get operators "<=") "<=") (set (get operators ">=") ">=")
   (set (get operators "=") "==")
 
-  (if ((= current-target "js")
+  (if ((= current-target 'js)
        (set (get operators "and") "&&"))
       (true (set (get operators "and") " and ")))
 
-  (if ((= current-target "js")
+  (if ((= current-target 'js)
        (set (get operators "or") "||"))
       (true (set (get operators "or") " or ")))
 
-  (if ((= current-target "js")
+  (if ((= current-target 'js)
        (set (get operators "cat") "+"))
       (true (set (get operators "cat") ".."))))
 
@@ -258,11 +257,11 @@
 (function compile-body (forms)
   (declare i 0)
   (declare str "")
-  (if ((= current-target "js") (set str "{")))
+  (if ((= current-target 'js) (set str "{")))
   (while (< i (array-length forms))
     (set str (cat str (compile (get forms i) true)))
     (set i (+ i 1)))
-  (if ((= current-target "js")
+  (if ((= current-target 'js)
        (return (cat str "}")))
       (true (return str))))
 
@@ -301,7 +300,7 @@
   (if ((not stmt?)
        (error "Cannot compile DO as an expression")))
   (declare body (compile-body forms))
-  (if ((= current-target "js") (return body))
+  (if ((= current-target 'js) (return body))
       (true (return (cat "do " body " end ")))))
 
 (function compile-set (form stmt?)
@@ -317,16 +316,16 @@
   (declare condition (compile (get branch 0) false))
   (declare body (compile-body (array-sub branch 1)))
   (declare end "")
-  (if ((and last? (= current-target "lua")) (set end " end ")))
+  (if ((and last? (= current-target 'lua)) (set end " end ")))
   (if (first?
-       (if ((= current-target "js")
+       (if ((= current-target 'js)
 	    (return (cat "if(" condition ")" body)))
 	   (true (return (cat "if " condition " then " body end)))))
       ((and last? (= condition "true"))
-       (if ((= current-target "js") (return (cat "else" body)))
+       (if ((= current-target 'js) (return (cat "else" body)))
 	   (true (return (cat " else " body " end ")))))
       (true
-       (if ((= current-target "js")
+       (if ((= current-target 'js)
 	    (return (cat "else if(" condition ")" body)))
 	   (true
 	    (return (cat " elseif " condition " then " body end)))))))
@@ -349,7 +348,7 @@
   (declare args (compile-args (get form 1)))
   (declare body (compile-body (array-sub form 2)))
   (declare end "")
-  (if ((= current-target "lua") (set end " end ")))
+  (if ((= current-target 'lua) (set end " end ")))
   (return (cat "function " name args body end)))
 
 (function compile-get (form stmt?)
@@ -364,7 +363,7 @@
 
 (function compile-not (form stmt?)
   (declare expr (compile (get form 0) false))
-  (if ((= current-target "js")
+  (if ((= current-target 'js)
        (return (cat "!(" expr ")" (terminator stmt?))))
       (true (return (cat "(not " expr ")" (terminator stmt?))))))
 
@@ -374,7 +373,7 @@
   (declare lh (compile (get form 0)))
   (declare tr (terminator true))
   (declare keyword "local ")
-  (if ((= current-target "js") (set keyword "var ")))
+  (if ((= current-target 'js) (set keyword "var ")))
   (if ((= (type (get form 1)) "undefined")
        (return (cat keyword lh tr)))
       (true
@@ -386,7 +385,7 @@
        (error "Cannot compile WHILE as an expression")))
   (declare condition (compile (get form 0) false))
   (declare body (compile-body (array-sub form 1)))
-  (if ((= current-target "js")
+  (if ((= current-target 'js)
        (return (cat "while(" condition ")" body)))
       (true (return (cat "while " condition " do " body " end ")))))
 
