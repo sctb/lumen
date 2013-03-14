@@ -1,8 +1,5 @@
 ;; -*- mode: lisp -*-
 
-;;; TODO
-;; Lua indexOf
-
 ;;; language targets
 
 (declare current-target 'js)
@@ -49,7 +46,6 @@
 (function array-push (arr x)
   (set (get arr (array-length arr)) x))
 
-
 ;; strings
 
 (function string-length (str)
@@ -68,6 +64,13 @@
 (function string-sub (str start end)
   (return (target (js (str.substring start end))
 		  (lua (string.sub str start end)))))
+
+(function string-find (str pattern start)
+  (target
+   (js (do (declare i (str.indexOf pattern start))
+	   (if ((> i 0) (return i))
+	       (true (return nil)))))
+   (lua (return (string.find str pattern (or start 1) true)))))
 
 ;; io
 
@@ -491,7 +494,8 @@
 (if ((< (array-length args) 3) (usage)))
 
 (declare input (get args 2))
-(declare output (cat (array-sub input 0 (input.indexOf ".")) ".js"))
+(declare output
+  (cat (string-sub input (string-start) (string-find input ".")) ".js"))
 (declare i 3)
 
 (while (< i (array-length args))
