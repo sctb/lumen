@@ -1,5 +1,8 @@
 ;; -*- mode: lisp -*-
 
+;;; TODO
+;; rename variables named END
+
 ;;; language targets
 
 (declare current-target 'js)
@@ -62,8 +65,11 @@
   (return (target (js (str.charAt n)) (lua (string.sub str n n)))))
 
 (function string-sub (str start end)
-  (return (target (js (str.substring start end))
-		  (lua (string.sub str start end)))))
+  (target
+    (js (return (str.substring start end)))
+    (lua (do (if ((not (= end nil))
+		  (set end (- end 1))
+		  (return (string.sub str start end))))))))
 
 (function string-find (str pattern start)
   (target
@@ -294,7 +300,8 @@
 	 (set i (+ i 1)))
        (declare end (string-end form))
        (if ((= (string-ref form end) "?")
-	    (set atom (cat "is_" (string-sub atom 0 end)))))))
+	    (declare name (string-sub atom (string-start) end))
+	    (set atom (cat "is_" name))))))
   (return (cat atom (terminator stmt?))))
 
 (function compile-call (form stmt?)
@@ -427,7 +434,7 @@
 
 (function quote-form (form)
   (if ((and (= (type form) "string")
-	    (= (string-ref form 0) "\""))
+	    (= (string-ref form (string-start)) "\""))
        (return form))
       ((atom? form) (return (compile-to-string form)))
       ((= (get form 0) "unquote")
