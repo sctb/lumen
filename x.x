@@ -65,9 +65,8 @@
 (function string-sub (str from upto)
   (target
     (js (return (str.substring from upto)))
-    (lua (do (if ((not (= upto nil))
-		  (set upto (- upto 1))
-		  (return (string.sub str from upto))))))))
+    (lua (do (if ((not (= upto nil)) (set upto (- upto 1))))
+	     (return (string.sub str from upto))))))
 
 (function string-find (str pattern start)
   (target
