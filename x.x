@@ -1,8 +1,5 @@
 ;; -*- mode: lisp -*-
 
-;;; TODO
-;; rename variables named END
-
 ;;; language targets
 
 (declare current-target 'js)
@@ -33,15 +30,15 @@
     (lua (if ((= (get arr 0) nil) (return 0))
 	     (true (return (+ #arr 1)))))))
 
-(function array-sub (arr start end)
+(function array-sub (arr from upto)
   (target
-    (js (return (arr.slice start end)))
+    (js (return (arr.slice from upto)))
     (lua
-     (do (set end (or end (array-length arr)))
-	 (declare i start)
+     (do (set upto (or upto (array-length arr)))
+	 (declare i from)
 	 (declare j 0)
 	 (declare arr2 {})
-	 (while (< i end)
+	 (while (< i upto)
 	   (set (get arr2 j) (get arr i))
 	   (set i (+ i 1))
 	   (set j (+ j 1)))))))
@@ -64,12 +61,12 @@
 (function string-ref (str n)
   (return (target (js (str.charAt n)) (lua (string.sub str n n)))))
 
-(function string-sub (str start end)
+(function string-sub (str from upto)
   (target
-    (js (return (str.substring start end)))
-    (lua (do (if ((not (= end nil))
-		  (set end (- end 1))
-		  (return (string.sub str start end))))))))
+    (js (return (str.substring from upto)))
+    (lua (do (if ((not (= upto nil))
+		  (set upto (- upto 1))
+		  (return (string.sub str from upto))))))))
 
 (function string-find (str pattern start)
   (target
@@ -123,11 +120,11 @@
   (declare s {})
   (set s.pos (string-start))
   (set s.string str)
-  (set s.end (string-end str))
+  (set s.last (string-end str))
   (return s))
 
 (function peek-char (s)
-  (if ((<= s.pos s.end) (return (string-ref s.string s.pos)))))
+  (if ((<= s.pos s.last) (return (string-ref s.string s.pos)))))
 
 (function read-char (s)
   (declare c (peek-char s))
@@ -298,9 +295,9 @@
 	 (if ((= c "-") (set c "_")))
 	 (set atom (cat atom c))
 	 (set i (+ i 1)))
-       (declare end (string-end form))
-       (if ((= (string-ref form end) "?")
-	    (declare name (string-sub atom (string-start) end))
+       (declare last (string-end form))
+       (if ((= (string-ref form last) "?")
+	    (declare name (string-sub atom (string-start) last))
 	    (set atom (cat "is_" name))))))
   (return (cat atom (terminator stmt?))))
 
@@ -338,12 +335,12 @@
 (function compile-branch (branch first? last?)
   (declare condition (compile (get branch 0) false))
   (declare body (compile-body (array-sub branch 1)))
-  (declare end "")
-  (if ((and last? (= current-target 'lua)) (set end " end ")))
+  (declare tr "")
+  (if ((and last? (= current-target 'lua)) (set tr " end ")))
   (if (first?
        (if ((= current-target 'js)
 	    (return (cat "if(" condition ")" body)))
-	   (true (return (cat "if " condition " then " body end)))))
+	   (true (return (cat "if " condition " then " body tr)))))
       ((and last? (= condition "true"))
        (if ((= current-target 'js) (return (cat "else" body)))
 	   (true (return (cat " else " body " end ")))))
@@ -351,7 +348,7 @@
        (if ((= current-target 'js)
 	    (return (cat "else if(" condition ")" body)))
 	   (true
-	    (return (cat " elseif " condition " then " body end)))))))
+	    (return (cat " elseif " condition " then " body tr)))))))
 
 (function compile-if (form stmt?)
   (if ((not stmt?)
@@ -370,9 +367,9 @@
   (declare name (compile (get form 0)))
   (declare args (compile-args (get form 1)))
   (declare body (compile-body (array-sub form 2)))
-  (declare end "")
-  (if ((= current-target 'lua) (set end " end ")))
-  (return (cat "function " name args body end)))
+  (declare tr "")
+  (if ((= current-target 'lua) (set tr " end ")))
+  (return (cat "function " name args body tr)))
 
 (function compile-get (form stmt?)
   (declare object (compile (get form 0) false))
@@ -417,6 +414,7 @@
        (error "Cannot compile LIST as a statement")))
   (declare i 0)
   (declare str "[")
+  (if ((= current-target 'lua) (set str "{")))
   (while (< i (array-length forms))
     (declare x (get forms i))
     (declare x1)
@@ -425,7 +423,8 @@
     (set str (cat str x1))
     (if ((< i (- (array-length forms) 1)) (set str (cat str ","))))
     (set i (+ i 1)))
-  (return (cat str "]")))
+  (if ((= current-target 'lua) (return (cat str "}")))
+      (true (return (cat str "]")))))
 
 (function compile-to-string (form)
   (if ((= (type form) "string")
