@@ -2,16 +2,16 @@
 
 ;;; language targets
 
-(declare current-target 'js)
+(global current-target 'js)
 
 (macro target (args)
-  (declare i 0)
+  (local i 0)
   (while (< i (array-length args))
     (if ((= (get (get args i) 0) current-target)
 	 (return (get (get args i) 1))))
     (set i (+ i 1))))
 
-(declare current-language
+(global current-language
   (target (js 'js) (lua 'lua)))
 
 
@@ -35,9 +35,9 @@
     (js (return (arr.slice from upto)))
     (lua
      (do (set upto (or upto (array-length arr)))
-	 (declare i from)
-	 (declare j 0)
-	 (declare arr2 {})
+	 (local i from)
+	 (local j 0)
+	 (local arr2 {})
 	 (while (< i upto)
 	   (set (get arr2 j) (get arr i))
 	   (set i (+ i 1))
@@ -70,7 +70,7 @@
 
 (function string-find (str pattern start)
   (target
-   (js (do (declare i (str.indexOf pattern start))
+   (js (do (local i (str.indexOf pattern start))
 	   (if ((> i 0) (return i))
 	       (true (return nil)))))
    (lua (return (string.find str pattern (or start 1) true)))))
@@ -82,13 +82,13 @@
 (function read-file (filename)
   (target
     (js (return (fs.readFileSync filename "utf8")))
-    (lua (do (declare f (io.open filename))
+    (lua (do (local f (io.open filename))
 	     (return (f:read "*a"))))))
 
 (function write-file (filename data)
   (target
     (js (fs.writeFileSync filename data "utf8"))
-    (lua (do (declare f (io.open filename "w"))
+    (lua (do (local f (io.open filename "w"))
 	     (f:write data)))))
 
 (target (js (function print (x) (console.log x))))
@@ -100,24 +100,24 @@
 
 (function parse-number (str)
   (target
-    (js (do (declare n (parseFloat str))
+    (js (do (local n (parseFloat str))
 	    (if ((not (isNaN n)) (return n)))))
     (lua (return (tonumber str)))))
 
 
 ;;; reader
 
-(declare delimiters {})
+(global delimiters {})
 (set (get delimiters "(") true) (set (get delimiters ")") true)
 (set (get delimiters ";") true) (set (get delimiters "\n") true)
 
-(declare whitespace {})
+(global whitespace {})
 (set (get whitespace " ") true)
 (set (get whitespace "\t") true)
 (set (get whitespace "\n") true)
 
 (function make-stream (str)
-  (declare s {})
+  (local s {})
   (set s.pos (string-start))
   (set s.string str)
   (set s.last (string-end str))
@@ -127,11 +127,11 @@
   (if ((<= s.pos s.last) (return (string-ref s.string s.pos)))))
 
 (function read-char (s)
-  (declare c (peek-char s))
+  (local c (peek-char s))
   (if (c (set s.pos (+ s.pos 1)) (return c))))
 
 (function skip-non-code (s)
-  (declare c)
+  (local c)
   (while true
     (set c (peek-char s))
     (if ((not c) break)
@@ -143,8 +143,8 @@
 	(true break))))
 
 (function read-atom (s)
-  (declare c)
-  (declare str "")
+  (local c)
+  (local str "")
   (while true
     (set c (peek-char s))
     (if ((and c (and (not (get whitespace c))
@@ -152,14 +152,14 @@
          (set str (cat str c))
          (read-char s))
         (true break)))
-  (declare n (parse-number str))
+  (local n (parse-number str))
   (if ((= n nil) (return str))
       (true (return n))))
 
 (function read-list (s)
   (read-char s) ; (
-  (declare c)
-  (declare l [])
+  (local c)
+  (local l [])
   (while true
     (skip-non-code s)
     (set c (peek-char s))
@@ -170,8 +170,8 @@
 
 (function read-string (s)
   (read-char s) ; "
-  (declare c)
-  (declare str "\"")
+  (local c)
+  (local str "\"")
   (while true
     (set c (peek-char s))
     (if ((and c (not (= c "\"")))
@@ -191,7 +191,7 @@
 
 (function read (s)
   (skip-non-code s)
-  (declare c (peek-char s))
+  (local c (peek-char s))
   (if ((= c "(") (return (read-list s)))
       ((= c ")") (error (cat "Unexpected ) at " s.pos)))
       ((= c "\"") (return (read-string s)))
@@ -202,7 +202,7 @@
 
 ;;; compiler
 
-(declare operators {})
+(global operators {})
 
 (function define-operators ()
   (set (get operators "+") "+") (set (get operators "-") "-")
@@ -222,7 +222,7 @@
        (set (get operators "cat") "+"))
       (true (set (get operators "cat") ".."))))
 
-(declare special {})
+(global special {})
 (set (get special "do") compile-do)
 (set (get special "set") compile-set)
 (set (get special "get") compile-get)
@@ -230,12 +230,13 @@
 (set (get special "not") compile-not)
 (set (get special "if") compile-if)
 (set (get special "function") compile-function)
-(set (get special "declare") compile-declare)
+(set (get special "global") compile-global)
+(set (get special "local") compile-local)
 (set (get special "while") compile-while)
 (set (get special "list") compile-list)
 (set (get special "quote") compile-quote)
 
-(declare macros {})
+(global macros {})
 
 (function atom? (form)
   (return (or (= (type form) "string") (= (type form) "number"))))
@@ -259,8 +260,8 @@
   (if (stmt? (return ";")) (true (return ""))))
 
 (function compile-args (forms)
-  (declare i 0)
-  (declare str "(")
+  (local i 0)
+  (local str "(")
   (while (< i (array-length forms))
     (set str (cat str (compile (get forms i) false)))
     (if ((< i (- (array-length forms) 1)) (set str (cat str ","))))
@@ -268,8 +269,8 @@
   (return (cat str ")")))
 
 (function compile-body (forms)
-  (declare i 0)
-  (declare str "")
+  (local i 0)
+  (local str "")
   (if ((= current-target 'js) (set str "{")))
   (while (< i (array-length forms))
     (set str (cat str (compile (get forms i) true)))
@@ -279,7 +280,7 @@
       (true (return str))))
 
 (function compile-atom (form stmt?)
-  (declare atom form)
+  (local atom form)
   (if ((= form "[]")
        (if ((= current-target 'lua) (return "{}"))
 	   (true (return form))))
@@ -289,27 +290,27 @@
       ((and (= (type form) "string")
 	    (not (= (string-ref form (string-start)) "\"")))
        (set atom (string-ref form (string-start)))
-       (declare i (+ (string-start) 1)) ; skip leading -
+       (local i (+ (string-start) 1)) ; skip leading -
        (while (<= i (string-end form))
-	 (declare c (string-ref form i))
+	 (local c (string-ref form i))
 	 (if ((= c "-") (set c "_")))
 	 (set atom (cat atom c))
 	 (set i (+ i 1)))
-       (declare last (string-end form))
+       (local last (string-end form))
        (if ((= (string-ref form last) "?")
-	    (declare name (string-sub atom (string-start) last))
+	    (local name (string-sub atom (string-start) last))
 	    (set atom (cat "is_" name))))))
   (return (cat atom (terminator stmt?))))
 
 (function compile-call (form stmt?)
-  (declare fn (compile (get form 0) false))
-  (declare args (compile-args (array-sub form 1)))
+  (local fn (compile (get form 0) false))
+  (local args (compile-args (array-sub form 1)))
   (return (cat fn args (terminator stmt?))))
 
 (function compile-operator (form)
-  (declare i 1)
-  (declare str "(")
-  (declare op (get operators (get form 0)))
+  (local i 1)
+  (local str "(")
+  (local op (get operators (get form 0)))
   (while (< i (array-length form))
     (set str (cat str (compile (get form i) false)))
     (if ((< i (- (array-length form) 1)) (set str (cat str op))))
@@ -319,7 +320,7 @@
 (function compile-do (forms stmt?)
   (if ((not stmt?)
        (error "Cannot compile DO as an expression")))
-  (declare body (compile-body forms))
+  (local body (compile-body forms))
   (if ((= current-target 'js) (return body))
       (true (return (cat "do " body " end ")))))
 
@@ -328,14 +329,14 @@
        (error "Cannot compile assignment as an expression")))
   (if ((< (array-length form) 2)
        (error "Missing right-hand side in assignment")))
-  (declare lh (compile (get form 0) false))
-  (declare rh (compile (get form 1) false))
+  (local lh (compile (get form 0) false))
+  (local rh (compile (get form 1) false))
   (return (cat lh "=" rh (terminator true))))
 
 (function compile-branch (branch first? last?)
-  (declare condition (compile (get branch 0) false))
-  (declare body (compile-body (array-sub branch 1)))
-  (declare tr "")
+  (local condition (compile (get branch 0) false))
+  (local body (compile-body (array-sub branch 1)))
+  (local tr "")
   (if ((and last? (= current-target 'lua)) (set tr " end ")))
   (if (first?
        (if ((= current-target 'js)
@@ -353,58 +354,68 @@
 (function compile-if (form stmt?)
   (if ((not stmt?)
        (error "Cannot compile if as an expression")))
-  (declare i 0)
-  (declare str "")
+  (local i 0)
+  (local str "")
   (while (< i (array-length form))
-    (declare last? (= i (- (array-length form) 1)))
-    (declare first? (= i 0))
-    (declare branch (compile-branch (get form i) first? last?))
+    (local last? (= i (- (array-length form) 1)))
+    (local first? (= i 0))
+    (local branch (compile-branch (get form i) first? last?))
     (set str (cat str branch))
     (set i (+ i 1)))
   (return str))
 
 (function compile-function (form stmt?)
-  (declare name (compile (get form 0)))
-  (declare args (compile-args (get form 1)))
-  (declare body (compile-body (array-sub form 2)))
-  (declare tr "")
+  (local name (compile (get form 0)))
+  (local args (compile-args (get form 1)))
+  (local body (compile-body (array-sub form 2)))
+  (local tr "")
   (if ((= current-target 'lua) (set tr " end ")))
   (return (cat "function " name args body tr)))
 
 (function compile-get (form stmt?)
-  (declare object (compile (get form 0) false))
-  (declare key (compile (get form 1) false))
+  (local object (compile (get form 0) false))
+  (local key (compile (get form 1) false))
   (return (cat object "[" key "]" (terminator stmt?))))
 
 (function compile-dot (form stmt?)
-  (declare object (compile (get form 0) false))
-  (declare key (get form 1))
+  (local object (compile (get form 0) false))
+  (local key (get form 1))
   (return (cat object "." key (terminator stmt?))))
 
 (function compile-not (form stmt?)
-  (declare expr (compile (get form 0) false))
+  (local expr (compile (get form 0) false))
   (if ((= current-target 'js)
        (return (cat "!(" expr ")" (terminator stmt?))))
       (true (return (cat "(not " expr ")" (terminator stmt?))))))
 
-(function compile-declare (form stmt?)
+(function compile-global (form stmt?)
   (if ((not stmt?)
-       (error "Cannot compile declaration as an expression")))
-  (declare lh (compile (get form 0)))
-  (declare tr (terminator true))
-  (declare keyword "local ")
+       (error "Cannot compile variable declaration as an expression")))
+  (if ((< (array-length form) 2)
+       (error "Global variable definition requires a value")))
+  (local lh (compile (get form 0)))
+  (local rh (compile (get form 1) false))
+  (local tr (terminator true))
+  (return (cat lh "=" rh tr)))
+
+(function compile-local (form stmt?)
+  (if ((not stmt?)
+       (error "Cannot compile local variable declaration as an expression")))
+  (local lh (compile (get form 0)))
+  (local tr (terminator true))
+  (local keyword "local ")
   (if ((= current-target 'js) (set keyword "var ")))
   (if ((= (get form 1) nil)
        (return (cat keyword lh tr)))
       (true
-       (declare rh (compile (get form 1) false))
+       (local rh (compile (get form 1) false))
        (return (cat keyword lh "=" rh tr)))))
 
 (function compile-while (form stmt?)
   (if ((not stmt?)
        (error "Cannot compile WHILE as an expression")))
-  (declare condition (compile (get form 0) false))
-  (declare body (compile-body (array-sub form 1)))
+  (local condition (compile (get form 0) false))
+  (local body (compile-body (array-sub form 1)))
   (if ((= current-target 'js)
        (return (cat "while(" condition ")" body)))
       (true (return (cat "while " condition " do " body " end ")))))
@@ -412,12 +423,12 @@
 (function compile-list (forms stmt? quoted?)
   (if (stmt?
        (error "Cannot compile LIST as a statement")))
-  (declare i 0)
-  (declare str "[")
+  (local i 0)
+  (local str "[")
   (if ((= current-target 'lua) (set str "{")))
   (while (< i (array-length forms))
-    (declare x (get forms i))
-    (declare x1)
+    (local x (get forms i))
+    (local x1)
     (if (quoted? (set x1 (quote-form x)))
 	(true (set x1 (compile x false))))
     (set str (cat str x1))
@@ -450,11 +461,11 @@
 (function compile-macro (form stmt?)
   (if ((not stmt?)
        (error "Cannot compile macro definition as an expression")))
-  (declare tmp current-target)
+  (local tmp current-target)
   (set current-target current-language)
   (eval (compile-function form true))
-  (declare name (get form 0))
-  (declare register
+  (local name (get form 0))
+  (local register
     '(set (get macros ,(compile-to-string name)) ,name))
   (eval (compile register true))
   (set current-target tmp))
@@ -471,19 +482,19 @@
 	    (compile-macro (array-sub form 1) stmt?)
 	    (return ""))
            ((special? form)
-            (declare fn (get special (get form 0)))
+            (local fn (get special (get form 0)))
             (return (fn (array-sub form 1) stmt?)))
 	   ((macro-call? form)
-	    (declare fn (get macros (get form 0)))
-	    (declare form (fn (array-sub form 1)))
+	    (local fn (get macros (get form 0)))
+	    (local form (fn (array-sub form 1)))
 	    (return (compile form stmt?)))
            (true (return (compile-call form stmt?)))))
       (true (error (cat "Unexpected form: " form)))))
 
 (function compile-file (filename)
-  (declare form)
-  (declare output "")
-  (declare s (make-stream (read-file filename)))
+  (local form)
+  (local output "")
+  (local s (make-stream (read-file filename)))
   (while true
     (set form (read s))
     (if (form (set output (cat output (compile form true))))
@@ -494,23 +505,23 @@
   (print "usage: x input [-o output] [-t target]")
   (exit))
 
-(declare args
+(global args
   (target (js (array-sub process.argv 2))
 	  (lua (array-sub arg 1))))
 
 (if ((< (array-length args) 1) (usage)))
 
-(declare input (get args 0))
-(declare output
+(global input (get args 0))
+(global output
   (cat (string-sub input (string-start) (string-find input ".")) ".js"))
-(declare i 1)
+(global i 1)
 
 (while (< i (array-length args))
-  (declare arg (get args i))
+  (local arg (get args i))
   (if ((or (= arg "-o") (= arg "-t"))
        (if ((> (array-length args) (+ i 1))
 	    (set i (+ i 1))
-	    (declare arg2 (get args i))
+	    (local arg2 (get args i))
 	    (if ((= arg "-o") (set output arg2))
 		(true (set current-target arg2))))
 	   (true (print "missing argument for" arg) (usage))))
