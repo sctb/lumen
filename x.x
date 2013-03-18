@@ -495,14 +495,15 @@
   (exit))
 
 (declare args
-  (target (js process.argv) (lua arg)))
+  (target (js (array-sub process.argv 2))
+	  (lua (array-sub arg 1))))
 
-(if ((< (array-length args) 3) (usage)))
+(if ((< (array-length args) 1) (usage)))
 
-(declare input (get args 2))
+(declare input (get args 0))
 (declare output
   (cat (string-sub input (string-start) (string-find input ".")) ".js"))
-(declare i 3)
+(declare i 1)
 
 (while (< i (array-length args))
   (declare arg (get args i))
