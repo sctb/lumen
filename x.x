@@ -41,7 +41,8 @@
 	 (while (< i upto)
 	   (set (get arr2 j) (get arr i))
 	   (set i (+ i 1))
-	   (set j (+ j 1)))))))
+	   (set j (+ j 1)))
+	 (return arr2)))))
 
 (function array-push (arr x)
   (set (get arr (array-length arr)) x))
