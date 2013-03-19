@@ -2,7 +2,6 @@
 
 ;;; TODO
 ;;   simplify/refactor COMPILE-ATOM
-;;   simplify MACRO-DEFINITION?
 ;;   use the (OR (AND C A) B) pattern, possibly with a macro
 
 ;;; language targets
@@ -256,7 +255,7 @@
   (return (not (= (get macros (get form 0)) nil))))
 
 (function macro-definition? (form)
-  (return (and (call? form) (= (get form 0) "macro"))))
+  (return (= (get form 0) "macro")))
 
 (function terminator (stmt?)
   (if (stmt? (return ";")) (true (return ""))))
