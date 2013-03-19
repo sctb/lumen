@@ -4,6 +4,7 @@
 ;;   get rid of GLOBAL in favour of SET
 ;;   simplify/refactor COMPILE-ATOM
 ;;   simplify MACRO-DEFINITION?
+;;   use the (OR (AND C A) B) pattern, possibly with a macro
 
 ;;; language targets
 
