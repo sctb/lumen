@@ -354,7 +354,7 @@
 
 (function compile-if (form stmt?)
   (if ((not stmt?)
-       (error "Cannot compile if as an expression")))
+       (error "Cannot compile IF as an expression")))
   (local i 0)
   (local str "")
   (while (< i (array-length form))
