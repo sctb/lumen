@@ -1,14 +1,13 @@
 ;; -*- mode: lisp -*-
 
 ;;; TODO
-;;   get rid of GLOBAL in favour of SET
 ;;   simplify/refactor COMPILE-ATOM
 ;;   simplify MACRO-DEFINITION?
 ;;   use the (OR (AND C A) B) pattern, possibly with a macro
 
 ;;; language targets
 
-(global current-target 'js)
+(set current-target 'js)
 
 (macro target (args)
   (local i 0)
@@ -17,7 +16,7 @@
 	 (return (get (get args i) 1))))
     (set i (+ i 1))))
 
-(global current-language
+(set current-language
   (target (js 'js) (lua 'lua)))
 
 
@@ -81,7 +80,7 @@
 
 ;; io
 
-(target (js (global fs (require "fs"))))
+(target (js (set fs (require "fs"))))
 
 (function read-file (filename)
   (target
@@ -111,11 +110,11 @@
 
 ;;; reader
 
-(global delimiters {})
+(set delimiters {})
 (set (get delimiters "(") true) (set (get delimiters ")") true)
 (set (get delimiters ";") true) (set (get delimiters "\n") true)
 
-(global whitespace {})
+(set whitespace {})
 (set (get whitespace " ") true)
 (set (get whitespace "\t") true)
 (set (get whitespace "\n") true)
@@ -206,7 +205,7 @@
 
 ;;; compiler
 
-(global operators {})
+(set operators {})
 
 (function define-operators ()
   (set (get operators "+") "+") (set (get operators "-") "-")
@@ -226,7 +225,7 @@
        (set (get operators "cat") "+"))
       (true (set (get operators "cat") ".."))))
 
-(global special {})
+(set special {})
 (set (get special "do") compile-do)
 (set (get special "set") compile-set)
 (set (get special "get") compile-get)
@@ -234,13 +233,12 @@
 (set (get special "not") compile-not)
 (set (get special "if") compile-if)
 (set (get special "function") compile-function)
-(set (get special "global") compile-global)
 (set (get special "local") compile-local)
 (set (get special "while") compile-while)
 (set (get special "list") compile-list)
 (set (get special "quote") compile-quote)
 
-(global macros {})
+(set macros {})
 
 (function atom? (form)
   (return (or (= (type form) "string") (= (type form) "number"))))
@@ -392,16 +390,6 @@
        (return (cat "!(" expr ")" (terminator stmt?))))
       (true (return (cat "(not " expr ")" (terminator stmt?))))))
 
-(function compile-global (form stmt?)
-  (if ((not stmt?)
-       (error "Cannot compile variable declaration as an expression")))
-  (if ((< (array-length form) 2)
-       (error "Global variable definition requires a value")))
-  (local lh (compile (get form 0)))
-  (local rh (compile (get form 1) false))
-  (local tr (terminator true))
-  (return (cat lh "=" rh tr)))
-
 (function compile-local (form stmt?)
   (if ((not stmt?)
        (error "Cannot compile local variable declaration as an expression")))
@@ -509,15 +497,15 @@
   (print "usage: x input [-o output] [-t target]")
   (exit))
 
-(global args
+(set args
   (target (js (array-sub process.argv 2))
 	  (lua (array-sub arg 1))))
 
 (if ((< (array-length args) 1) (usage)))
 
-(global input (get args 0))
-(global output false)
-(global i 1)
+(set input (get args 0))
+(set output false)
+(set i 1)
 
 (while (< i (array-length args))
   (local arg (get args i))
