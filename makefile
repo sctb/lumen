@@ -9,3 +9,4 @@ check: x.x
 
 clean:
 	git checkout x.js
+	git checkout x.lua
