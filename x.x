@@ -18,9 +18,7 @@
 ;;; library
 
 (target (js (function error (msg) (throw msg))))
-
-(function type (x)
-  (return (target (js (typeof x)) (lua (type x)))))
+(target (js (function type (x) (return (typeof x)))))
 
 ;; arrays
 
