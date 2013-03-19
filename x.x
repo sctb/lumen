@@ -75,7 +75,7 @@
 
 ;; io
 
-(target (js (set fs (require "fs"))))
+(target (js (global fs (require "fs"))))
 
 (function read-file (filename)
   (target
