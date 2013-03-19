@@ -512,8 +512,7 @@
 (if ((< (array-length args) 1) (usage)))
 
 (global input (get args 0))
-(global output
-  (cat (string-sub input (string-start) (string-find input ".")) ".js"))
+(global output false)
 (global i 1)
 
 (while (< i (array-length args))
@@ -527,6 +526,10 @@
 	   (true (print "missing argument for" arg) (usage))))
       (true (print "unrecognized option:" arg) (usage)))
   (set i (+ i 1)))
+
+(if ((= output false)
+     (local name (string-sub input (string-start) (string-find input ".")))
+     (set output (cat name "." current-target))))
 
 (define-operators)
 (write-file output (compile-file input))
