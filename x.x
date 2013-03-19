@@ -1,5 +1,10 @@
 ;; -*- mode: lisp -*-
 
+;;; TODO
+;;   get rid of GLOBAL in favour of SET
+;;   simplify/refactor COMPILE-ATOM
+;;   simplify MACRO-DEFINITION?
+
 ;;; language targets
 
 (global current-target 'js)
