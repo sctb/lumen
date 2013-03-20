@@ -1,8 +1,5 @@
 ;; -*- mode: lisp -*-
 
-;;; TODO
-;;   use the (OR (AND C A) B) pattern, possibly with a macro
-
 ;;; language targets
 
 (set current-target 'js)
