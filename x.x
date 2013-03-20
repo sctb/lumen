@@ -259,7 +259,7 @@
 
 (function compile-body (forms)
   (local i 0)
-  (local str (? (= current-target 'js) "" "{"))
+  (local str (? (= current-target 'js) "{" ""))
   (while (< i (array-length forms))
     (set str (cat str (compile (get forms i) true)))
     (set i (+ i 1)))
