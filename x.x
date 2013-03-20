@@ -20,6 +20,9 @@
 (target (js (function error (msg) (throw msg))))
 (target (js (function type (x) (return (typeof x)))))
 
+(macro ? (args)
+  (return '(or (and ,(get args 0) ,(get args 1)) ,(get args 2))))
+
 ;; arrays
 
 (function array-length (arr)
@@ -69,8 +72,7 @@
 (function string-find (str pattern start)
   (target
    (js (do (local i (str.indexOf pattern start))
-	   (if ((> i 0) (return i))
-	       (true (return nil)))))
+	   (return (and (> i 0) i))))
    (lua (return (string.find str pattern (or start 1) true)))))
 
 ;; io
@@ -122,7 +124,7 @@
   (return s))
 
 (function peek-char (s)
-  (if ((<= s.pos s.last) (return (string-ref s.string s.pos)))))
+  (return (and (<= s.pos s.last) (string-ref s.string s.pos))))
 
 (function read-char (s)
   (local c (peek-char s))
@@ -151,8 +153,7 @@
          (read-char s))
         (true break)))
   (local n (parse-number str))
-  (if ((= n nil) (return str))
-      (true (return n))))
+  (return (? (= n nil) str n)))
 
 (function read-list (s)
   (read-char s) ; (
@@ -207,18 +208,9 @@
   (set (get operators "<") "<") (set (get operators ">") ">")
   (set (get operators "<=") "<=") (set (get operators ">=") ">=")
   (set (get operators "=") "==")
-
-  (if ((= current-target 'js)
-       (set (get operators "and") "&&"))
-      (true (set (get operators "and") " and ")))
-
-  (if ((= current-target 'js)
-       (set (get operators "or") "||"))
-      (true (set (get operators "or") " or ")))
-
-  (if ((= current-target 'js)
-       (set (get operators "cat") "+"))
-      (true (set (get operators "cat") ".."))))
+  (set (get operators "and") (? (= current-target 'js) "&&" " and "))
+  (set (get operators "or") (? (= current-target 'js) "||" " or "))
+  (set (get operators "cat") (? (= current-target 'js) "+" "..")))
 
 (set special {})
 (set (get special "do") compile-do)
@@ -254,7 +246,7 @@
   (return (= (get form 0) "macro")))
 
 (function terminator (stmt?)
-  (if (stmt? (return ";")) (true (return ""))))
+  (return (? stmt? ";" "")))
 
 (function compile-args (forms)
   (local i 0)
@@ -267,22 +259,17 @@
 
 (function compile-body (forms)
   (local i 0)
-  (local str "")
-  (if ((= current-target 'js) (set str "{")))
+  (local str (? (= current-target 'js) "" "{"))
   (while (< i (array-length forms))
     (set str (cat str (compile (get forms i) true)))
     (set i (+ i 1)))
-  (if ((= current-target 'js)
-       (return (cat str "}")))
-      (true (return str))))
+  (return (? (= current-target 'js) (cat str "}") str)))
 
 (function compile-atom (form stmt?)
   (if ((= form "[]")
-       (if ((= current-target 'lua) (return "{}"))
-	   (true (return form))))
+       (return (? (= current-target 'lua) "{}" "[]")))
       ((= form "nil")
-       (if ((= current-target 'js) (return "undefined"))
-	   (true (return form))))
+       (return (? (= current-target 'js) "undefined" "nil")))
       ((and (= (type form) "string")
 	    (not (= (string-ref form (string-start)) "\"")))
        (local atom "")
@@ -318,8 +305,7 @@
   (if ((not stmt?)
        (error "Cannot compile DO as an expression")))
   (local body (compile-body forms))
-  (if ((= current-target 'js) (return body))
-      (true (return (cat "do " body " end ")))))
+  (return (? (= current-target 'js) body (cat "do " body " end "))))
 
 (function compile-set (form stmt?)
   (if ((not stmt?)
@@ -335,18 +321,18 @@
   (local body (compile-body (array-sub branch 1)))
   (local tr "")
   (if ((and last? (= current-target 'lua)) (set tr " end ")))
-  (if (first?
-       (if ((= current-target 'js)
-	    (return (cat "if(" condition ")" body)))
-	   (true (return (cat "if " condition " then " body tr)))))
+  (if (first? (return
+	       (? (= current-target 'js)
+		  (cat "if(" condition ")" body)
+		  (cat "if " condition " then " body tr))))
       ((and last? (= condition "true"))
-       (if ((= current-target 'js) (return (cat "else" body)))
-	   (true (return (cat " else " body " end ")))))
+       (return (? (= current-target 'js)
+		  (cat "else" body)
+		  (cat " else " body " end "))))
       (true
-       (if ((= current-target 'js)
-	    (return (cat "else if(" condition ")" body)))
-	   (true
-	    (return (cat " elseif " condition " then " body tr)))))))
+       (return (? (= current-target 'js)
+		  (cat "else if(" condition ")" body)
+		  (cat " elseif " condition " then " body tr))))))
 
 (function compile-if (form stmt?)
   (if ((not stmt?)
@@ -365,8 +351,7 @@
   (local name (compile (get form 0)))
   (local args (compile-args (get form 1)))
   (local body (compile-body (array-sub form 2)))
-  (local tr "")
-  (if ((= current-target 'lua) (set tr " end ")))
+  (local tr (? (= current-target 'lua) " end " ""))
   (return (cat "function " name args body tr)))
 
 (function compile-get (form stmt?)
@@ -381,17 +366,17 @@
 
 (function compile-not (form stmt?)
   (local expr (compile (get form 0) false))
-  (if ((= current-target 'js)
-       (return (cat "!(" expr ")" (terminator stmt?))))
-      (true (return (cat "(not " expr ")" (terminator stmt?))))))
+  (local tr (terminator stmt?))
+  (return (? (= current-target 'js)
+	     (cat "!(" expr ")" tr)
+	     (cat "(not " expr ")" tr))))
 
 (function compile-local (form stmt?)
   (if ((not stmt?)
        (error "Cannot compile local variable declaration as an expression")))
   (local lh (compile (get form 0)))
   (local tr (terminator true))
-  (local keyword "local ")
-  (if ((= current-target 'js) (set keyword "var ")))
+  (local keyword (? (= current-target 'js) "var " "local "))
   (if ((= (get form 1) nil)
        (return (cat keyword lh tr)))
       (true
@@ -403,31 +388,25 @@
        (error "Cannot compile WHILE as an expression")))
   (local condition (compile (get form 0) false))
   (local body (compile-body (array-sub form 1)))
-  (if ((= current-target 'js)
-       (return (cat "while(" condition ")" body)))
-      (true (return (cat "while " condition " do " body " end ")))))
+  (return (? (= current-target 'js)
+	     (cat "while(" condition ")" body)
+	     (cat "while " condition " do " body " end "))))
 
 (function compile-list (forms stmt? quoted?)
   (if (stmt?
        (error "Cannot compile LIST as a statement")))
   (local i 0)
-  (local str "[")
-  (if ((= current-target 'lua) (set str "{")))
+  (local str (? (= current-target 'lua) "{" "["))
   (while (< i (array-length forms))
     (local x (get forms i))
-    (local x1)
-    (if (quoted? (set x1 (quote-form x)))
-	(true (set x1 (compile x false))))
+    (local x1 (? quoted? (quote-form x) (compile x false)))
     (set str (cat str x1))
     (if ((< i (- (array-length forms) 1)) (set str (cat str ","))))
     (set i (+ i 1)))
-  (if ((= current-target 'lua) (return (cat str "}")))
-      (true (return (cat str "]")))))
+  (return (cat str (? (= current-target 'lua) "}" "]"))))
 
 (function compile-to-string (form)
-  (if ((= (type form) "string")
-       (return (cat "\"" form "\"")))
-      (true (return (cat form "")))))
+  (return (? (= (type form) "string") (cat "\"" form "\"") (cat form ""))))
 
 (function quote-form (form)
   (if ((and (= (type form) "string")
@@ -493,8 +472,7 @@
   (exit))
 
 (set args
-  (target (js (array-sub process.argv 2))
-	  (lua (array-sub arg 1))))
+  (target (js (array-sub process.argv 2)) (lua (array-sub arg 1))))
 
 (if ((< (array-length args) 1) (usage)))
 
