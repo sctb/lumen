@@ -104,6 +104,24 @@
 	    (if ((not (isNaN n)) (return n)))))
     (lua (return (tonumber str)))))
 
+;; printing
+
+(function to-string (x)
+  (if ((= x nil) (return "nil"))
+      ((or (= (type x) "string")
+	   (= (type x) "number"))
+       (return (cat x "")))
+      (true
+       (local str "[")
+       (local i 0)
+       (while (< i (array-length x))
+	 (local y (get x i))
+	 (set str (cat str (to-string y)))
+	 (if ((< i (- (array-length x) 1))
+	      (set str (cat str " "))))
+	 (set i (+ i 1)))
+       (return (cat str  "]")))))
+
 
 ;;; reader
 
