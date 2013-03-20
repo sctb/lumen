@@ -1,7 +1,6 @@
 ;; -*- mode: lisp -*-
 
 ;;; TODO
-;;   simplify/refactor COMPILE-ATOM
 ;;   use the (OR (AND C A) B) pattern, possibly with a macro
 
 ;;; language targets
@@ -281,7 +280,6 @@
       (true (return str))))
 
 (function compile-atom (form stmt?)
-  (local atom form)
   (if ((= form "[]")
        (if ((= current-target 'lua) (return "{}"))
 	   (true (return form))))
@@ -290,8 +288,8 @@
 	   (true (return form))))
       ((and (= (type form) "string")
 	    (not (= (string-ref form (string-start)) "\"")))
-       (set atom (string-ref form (string-start)))
-       (local i (+ (string-start) 1)) ; skip leading -
+       (local atom "")
+       (local i (string-start))
        (while (<= i (string-end form))
 	 (local c (string-ref form i))
 	 (if ((= c "-") (set c "_")))
@@ -300,8 +298,9 @@
        (local last (string-end form))
        (if ((= (string-ref form last) "?")
 	    (local name (string-sub atom (string-start) last))
-	    (set atom (cat "is_" name))))))
-  (return (cat atom (terminator stmt?))))
+	    (set atom (cat "is_" name))))
+       (return (cat atom (terminator stmt?))))
+      (true (return form))))
 
 (function compile-call (form stmt?)
   (local fn (compile (get form 0) false))
