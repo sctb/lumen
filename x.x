@@ -3,7 +3,6 @@
 ;;; language targets
 
 ;;; TODO
-;;   Get rid of STRING-START: always increment indexes in Lua
 ;;   Factor out identifier mangling
 
 (set current-target 'js)
@@ -62,27 +61,22 @@
 (function string-length (str)
   (return (target (js str.length) (lua (string.len str)))))
 
-(function string-start ()
-  (return (target (js 0) (lua 1))))
-
-(function string-end (str) ; last valid position
-  (return (target (js (- (string-length str) 1))
-		  (lua (string-length str)))))
-
 (function string-ref (str n)
-  (return (target (js (str.charAt n)) (lua (string.sub str n n)))))
+  (return (target (js (str.charAt n))
+		  (lua (string.sub str (+ n 1) (+ n 1))))))
 
 (function string-sub (str from upto)
   (target
     (js (return (str.substring from upto)))
-    (lua (do (if ((not (= upto nil)) (set upto (- upto 1))))
-	     (return (string.sub str from upto))))))
+    (lua (return (string.sub str (+ from 1) upto)))))
 
 (function string-find (str pattern start)
   (target
    (js (do (local i (str.indexOf pattern start))
 	   (return (and (> i 0) i))))
-   (lua (return (string.find str pattern (or start 1) true)))))
+   (lua (do (if (start (set start (+ start 1))))
+	    (local i (string.find str pattern start true))
+	    (return (and i (- i 1)))))))
 
 ;; io
 
@@ -147,13 +141,13 @@
 
 (function make-stream (str)
   (local s {})
-  (set s.pos (string-start))
+  (set s.pos 0)
   (set s.string str)
-  (set s.last (string-end str))
+  (set s.length (string-length str))
   (return s))
 
 (function peek-char (s)
-  (return (? (<= s.pos s.last) (string-ref s.string s.pos) eof)))
+  (return (? (< s.pos s.length) (string-ref s.string s.pos) eof)))
 
 (function read-char (s)
   (local c (peek-char s))
@@ -303,17 +297,17 @@
       ((= form "nil")
        (return (? (= current-target 'js) "undefined" "nil")))
       ((and (= (type form) "string")
-	    (not (= (string-ref form (string-start)) "\"")))
+	    (not (= (string-ref form 0) "\"")))
        (local atom "")
-       (local i (string-start))
-       (while (<= i (string-end form))
+       (local i 0)
+       (while (< i (string-length form))
 	 (local c (string-ref form i))
 	 (if ((= c "-") (set c "_")))
 	 (set atom (cat atom c))
 	 (set i (+ i 1)))
-       (local last (string-end form))
+       (local last (- (string-length form) 1))
        (if ((= (string-ref form last) "?")
-	    (local name (string-sub atom (string-start) last))
+	    (local name (string-sub atom 0 last))
 	    (set atom (cat "is_" name))))
        (return (cat atom (terminator stmt?))))
       (true (return form))))
@@ -445,7 +439,7 @@
 
 (function quote-form (form)
   (if ((and (= (type form) "string")
-	    (= (string-ref form (string-start)) "\""))
+	    (= (string-ref form 0) "\""))
        (return form))
       ((atom? form) (return (compile-to-string form)))
       ((= (get form 0) "unquote")
@@ -528,7 +522,7 @@
   (set i (+ i 1)))
 
 (if ((= output false)
-     (local name (string-sub input (string-start) (string-find input ".")))
+     (local name (string-sub input 0 (string-find input ".")))
      (set output (cat name "." current-target))))
 
 (define-operators)
