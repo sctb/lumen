@@ -20,6 +20,11 @@
 (target (js (function error (msg) (throw msg))))
 (target (js (function type (x) (return (typeof x)))))
 
+(target
+ (lua (function eval (x)
+        (local f (loadstring x))
+	(return (f)))))
+
 (macro ? (args)
   (return '(or (and ,(get args 0) ,(get args 1)) ,(get args 2))))
 
