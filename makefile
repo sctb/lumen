@@ -1,12 +1,25 @@
 .PHONY: clean
 
 main: x.x
-	./y x.x && ./y x.x -o x1.js && diff x.js x1.js
-	./y x.x -t lua
+	@echo x.js
+	@node x.js x.x && \
+node x.js x.x -o x1.js && \
+diff x.js x1.js && \
+lua x.lua x.x && \
+diff x.js x1.js && \
+echo x.lua && \
+lua x.lua x.x -t lua && \
+lua x.lua x.x -t lua -o x1.lua && \
+diff x.lua x1.lua && \
+node x.js x.x -t lua -o x1.lua && \
+diff x.lua x1.lua
 
 check: x.x
-	./y x.x -o x2.js
+	@echo x2.js
+	@node x.js x.x -o x2.js
+	@echo x2.lua
+	@lua x.lua x.x -o x2.lua
 
 clean:
-	git checkout x.js
-	git checkout x.lua
+	@git checkout x.js
+	@git checkout x.lua
