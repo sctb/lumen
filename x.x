@@ -43,7 +43,7 @@
      (do (set upto (or upto (array-length arr)))
 	 (local i from)
 	 (local j 0)
-	 (local arr2 {})
+	 (local arr2 [])
 	 (while (< i upto)
 	   (set (get arr2 j) (get arr i))
 	   (set i (+ i 1))
