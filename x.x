@@ -231,17 +231,19 @@
   (set (get operators "cat") (? (= current-target 'js) "+" "..")))
 
 (set special {})
-(set (get special "do") compile-do)
-(set (get special "set") compile-set)
-(set (get special "get") compile-get)
-(set (get special "dot") compile-dot)
-(set (get special "not") compile-not)
-(set (get special "if") compile-if)
-(set (get special "function") compile-function)
-(set (get special "local") compile-local)
-(set (get special "while") compile-while)
-(set (get special "list") compile-list)
-(set (get special "quote") compile-quote)
+
+(function define-special ()
+  (set (get special "do") compile-do)
+  (set (get special "set") compile-set)
+  (set (get special "get") compile-get)
+  (set (get special "dot") compile-dot)
+  (set (get special "not") compile-not)
+  (set (get special "if") compile-if)
+  (set (get special "function") compile-function)
+  (set (get special "local") compile-local)
+  (set (get special "while") compile-while)
+  (set (get special "list") compile-list)
+  (set (get special "quote") compile-quote))
 
 (set macros {})
 
@@ -476,7 +478,7 @@
 	    (local form (fn (array-sub form 1)))
 	    (return (compile form stmt?)))
            (true (return (compile-call form stmt?)))))
-      (true (error (cat "Unexpected form: " form)))))
+      (true (error (cat "Unexpected form: " (to-string form))))))
 
 (function compile-file (filename)
   (local form)
@@ -518,4 +520,6 @@
      (set output (cat name "." current-target))))
 
 (define-operators)
+(define-special)
+
 (write-file output (compile-file input))
