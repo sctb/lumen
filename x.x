@@ -2,6 +2,9 @@
 
 ;;; language targets
 
+;;; TODO
+;;   Get rid of STRING-START: always increment indexes in Lua
+
 (set current-target 'js)
 
 (macro target (args)
