@@ -2,9 +2,6 @@
 
 ;;; language targets
 
-;;; TODO
-;;   Factor out identifier mangling
-
 (set current-target 'js)
 
 (macro target (args)
@@ -99,6 +96,12 @@
 (function exit (code)
   (target (js (process.exit code)) (lua (os.exit code))))
 
+;; predicates
+
+(function string? (x) (return (= (type x) "string")))
+(function number? (x) (return (= (type x) "number")))
+(function atom? (x) (return (or (string? x) (number? x))))
+
 ;; numbers
 
 (function parse-number (str)
@@ -111,9 +114,7 @@
 
 (function to-string (x)
   (if ((= x nil) (return "nil"))
-      ((or (= (type x) "string")
-	   (= (type x) "number"))
-       (return (cat x "")))
+      ((atom? x) (return (cat x "")))
       (true
        (local str "[")
        (local i 0)
@@ -253,11 +254,8 @@
 
 (set macros {})
 
-(function atom? (form)
-  (return (or (= (type form) "string") (= (type form) "number"))))
-
 (function call? (form)
-  (return (= (type (get form 0)) "string")))
+  (return (string? (get form 0))))
 
 (function operator? (form)
   (return (not (= (get operators (get form 0)) nil))))
@@ -291,25 +289,27 @@
     (set i (+ i 1)))
   (return (? (= current-target 'js) (cat str "}") str)))
 
+(function normalize (id)
+  (local id2 "")
+  (local i 0)
+  (while (< i (string-length id))
+    (local c (string-ref id i))
+    (if ((= c "-") (set c "_")))
+    (set id2 (cat id2 c))
+    (set i (+ i 1)))
+  (local last (- (string-length id) 1))
+  (if ((= (string-ref id last) "?")
+       (local name (string-sub id2 0 last))
+       (set id2 (cat "is_" name))))
+  (return id2))
+
 (function compile-atom (form stmt?)
   (if ((= form "[]")
        (return (? (= current-target 'lua) "{}" "[]")))
       ((= form "nil")
        (return (? (= current-target 'js) "undefined" "nil")))
-      ((and (= (type form) "string")
-	    (not (= (string-ref form 0) "\"")))
-       (local atom "")
-       (local i 0)
-       (while (< i (string-length form))
-	 (local c (string-ref form i))
-	 (if ((= c "-") (set c "_")))
-	 (set atom (cat atom c))
-	 (set i (+ i 1)))
-       (local last (- (string-length form) 1))
-       (if ((= (string-ref form last) "?")
-	    (local name (string-sub atom 0 last))
-	    (set atom (cat "is_" name))))
-       (return (cat atom (terminator stmt?))))
+      ((and (string? form) (not (= (string-ref form 0) "\"")))
+       (return (cat (normalize form) (terminator stmt?))))
       (true (return form))))
 
 (function compile-call (form stmt?)
@@ -435,11 +435,10 @@
   (return (cat str (? (= current-target 'lua) "}" "]"))))
 
 (function compile-to-string (form)
-  (return (? (= (type form) "string") (cat "\"" form "\"") (cat form ""))))
+  (return (? (string? form) (cat "\"" form "\"") (cat form ""))))
 
 (function quote-form (form)
-  (if ((and (= (type form) "string")
-	    (= (string-ref form 0) "\""))
+  (if ((and (string? form) (= (string-ref form 0) "\""))
        (return form))
       ((atom? form) (return (compile-to-string form)))
       ((= (get form 0) "unquote")
