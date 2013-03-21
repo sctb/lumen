@@ -495,6 +495,9 @@
     (set output (cat output (compile form true))))
   (return output))
 
+
+;;; command-line
+
 (function usage ()
   (print "usage: x input [-o output] [-t target]")
   (exit))
