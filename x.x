@@ -4,6 +4,7 @@
 
 ;;; TODO
 ;;   Get rid of STRING-START: always increment indexes in Lua
+;;   Factor out identifier mangling
 
 (set current-target 'js)
 
