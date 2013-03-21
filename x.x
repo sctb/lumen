@@ -139,6 +139,8 @@
 (set (get whitespace "\t") true)
 (set (get whitespace "\n") true)
 
+(set eof {})
+
 (function make-stream (str)
   (local s {})
   (set s.pos (string-start))
@@ -147,7 +149,7 @@
   (return s))
 
 (function peek-char (s)
-  (return (and (<= s.pos s.last) (string-ref s.string s.pos))))
+  (return (? (<= s.pos s.last) (string-ref s.string s.pos) eof)))
 
 (function read-char (s)
   (local c (peek-char s))
@@ -214,7 +216,8 @@
 (function read (s)
   (skip-non-code s)
   (local c (peek-char s))
-  (if ((= c "(") (return (read-list s)))
+  (if ((= c eof) (return c))
+      ((= c "(") (return (read-list s)))
       ((= c ")") (error (cat "Unexpected ) at " s.pos)))
       ((= c "\"") (return (read-string s)))
       ((= c "'") (return (read-quote s)))
@@ -491,8 +494,8 @@
   (local s (make-stream (read-file filename)))
   (while true
     (set form (read s))
-    (if (form (set output (cat output (compile form true))))
-        (true break)))
+    (if ((= form eof) break))
+    (set output (cat output (compile form true))))
   (return output))
 
 (function usage ()
