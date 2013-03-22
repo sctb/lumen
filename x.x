@@ -2,6 +2,14 @@
 
 ;;; language targets
 
+;;; TODO
+;;   Clarify datatypes (strings, numbers, booleans, nil, arrays, tables)
+;;   READ booleans and nil
+;;   Move local declarations into lower blocks (mostly in the reader)
+;;   Add basic iteration functions/macros
+;;   Implement UNQUOTE-SPLICING
+;;   Add argument list support to macros
+
 (set current-target 'js)
 
 (macro target (args)
