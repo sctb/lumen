@@ -1,11 +1,12 @@
 ;; -*- mode: lisp -*-
 
-;;; language targets
-
 ;;; TODO
-;;   Add basic iteration functions/macros
 ;;   Implement UNQUOTE-SPLICING
 ;;   Add argument list support to macros
+;;   Add basic iteration functions/macros
+
+
+;;; language targets
 
 (set current-target 'js)
 
