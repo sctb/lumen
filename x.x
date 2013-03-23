@@ -3,8 +3,6 @@
 ;;; language targets
 
 ;;; TODO
-;;   READ booleans and nil
-;;   Move local declarations into lower blocks (mostly in the reader)
 ;;   Add basic iteration functions/macros
 ;;   Implement UNQUOTE-SPLICING
 ;;   Add argument list support to macros
@@ -172,9 +170,8 @@
   (if (c (set s.pos (+ s.pos 1)) (return c))))
 
 (function skip-non-code (s)
-  (local c)
   (while true
-    (set c (peek-char s))
+    (local c (peek-char s))
     (if ((not c) break)
 	((get whitespace c) (read-char s))
         ((= c ";")
@@ -184,10 +181,9 @@
 	(true break))))
 
 (function read-atom (s)
-  (local c)
   (local str "")
   (while true
-    (set c (peek-char s))
+    (local c (peek-char s))
     (if ((and c (and (not (get whitespace c))
                      (not (get delimiters c))))
          (set str (cat str c))
@@ -198,11 +194,10 @@
 
 (function read-list (s)
   (read-char s) ; (
-  (local c)
   (local l [])
   (while true
     (skip-non-code s)
-    (set c (peek-char s))
+    (local c (peek-char s))
     (if ((and c (not (= c ")"))) (array-push l (read s)))
         (c (read-char s) break) ; )
         (true (error (cat "Expected ) at " s.pos)))))
@@ -210,10 +205,9 @@
 
 (function read-string (s)
   (read-char s) ; "
-  (local c)
   (local str "\"")
   (while true
-    (set c (peek-char s))
+    (local c (peek-char s))
     (if ((and c (not (= c "\"")))
          (if ((= c "\\") (set str (cat str (read-char s)))))
          (set str (cat str (read-char s))))
