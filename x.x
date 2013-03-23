@@ -3,7 +3,6 @@
 ;;; language targets
 
 ;;; TODO
-;;   Clarify datatypes (strings, numbers, booleans, nil, arrays, tables)
 ;;   READ booleans and nil
 ;;   Move local declarations into lower blocks (mostly in the reader)
 ;;   Add basic iteration functions/macros
@@ -108,7 +107,16 @@
 
 (function string? (x) (return (= (type x) "string")))
 (function number? (x) (return (= (type x) "number")))
-(function atom? (x) (return (or (string? x) (number? x))))
+(function boolean? (x) (return (= (type x) "boolean")))
+
+(function composite? (x)
+  (return (= (type x) (target (js "object") (lua "table")))))
+(function atom? (x) (return (not (composite? x))))
+
+(function table? (x)
+  (return (and (composite? x) (= (get x 0) nil))))
+(function array? (x)
+  (return (and (composite? x) (not (= (get x 0) nil)))))
 
 ;; numbers
 
@@ -122,6 +130,7 @@
 
 (function to-string (x)
   (if ((= x nil) (return "nil"))
+      ((boolean? x) (return (? x "true" "false")))
       ((atom? x) (return (cat x "")))
       (true
        (local str "[")
@@ -318,7 +327,7 @@
        (return (? (= current-target 'js) "undefined" "nil")))
       ((and (string? form) (not (= (string-ref form 0) "\"")))
        (return (cat (normalize form) (terminator stmt?))))
-      (true (return form))))
+      (true (return (to-string form)))))
 
 (function compile-call (form stmt?)
   (local fn (compile (get form 0) false))
@@ -443,7 +452,7 @@
   (return (cat str (? (= current-target 'lua) "}" "]"))))
 
 (function compile-to-string (form)
-  (return (? (string? form) (cat "\"" form "\"") (cat form ""))))
+  (return (? (string? form) (cat "\"" form "\"") (to-string form))))
 
 (function quote-form (form)
   (if ((and (string? form) (= (string-ref form 0) "\""))
