@@ -471,9 +471,6 @@
   (if ((atom? form) (return (compile-to-string form)))
       ((= (get form 0) "unquote")
        (return (compile (get form 1) false)))
-      ((= (get form 0) "unquote-splicing")
-       ;; not implemented
-       )
       (true (return (compile-list form false true)))))
 
 (function compile-quote (forms stmt?)
