@@ -462,14 +462,18 @@
   (return (cat str (? (= current-target 'lua) "}" "]"))))
 
 (function compile-to-string (form)
-  (return (? (string? form) (cat "\"" form "\"") (to-string form))))
-
-(function quote-form (form)
   (if ((and (string? form) (= (string-ref form 0) "\""))
        (return form))
-      ((atom? form) (return (compile-to-string form)))
+      ((string? form) (return (cat "\"" form "\"")))
+      (true (return (to-string form)))))
+
+(function quote-form (form)
+  (if ((atom? form) (return (compile-to-string form)))
       ((= (get form 0) "unquote")
        (return (compile (get form 1) false)))
+      ((= (get form 0) "unquote-splicing")
+       ;; not implemented
+       )
       (true (return (compile-list form false true)))))
 
 (function compile-quote (forms stmt?)
