@@ -59,6 +59,21 @@
 (function array-push (arr x)
   (set (get arr (array-length arr)) x))
 
+(function array-cat (a1 a2)
+  (target
+    (js (return (a1.concat a2)))
+    (lua
+     (do (local a3 [])
+	 (local i 0)
+	 (local len (array-length a1))
+	 (while (< i len)
+	   (set (get a3 i) (get a1 i))
+	   (set i (+ i 1)))
+	 (while (< i (+ len (array-length a2)))
+	   (set (get a3 i) (get a2 (- i len)))
+	   (set i (+ i 1)))
+	 (return a3)))))
+
 ;; strings
 
 (function string-length (str)
