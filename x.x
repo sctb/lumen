@@ -6,11 +6,11 @@
 ;;   Add basic iteration functions/macros
 
 
-;;; language targets
+;;; library
 
-(set current-target 'js)
+;; macros
 
-(macro array-ref (args)
+(macro at (args)
   (local arr (get args 0))
   (local i (get args 1))
   (if ((= current-language 'lua)
@@ -21,84 +21,71 @@
       ((= current-target 'lua) (set i '(+ ,i 1))))
   (return '(get ,arr ,i)))
 
+(macro ? (args)
+  (return '(or (and ,(at args 0) ,(at args 1)) ,(at args 2))))
+
+;; languages
+
+(set current-target 'js)
+
 (macro target (args)
   (local i 0)
-  (while (< i (array-length args))
-    (if ((= (array-ref (array-ref args i) 0) current-target)
-	 (return (array-ref (array-ref args i) 1))))
+  (while (< i (length args))
+    (if ((= (at (at args i) 0) current-target)
+	 (return (at (at args i) 1))))
     (set i (+ i 1))))
 
-(set current-language
-  (target (js 'js) (lua 'lua)))
+;; sequences
 
+(function length (x)
+  (return (target (js x.length) (lua #x))))
 
-;;; library
-
-(target (js (function error (msg) (throw msg))))
-(target (js (function type (x) (return (typeof x)))))
-
-(target
- (lua (function eval (x)
-        (local f (loadstring x))
-	(return (f)))))
-
-(macro ? (args)
-  (return '(or (and ,(array-ref args 0)
-		    ,(array-ref args 1))
-	       ,(array-ref args 2))))
+(function sub (x from upto)
+  (if ((string? x)
+       (target
+	(js (return (x.substring from upto)))
+	(lua (return (string.sub x (+ from 1) upto)))))
+      (true
+       (target
+	(js (return (x.slice from upto)))
+	(lua
+	 (do (set upto (or upto (length x)))
+	     (local i from)
+	     (local j 0)
+	     (local x2 [])
+	     (while (< i upto)
+	       (set (at x2 j) (at x i))
+	       (set i (+ i 1))
+	       (set j (+ j 1)))
+	     (return x2)))))))
 
 ;; arrays
 
-(function array-length (arr)
-  (return (target (js arr.length) (lua #arr))))
+(function push (arr x)
+  (set (at arr (length arr)) x))
 
-(function array-sub (arr from upto)
-  (target
-    (js (return (arr.slice from upto)))
-    (lua
-     (do (set upto (or upto (array-length arr)))
-	 (local i from)
-	 (local j 0)
-	 (local arr2 [])
-	 (while (< i upto)
-	   (set (array-ref arr2 j) (array-ref arr i))
-	   (set i (+ i 1))
-	   (set j (+ j 1)))
-	 (return arr2)))))
-
-(function array-push (arr x)
-  (set (array-ref arr (array-length arr)) x))
-
-(function array-cat (a1 a2)
+(function join (a1 a2)
   (target
     (js (return (a1.concat a2)))
     (lua
      (do (local a3 [])
 	 (local i 0)
-	 (local len (array-length a1))
+	 (local len (length a1))
 	 (while (< i len)
-	   (set (array-ref a3 i) (array-ref a1 i))
+	   (set (at a3 i) (at a1 i))
 	   (set i (+ i 1)))
-	 (while (< i (+ len (array-length a2)))
-	   (set (array-ref a3 i) (array-ref a2 (- i len)))
+	 (while (< i (+ len (length a2)))
+	   (set (at a3 i) (at a2 (- i len)))
 	   (set i (+ i 1)))
 	 (return a3)))))
 
 ;; strings
 
-(function string-length (str)
-  (return (target (js str.length) (lua (string.len str)))))
-
-(function string-ref (str n)
+(function char (str n)
   (return (target (js (str.charAt n))
 		  (lua (string.sub str (+ n 1) (+ n 1))))))
 
-(function string-sub (str from upto)
-  (target
-    (js (return (str.substring from upto)))
-    (lua (return (string.sub str (+ from 1) upto)))))
-
-(function string-find (str pattern start)
+(function find (str pattern start)
   (target
    (js (do (local i (str.indexOf pattern start))
 	   (return (and (> i 0) i))))
@@ -138,9 +125,9 @@
 (function atom? (x) (return (not (composite? x))))
 
 (function table? (x)
-  (return (and (composite? x) (= (array-ref x 0) nil))))
+  (return (and (composite? x) (= (at x 0) nil))))
 (function array? (x)
-  (return (and (composite? x) (not (= (array-ref x 0) nil)))))
+  (return (and (composite? x) (not (= (at x 0) nil)))))
 
 ;; numbers
 
@@ -159,13 +146,26 @@
       (true
        (local str "[")
        (local i 0)
-       (while (< i (array-length x))
-	 (local y (array-ref x i))
+       (while (< i (length x))
+	 (local y (at x i))
 	 (set str (cat str (to-string y)))
-	 (if ((< i (- (array-length x) 1))
+	 (if ((< i (- (length x) 1))
 	      (set str (cat str " "))))
 	 (set i (+ i 1)))
        (return (cat str  "]")))))
+
+;; misc
+
+(target (js (function error (msg) (throw msg))))
+(target (js (function type (x) (return (typeof x)))))
+
+(target
+ (lua (function eval (x)
+        (local f (loadstring x))
+	(return (f)))))
+
+(set current-language
+  (target (js 'js) (lua 'lua)))
 
 
 ;;; reader
@@ -185,11 +185,11 @@
   (local s {})
   (set s.pos 0)
   (set s.string str)
-  (set s.length (string-length str))
+  (set s.length (length str))
   (return s))
 
 (function peek-char (s)
-  (return (? (< s.pos s.length) (string-ref s.string s.pos) eof)))
+  (return (? (< s.pos s.length) (char s.string s.pos) eof)))
 
 (function read-char (s)
   (local c (peek-char s))
@@ -224,7 +224,7 @@
   (while true
     (skip-non-code s)
     (local c (peek-char s))
-    (if ((and c (not (= c ")"))) (array-push l (read s)))
+    (if ((and c (not (= c ")"))) (push l (read s)))
         (c (read-char s) break) ; )
         (true (error (cat "Expected ) at " s.pos)))))
   (return l))
@@ -296,19 +296,19 @@
 (set special {})
 
 (function call? (form)
-  (return (string? (array-ref form 0))))
+  (return (string? (at form 0))))
 
 (function operator? (form)
-  (return (not (= (get-op (array-ref form 0)) nil))))
+  (return (not (= (get-op (at form 0)) nil))))
 
 (function special? (form)
-  (return (not (= (get special (array-ref form 0)) nil))))
+  (return (not (= (get special (at form 0)) nil))))
 
 (function macro-call? (form)
-  (return (not (= (get macros (array-ref form 0)) nil))))
+  (return (not (= (get macros (at form 0)) nil))))
 
 (function macro-definition? (form)
-  (return (= (array-ref form 0) "macro")))
+  (return (= (at form 0) "macro")))
 
 (function terminator (stmt?)
   (return (? stmt? ";" "")))
@@ -316,31 +316,31 @@
 (function compile-args (forms)
   (local i 0)
   (local str "(")
-  (while (< i (array-length forms))
-    (set str (cat str (compile (array-ref forms i) false)))
-    (if ((< i (- (array-length forms) 1)) (set str (cat str ","))))
+  (while (< i (length forms))
+    (set str (cat str (compile (at forms i) false)))
+    (if ((< i (- (length forms) 1)) (set str (cat str ","))))
     (set i (+ i 1)))
   (return (cat str ")")))
 
 (function compile-body (forms)
   (local i 0)
   (local str (? (= current-target 'js) "{" ""))
-  (while (< i (array-length forms))
-    (set str (cat str (compile (array-ref forms i) true)))
+  (while (< i (length forms))
+    (set str (cat str (compile (at forms i) true)))
     (set i (+ i 1)))
   (return (? (= current-target 'js) (cat str "}") str)))
 
 (function normalize (id)
   (local id2 "")
   (local i 0)
-  (while (< i (string-length id))
-    (local c (string-ref id i))
+  (while (< i (length id))
+    (local c (char id i))
     (if ((= c "-") (set c "_")))
     (set id2 (cat id2 c))
     (set i (+ i 1)))
-  (local last (- (string-length id) 1))
-  (if ((= (string-ref id last) "?")
-       (local name (string-sub id2 0 last))
+  (local last (- (length id) 1))
+  (if ((= (char id last) "?")
+       (local name (sub id2 0 last))
        (set id2 (cat "is_" name))))
   (return id2))
 
@@ -349,22 +349,22 @@
        (return (? (= current-target 'lua) "{}" "[]")))
       ((= form "nil")
        (return (? (= current-target 'js) "undefined" "nil")))
-      ((and (string? form) (not (= (string-ref form 0) "\"")))
+      ((and (string? form) (not (= (char form 0) "\"")))
        (return (cat (normalize form) (terminator stmt?))))
       (true (return (to-string form)))))
 
 (function compile-call (form stmt?)
-  (local fn (compile (array-ref form 0) false))
-  (local args (compile-args (array-sub form 1)))
+  (local fn (compile (at form 0) false))
+  (local args (compile-args (sub form 1)))
   (return (cat fn args (terminator stmt?))))
 
 (function compile-operator (form)
   (local i 1)
   (local str "(")
-  (local op (get-op (array-ref form 0)))
-  (while (< i (array-length form))
-    (set str (cat str (compile (array-ref form i) false)))
-    (if ((< i (- (array-length form) 1)) (set str (cat str op))))
+  (local op (get-op (at form 0)))
+  (while (< i (length form))
+    (set str (cat str (compile (at form i) false)))
+    (if ((< i (- (length form) 1)) (set str (cat str op))))
     (set i (+ i 1)))
   (return (cat str ")")))
 
@@ -377,15 +377,15 @@
 (function compile-set (form stmt?)
   (if ((not stmt?)
        (error "Cannot compile assignment as an expression")))
-  (if ((< (array-length form) 2)
+  (if ((< (length form) 2)
        (error "Missing right-hand side in assignment")))
-  (local lh (compile (array-ref form 0) false))
-  (local rh (compile (array-ref form 1) false))
+  (local lh (compile (at form 0) false))
+  (local rh (compile (at form 1) false))
   (return (cat lh "=" rh (terminator true))))
 
 (function compile-branch (branch first? last?)
-  (local condition (compile (array-ref branch 0) false))
-  (local body (compile-body (array-sub branch 1)))
+  (local condition (compile (at branch 0) false))
+  (local body (compile-body (sub branch 1)))
   (local tr "")
   (if ((and last? (= current-target 'lua)) (set tr " end ")))
   (if (first? (return
@@ -406,33 +406,33 @@
        (error "Cannot compile IF as an expression")))
   (local i 0)
   (local str "")
-  (while (< i (array-length form))
-    (local last? (= i (- (array-length form) 1)))
+  (while (< i (length form))
+    (local last? (= i (- (length form) 1)))
     (local first? (= i 0))
-    (local branch (compile-branch (array-ref form i) first? last?))
+    (local branch (compile-branch (at form i) first? last?))
     (set str (cat str branch))
     (set i (+ i 1)))
   (return str))
 
 (function compile-function (form stmt?)
-  (local name (compile (array-ref form 0)))
-  (local args (compile-args (array-ref form 1)))
-  (local body (compile-body (array-sub form 2)))
+  (local name (compile (at form 0)))
+  (local args (compile-args (at form 1)))
+  (local body (compile-body (sub form 2)))
   (local tr (? (= current-target 'lua) " end " ""))
   (return (cat "function " name args body tr)))
 
 (function compile-get (form stmt?)
-  (local object (compile (array-ref form 0) false))
-  (local key (compile (array-ref form 1) false))
+  (local object (compile (at form 0) false))
+  (local key (compile (at form 1) false))
   (return (cat object "[" key "]" (terminator stmt?))))
 
 (function compile-dot (form stmt?)
-  (local object (compile (array-ref form 0) false))
-  (local key (array-ref form 1))
+  (local object (compile (at form 0) false))
+  (local key (at form 1))
   (return (cat object "." key (terminator stmt?))))
 
 (function compile-not (form stmt?)
-  (local expr (compile (array-ref form 0) false))
+  (local expr (compile (at form 0) false))
   (local tr (terminator stmt?))
   (return (? (= current-target 'js)
 	     (cat "!(" expr ")" tr)
@@ -441,20 +441,20 @@
 (function compile-local (form stmt?)
   (if ((not stmt?)
        (error "Cannot compile local variable declaration as an expression")))
-  (local lh (compile (array-ref form 0)))
+  (local lh (compile (at form 0)))
   (local tr (terminator true))
   (local keyword (? (= current-target 'js) "var " "local "))
-  (if ((= (array-ref form 1) nil)
+  (if ((= (at form 1) nil)
        (return (cat keyword lh tr)))
       (true
-       (local rh (compile (array-ref form 1) false))
+       (local rh (compile (at form 1) false))
        (return (cat keyword lh "=" rh tr)))))
 
 (function compile-while (form stmt?)
   (if ((not stmt?)
        (error "Cannot compile WHILE as an expression")))
-  (local condition (compile (array-ref form 0) false))
-  (local body (compile-body (array-sub form 1)))
+  (local condition (compile (at form 0) false))
+  (local body (compile-body (sub form 1)))
   (return (? (= current-target 'js)
 	     (cat "while(" condition ")" body)
 	     (cat "while " condition " do " body " end "))))
@@ -464,32 +464,32 @@
        (error "Cannot compile LIST as a statement")))
   (local i 0)
   (local str (? (= current-target 'lua) "{" "["))
-  (while (< i (array-length forms))
-    (local x (array-ref forms i))
+  (while (< i (length forms))
+    (local x (at forms i))
     (local x1 (? quoted? (quote-form x) (compile x false)))
     (set str (cat str x1))
-    (if ((< i (- (array-length forms) 1)) (set str (cat str ","))))
+    (if ((< i (- (length forms) 1)) (set str (cat str ","))))
     (set i (+ i 1)))
   (return (cat str (? (= current-target 'lua) "}" "]"))))
 
 (function compile-to-string (form)
-  (if ((and (string? form) (= (string-ref form 0) "\""))
+  (if ((and (string? form) (= (char form 0) "\""))
        (return form))
       ((string? form) (return (cat "\"" form "\"")))
       (true (return (to-string form)))))
 
 (function quote-form (form)
   (if ((atom? form) (return (compile-to-string form)))
-      ((= (array-ref form 0) "unquote")
-       (return (compile (array-ref form 1) false)))
+      ((= (at form 0) "unquote")
+       (return (compile (at form 1) false)))
       (true (return (compile-list form false true)))))
 
 (function compile-quote (forms stmt?)
   (if (stmt?
        (error "Cannot compile quoted form as a statement")))
-  (if ((< (array-length forms) 1)
+  (if ((< (length forms) 1)
        (error "Must supply at least one argument to QUOTE")))
-  (return (quote-form (array-ref forms 0))))	; first arg only
+  (return (quote-form (at forms 0))))	; first arg only
 
 (function compile-macro (form stmt?)
   (if ((not stmt?)
@@ -497,7 +497,7 @@
   (local tmp current-target)
   (set current-target current-language)
   (eval (compile-function form true))
-  (local name (array-ref form 0))
+  (local name (at form 0))
   (local register
     '(set (get macros ,(compile-to-string name)) ,name))
   (eval (compile register true))
@@ -524,14 +524,14 @@
            ((operator? form)
             (return (compile-operator form)))
 	   ((macro-definition? form)
-	    (compile-macro (array-sub form 1) stmt?)
+	    (compile-macro (sub form 1) stmt?)
 	    (return ""))
            ((special? form)
-            (local fn (get special (array-ref form 0)))
-            (return (fn (array-sub form 1) stmt?)))
+            (local fn (get special (at form 0)))
+            (return (fn (sub form 1) stmt?)))
 	   ((macro-call? form)
-	    (local fn (get macros (array-ref form 0)))
-	    (local form (fn (array-sub form 1)))
+	    (local fn (get macros (at form 0)))
+	    (local form (fn (sub form 1)))
 	    (return (compile form stmt?)))
            (true (return (compile-call form stmt?)))))
       (true (error (cat "Unexpected form: " (to-string form))))))
@@ -553,20 +553,20 @@
   (print "usage: x input [-o output] [-t target]")
   (exit))
 
-(set args (target (js (array-sub process.argv 2)) (lua arg)))
+(set args (target (js (sub process.argv 2)) (lua arg)))
 
-(if ((< (array-length args) 1) (usage)))
+(if ((< (length args) 1) (usage)))
 
-(set input (array-ref args 0))
+(set input (at args 0))
 (set output false)
 (set i 1)
 
-(while (< i (array-length args))
-  (local arg (array-ref args i))
+(while (< i (length args))
+  (local arg (at args i))
   (if ((or (= arg "-o") (= arg "-t"))
-       (if ((> (array-length args) (+ i 1))
+       (if ((> (length args) (+ i 1))
 	    (set i (+ i 1))
-	    (local arg2 (array-ref args i))
+	    (local arg2 (at args i))
 	    (if ((= arg "-o") (set output arg2))
 		(true (set current-target arg2))))
 	   (true (print "missing argument for" arg) (usage))))
@@ -574,7 +574,7 @@
   (set i (+ i 1)))
 
 (if ((= output false)
-     (local name (string-sub input 0 (string-find input ".")))
+     (local name (sub input 0 (find input ".")))
      (set output (cat name "." current-target))))
 
 (write-file output (compile-file input))
