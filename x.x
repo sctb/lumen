@@ -547,34 +547,43 @@
   (return output))
 
 
+;;; tests
+
+(set tests [])
+
+(function run-tests ()
+  (print "running tests...")
+  (local i 0)
+  (while (< i (length tests))
+    (set i (+ i 1))))
+
+
 ;;; command-line
 
 (function usage ()
-  (print "usage: x <input> [-t] [-o <output>] [-l <language>]")
+  (print "usage: x [<input> | -t] [-o <output>] [-l <language>]")
   (exit))
 
 (set args (target (js (sub process.argv 2)) (lua arg)))
 
-(if ((< (length args) 1) (usage)))
-
-(set input (at args 0))
-(set output false)
-(set i 1)
-
-(while (< i (length args))
-  (local arg (at args i))
-  (if ((or (= arg "-o") (= arg "-l"))
-       (if ((> (length args) (+ i 1))
-	    (set i (+ i 1))
-	    (local arg2 (at args i))
-	    (if ((= arg "-o") (set output arg2))
-		(true (set current-target arg2))))
-	   (true (print "missing argument for" arg) (usage))))
-      (true (print "unrecognized option:" arg) (usage)))
-  (set i (+ i 1)))
-
-(if ((= output false)
-     (local name (sub input 0 (find input ".")))
-     (set output (cat name "." current-target))))
-
-(write-file output (compile-file input))
+(if ((< (length args) 1) (usage))
+    ((= (at args 0) "-t") (run-tests))
+    (true
+     (local input (at args 0))
+     (local output false)
+     (local i 1)
+     (while (< i (length args))
+       (local arg (at args i))
+       (if ((or (= arg "-o") (= arg "-l"))
+	    (if ((> (length args) (+ i 1))
+		 (set i (+ i 1))
+		 (local arg2 (at args i))
+		 (if ((= arg "-o") (set output arg2))
+		     (true (set current-target arg2))))
+		(true (print "missing argument for" arg) (usage))))
+	   (true (print "unrecognized option:" arg) (usage)))
+       (set i (+ i 1)))
+     (if ((= output false)
+	  (local name (sub input 0 (find input ".")))
+	  (set output (cat name "." current-target))))
+     (write-file output (compile-file input))))
