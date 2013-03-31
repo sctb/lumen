@@ -550,7 +550,7 @@
 ;;; command-line
 
 (function usage ()
-  (print "usage: x input [-o output] [-t target]")
+  (print "usage: x <input> [-t] [-o <output>] [-l <language>]")
   (exit))
 
 (set args (target (js (sub process.argv 2)) (lua arg)))
@@ -563,7 +563,7 @@
 
 (while (< i (length args))
   (local arg (at args i))
-  (if ((or (= arg "-o") (= arg "-t"))
+  (if ((or (= arg "-o") (= arg "-l"))
        (if ((> (length args) (+ i 1))
 	    (set i (+ i 1))
 	    (local arg2 (at args i))

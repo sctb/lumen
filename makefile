@@ -8,10 +8,10 @@ diff x.js x1.js && \
 lua x.lua x.x && \
 diff x.js x1.js && \
 echo x.lua && \
-lua x.lua x.x -t lua && \
-lua x.lua x.x -t lua -o x1.lua && \
+lua x.lua x.x -l lua && \
+lua x.lua x.x -l lua -o x1.lua && \
 diff x.lua x1.lua && \
-node x.js x.x -t lua -o x1.lua && \
+node x.js x.x -l lua -o x1.lua && \
 diff x.lua x1.lua
 
 check: x.x
