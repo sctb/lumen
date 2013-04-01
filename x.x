@@ -549,13 +549,20 @@
 
 ;;; tests
 
-(set tests [])
+(set passed 0)
+
+(function assert-equal (a b)
+  (local sa (to-string a))
+  (local sb (to-string b))
+  (if ((not (= sa sb))
+       (error (cat " failed: expected " sa " was " sb)))
+      (true (set passed (+ passed 1)))))
 
 (function run-tests ()
-  (print "running tests...")
-  (local i 0)
-  (while (< i (length tests))
-    (set i (+ i 1))))
+  (print " running tests...")
+  ;; atoms
+  (assert-equal 17 17)
+  (print (cat " " passed " passed")))
 
 
 ;;; command-line

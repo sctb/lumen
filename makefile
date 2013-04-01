@@ -20,6 +20,12 @@ check: x.x
 	@echo x2.lua
 	@lua x.lua x.x -o x2.lua
 
+test: x.x
+	@echo js
+	@node x.js -t
+	@echo lua
+	@lua x.lua -t
+
 clean:
 	@git checkout x.js
 	@git checkout x.lua
