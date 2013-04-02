@@ -428,6 +428,9 @@
 (function compile-get (form stmt?)
   (local object (compile (at form 0) false))
   (local key (compile (at form 1) false))
+  (if ((and (= current-target 'lua)
+	    (= (char object 0) "{"))
+       (set object (cat "(" object ")"))))
   (return (cat object "[" key "]" (terminator stmt?))))
 
 (function compile-dot (form stmt?)
