@@ -2,6 +2,7 @@
 
 ;;; TODO
 ;;   Factor out common operators
+;;   Eliminate the term 'array' in favour of 'list'
 ;;   Implement UNQUOTE-SPLICING
 ;;   Add argument list support to macros
 ;;   Add basic iteration functions/macros
