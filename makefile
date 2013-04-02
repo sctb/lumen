@@ -20,7 +20,7 @@ check: x.x
 	@echo x2.lua
 	@lua x.lua x.x -o x2.lua
 
-test: x.x
+test: main
 	@echo js
 	@node x.js -t
 	@echo lua
