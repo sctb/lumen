@@ -1,7 +1,6 @@
 ;; -*- mode: lisp -*-
 
 ;;; TODO
-;;   Factor out common operators
 ;;   Implement UNQUOTE-SPLICING
 ;;   Add argument list support to macros
 ;;   Add basic iteration functions/macros
@@ -266,36 +265,30 @@
 
 (set operators {})
 
+(set (get operators 'common) {})
+(set (get (get operators 'common) "+") "+")
+(set (get (get operators 'common) "-") "-")
+(set (get (get operators 'common) "*") "*")
+(set (get (get operators 'common) "/") "/")
+(set (get (get operators 'common) "<") "<")
+(set (get (get operators 'common) ">") ">")
+(set (get (get operators 'common) "=") "==")
+(set (get (get operators 'common) "<=") "<=")
+(set (get (get operators 'common) ">=") ">=")
+
 (set (get operators 'js) {})
-(set (get (get operators 'js) "+") "+")
-(set (get (get operators 'js) "-") "-")
-(set (get (get operators 'js) "*") "*")
-(set (get (get operators 'js) "/") "/")
-(set (get (get operators 'js) "<") "<")
-(set (get (get operators 'js) ">") ">")
-(set (get (get operators 'js) "=") "==")
-(set (get (get operators 'js) "<=") "<=")
-(set (get (get operators 'js) ">=") ">=")
 (set (get (get operators 'js) "and") "&&")
 (set (get (get operators 'js) "or") "||")
 (set (get (get operators 'js) "cat") "+")
 
 (set (get operators 'lua) {})
-(set (get (get operators 'lua) "+") "+")
-(set (get (get operators 'lua) "-") "-")
-(set (get (get operators 'lua) "*") "*")
-(set (get (get operators 'lua) "/") "/")
-(set (get (get operators 'lua) "<") "<")
-(set (get (get operators 'lua) ">") ">")
-(set (get (get operators 'lua) "=") "==")
-(set (get (get operators 'lua) "<=") "<=")
-(set (get (get operators 'lua) ">=") ">=")
 (set (get (get operators 'lua) "and") " and ")
 (set (get (get operators 'lua) "or") " or ")
 (set (get (get operators 'lua) "cat") "..")
 
 (function get-op (op)
-  (return (get (get operators current-target) op)))
+  (return (or (get (get operators 'common) op)
+	      (get (get operators current-target) op))))
 
 (set macros {})
 (set special {})
