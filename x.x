@@ -2,7 +2,6 @@
 
 ;;; TODO
 ;;   Factor out common operators
-;;   Eliminate the term 'array' in favour of 'list'
 ;;   Implement UNQUOTE-SPLICING
 ;;   Add argument list support to macros
 ;;   Add basic iteration functions/macros
@@ -61,7 +60,7 @@
 	       (set j (+ j 1)))
 	     (return x2)))))))
 
-;; arrays
+;; lists
 
 (function push (arr x)
   (set (at arr (length arr)) x))
@@ -128,7 +127,7 @@
 
 (function table? (x)
   (return (and (composite? x) (= (at x 0) nil))))
-(function array? (x)
+(function list? (x)
   (return (and (composite? x) (not (= (at x 0) nil)))))
 
 ;; numbers
@@ -592,7 +591,7 @@
   (assert-equal 2 (length (cat "\"" "\"")))
   (assert-equal 'a "a")
   (assert-equal 'a (quote a))
-  ;; arrays
+  ;; lists
   (assert-equal '() (list))
   (assert-equal '(1) (list 1))
   (assert-equal '(a) (list 'a))
