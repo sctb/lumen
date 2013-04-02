@@ -567,8 +567,38 @@
 
 (function run-tests ()
   (print " running tests...")
-  ;; atoms
-  (assert-equal 17 17)
+  ;; numbers
+  (assert-equal 18 18.00)
+  (assert-equal 123 1.23e2)
+  (assert-equal 0.123 123e-3)
+  (assert-equal 17 (+ 16 1))
+  (assert-equal 4 (- 7 3))
+  (assert-equal 5.0 (/ 10 2))
+  (assert-equal 6 (* 2 3.00))
+  ;; booleans
+  (assert-equal true (not false))
+  (assert-equal true (or true false))
+  (assert-equal false (and true false))
+  (assert-equal 17 (? true 17 18))
+  (assert-equal 18 (? false 17 18))
+  ;; strings
+  (assert-equal "foo" "foo")
+  (assert-equal "\"bar\"" "\"bar\"")
+  (assert-equal 1 (length "\""))
+  (assert-equal 2 (length "a\""))
+  (assert-equal "foobar" (cat "foo" "bar"))
+  (assert-equal 2 (length (cat "\"" "\"")))
+  (assert-equal 'a "a")
+  (assert-equal 'a (quote a))
+  ;; arrays
+  (assert-equal '() (list))
+  (assert-equal '(1) (list 1))
+  (assert-equal '(a) (list 'a))
+  (assert-equal '(a) (list "a"))
+  (assert-equal false (= '(a) '("a")))
+  (assert-equal 5 (length '(1 2 3 4 5)))
+  (assert-equal 3 (length '(1 (2 3 4) 5)))
+  (assert-equal 3 (length (at '(1 (2 3 4) 5) 1)))
   (print (cat " " passed " passed")))
 
 
