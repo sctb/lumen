@@ -601,6 +601,9 @@
   (assert-equal 5 (length '(1 2 3 4 5)))
   (assert-equal 3 (length '(1 (2 3 4) 5)))
   (assert-equal 3 (length (at '(1 (2 3 4) 5) 1)))
+  (local a 'bar)
+  (assert-equal '(1 2 bar) '(1 2 ,a))
+  (assert-equal '(a (2 3 7 "b")) '(a ,(list 2 3 7 "b")))
   (print (cat " " passed " passed")))
 
 
