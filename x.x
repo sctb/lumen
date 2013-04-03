@@ -1,6 +1,7 @@
 ;; -*- mode: lisp -*-
 
 ;;; TODO
+;;   Investigate assignment as an expression
 ;;   Implement UNQUOTE-SPLICING
 ;;   Add argument list support to macros
 ;;   Add basic iteration functions/macros
