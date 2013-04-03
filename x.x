@@ -597,6 +597,8 @@
   (local a 'bar)
   (assert-equal '(1 2 bar) '(1 2 ,a))
   (assert-equal '(a (2 3 7 "b")) '(a ,(list 2 3 7 "b")))
+  (assert-equal '(1 2 3) (join '(1) '(2 3)))
+  (assert-equal '(1 2 3 4) (join '(1) (join '(2) '(3 4))))
   (print (cat " " passed " passed")))
 
 
