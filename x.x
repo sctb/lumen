@@ -1,6 +1,7 @@
 ;; -*- mode: lisp -*-
 
 ;;; TODO
+;;   Make macro definitions a special form
 ;;   Replace STMT? with a property on the form
 ;;   Implement UNQUOTE-SPLICING
 ;;   Add argument list support to macros
