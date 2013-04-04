@@ -1,6 +1,7 @@
 ;; -*- mode: lisp -*-
 
 ;;; TODO
+;;   Push error handling in COMPILE-OPERATOR
 ;;   Make macro definitions a special form
 ;;   Replace STMT? with a property on the form
 ;;   Implement UNQUOTE-SPLICING
