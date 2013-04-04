@@ -1,10 +1,11 @@
 ;; -*- mode: lisp -*-
 
 ;;; TODO
-;;   Investigate assignment as an expression
+;;   Replace STMT? with a property on the form
 ;;   Implement UNQUOTE-SPLICING
 ;;   Add argument list support to macros
 ;;   Add basic iteration functions/macros
+;;   Implicit return (using a TAIL? property)
 
 
 ;;; library
