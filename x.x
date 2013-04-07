@@ -1,8 +1,6 @@
 ;; -*- mode: lisp -*-
 
 ;;; TODO
-;;   Push error handling in COMPILE-OPERATOR
-;;   Make macro definitions a special form
 ;;   Replace STMT? with a property on the form
 ;;   Implement UNQUOTE-SPLICING
 ;;   Add argument list support to macros
@@ -360,7 +358,8 @@
   (local args (compile-args (sub form 1)))
   (return (cat fn args (terminator stmt?))))
 
-(function compile-operator (form)
+(function compile-operator (form stmt?)
+  (if (stmt? (error "Cannot compile operator application as a statement")))
   (local i 1)
   (local str "(")
   (local op (get-op (at form 0)))
@@ -506,7 +505,8 @@
   (local register
     '(set (get macros ,(compile-to-string name)) ,name))
   (eval (compile register true))
-  (set current-target tmp))
+  (set current-target tmp)
+  (return ""))
 
 (set (get special "do") compile-do)
 (set (get special "set") compile-set)
@@ -515,6 +515,7 @@
 (set (get special "not") compile-not)
 (set (get special "if") compile-if)
 (set (get special "function") compile-function)
+(set (get special "macro") compile-macro)
 (set (get special "local") compile-local)
 (set (get special "while") compile-while)
 (set (get special "list") compile-list)
@@ -524,13 +525,8 @@
   (if ((= form nil) (return ""))
       ((atom? form) (return (compile-atom form stmt?)))
       ((call? form)
-       (if ((and (operator? form) stmt?)
-            (error (cat "Cannot compile operator application as a statement")))
-           ((operator? form)
-            (return (compile-operator form)))
-	   ((macro-definition? form)
-	    (compile-macro (sub form 1) stmt?)
-	    (return ""))
+       (if ((operator? form)
+            (return (compile-operator form stmt?)))
            ((special? form)
             (local fn (get special (at form 0)))
             (return (fn (sub form 1) stmt?)))
