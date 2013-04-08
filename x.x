@@ -487,6 +487,9 @@
 	 (set i (+ i 1)))))
   (return (cat open str close)))
 
+(macro unquote () (error "UNQUOTE not inside QUOTE"))
+(macro unquote-splicing () (error "UNQUOTE-SPLICING not inside QUOTE"))
+
 (function compile-to-string (form)
   (if ((and (string? form) (= (char form 0) "\""))
        (return form))
