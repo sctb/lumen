@@ -2,7 +2,6 @@
 
 ;;; TODO
 ;;   Replace STMT? with a property on the form
-;;   Implement UNQUOTE-SPLICING
 ;;   Add argument list support to macros
 ;;   Add basic iteration functions/macros
 ;;   Implicit return (using a TAIL? property)
@@ -249,7 +248,10 @@
 
 (function read-unquote (s)
   (read-char s) ; ,
-  (return (list "unquote" (read s))))
+  (if ((= (peek-char s) "@")
+       (read-char s) ; @
+       (return (list "unquote-splicing" (read s))))
+      (true (return (list "unquote" (read s))))))
 
 (function read (s)
   (skip-non-code s)
@@ -608,7 +610,10 @@
   (assert-equal '(1 2 3) (join '(1) '(2 3)))
   (assert-equal '(1 2 3 4) (join '(1) (join '(2) '(3 4))))
   (set a '(2 3))
-  (assert-equal '(1 2 3 4) '(1 (unquote-splicing a) 4))
+  (assert-equal '(1 2 3 4) '(1 ,@a 4))
+  (assert-equal '(1 2 3 4) '(1 ,@(list 2 3) 4))
+  (assert-equal '(1 2 3) '(1 ,@a))
+  (assert-equal '(2 3) '(,@a))
   (print (cat " " passed " passed")))
 
 
