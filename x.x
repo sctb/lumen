@@ -467,14 +467,23 @@
   (if (stmt?
        (error "Cannot compile LIST as a statement")))
   (local i 0)
-  (local str (? (= current-target 'lua) "{" "["))
+  (local open (? (= current-target 'lua) "{" "["))
+  (local close (? (= current-target 'lua) "}" "]"))
+  (local str "")
   (while (< i (length forms))
     (local x (at forms i))
-    (local x1 (? quoted? (quote-form x) (compile x false)))
-    (set str (cat str x1))
-    (if ((< i (- (length forms) 1)) (set str (cat str ","))))
-    (set i (+ i 1)))
-  (return (cat str (? (= current-target 'lua) "}" "]"))))
+    (if ((and (list? x) (= (at x 0) "unquote-splicing"))
+	 (local x1 (compile (at x 1) false))
+	 (local x2 (compile-list (sub forms (+ i 1)) false true))
+	 (set open (cat "join(" open))
+	 (set close (cat close ",join(" x1 "," x2 "))"))
+	 break)
+	(true
+	 (local x1 (? quoted? (quote-form x) (compile x false)))
+	 (set str (cat str x1))
+	 (if ((< i (- (length forms) 1)) (set str (cat str ","))))
+	 (set i (+ i 1)))))
+  (return (cat open str close)))
 
 (function compile-to-string (form)
   (if ((and (string? form) (= (char form 0) "\""))
@@ -598,6 +607,8 @@
   (assert-equal '(a (2 3 7 "b")) '(a ,(list 2 3 7 "b")))
   (assert-equal '(1 2 3) (join '(1) '(2 3)))
   (assert-equal '(1 2 3 4) (join '(1) (join '(2) '(3 4))))
+  (set a '(2 3))
+  (assert-equal '(1 2 3 4) '(1 (unquote-splicing a) 4))
   (print (cat " " passed " passed")))
 
 
