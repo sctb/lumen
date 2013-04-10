@@ -2,7 +2,7 @@
 
 ;;; TODO
 ;;   Replace STMT? with a property on the form
-;;   Add argument list support to macros
+;;   Add argument list support to macros (need APPLY)
 ;;   Add basic iteration functions/macros
 ;;   Implicit return (using a TAIL? property)
 
