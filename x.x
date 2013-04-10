@@ -4,6 +4,7 @@
 ;;   Replace STMT? with a property on the form
 ;;   Add argument list support to macros (need APPLY)
 ;;   Add basic iteration functions/macros
+;;   REPL
 ;;   Implicit return (using a TAIL? property)
 
 
