@@ -36,6 +36,9 @@
 	 (return (at (at args i) 1))))
     (set i (+ i 1))))
 
+(set current-language
+  (target (js 'js) (lua 'lua)))
+
 ;; sequences
 
 (function length (x)
@@ -164,9 +167,6 @@
  (lua (function eval (x)
         (local f (loadstring x))
 	(return (f)))))
-
-(set current-language
-  (target (js 'js) (lua 'lua)))
 
 
 ;;; reader
