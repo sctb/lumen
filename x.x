@@ -169,6 +169,9 @@
         (local f (loadstring x))
 	(return (f)))))
 
+(function apply (f args)
+  (return (target (js (f.apply f args)) (lua (f (unpack args))))))
+
 
 ;;; reader
 
@@ -618,6 +621,9 @@
   (assert-equal '(1 2 3 4) '(1 ,@(list 2 3) 4))
   (assert-equal '(1 2 3) '(1 ,@a))
   (assert-equal '(2 3) '(,@a))
+  ;; apply
+  (assert-equal '(2 3) (apply join '((2) (3))))
+  (apply assert-equal (list 4 4))
   (print (cat " " passed " passed")))
 
 
