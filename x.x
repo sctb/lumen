@@ -319,10 +319,12 @@
 (function terminator (stmt?)
   (return (? stmt? ";" "")))
 
-(function compile-args (forms)
+(function compile-args (forms compile?)
   (local i 0)
   (local str "(")
   (while (< i (length forms))
+    (local x (at forms i))
+    (local x1 (? compile? (compile x false) (normalize x)))
     (set str (cat str (compile (at forms i) false)))
     (if ((< i (- (length forms) 1)) (set str (cat str ","))))
     (set i (+ i 1)))
@@ -361,7 +363,7 @@
 
 (function compile-call (form stmt?)
   (local fn (compile (at form 0) false))
-  (local args (compile-args (sub form 1)))
+  (local args (compile-args (sub form 1) true))
   (return (cat fn args (terminator stmt?))))
 
 (function compile-operator (form stmt?)
