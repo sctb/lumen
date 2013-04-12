@@ -172,6 +172,12 @@
 (function apply (f args)
   (return (target (js (f.apply f args)) (lua (f (unpack args))))))
 
+(set unique-counter 0)
+
+(function make-unique (prefix)
+  (set unique-counter (+ unique-counter 1))
+  (return (cat "_" (or prefix "") unique-counter)))
+
 
 ;;; reader
 
