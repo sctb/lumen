@@ -659,6 +659,7 @@
 ;;; repl
 
 (function repl ()
+  (set current-target current-language)
   (local execute
     (function (str)
       (local form (read-from-string str))
