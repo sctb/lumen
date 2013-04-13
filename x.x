@@ -2,7 +2,6 @@
 
 ;;; TODO
 ;;   Replace STMT? with a property on the form
-;;   REPL
 ;;   Implicit return (using a TAIL? property)
 ;;   Add argument list support to macros (need APPLY and varargs)
 ;;   Add basic iteration functions/macros
@@ -100,17 +99,17 @@
 
 ;; io
 
-(target (js (set fs (require "fs"))))
+(target (js (set fs (require 'fs))))
 
 (function read-file (filename)
   (target
-    (js (return (fs.readFileSync filename "utf8")))
+    (js (return (fs.readFileSync filename 'utf8)))
     (lua (do (local f (io.open filename))
 	     (return (f:read "*a"))))))
 
 (function write-file (filename data)
   (target
-    (js (fs.writeFileSync filename data "utf8"))
+    (js (fs.writeFileSync filename data 'utf8))
     (lua (do (local f (io.open filename "w"))
 	     (f:write data)))))
 
@@ -166,8 +165,8 @@
 
 (target
  (lua (function eval (x)
-        (local f (loadstring x))
-	(return (f)))))
+        (local f (load x))
+	(if (f (return (f)))))))
 
 (function apply (f args)
   (return (target (js (f.apply f args)) (lua (f (unpack args))))))
@@ -181,16 +180,19 @@
 
 ;;; reader
 
+(set eof {})
+
 (set delimiters {})
-(set (get delimiters "(") true) (set (get delimiters ")") true)
-(set (get delimiters ";") true) (set (get delimiters "\n") true)
+(set (get delimiters "(") true)
+(set (get delimiters ")") true)
+(set (get delimiters ";") true)
+(set (get delimiters eof) true)
+(set (get delimiters "\n") true)
 
 (set whitespace {})
 (set (get whitespace " ") true)
 (set (get whitespace "\t") true)
 (set (get whitespace "\n") true)
-
-(set eof {})
 
 (function make-stream (str)
   (local s {})
@@ -273,6 +275,9 @@
       ((= c "'") (return (read-quote s)))
       ((= c ",") (return (read-unquote s)))
       (true (return (read-atom s)))))
+
+(function read-from-string (str)
+  (return (read (make-stream str))))
 
 
 ;;; compiler
@@ -650,15 +655,34 @@
   (print (cat " " passed " passed")))
 
 
+;;; repl
+
+(function repl ()
+  (local execute
+    (function (str)
+      (local form (read-from-string str))
+      (set form '(print (to-string ,form)))
+      (return (eval (compile form)))))
+  (target
+   (js (do (process.stdin.resume)
+	   (process.stdin.setEncoding 'utf8)
+	   (process.stdin.on 'data execute)))
+   (lua (while true
+	  (local str (io.stdin:read))
+	  (if (str (execute str))
+	      (true break))))))
+
+
 ;;; command-line
 
 (function usage ()
-  (print "usage: x [<input> | -t] [-o <output>] [-l <language>]")
+  (print "usage: x [<input> | -i | -t] [-o <output>] [-l <language>]")
   (exit))
 
 (set args (target (js (sub process.argv 2)) (lua arg)))
 
 (if ((< (length args) 1) (usage))
+    ((= (at args 0) "-i") (repl))
     ((= (at args 0) "-t") (run-tests))
     (true
      (local input (at args 0))
