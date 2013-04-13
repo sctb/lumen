@@ -1,6 +1,7 @@
 ;; -*- mode: lisp -*-
 
 ;;; TODO
+;;   Fix quoted strings
 ;;   Replace STMT? with a property on the form
 ;;   Implicit return (using a TAIL? property)
 ;;   Add argument list support to macros (need APPLY and varargs)
