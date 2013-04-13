@@ -1,7 +1,6 @@
 ;; -*- mode: lisp -*-
 
 ;;; TODO
-;;   Fix quoted strings
 ;;   Replace STMT? with a property on the form
 ;;   Implicit return (using a TAIL? property)
 ;;   Add argument list support to macros (need APPLY and varargs)
@@ -522,7 +521,8 @@
 
 (function compile-to-string (form)
   (if ((and (string? form) (= (char form 0) "\""))
-       (return form))
+       (local str (sub form 1 (- (length form) 1)))
+       (return (cat "\"\\\"" str "\\\"\"")))
       ((string? form) (return (cat "\"" form "\"")))
       (true (return (to-string form)))))
 
@@ -639,7 +639,9 @@
   (assert-equal 3 (length (at '(1 (2 3 4) 5) 1)))
   (local a 'bar)
   (assert-equal '(1 2 bar) '(1 2 ,a))
-  (assert-equal '(a (2 3 7 "b")) '(a ,(list 2 3 7 "b")))
+  (assert-equal false (= '"a" "a"))
+  (assert-equal false (= (list "a") '("a")))
+  (assert-equal '(a (2 3 7 b)) '(a ,(list 2 3 7 'b)))
   (assert-equal '(1 2 3) (join '(1) '(2 3)))
   (assert-equal '(1 2 3 4) (join '(1) (join '(2) '(3 4))))
   (set a '(2 3))
