@@ -430,11 +430,23 @@
   (return str))
 
 (function compile-function (form stmt?)
-  (local name (compile (at form 0)))
-  (local args (compile-args (at form 1)))
-  (local body (compile-body (sub form 2)))
-  (local tr (? (= current-target 'lua) " end " ""))
-  (return (cat "function " name args body tr)))
+  (local i 0)
+  (local name "")
+  (local anon? true)
+  (if ((string? (at form 0))
+       (set i 1)
+       (set anon? false)
+       (set name (normalize (at form 0)))))
+  (if ((and stmt? anon?)
+       (error "Cannot compile anonymous function as a statement"))
+      ((and (not anon?) (not stmt?))
+       (error "Cannot compile named function as an expression")))
+  (local args (compile-args (at form i)))
+  (local body (compile-body (sub form (+ i 1))))
+  (return (cat (? anon? "(" "")
+	       "function " name args body
+	       (? (= current-target 'lua) " end " "")
+	       (? anon? ")" ""))))
 
 (function compile-get (form stmt?)
   (local object (compile (at form 0) false))
@@ -632,6 +644,9 @@
   ;; apply
   (assert-equal '(2 3) (apply join '((2) (3))))
   (apply assert-equal (list 4 4))
+  ;; functions
+  (local f (function (x) (return (+ x 1))))
+  (assert-equal 2 (f 1))
   (print (cat " " passed " passed")))
 
 
