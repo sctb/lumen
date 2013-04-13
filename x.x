@@ -665,7 +665,7 @@
   (local execute
     (function (str)
       (local form (read-from-string str))
-      (set form '(print (to-string ,form)))
+      (set form '(print (cat "=> " (to-string ,form))))
       (return (eval (compile form)))))
   (target
    (js (do (process.stdin.resume)
