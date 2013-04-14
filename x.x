@@ -423,16 +423,40 @@
     (set i (+ i 1)))
   (return str))
 
+(function expand-function (args body)
+  (local i 0)
+  (while (< i (length args))
+    (if ((= (at args i) '...)
+	 (set args (sub args 0 i))
+	 (local name (make-unique))
+	 (local expr '(list ...))
+	 (if ((= current-target 'js)
+	      (set expr '(Array.prototype.slice.call arguments ,i)))
+	     (true (push args '...)))
+	 (process-body body name)
+	 (set body (join '((local ,name ,expr)) body))
+	 break))
+    (set i (+ i 1)))
+  (return (list args body)))
+
+(function process-body (body vararg)	; destructive
+  (local i 0)
+  (while (< i (length body))
+    (local form (at body i))
+    (if ((= form '...) (set (at body i) vararg))
+	((list? form) (process-body form vararg)))
+    (set i (+ i 1))))
+
 (function compile-function (form)
   (local i 0)
   (local name "")
-  (local anon? true)
   (if ((string? (at form 0))
        (set i 1)
-       (set anon? false)
        (set name (normalize (at form 0)))))
-  (local args (compile-args (at form i)))
-  (local body (compile-body (sub form (+ i 1))))
+  (local expanded
+    (expand-function (at form i) (sub form (+ i 1))))
+  (local args (compile-args (at expanded 0)))
+  (local body (compile-body (at expanded 1)))
   (local tr (? (= current-target 'lua) " end " ""))
   (return (cat "function " name args body tr)))
 
@@ -522,7 +546,7 @@
   (set current-target tmp)
   (return ""))
 
-(set self-terminating {}) ; TODO fold into SPECIAL
+(set self-terminating {}) 		; merge with SPECIAL
 (set (get self-terminating "do") true)
 (set (get self-terminating "if") true)
 (set (get self-terminating "function") true)
@@ -640,6 +664,7 @@
   (local f (function (x) (return (+ x 1))))
   (assert-equal 2 (f 1))
   (assert-equal 3 (apply (function (a b) (return (+ a b))) '(1 2)))
+  (assert-equal '(1 2) (apply (function (...) (return ...)) '(1 2)))
   (print (cat " " passed " passed")))
 
 
