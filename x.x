@@ -448,10 +448,8 @@
        (error "Cannot compile named function as an expression")))
   (local args (compile-args (at form i)))
   (local body (compile-body (sub form (+ i 1))))
-  (return (cat (? anon? "(" "")
-	       "function " name args body
-	       (? (= current-target 'lua) " end " "")
-	       (? anon? ")" ""))))
+  (local tr (? (= current-target 'lua) " end " ""))
+  (return (cat "function " name args body tr)))
 
 (function compile-get (form stmt?)
   (local object (compile (at form 0) false))
