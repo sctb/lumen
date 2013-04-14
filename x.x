@@ -332,7 +332,7 @@
   (while (< i (length forms))
     (local x (at forms i))
     (local x1 (? compile? (compile x) (normalize x)))
-    (set str (cat str (compile (at forms i))))
+    (set str (cat str x1))
     (if ((< i (- (length forms) 1)) (set str (cat str ","))))
     (set i (+ i 1)))
   (return (cat str ")")))
