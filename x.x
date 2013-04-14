@@ -2,7 +2,6 @@
 
 ;;; TODO
 ;;   Implicit return
-;;   Add argument list support to macros (need APPLY and varargs)
 ;;   Add basic iteration functions/macros
 
 
@@ -10,29 +9,24 @@
 
 ;; macros
 
-(macro at (args)
-  (local arr (get args 0))
-  (local i (get args 1))
-  (if ((= current-language 'lua)
-       (set arr (get args 1))
-       (set i (get args 2))))
+(macro at (arr i)
   (if ((and (= current-target 'lua) (number? i))
        (set i (+ i 1)))
       ((= current-target 'lua) (set i '(+ ,i 1))))
   (return '(get ,arr ,i)))
 
-(macro ? (args)
-  (return '(or (and ,(at args 0) ,(at args 1)) ,(at args 2))))
+(macro ? (a b c)
+  (return '(or (and ,a ,b) ,c)))
 
 ;; languages
 
 (set current-target 'js)
 
-(macro target (args)
+(macro target (...)
   (local i 0)
-  (while (< i (length args))
-    (if ((= (at (at args i) 0) current-target)
-	 (return (at (at args i) 1))))
+  (while (< i (length ...))
+    (if ((= (at (at ... i) 0) current-target)
+	 (return (at (at ... i) 1))))
     (set i (+ i 1))))
 
 (set current-language
@@ -584,7 +578,7 @@
 	    (return (compile-special form stmt?)))
 	   ((macro-call? form)
 	    (local fn (get macros (at form 0)))
-	    (local form (fn (sub form 1)))
+	    (local form (apply fn (sub form 1)))
 	    (return (compile form stmt?)))
            (true (return (cat (compile-call form) delim)))))
       (true (error (cat "Unexpected form: " (to-string form))))))
