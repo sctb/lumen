@@ -655,6 +655,7 @@
   ;; functions
   (local f (function (x) (return (+ x 1))))
   (assert-equal 2 (f 1))
+  (assert-equal 3 (apply (function (a b) (return (+ a b))) '(1 2)))
   (print (cat " " passed " passed")))
 
 
