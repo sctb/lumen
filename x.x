@@ -2,6 +2,7 @@
 
 ;;; TODO
 ;;   WRITE
+;;   Additional vararg tests
 ;;   Implicit return
 ;;   Add basic iteration functions/macros
 
