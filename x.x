@@ -1,6 +1,7 @@
 ;; -*- mode: lisp -*-
 
 ;;; TODO
+;;   WRITE
 ;;   Implicit return
 ;;   Add basic iteration functions/macros
 
