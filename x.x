@@ -143,7 +143,7 @@
       ((boolean? x) (return (? x "true" "false")))
       ((atom? x) (return (cat x "")))
       (true
-       (local str "[")
+       (local str "(")
        (local i 0)
        (while (< i (length x))
 	 (local y (at x i))
@@ -151,7 +151,7 @@
 	 (if ((< i (- (length x) 1))
 	      (set str (cat str " "))))
 	 (set i (+ i 1)))
-       (return (cat str  "]")))))
+       (return (cat str  ")")))))
 
 ;; misc
 
@@ -664,9 +664,9 @@
   (print (cat " " passed " passed")))
 
 
-;;; repl
+;;; interactive
 
-(function repl ()
+(function interactive ()
   (set current-target current-language)
   (local execute
     (function (str)
@@ -692,7 +692,7 @@
 (set args (target (js (sub process.argv 2)) (lua arg)))
 
 (if ((< (length args) 1) (usage))
-    ((= (at args 0) "-i") (repl))
+    ((= (at args 0) "-i") (interactive))
     ((= (at args 0) "-t") (run-tests))
     (true
      (local input (at args 0))
