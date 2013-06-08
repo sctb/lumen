@@ -519,6 +519,18 @@
 	 (set i (+ i 1)))))
   (return (cat open str close)))
 
+(function compile-table (forms)		; ignore quoted? for now
+  (local i 0)
+  (local sep (? (= current-target 'lua) "=" ":"))
+  (local str "{")
+  (while (< i (- (length forms) 1))
+    (local k (compile (at forms i)))
+    (local v (compile (at forms (+ i 1))))
+    (set str (cat str k sep v))
+    (if ((< i (- (length forms) 2)) (set str (cat str ","))))
+    (set i (+ i 2)))
+  (return (cat str "}")))
+
 (macro unquote () (error "UNQUOTE not inside QUOTE"))
 (macro unquote-splicing () (error "UNQUOTE-SPLICING not inside QUOTE"))
 
@@ -576,6 +588,7 @@
 (set (get special "local") compile-local)
 (set (get special "while") compile-while)
 (set (get special "list") compile-list)
+(set (get special "table") compile-table)
 (set (get special "quote") compile-quote)
 
 (function compile (form stmt?)
@@ -670,6 +683,13 @@
   (assert-equal 2 (f 1))
   (assert-equal 3 (apply (function (a b) (return (+ a b))) '(1 2)))
   (assert-equal '(1 2) (apply (function (...) (return ...)) '(1 2)))
+  ;; tables
+  (assert-equal (table) {})
+  (local t {})
+  (set (get t 'foo) 17)
+  (assert-equal (table foo 17) t)
+  (set (get t 'bar) 42)
+  (assert-equal (table foo 17 bar 42) t)
   (print (cat " " passed " passed")))
 
 
