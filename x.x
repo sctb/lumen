@@ -51,7 +51,7 @@
 	 (do (set upto (or upto (length x)))
 	     (local i from)
 	     (local j 0)
-	     (local x2 [])
+	     (local x2 '())
 	     (while (< i upto)
 	       (set (at x2 j) (at x i))
 	       (set i (+ i 1))
@@ -67,7 +67,7 @@
   (target
     (js (return (a1.concat a2)))
     (lua
-     (do (local a3 [])
+     (do (local a3 '())
 	 (local i 0)
 	 (local len (length a1))
 	 (while (< i len)
@@ -185,22 +185,22 @@
 
 ;;; reader
 
-(set eof {})
+(set eof (table))
 
-(set delimiters {})
+(set delimiters (table))
 (set (get delimiters "(") true)
 (set (get delimiters ")") true)
 (set (get delimiters ";") true)
 (set (get delimiters eof) true)
 (set (get delimiters "\n") true)
 
-(set whitespace {})
+(set whitespace (table))
 (set (get whitespace " ") true)
 (set (get whitespace "\t") true)
 (set (get whitespace "\n") true)
 
 (function make-stream (str)
-  (local s {})
+  (local s (table))
   (set s.pos 0)
   (set s.string str)
   (set s.length (length str))
@@ -238,7 +238,7 @@
 
 (function read-list (s)
   (read-char s) ; (
-  (local l [])
+  (local l '())
   (while true
     (skip-non-code s)
     (local c (peek-char s))
@@ -287,9 +287,9 @@
 
 ;;; compiler
 
-(set operators {})
+(set operators (table))
 
-(set (get operators 'common) {})
+(set (get operators 'common) (table))
 (set (get (get operators 'common) "+") "+")
 (set (get (get operators 'common) "-") "-")
 (set (get (get operators 'common) "*") "*")
@@ -300,12 +300,12 @@
 (set (get (get operators 'common) "<=") "<=")
 (set (get (get operators 'common) ">=") ">=")
 
-(set (get operators 'js) {})
+(set (get operators 'js) (table))
 (set (get (get operators 'js) "and") "&&")
 (set (get (get operators 'js) "or") "||")
 (set (get (get operators 'js) "cat") "+")
 
-(set (get operators 'lua) {})
+(set (get operators 'lua) (table))
 (set (get (get operators 'lua) "and") " and ")
 (set (get (get operators 'lua) "or") " or ")
 (set (get (get operators 'lua) "cat") "..")
@@ -314,8 +314,8 @@
   (return (or (get (get operators 'common) op)
 	      (get (get operators current-target) op))))
 
-(set macros {})
-(set special {})
+(set macros (table))
+(set special (table))
 
 (function call? (form)
   (return (string? (at form 0))))
@@ -366,9 +366,7 @@
   (return id2))
 
 (function compile-atom (form)
-  (if ((= form "[]")
-       (return (? (= current-target 'lua) "{}" "[]")))
-      ((= form "nil")
+  (if ((= form "nil")
        (return (? (= current-target 'js) "undefined" "nil")))
       ((and (string? form) (not (= (char form 0) "\"")))
        (return (normalize form)))
@@ -578,7 +576,7 @@
   (set current-target tmp)
   (return ""))
 
-(set self-terminating {}) 		; merge with SPECIAL
+(set self-terminating (table)) 		; merge with SPECIAL
 (set (get self-terminating "do") true)
 (set (get self-terminating "if") true)
 (set (get self-terminating "function") true)
@@ -700,8 +698,7 @@
   (assert-equal 3 (apply (function (a b) (return (+ a b))) '(1 2)))
   (assert-equal '(1 2) (apply (function (...) (return ...)) '(1 2)))
   ;; tables
-  (assert-equal (table) {})
-  (local t {})
+  (local t (table))
   (set (get t 'foo) 17)
   (assert-equal (table foo 17) t)
   (set (get t 'bar) 42)
