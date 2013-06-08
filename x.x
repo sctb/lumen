@@ -158,11 +158,6 @@
 (target (js (function error (msg) (throw msg))))
 (target (js (function type (x) (return (typeof x)))))
 
-(target
- (lua (function eval (x)
-        (local f (load x))
-	(if (f (return (f)))))))
-
 (function apply (f args)
   (return (target (js (f.apply f args)) (lua (f (unpack args))))))
 
@@ -171,6 +166,21 @@
 (function make-unique (prefix)
   (set unique-counter (+ unique-counter 1))
   (return (cat "_" (or prefix "") unique-counter)))
+
+(set eval-result nil)
+
+(target
+ (lua (function eval (x)
+        (local f (load x))
+	(if (f (return (f)))
+	    ;; lua does not allow expressions to be evaluated at the
+	    ;; top-level
+	    (true (set x (cat "eval_result=" x))
+		  (set f (load x))
+		  (if (f (f)
+			 (local ret eval-result)
+			 (set eval-result nil)
+			 (return ret))))))))
 
 
 ;;; reader
@@ -671,8 +681,8 @@
   (local execute
     (function (str)
       (local form (read-from-string str))
-      (set form '(print (cat "=> " (to-string ,form))))
-      (return (eval (compile form)))))
+      (local result (eval (compile form)))
+      (print (cat "=> " (to-string result)))))
   (target
    (js (do (process.stdin.resume)
 	   (process.stdin.setEncoding 'utf8)
