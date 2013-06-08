@@ -1,8 +1,6 @@
 ;; -*- mode: lisp -*-
 
 ;;; TODO
-;;   Clean up empty composite literals
-;;   Additional vararg tests
 ;;   Implicit return
 ;;   Add basic iteration functions/macros
 
