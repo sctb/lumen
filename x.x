@@ -15,6 +15,20 @@
       ((= current-target 'lua) (set i '(+ ,i 1))))
   (return '(get ,arr ,i)))
 
+(macro across (args ...)
+  (local l (at args 0))
+  (local v (at args 1))
+  (local i (or (at args 2) (make-unique)))
+  (local l1 (make-unique))
+  (return
+   '(do
+      (local ,i 0)
+      (local ,l1 ,l)
+      (while (< ,i (length ,l1))
+	(local ,v (at ,l1 ,i))
+	,@...
+	(set ,i (+ ,i 1))))))
+
 (macro ? (a b c)
   (return '(or (and ,a ,b) ,c)))
 
@@ -705,6 +719,15 @@
   (assert-equal (table foo 17 bar 42) t)
   ;; iteration
   (local x 0)
+  (local l '(1 2 3 4 5))
+  (across (l v)
+    (set x (+ x v)))
+  (assert-equal x 15)
+  (local l2 '())
+  (across (l v i)
+    (set (at l2 i) v))
+  (assert-equal l l2)
+  (set x 0)
   (set t (table foo 10 bar 100))
   (each (t k v)
     (if ((= k 'foo) (set x (+ x v 1)))
