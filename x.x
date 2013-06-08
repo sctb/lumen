@@ -520,7 +520,7 @@
 	 (set i (+ i 1)))))
   (return (cat open str close)))
 
-(function compile-table (forms)		; ignore quoted? for now
+(function compile-table (forms)
   (local i 0)
   (local sep (? (= current-target 'lua) "=" ":"))
   (local str "{")
@@ -531,6 +531,20 @@
     (if ((< i (- (length forms) 2)) (set str (cat str ","))))
     (set i (+ i 2)))
   (return (cat str "}")))
+
+(function compile-each (forms)
+  (local args (at forms 0))
+  (local t (at args 0))
+  (local k (at args 1))
+  (local v (at args 2))
+  (local body (sub forms 1))
+  (if ((= current-target 'lua)
+       (local body1 (compile-body body))
+       (local t1 (compile t))
+       (return (cat "for " k "," v " in pairs(" t1 ") do " body1 " end")))
+      (true
+       (local body1 (compile-body '((set ,v (get ,t ,k)) ,@body)))
+       (return (cat "for(" k " in " t ")" body1)))))
 
 (macro unquote () (error "UNQUOTE not inside QUOTE"))
 (macro unquote-splicing () (error "UNQUOTE-SPLICING not inside QUOTE"))
@@ -590,6 +604,7 @@
 (set (get special "while") compile-while)
 (set (get special "list") compile-list)
 (set (get special "table") compile-table)
+(set (get special "each") compile-each)
 (set (get special "quote") compile-quote)
 
 (function compile (form stmt?)
@@ -691,6 +706,13 @@
   (assert-equal (table foo 17) t)
   (set (get t 'bar) 42)
   (assert-equal (table foo 17 bar 42) t)
+  ;; iteration
+  (local x 0)
+  (set t (table foo 10 bar 100))
+  (each (t k v)
+    (if ((= k 'foo) (set x (+ x v 1)))
+	(true (set x (+ x v 10)))))
+  (assert-equal x 121)
   (print (cat " " passed " passed")))
 
 
