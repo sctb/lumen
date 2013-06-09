@@ -685,6 +685,8 @@
   (assert-equal '(1 2) (apply (function (...) (return ...)) '(1 2)))
   (assert-equal '((1 2)) (apply (function (...) (return '(,...))) '(1 2)))
   (assert-equal '(1 2) (apply (function (...) (return '(,@...))) '(1 2)))
+  (set f (function (...) (return ...)))
+  (assert-equal '(a b) (f 'a 'b))
   ;; tables
   (local t (table))
   (set (get t 'foo) 17)
