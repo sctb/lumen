@@ -1,9 +1,5 @@
 ;; -*- mode: lisp -*-
 
-;;; TODO
-;;   Implicit return
-;;   Argument list destructuring
-
 
 ;;; library
 
@@ -183,12 +179,10 @@
 	(if (f (return (f)))
 	    ;; lua does not allow expressions to be evaluated at the
 	    ;; top-level
-	    (true (set x (cat "eval_result=" x))
-		  (set f (load x))
-		  (if (f (f)
-			 (local ret eval-result)
-			 (set eval-result nil)
-			 (return ret))))))))
+	    (true
+	     (set x (cat "eval_result=" x))
+	     (set f (load x))
+	     (if (f (f) (return eval-result))))))))
 
 
 ;;; reader
