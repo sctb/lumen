@@ -2,7 +2,7 @@
 
 ;;; TODO
 ;;   Implicit return
-;;   Add basic iteration functions/macros
+;;   Argument list destructuring
 
 
 ;;; library
@@ -19,10 +19,11 @@
   (local l (at args 0))
   (local v (at args 1))
   (local i (or (at args 2) (make-unique)))
+  (local o (or (at args 3) 0))
   (local l1 (make-unique))
   (return
    '(do
-      (local ,i 0)
+      (local ,i ,o)
       (local ,l1 ,l)
       (while (< ,i (length ,l1))
 	(local ,v (at ,l1 ,i))
@@ -37,11 +38,9 @@
 (set current-target 'js)
 
 (macro target (...)
-  (local i 0)
-  (while (< i (length ...))
-    (if ((= (at (at ... i) 0) current-target)
-	 (return (at (at ... i) 1))))
-    (set i (+ i 1))))
+  (across (... clause)
+    (if ((= (at clause 0) current-target)
+	 (return (at clause 1))))))
 
 (set current-language
   (target (js 'js) (lua 'lua)))
@@ -156,13 +155,10 @@
       ((atom? x) (return (cat x "")))
       (true
        (local str "(")
-       (local i 0)
-       (while (< i (length x))
-	 (local y (at x i))
-	 (set str (cat str (to-string y)))
+       (across (x y i)
+         (set str (cat str (to-string y)))
 	 (if ((< i (- (length x) 1))
-	      (set str (cat str " "))))
-	 (set i (+ i 1)))
+	      (set str (cat str " ")))))
        (return (cat str  ")")))))
 
 ;; misc
@@ -345,22 +341,17 @@
   (return (= (at form 0) "macro")))
 
 (function compile-args (forms compile?)
-  (local i 0)
   (local str "(")
-  (while (< i (length forms))
-    (local x (at forms i))
+  (across (forms x i)
     (local x1 (? compile? (compile x) (normalize x)))
     (set str (cat str x1))
-    (if ((< i (- (length forms) 1)) (set str (cat str ","))))
-    (set i (+ i 1)))
+    (if ((< i (- (length forms) 1)) (set str (cat str ",")))))
   (return (cat str ")")))
 
 (function compile-body (forms)
-  (local i 0)
   (local str (? (= current-target 'js) "{" ""))
-  (while (< i (length forms))
-    (set str (cat str (compile (at forms i) true)))
-    (set i (+ i 1)))
+  (across (forms form)
+    (set str (cat str (compile form true))))
   (return (? (= current-target 'js) (cat str "}") str)))
 
 (function normalize (id)
@@ -390,13 +381,11 @@
   (return (cat fn args)))
 
 (function compile-operator (form)
-  (local i 1)
   (local str "(")
   (local op (get-op (at form 0)))
-  (while (< i (length form))
-    (set str (cat str (compile (at form i))))
-    (if ((< i (- (length form) 1)) (set str (cat str op))))
-    (set i (+ i 1)))
+  (across (form arg i 1)
+    (set str (cat str (compile arg)))
+    (if ((< i (- (length form) 1)) (set str (cat str op)))))
   (return (cat str ")")))
 
 (function compile-do (forms)
@@ -429,21 +418,17 @@
 		  (cat " elseif " condition " then " body tr))))))
 
 (function compile-if (form)
-  (local i 0)
   (local str "")
-  (while (< i (length form))
+  (across (form branch i)
     (local last? (= i (- (length form) 1)))
     (local first? (= i 0))
-    (local branch (compile-branch (at form i) first? last?))
-    (set str (cat str branch))
-    (set i (+ i 1)))
+    (set str (cat str (compile-branch branch first? last?))))
   (return str))
 
 (function expand-function (args body)
-  (local i 0)
-  (while (< i (length args))
-    (if ((= (at args i) '...)
-	 (set args (sub args 0 i))
+  (across (args arg i)
+    (if ((= arg '...)
+         (set args (sub args 0 i))
 	 (local name (make-unique))
 	 (local expr '(list ...))
 	 (if ((= current-target 'js)
@@ -451,17 +436,13 @@
 	     (true (push args '...)))
 	 (process-body body name)
 	 (set body (join '((local ,name ,expr)) body))
-	 break))
-    (set i (+ i 1)))
+	 break)))
   (return (list args body)))
 
 (function process-body (body vararg)	; destructive
-  (local i 0)
-  (while (< i (length body))
-    (local form (at body i))
+  (across (body form i)
     (if ((= form '...) (set (at body i) vararg))
-	((list? form) (process-body form vararg)))
-    (set i (+ i 1))))
+	((list? form) (process-body form vararg)))))
 
 (function compile-function (form)
   (local i 0)
@@ -511,12 +492,10 @@
 	     (cat "while " condition " do " body " end "))))
 
 (function compile-list (forms quoted?)
-  (local i 0)
   (local open (? (= current-target 'lua) "{" "["))
   (local close (? (= current-target 'lua) "}" "]"))
   (local str "")
-  (while (< i (length forms))
-    (local x (at forms i))
+  (across (forms x i)
     (if ((and (list? x) (= (at x 0) "unquote-splicing"))
 	 (local x1 (compile (at x 1)))
 	 (local x2 (compile-list (sub forms (+ i 1)) true))
@@ -526,14 +505,13 @@
 	(true
 	 (local x1 (? quoted? (quote-form x) (compile x)))
 	 (set str (cat str x1))
-	 (if ((< i (- (length forms) 1)) (set str (cat str ","))))
-	 (set i (+ i 1)))))
+	 (if ((< i (- (length forms) 1)) (set str (cat str ",")))))))
   (return (cat open str close)))
 
 (function compile-table (forms)
-  (local i 0)
   (local sep (? (= current-target 'lua) "=" ":"))
   (local str "{")
+  (local i 0)
   (while (< i (- (length forms) 1))
     (local k (compile (at forms i)))
     (local v (compile (at forms (+ i 1))))
@@ -573,8 +551,6 @@
       (true (return (compile-list form true)))))
 
 (function compile-quote (forms)
-  (if ((< (length forms) 1)
-       (error "Must supply at least one argument to QUOTE")))
   (return (quote-form (at forms 0))))	; first arg only
 
 (function compile-macro (form)
@@ -769,9 +745,7 @@
     (true
      (local input (at args 0))
      (local output false)
-     (local i 1)
-     (while (< i (length args))
-       (local arg (at args i))
+     (across (args arg i 1)
        (if ((or (= arg "-o") (= arg "-l"))
 	    (if ((> (length args) (+ i 1))
 		 (set i (+ i 1))
@@ -779,8 +753,7 @@
 		 (if ((= arg "-o") (set output arg2))
 		     (true (set current-target arg2))))
 		(true (print "missing argument for" arg) (usage))))
-	   (true (print "unrecognized option:" arg) (usage)))
-       (set i (+ i 1)))
+	   (true (print "unrecognized option:" arg) (usage))))
      (if ((= output false)
 	  (local name (sub input 0 (find input ".")))
 	  (set output (cat name "." current-target))))
