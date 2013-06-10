@@ -107,16 +107,16 @@
 
 (target (js (set fs (require 'fs))))
 
-(function read-file (filename)
+(function read-file (path)
   (target
-    (js (return (fs.readFileSync filename 'utf8)))
-    (lua (do (local f (io.open filename))
+    (js (return (fs.readFileSync path 'utf8)))
+    (lua (do (local f (io.open path))
 	     (return (f:read "*a"))))))
 
-(function write-file (filename data)
+(function write-file (path data)
   (target
-    (js (fs.writeFileSync filename data 'utf8))
-    (lua (do (local f (io.open filename "w"))
+    (js (fs.writeFileSync path data 'utf8))
+    (lua (do (local f (io.open path "w"))
 	     (f:write data)))))
 
 (target (js (function print (x) (console.log x))))
