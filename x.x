@@ -1,5 +1,9 @@
 ;; -*- mode: lisp -*-
 
+;;; TODO
+;;    fix EVAL return value in Lua
+;;    use SUB in CHAR for Lua
+
 
 ;;; library
 
