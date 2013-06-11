@@ -346,8 +346,8 @@
 
 (function compile-body (forms)
   (local str (? (= current-target 'js) "{" ""))
-  (across (forms form)
-    (set str (cat str (compile form true))))
+  (across (forms x)
+    (set str (cat str (compile x true))))
   (return (? (= current-target 'js) (cat str "}") str)))
 
 (function normalize (id)
@@ -652,6 +652,8 @@
   (assert-equal 2 (length (cat "\"" "\"")))
   (assert-equal 'a "a")
   (assert-equal 'a (quote a))
+  (assert-equal "a" (char "bar" 1))
+  (assert-equal "uu" (sub "quux" 1 3))
   ;; lists
   (assert-equal '() (list))
   (assert-equal '(1) (list 1))
