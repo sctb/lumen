@@ -2,7 +2,6 @@
 
 ;;; TODO
 ;;    fix EVAL return value in Lua
-;;    use SUB in CHAR for Lua
 
 
 ;;; library
@@ -92,8 +91,7 @@
 ;; strings
 
 (function char (str n)
-  (return (target (js (str.charAt n))
-		  (lua (string.sub str (+ n 1) (+ n 1))))))
+  (return (target (js (str.charAt n)) (lua (sub str n (+ n 1))))))
 
 (function find (str pattern start)
   (target
