@@ -1,8 +1,5 @@
 ;; -*- mode: lisp -*-
 
-;;; TODO
-;;    fix EVAL return value in Lua
-
 
 ;;; library
 
@@ -177,14 +174,14 @@
 
 (target
  (lua (function eval (x)
-        (local f (load x))
-	(if (f (return (f)))
-	    ;; lua does not allow expressions to be evaluated at the
-	    ;; top-level
+	;; lua does not allow expressions to be evaluated at the
+	;; top-level
+        (local y (cat "eval_result=" x))
+	(local f (load y))
+	(if (f (f) (return eval-result))
 	    (true
-	     (set x (cat "eval_result=" x))
-	     (set f (load x))
-	     (if (f (f) (return eval-result))))))))
+	     (local f (load x))
+	     (if (f (return (f)))))))))
 
 
 ;;; reader
@@ -675,6 +672,9 @@
   (assert-equal '(1 2 3 4) '(1 ,@(list 2 3) 4))
   (assert-equal '(1 2 3) '(1 ,@a))
   (assert-equal '(2 3) '(,@a))
+  ;; eval
+  (assert-equal 4 (eval (compile '(+ 2 2))))
+  (assert-equal 'foo (eval (compile '(quote foo))))
   ;; apply
   (assert-equal '(2 3) (apply join '((2) (3))))
   (apply assert-equal (list 4 4))
