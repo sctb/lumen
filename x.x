@@ -587,12 +587,12 @@
 
 (function compile (form stmt? tail?)
   (local tr (? stmt? ";" ""))
+  (if ((and (list? form) (call? form) (= (at form 0) "return"))
+       (if ((not tail?) (print (cat "FAIL: " (to-string form))))))
+      ((and tail? (not (special? form)) (not (macro-call? form)))
+       (print (cat "FAIL: " (to-string form)))))
   (if ((= form nil) (return ""))
       ((atom? form) (return (cat (compile-atom form) tr)))
-      ((and (call? form) (= (at form 0) "return"))
-       ;; TODO: check for TAIL?
-       (if ((not tail?) (print (cat "FAIL: " (to-string form)))))
-       (return (cat (compile-call form) tr)))
       ((call? form)
        (if ((operator? form)
             (return (cat (compile-operator form) tr)))
