@@ -157,7 +157,7 @@
 
 ;; misc
 
-(target (js (function error (msg) (throw msg))))
+(target (js (function error (msg) (throw msg) nil)))
 (target (js (function type (x) (typeof x))))
 
 (function apply (f args)
@@ -569,20 +569,13 @@
 (set (get special "table") (table compiler compile-table))
 (set (get special "quote") (table compiler compile-quote))
 
-(set no-return (table))
-(set (get no-return "throw") true)
-(set (get no-return "error") true)
-(set (get no-return "exit") true)
-
 (function compile (form stmt? tail?)
   (local tr (? stmt? ";" ""))
   (if ((and tail? (not (macro-call? form)))
        (local return? true)
        (if ((special? form)
 	    (local sp (get special (at form 0)))
-	    (if ((get sp 'statement) (set return? false))))
-	   ((and (list? form) (get no-return (at form 0)))
-	    (set return? false)))
+	    (if ((get sp 'statement) (set return? false)))))
        (if (return?
 	    (if ((not (and (list? form) (= (at form 0) "return")))
 		 (set form '(return ,form))))))))
