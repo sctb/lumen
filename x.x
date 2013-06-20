@@ -1,5 +1,11 @@
 ;; -*- mode: lisp -*-
 
+;;; TODO
+;;   Clean up COMPILE
+;;   Keywords and keyword arguments
+;;   Named variable arguments (foo...)
+;;   LET
+
 
 ;;; library
 
