@@ -1,7 +1,6 @@
 ;; -*- mode: lisp -*-
 
 ;;; TODO
-;;   Clean up COMPILE
 ;;   Keywords and keyword arguments
 ;;   Named variable arguments (foo...)
 ;;   LET
@@ -569,16 +568,16 @@
 (set (get special "table") (table compiler compile-table))
 (set (get special "quote") (table compiler compile-quote))
 
+(function can-return? (form)
+  (if ((macro-call? form) false)
+      ((special? form)
+       (not (get (get special (at form 0)) 'statement)))
+      (true true)))
+
 (function compile (form stmt? tail?)
   (local tr (? stmt? ";" ""))
-  (if ((and tail? (not (macro-call? form)))
-       (local return? true)
-       (if ((special? form)
-	    (local sp (get special (at form 0)))
-	    (if ((get sp 'statement) (set return? false)))))
-       (if (return?
-	    (if ((not (and (list? form) (= (at form 0) "return")))
-		 (set form '(return ,form))))))))
+  (if ((and tail? (can-return? form))
+       (set form '(return ,form))))
   (if ((= form nil) "")
       ((atom? form) (cat (compile-atom form) tr))
       ((call? form)
