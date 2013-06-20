@@ -403,7 +403,7 @@
     (set str (cat str (compile-branch branch first? last? tail?))))
   str)
 
-(function expand-function (args body)	; TODO: rename
+(function bind-arguments (args body)
   (across (args arg i)
     (if ((= arg '...)
          (set args (sub args 0 i))
@@ -429,7 +429,7 @@
        (set i 1)
        (set name (normalize (at form 0)))))
   (local expanded
-    (expand-function (at form i) (sub form (+ i 1))))
+    (bind-arguments (at form i) (sub form (+ i 1))))
   (local args (compile-args (at expanded 0)))
   (local body (compile-body (at expanded 1) true))
   (local tr (? (= current-target 'lua) " end " ""))
