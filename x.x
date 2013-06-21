@@ -3,7 +3,8 @@
 ;;; TODO
 ;;   Keywords and keyword arguments
 ;;   Named variable arguments (foo...)
-;;   LET
+;;   Destructing binding
+;;   Multi-variable LOCAL?
 
 
 ;;; library
