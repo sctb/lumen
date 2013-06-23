@@ -3,7 +3,6 @@
 ;;; TODO
 ;;   Keyword arguments
 ;;   Destructing binding
-;;   Multi-variable LOCAL?
 
 
 ;;; library
