@@ -1,7 +1,7 @@
 ;; -*- mode: lisp -*-
 
 ;;; TODO
-;;   Keywords and keyword arguments
+;;   Keyword arguments
 ;;   Named variable arguments (foo...)
 ;;   Destructing binding
 ;;   Multi-variable LOCAL?
