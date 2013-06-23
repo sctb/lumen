@@ -2,7 +2,6 @@
 
 ;;; TODO
 ;;   Keyword arguments
-;;   Named variable arguments (foo...)
 ;;   Destructing binding
 ;;   Multi-variable LOCAL?
 
@@ -17,7 +16,7 @@
       ((= current-target 'lua) (set i '(+ ,i 1))))
   '(get ,arr ,i))
 
-(macro across (args ...)
+(macro across (args body...)
   (local l (at args 0))
   (local v (at args 1))
   (local i (or (at args 2) (make-unique)))
@@ -28,7 +27,7 @@
     (local ,l1 ,l)
     (while (< ,i (length ,l1))
       (local ,v (at ,l1 ,i))
-      ,@...
+      ,@body
       (set ,i (+ ,i 1)))))
 
 (macro ? (a b c) '(or (and ,a ,b) ,c))
@@ -37,8 +36,8 @@
 
 (set current-target 'js)
 
-(macro target (...)
-  (across (... clause)
+(macro target (clauses...)
+  (across (clauses clause)
     (if ((= (at clause 0) current-target)
 	 (return (at clause 1))))))
 
@@ -404,24 +403,21 @@
     (set str (cat str (compile-branch branch first? last? tail?))))
   str)
 
+(function vararg? (name)
+  (= (sub name (- (length name) 3) (length name)) "..."))
+
 (function bind-arguments (args body)
   (across (args arg i)
-    (if ((= arg '...)
+    (if ((vararg? arg)
          (set args (sub args 0 i))
-	 (local name (make-unique))
+	 (local name (sub arg 0 (- (length arg) 3)))
 	 (local expr '(list ...))
 	 (if ((= current-target 'js)
 	      (set expr '(Array.prototype.slice.call arguments ,i)))
 	     (true (push args '...)))
-	 (process-body body name)
 	 (set body (join '((local ,name ,expr)) body))
 	 break)))
   (list args body))
-
-(function process-body (body vararg)	; destructive
-  (across (body form i)
-    (if ((= form '...) (set (at body i) vararg))
-	((list? form) (process-body form vararg)))))
 
 (function compile-function (form)
   (local i 0)
@@ -673,10 +669,10 @@
   (local f (function (x) (+ x 1)))
   (assert-equal 2 (f 1))
   (assert-equal 3 (apply (function (a b) (+ a b)) '(1 2)))
-  (assert-equal '(1 2) (apply (function (...) ...) '(1 2)))
-  (assert-equal '((1 2)) (apply (function (...) '(,...)) '(1 2)))
-  (assert-equal '(1 2) (apply (function (...) '(,@...)) '(1 2)))
-  (set f (function (...) ...))
+  (assert-equal '(1 2) (apply (function (a...) a) '(1 2)))
+  (assert-equal '((1 2)) (apply (function (a...) '(,a)) '(1 2)))
+  (assert-equal '(1 2) (apply (function (a...) '(,@a)) '(1 2)))
+  (set f (function (a...) a))
   (assert-equal '(a b) (f 'a 'b))
   ;; tables
   (local t (table))
