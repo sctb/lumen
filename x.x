@@ -1,9 +1,5 @@
 ;; -*- mode: lisp -*-
 
-;;; TODO
-;;   Keyword arguments
-;;   Destructing binding
-
 
 ;;; library
 
