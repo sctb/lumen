@@ -321,11 +321,11 @@
   (cat str ")"))
 
 (function compile-body (forms tail?)
-  (local str (? (= current-target 'js) "{" ""))
+  (local str "")
   (across (forms x i)
     (local t? (and tail? (= i (- (length forms) 1))))
     (set str (cat str (compile x true t?))))
-  (? (= current-target 'js) (cat str "}") str))
+  str)
 
 (function normalize (id)
   (local id2 "")
@@ -362,8 +362,7 @@
   (cat str ")"))
 
 (function compile-do (forms tail?)
-  (local body (compile-body forms tail?))
-  (? (= current-target 'js) body (cat "do " body " end ")))
+  (compile-body forms tail?))
 
 (function compile-set (form)
   (if ((< (length form) 2)
@@ -379,15 +378,15 @@
   (if ((and last? (= current-target 'lua)) (set tr " end ")))
   (if (first?
        (? (= current-target 'js)
-	  (cat "if(" condition ")" body)
+	  (cat "if(" condition "){" body "}")
 	  (cat "if " condition " then " body tr)))
       ((and last? (= condition "true"))
        (? (= current-target 'js)
-	  (cat "else" body)
+	  (cat "else{" body "}")
 	  (cat " else " body " end ")))
       (true
        (? (= current-target 'js)
-	  (cat "else if(" condition ")" body)
+	  (cat "else if(" condition "){" body "}")
 	  (cat " elseif " condition " then " body tr)))))
 
 (function compile-if (form tail?)
@@ -424,8 +423,9 @@
     (bind-arguments (at form i) (sub form (+ i 1))))
   (local args (compile-args (at expanded 0)))
   (local body (compile-body (at expanded 1) true))
-  (local tr (? (= current-target 'lua) " end " ""))
-  (cat "function " name args body tr))
+  (if ((= current-target 'js)
+       (cat "function " name args "{" body "}"))
+      (true (cat "function " name args body " end "))))
 
 (function compile-get (form)
   (local object (compile (at form 0)))
@@ -456,7 +456,7 @@
   (local condition (compile (at form 0)))
   (local body (compile-body (sub form 1)))
   (? (= current-target 'js)
-     (cat "while(" condition ")" body)
+     (cat "while(" condition "){" body "}")
      (cat "while " condition " do " body " end ")))
 
 (function compile-list (forms quoted?)
@@ -500,7 +500,7 @@
        (cat "for " k "," v " in pairs(" t1 ") do " body1 " end"))
       (true
        (local body1 (compile-body '((set ,v (get ,t ,k)) ,@body)))
-       (cat "for(" k " in " t ")" body1))))
+       (cat "for(" k " in " t "){" body1 "}"))))
 
 (macro unquote () (error "UNQUOTE not inside QUOTE"))
 (macro unquote-splicing () (error "UNQUOTE-SPLICING not inside QUOTE"))
