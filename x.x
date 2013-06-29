@@ -5,13 +5,13 @@
 
 ;; macros
 
-(macro at (arr i)
+(defmacro at (arr i)
   (if (and (= current-target 'lua) (number? i))
       (set i (+ i 1))
     (= current-target 'lua) (set i '(+ ,i 1)))
   '(get ,arr ,i))
 
-(macro across (args body...)
+(defmacro across (args body...)
   (local l (at args 0))
   (local v (at args 1))
   (local i (or (at args 2) (make-unique)))
@@ -25,13 +25,13 @@
       ,@body
       (set ,i (+ ,i 1)))))
 
-(macro ? (a b c) '(or (and ,a ,b) ,c))
+(defmacro ? (a b c) '(or (and ,a ,b) ,c))
 
 ;; languages
 
 (set current-target 'js)
 
-(macro target (clauses...)
+(defmacro target (clauses...)
   (across (clauses clause)
     (if (= (at clause 0) current-target)
 	(return (at clause 1)))))
@@ -41,10 +41,10 @@
 
 ;; sequences
 
-(function length (x)
+(defun length (x)
   (target (js x.length) (lua #x)))
 
-(function sub (x from upto)
+(defun sub (x from upto)
   (if (string? x)
       (target
        (js (x.substring from upto))
@@ -64,10 +64,10 @@
 
 ;; lists
 
-(function push (arr x)
+(defun push (arr x)
   (set (at arr (length arr)) x))
 
-(function join (a1 a2)
+(defun join (a1 a2)
   (target
     (js (a1.concat a2))
     (lua
@@ -84,10 +84,10 @@
 
 ;; strings
 
-(function char (str n)
+(defun char (str n)
   (target (js (str.charAt n)) (lua (sub str n (+ n 1)))))
 
-(function find (str pattern start)
+(defun find (str pattern start)
   (target
    (js (do (local i (str.indexOf pattern start))
 	   (and (> i 0) i)))
@@ -99,36 +99,36 @@
 
 (target (js (set fs (require 'fs))))
 
-(function read-file (path)
+(defun read-file (path)
   (target
     (js (fs.readFileSync path 'utf8))
     (lua (do (local f (io.open path))
 	     (f:read "*a")))))
 
-(function write-file (path data)
+(defun write-file (path data)
   (target
     (js (fs.writeFileSync path data 'utf8))
     (lua (do (local f (io.open path "w"))
 	     (f:write data)))))
 
-(target (js (function print (x) (console.log x))))
+(target (js (defun print (x) (console.log x))))
 
-(function exit (code)
+(defun exit (code)
   (target (js (process.exit code)) (lua (os.exit code))))
 
 ;; predicates
 
-(function string? (x) (= (type x) "string"))
-(function number? (x) (= (type x) "number"))
-(function boolean? (x) (= (type x) "boolean"))
-(function composite? (x) (= (type x) (target (js "object") (lua "table"))))
-(function atom? (x) (not (composite? x)))
-(function table? (x) (and (composite? x) (= (at x 0) nil)))
-(function list? (x) (and (composite? x) (not (= (at x 0) nil))))
+(defun string? (x) (= (type x) "string"))
+(defun number? (x) (= (type x) "number"))
+(defun boolean? (x) (= (type x) "boolean"))
+(defun composite? (x) (= (type x) (target (js "object") (lua "table"))))
+(defun atom? (x) (not (composite? x)))
+(defun table? (x) (and (composite? x) (= (at x 0) nil)))
+(defun list? (x) (and (composite? x) (not (= (at x 0) nil))))
 
 ;; numbers
 
-(function parse-number (str)
+(defun parse-number (str)
   (target
     (js (do (local n (parseFloat str))
 	    (if (not (isNaN n)) n)))
@@ -136,7 +136,7 @@
 
 ;; printing
 
-(function to-string (x)
+(defun to-string (x)
   (if (= x nil) "nil"
       (boolean? x) (? x "true" "false")
       (atom? x) (cat x "")
@@ -149,22 +149,22 @@
 
 ;; misc
 
-(target (js (function error (msg) (throw msg) nil)))
-(target (js (function type (x) (typeof x))))
+(target (js (defun error (msg) (throw msg) nil)))
+(target (js (defun type (x) (typeof x))))
 
-(function apply (f args)
+(defun apply (f args)
   (target (js (f.apply f args)) (lua (f (unpack args)))))
 
 (set unique-counter 0)
 
-(function make-unique (prefix)
+(defun make-unique (prefix)
   (set unique-counter (+ unique-counter 1))
   (cat "_" (or prefix "") unique-counter))
 
 (set eval-result nil)
 
 (target
- (lua (function eval (x)
+ (lua (defun eval (x)
 	;; lua does not allow expressions to be evaluated at the
 	;; top-level
         (local y (cat "eval_result=" x))
@@ -190,17 +190,17 @@
 (set (get whitespace "\t") true)
 (set (get whitespace "\n") true)
 
-(function make-stream (str)
+(defun make-stream (str)
   (table pos 0 string str len (length str)))
 
-(function peek-char (s)
+(defun peek-char (s)
   (? (< s.pos s.len) (char s.string s.pos) eof))
 
-(function read-char (s)
+(defun read-char (s)
   (local c (peek-char s))
   (if c (do (set s.pos (+ s.pos 1)) c)))
 
-(function skip-non-code (s)
+(defun skip-non-code (s)
   (while true
     (local c (peek-char s))
     (if (not c) break
@@ -211,7 +211,7 @@
 	    (skip-non-code s))
       break)))
 
-(function read-atom (s)
+(defun read-atom (s)
   (local str "")
   (while true
     (local c (peek-char s))
@@ -223,7 +223,7 @@
   (local n (parse-number str))
   (? (= n nil) str n))
 
-(function read-list (s)
+(defun read-list (s)
   (read-char s) ; (
   (local l '())
   (while true
@@ -234,7 +234,7 @@
       (error (cat "Expected ) at " s.pos))))
   l)
 
-(function read-string (s)
+(defun read-string (s)
   (read-char s) ; "
   (local str "\"")
   (while true
@@ -246,18 +246,18 @@
       (error (cat "Expected \" at " s.pos))))
   (cat str "\""))
 
-(function read-quote (s)
+(defun read-quote (s)
   (read-char s) ; '
   (list "quote" (read s)))
 
-(function read-unquote (s)
+(defun read-unquote (s)
   (read-char s) ; ,
   (if (= (peek-char s) "@")
       (do (read-char s) ; @
 	  (list "unquote-splicing" (read s)))
     (list "unquote" (read s))))
 
-(function read (s)
+(defun read (s)
   (skip-non-code s)
   (local c (peek-char s))
   (if (= c eof) c
@@ -268,7 +268,7 @@
       (= c ",") (read-unquote s)
     (read-atom s)))
 
-(function read-from-string (str) (read (make-stream str)))
+(defun read-from-string (str) (read (make-stream str)))
 
 
 ;;; compiler
@@ -296,20 +296,20 @@
 (set (get (get operators 'lua) "or") " or ")
 (set (get (get operators 'lua) "cat") "..")
 
-(function get-op (op)
+(defun get-op (op)
   (or (get (get operators 'common) op)
       (get (get operators current-target) op)))
 
 (set macros (table))
 (set special (table))
 
-(function call? (form) (string? (at form 0)))
-(function operator? (form) (not (= (get-op (at form 0)) nil)))
-(function special? (form) (not (= (get special (at form 0)) nil)))
-(function macro-call? (form) (not (= (get macros (at form 0)) nil)))
-(function macro-definition? (form) (= (at form 0) "macro"))
+(defun call? (form) (string? (at form 0)))
+(defun operator? (form) (not (= (get-op (at form 0)) nil)))
+(defun special? (form) (not (= (get special (at form 0)) nil)))
+(defun macro-call? (form) (not (= (get macros (at form 0)) nil)))
+(defun macro-definition? (form) (= (at form 0) "defmacro"))
 
-(function compile-args (forms compile?)
+(defun compile-args (forms compile?)
   (local str "(")
   (across (forms x i)
     (local x1 (? compile? (compile x) (normalize x)))
@@ -317,14 +317,14 @@
     (if (< i (- (length forms) 1)) (set str (cat str ","))))
   (cat str ")"))
 
-(function compile-body (forms tail?)
+(defun compile-body (forms tail?)
   (local str "")
   (across (forms x i)
     (local t? (and tail? (= i (- (length forms) 1))))
     (set str (cat str (compile x true t?))))
   str)
 
-(function normalize (id)
+(defun normalize (id)
   (local id2 "")
   (local i 0)
   (while (< i (length id))
@@ -338,19 +338,19 @@
 	  (set id2 (cat "is_" name))))
   id2)
 
-(function compile-atom (form)
+(defun compile-atom (form)
   (if (= form "nil")
       (? (= current-target 'js) "undefined" "nil")
       (and (string? form) (not (= (char form 0) "\"")))
       (normalize form)
     (to-string form)))
 
-(function compile-call (form)
+(defun compile-call (form)
   (local fn (compile (at form 0)))
   (local args (compile-args (sub form 1) true))
   (cat fn args))
 
-(function compile-operator (form)
+(defun compile-operator (form)
   (local str "(")
   (local op (get-op (at form 0)))
   (across (form arg i 1)
@@ -358,17 +358,17 @@
     (if (< i (- (length form) 1)) (set str (cat str op))))
   (cat str ")"))
 
-(function compile-do (forms tail?)
+(defun compile-do (forms tail?)
   (compile-body forms tail?))
 
-(function compile-set (form)
+(defun compile-set (form)
   (if (< (length form) 2)
       (error "Missing right-hand side in assignment"))
   (local lh (compile (at form 0)))
   (local rh (compile (at form 1)))
   (cat lh "=" rh))
 
-(function compile-branch (condition body first? last? tail?)
+(defun compile-branch (condition body first? last? tail?)
   (local cond1 (compile condition))
   (local body1 (compile body true tail?))
   (local tr "")
@@ -385,7 +385,7 @@
        (cat "else if(" cond1 "){" body1 "}")
        (cat " elseif " cond1 " then " body1 tr))))
 
-(function compile-if (form tail?)
+(defun compile-if (form tail?)
   (local str "")
   (across (form condition i)
     (local last? (>= i (- (length form) 2)))
@@ -399,10 +399,10 @@
     (set str (cat str (compile-branch condition body first? last? tail?))))
   str)
 
-(function vararg? (name)
+(defun vararg? (name)
   (= (sub name (- (length name) 3) (length name)) "..."))
 
-(function bind-arguments (args body)
+(defun bind-arguments (args body)
   (across (args arg i)
     (if (vararg? arg)
 	(do (set args (sub args 0 i))
@@ -415,21 +415,27 @@
 	    break)))
   (list args body))
 
-(function compile-function (form)
-  (local i 0)
-  (local name "")
-  (if (string? (at form 0))
-      (do (set i 1)
-	  (set name (normalize (at form 0)))))
-  (local expanded
-    (bind-arguments (at form i) (sub form (+ i 1))))
-  (local args (compile-args (at expanded 0)))
-  (local body (compile-body (at expanded 1) true))
-  (if (= current-target 'js)
-      (cat "function " name args "{" body "}")
-    (cat "function " name args body " end ")))
+(defun compile-defun (form)
+  (local name (normalize (at form 0)))
+  (local args (at form 1))
+  (local body (sub form 2))
+  (compile-function args body name))
 
-(function compile-get (form)
+(defun compile-lambda (form)
+  (local args (at form 0))
+  (local body (sub form 1))
+  (compile-function args body))
+
+(defun compile-function (args body name)
+  (set name (or name ""))
+  (local expanded (bind-arguments args body))
+  (local args1 (compile-args (at expanded 0)))
+  (local body1 (compile-body (at expanded 1) true))
+  (if (= current-target 'js)
+      (cat "function " name args1 "{" body1 "}")
+    (cat "function " name args1 body1 " end ")))
+
+(defun compile-get (form)
   (local object (compile (at form 0)))
   (local key (compile (at form 1)))
   (if (and (= current-target 'lua)
@@ -437,17 +443,17 @@
       (set object (cat "(" object ")")))
   (cat object "[" key "]"))
 
-(function compile-dot (form)
+(defun compile-dot (form)
   (local object (compile (at form 0)))
   (local key (at form 1))
   (cat object "." key))
 
-(function compile-not (form)
+(defun compile-not (form)
   (local expr (compile (at form 0)))
   (local open (? (= current-target 'js) "!(" "(not "))
   (cat open expr ")"))
 
-(function compile-local (form)
+(defun compile-local (form)
   (local lh (compile (at form 0)))
   (local keyword (? (= current-target 'js) "var " "local "))
   (if (= (at form 1) nil)
@@ -455,14 +461,14 @@
     (do (local rh (compile (at form 1)))
 	(cat keyword lh "=" rh))))
 
-(function compile-while (form)
+(defun compile-while (form)
   (local condition (compile (at form 0)))
   (local body (compile-body (sub form 1)))
   (? (= current-target 'js)
      (cat "while(" condition "){" body "}")
      (cat "while " condition " do " body " end ")))
 
-(function compile-list (forms quoted?)
+(defun compile-list (forms quoted?)
   (local open (? (= current-target 'lua) "{" "["))
   (local close (? (= current-target 'lua) "}" "]"))
   (local str "")
@@ -478,7 +484,7 @@
 	  (if (< i (- (length forms) 1)) (set str (cat str ","))))))
   (cat open str close))
 
-(function compile-table (forms)
+(defun compile-table (forms)
   (local sep (? (= current-target 'lua) "=" ":"))
   (local str "{")
   (local i 0)
@@ -490,7 +496,7 @@
     (set i (+ i 2)))
   (cat str "}"))
 
-(function compile-each (forms)
+(defun compile-each (forms)
   (local args (at forms 0))
   (local t (at args 0))
   (local k (at args 1))
@@ -503,28 +509,28 @@
     (do (local body1 (compile-body '((set ,v (get ,t ,k)) ,@body)))
 	(cat "for(" k " in " t "){" body1 "}"))))
 
-(macro unquote () (error "UNQUOTE not inside QUOTE"))
-(macro unquote-splicing () (error "UNQUOTE-SPLICING not inside QUOTE"))
+(defmacro unquote () (error "UNQUOTE not inside QUOTE"))
+(defmacro unquote-splicing () (error "UNQUOTE-SPLICING not inside QUOTE"))
 
-(function compile-to-string (form)
+(defun compile-to-string (form)
   (if (and (string? form) (= (char form 0) "\""))
       (do (local str (sub form 1 (- (length form) 1)))
 	  (cat "\"\\\"" str "\\\"\""))
       (string? form) (cat "\"" form "\"")
     (to-string form)))
 
-(function quote-form (form)
+(defun quote-form (form)
   (if (atom? form) (compile-to-string form)
       (= (at form 0) "unquote") (compile (at form 1))
     (compile-list form true)))
 
-(function compile-quote (forms)
+(defun compile-quote (forms)
   (quote-form (at forms 0)))
 
-(function compile-macro (form)
+(defun compile-defmacro (form)
   (local tmp current-target)
   (set current-target current-language)
-  (eval (compile-function form true))
+  (eval (compile-defun form true)) 	; TODO: make anonymous
   (local name (at form 0))
   (local register
     '(set (get macros ,(compile-to-string name)) ,name))
@@ -532,7 +538,7 @@
   (set current-target tmp)
   "")
 
-(function compile-special (form stmt? tail?)
+(defun compile-special (form stmt? tail?)
   (local name (at form 0))
   (local sp (get special name))
   (local tr? (and stmt? (not (get sp 'terminated))))
@@ -544,12 +550,12 @@
      (table compiler compile-do terminated true statement true))
 (set (get special "if")
      (table compiler compile-if terminated true statement true))
-(set (get special "function")
-     (table compiler compile-function terminated true statement true))
 (set (get special "while")
      (table compiler compile-while terminated true statement true))
-(set (get special "macro")
-     (table compiler compile-macro terminated true statement true))
+(set (get special "defun")
+     (table compiler compile-defun terminated true statement true))
+(set (get special "defmacro")
+     (table compiler compile-defmacro terminated true statement true))
 
 (set (get special "local") (table compiler compile-local statement true))
 (set (get special "set") (table compiler compile-set statement true))
@@ -560,13 +566,14 @@
 (set (get special "list") (table compiler compile-list))
 (set (get special "table") (table compiler compile-table))
 (set (get special "quote") (table compiler compile-quote))
+(set (get special "lambda") (table compiler compile-lambda))
 
-(function can-return? (form)
+(defun can-return? (form)
   (if (macro-call? form) false
       (special? form) (not (get (get special (at form 0)) 'statement))
     true))
 
-(function compile (form stmt? tail?)
+(defun compile (form stmt? tail?)
   (local tr (? stmt? ";" ""))
   (if (and tail? (can-return? form))
       (set form '(return ,form)))
@@ -584,7 +591,7 @@
 	  (cat (compile-call form) tr)))
        (error (cat "Unexpected form: " (to-string form)))))
 
-(function compile-file (filename)
+(defun compile-file (filename)
   (local form)
   (local output "")
   (local s (make-stream (read-file filename)))
@@ -599,14 +606,14 @@
 
 (set passed 0)
 
-(function assert-equal (a b)
+(defun assert-equal (a b)
   (local sa (to-string a))
   (local sb (to-string b))
   (if (not (= sa sb))
       (error (cat " failed: expected " sa " was " sb))
     (set passed (+ passed 1))))
 
-(function run-tests ()
+(defun run-tests ()
   (print " running tests...")
   ;; numbers
   (assert-equal 18 18.00)
@@ -661,13 +668,13 @@
   (assert-equal '(2 3) (apply join '((2) (3))))
   (apply assert-equal (list 4 4))
   ;; functions
-  (local f (function (x) (+ x 1)))
+  (local f (lambda (x) (+ x 1)))
   (assert-equal 2 (f 1))
-  (assert-equal 3 (apply (function (a b) (+ a b)) '(1 2)))
-  (assert-equal '(1 2) (apply (function (a...) a) '(1 2)))
-  (assert-equal '((1 2)) (apply (function (a...) '(,a)) '(1 2)))
-  (assert-equal '(1 2) (apply (function (a...) '(,@a)) '(1 2)))
-  (set f (function (a...) a))
+  (assert-equal 3 (apply (lambda (a b) (+ a b)) '(1 2)))
+  (assert-equal '(1 2) (apply (lambda (a...) a) '(1 2)))
+  (assert-equal '((1 2)) (apply (lambda (a...) '(,a)) '(1 2)))
+  (assert-equal '(1 2) (apply (lambda (a...) '(,@a)) '(1 2)))
+  (set f (lambda (a...) a))
   (assert-equal '(a b) (f 'a 'b))
   ;; tables
   (local t (table))
@@ -697,10 +704,10 @@
 
 ;;; interactive
 
-(function interactive ()
+(defun interactive ()
   (set current-target current-language)
   (local execute
-    (function (str)
+    (lambda (str)
       (local form (read-from-string str))
       (local result (eval (compile form)))
       (print (cat "=> " (to-string result)))))
@@ -715,7 +722,7 @@
 
 ;;; command-line
 
-(function usage ()
+(defun usage ()
   (print "usage: x [<input> | -i | -t] [-o <output>] [-l <language>]")
   (exit))
 
