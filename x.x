@@ -549,7 +549,7 @@
 (set (get special "while")
      (table compiler compile-while terminated true statement true))
 (set (get special "macro")
-     (table compiler compile-macro statement true terminated true))
+     (table compiler compile-macro terminated true statement true))
 
 (set (get special "local") (table compiler compile-local statement true))
 (set (get special "set") (table compiler compile-set statement true))
