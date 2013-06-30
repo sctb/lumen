@@ -322,9 +322,12 @@
 
 (set macros (table))
 
-(defun operator? (form) (not (= (get-op (at form 0)) nil)))
-(defun special? (form) (not (= (get special (at form 0)) nil)))
-(defun macro-call? (form) (not (= (get macros (at form 0)) nil)))
+(defun call? (type form)
+  (if (not (list? form)) false
+      (= type :operator) (not (= (get-op (at form 0)) nil))
+      (= type :special) (not (= (get special (at form 0)) nil))
+      (= type :macro) (not (= (get macros (at form 0)) nil))
+    false))
 
 (defun compile-args (forms compile?)
   (local str "(")
@@ -363,9 +366,12 @@
     (to-string form)))
 
 (defun compile-call (form)
-  (local fn (compile (at form 0)))
+  (local fn (at form 0))
+  (local fn1 (compile fn))
   (local args (compile-args (sub form 1) true))
-  (cat fn args))
+  (if (list? fn) (cat "(" fn1 ")" args)
+      (string? fn) (cat fn1 args)
+    (error "Invalid function call")))
 
 (defun compile-operator (form)
   (local str "(")
@@ -584,8 +590,8 @@
    "lambda" (table :compiler compile-lambda)))
 
 (defun can-return? (form)
-  (if (macro-call? form) false
-      (special? form) (not (get (get special (at form 0)) :stmt?))
+  (if (call? :macro form) false
+      (call? :special form) (not (get (get special (at form 0)) :stmt?))
     true))
 
 (defun compile (form stmt? tail?)
@@ -594,11 +600,11 @@
       (set form '(return ,form)))
   (if (= form nil) ""
       (atom? form) (cat (compile-atom form) tr)
-      (operator? form)
+      (call? :operator form)
       (cat (compile-operator form) tr)
-      (special? form)
+      (call? :special form)
       (compile-special form stmt? tail?)
-      (macro-call? form)
+      (call? :macro form)
       (do (local fn (get macros (at form 0)))
 	  (local form (apply fn (sub form 1)))
 	  (compile form stmt? tail?))
@@ -690,6 +696,7 @@
   (assert-equal '(1 2) (apply (lambda (a...) '(,@a)) '(1 2)))
   (set f (lambda (a...) a))
   (assert-equal '(a b) (f 'a 'b))
+  (assert-equal 42 ((lambda () 42)))
   ;; tables
   (local t (table))
   (set (get t 'foo) 17)
