@@ -211,7 +211,7 @@
 	    (skip-non-code s))
       break)))
 
-(defun read-atom (s)
+(defun read-symbol (s)
   (local str "")
   (while true
     (local c (peek-char s))
@@ -220,6 +220,10 @@
 	(do (set str (cat str c))
 	    (read-char s))
       break))
+  str)
+
+(defun read-atom (s)
+  (local str (read-symbol s))
   (local n (parse-number str))
   (? (= n nil) str n))
 
@@ -257,7 +261,11 @@
 	  (list "unquote-splicing" (read s)))
     (list "unquote" (read s))))
 
-(defun read-eof (s) 
+(defun read-keyword (s)
+  (read-char s) ; :
+  (cat "\"" (read-symbol s) "\""))
+
+(defun read-eof (s)
   (read-char s)) ; eof
 
 (defun read-close-paren-error (s)
@@ -269,6 +277,7 @@
 	 "\"" read-string
 	 "'" read-quote
 	 "," read-unquote
+	 ":" read-keyword
 	 "" read-atom ; default
 	 ))
 (set (get read-table eof) read-eof)
@@ -645,6 +654,7 @@
   (assert-equal "foobar" (cat "foo" "bar"))
   (assert-equal 2 (length (cat "\"" "\"")))
   (assert-equal 'a "a")
+  (assert-equal 'a :a)
   (assert-equal 'a (quote a))
   (assert-equal "a" (char "bar" 1))
   (assert-equal "uu" (sub "quux" 1 3))
