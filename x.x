@@ -257,21 +257,27 @@
 	  (list "unquote-splicing" (read s)))
     (list "unquote" (read s))))
 
-(defun read-eof (s) (read-char s))
+(defun read-eof (s) 
+  (read-char s)) ; eof
 
 (defun read-close-paren-error (s)
   (error (cat "Unexpected ) at " s.pos)))
 
+(set read-table
+  (table "(" read-list
+	 ")" read-close-paren-error
+	 "\"" read-string
+	 "'" read-quote
+	 "," read-unquote
+	 "" read-atom ; default
+	 ))
+(set (get read-table eof) read-eof)
+
 (defun read (s)
   (skip-non-code s)
   (local c (peek-char s))
-  (if (= c eof) (read-eof s)
-      (= c "(") (read-list s)
-      (= c ")") (read-close-paren-error s)
-      (= c "\"") (read-string s)
-      (= c "'") (read-quote s)
-      (= c ",") (read-unquote s)
-    (read-atom s)))
+  (local f (or (get read-table c) (get read-table "")))
+  (f s))
 
 (defun read-from-string (str) (read (make-stream str)))
 
