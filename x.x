@@ -566,10 +566,12 @@
 (defun compile-special (form stmt? tail?)
   (local name (at form 0))
   (local sp (get special name))
-  (local tr? (and stmt? (not (get sp :self-tr))))
-  (local tr (? tr? ";" ""))
-  (local fn (get sp :compiler))
-  (cat (fn (sub form 1) tail?) tr))
+  (if (and (not stmt?) (get sp :stmt?))
+      (compile '((lambda () ,form)) false tail?)
+    (do (local tr? (and stmt? (not (get sp :self-tr))))
+	(local tr (? tr? ";" ""))
+	(local fn (get sp :compiler))
+	(cat (fn (sub form 1) tail?) tr))))
 
 (set special
   (table
@@ -648,6 +650,7 @@
   (assert-equal false (and true false))
   (assert-equal 17 (? true 17 18))
   (assert-equal 18 (? false 17 18))
+  (assert-equal 3 (if true 3 59))
   ;; strings
   (assert-equal "foo" "foo")
   (assert-equal "\"bar\"" "\"bar\"")
