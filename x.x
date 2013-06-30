@@ -671,6 +671,7 @@
   (assert-equal 3 (length (at '(1 (2 3 4) 5) 1)))
   (local a 'bar)
   (assert-equal '(1 2 bar) '(1 2 ,a))
+  (assert-equal (list (list 'bar)) '((,a)))
   (assert-equal false (= '"a" "a"))
   (assert-equal false (= (list "a") '("a")))
   (assert-equal '(a (2 3 7 b)) '(a ,(list 2 3 7 'b)))
