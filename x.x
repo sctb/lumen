@@ -555,10 +555,10 @@
 (defun compile-defmacro (form)
   (local tmp current-target)
   (set current-target current-language)
-  (eval (compile-defun form true)) 	; TODO: make anonymous
   (local name (at form 0))
+  (local lambda (sub form 1))
   (local register
-    '(set (get macros ,(compile-to-string name)) ,name))
+    '(set (get macros ,(compile-to-string name)) ,(compile-lambda lambda)))
   (eval (compile register true))
   (set current-target tmp)
   "")
