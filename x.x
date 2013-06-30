@@ -119,6 +119,7 @@
 ;; predicates
 
 (defun string? (x) (= (type x) "string"))
+(defun string-literal? (x) (and (string? x) (= (char x 0) "\"")))
 (defun number? (x) (= (type x) "number"))
 (defun boolean? (x) (= (type x) "boolean"))
 (defun composite? (x) (= (type x) (target (js "object") (lua "table"))))
@@ -341,7 +342,7 @@
 (defun compile-atom (form)
   (if (= form "nil")
       (? (= current-target 'js) "undefined" "nil")
-      (and (string? form) (not (= (char form 0) "\"")))
+      (and (string? form) (not (string-literal? form)))
       (normalize form)
     (to-string form)))
 
@@ -513,7 +514,7 @@
 (defmacro unquote-splicing () (error "UNQUOTE-SPLICING not inside QUOTE"))
 
 (defun compile-to-string (form)
-  (if (and (string? form) (= (char form 0) "\""))
+  (if (string-literal? form)
       (do (local str (sub form 1 (- (length form) 1)))
 	  (cat "\"\\\"" str "\\\"\""))
       (string? form) (cat "\"" form "\"")
