@@ -6,9 +6,9 @@
 ;; macros
 
 (defmacro at (arr i)
-  (if (and (= current-target 'lua) (number? i))
+  (if (and (= current-target :lua) (number? i))
       (set i (+ i 1))
-    (= current-target 'lua) (set i '(+ ,i 1)))
+    (= current-target :lua) (set i '(+ ,i 1)))
   '(get ,arr ,i))
 
 (defmacro across (args body...)
@@ -36,7 +36,7 @@
 
 ;; languages
 
-(set current-target 'js)
+(set current-target :js)
 
 (defmacro target (clauses...)
   (across (clauses clause)
@@ -44,7 +44,7 @@
 	(return (at clause 1)))))
 
 (set current-language
-  (target (js 'js) (lua 'lua)))
+  (target (js :js) (lua :lua)))
 
 ;; sequences
 
@@ -104,17 +104,17 @@
 
 ;; io
 
-(target (js (set fs (require 'fs))))
+(target (js (set fs (require :fs))))
 
 (defun read-file (path)
   (target
-    (js (fs.readFileSync path 'utf8))
+    (js (fs.readFileSync path :utf8))
     (lua (do (local f (io.open path))
 	     (f:read "*a")))))
 
 (defun write-file (path data)
   (target
-    (js (fs.writeFileSync path data 'utf8))
+    (js (fs.writeFileSync path data :utf8))
     (lua (do (local f (io.open path "w"))
 	     (f:write data)))))
 
@@ -306,15 +306,15 @@
 (set (get (get operators 'common) "<=") "<=")
 (set (get (get operators 'common) ">=") ">=")
 
-(set (get operators 'js) (table))
-(set (get (get operators 'js) "and") "&&")
-(set (get (get operators 'js) "or") "||")
-(set (get (get operators 'js) "cat") "+")
+(set (get operators :js) (table))
+(set (get (get operators :js) "and") "&&")
+(set (get (get operators :js) "or") "||")
+(set (get (get operators :js) "cat") "+")
 
-(set (get operators 'lua) (table))
-(set (get (get operators 'lua) "and") " and ")
-(set (get (get operators 'lua) "or") " or ")
-(set (get (get operators 'lua) "cat") "..")
+(set (get operators :lua) (table))
+(set (get (get operators :lua) "and") " and ")
+(set (get (get operators :lua) "or") " or ")
+(set (get (get operators :lua) "cat") "..")
 
 (defun get-op (op)
   (or (get (get operators 'common) op)
@@ -359,7 +359,7 @@
 
 (defun compile-atom (form)
   (if (= form "nil")
-      (? (= current-target 'js) "undefined" "nil")
+      (? (= current-target :js) "undefined" "nil")
       (and (string? form) (not (string-literal? form)))
       (normalize form)
     (to-string form)))
@@ -391,16 +391,16 @@
   (local cond1 (compile condition))
   (local body1 (compile body true tail?))
   (local tr "")
-  (if (and last? (= current-target 'lua)) (set tr " end "))
+  (if (and last? (= current-target :lua)) (set tr " end "))
   (if first?
-      (? (= current-target 'js)
+      (? (= current-target :js)
 	 (cat "if(" cond1 "){" body1 "}")
 	 (cat "if " cond1 " then " body1 tr))
       (= condition nil)
-      (? (= current-target 'js)
+      (? (= current-target :js)
          (cat "else{" body1 "}")
          (cat " else " body1 " end "))
-    (? (= current-target 'js)
+    (? (= current-target :js)
        (cat "else if(" cond1 "){" body1 "}")
        (cat " elseif " cond1 " then " body1 tr))))
 
@@ -427,7 +427,7 @@
 	(do (set args (sub args 0 i))
 	    (local name (sub arg 0 (- (length arg) 3)))
 	    (local expr '(list ...))
-	    (if (= current-target 'js)
+	    (if (= current-target :js)
 		(set expr '(Array.prototype.slice.call arguments ,i))
 	      (push args '...))
 	    (set body (join '((local ,name ,expr)) body))
@@ -450,14 +450,14 @@
   (local expanded (bind-arguments args body))
   (local args1 (compile-args (at expanded 0)))
   (local body1 (compile-body (at expanded 1) true))
-  (if (= current-target 'js)
+  (if (= current-target :js)
       (cat "function " name args1 "{" body1 "}")
     (cat "function " name args1 body1 " end ")))
 
 (defun compile-get (form)
   (local object (compile (at form 0)))
   (local key (compile (at form 1)))
-  (if (and (= current-target 'lua)
+  (if (and (= current-target :lua)
 	   (= (char object 0) "{"))
       (set object (cat "(" object ")")))
   (cat object "[" key "]"))
@@ -469,12 +469,12 @@
 
 (defun compile-not (form)
   (local expr (compile (at form 0)))
-  (local open (? (= current-target 'js) "!(" "(not "))
+  (local open (? (= current-target :js) "!(" "(not "))
   (cat open expr ")"))
 
 (defun compile-local (form)
   (local lh (compile (at form 0)))
-  (local keyword (? (= current-target 'js) "var " "local "))
+  (local keyword (? (= current-target :js) "var " "local "))
   (if (= (at form 1) nil)
       (cat keyword lh)
     (do (local rh (compile (at form 1)))
@@ -483,13 +483,13 @@
 (defun compile-while (form)
   (local condition (compile (at form 0)))
   (local body (compile-body (sub form 1)))
-  (? (= current-target 'js)
+  (? (= current-target :js)
      (cat "while(" condition "){" body "}")
      (cat "while " condition " do " body " end ")))
 
 (defun compile-list (forms quoted?)
-  (local open (? (= current-target 'lua) "{" "["))
-  (local close (? (= current-target 'lua) "}" "]"))
+  (local open (? (= current-target :lua) "{" "["))
+  (local close (? (= current-target :lua) "}" "]"))
   (local str "")
   (across (forms x i)
     (if (and (list? x) (= (at x 0) "unquote-splicing"))
@@ -504,13 +504,13 @@
   (cat open str close))
 
 (defun compile-table (forms)
-  (local sep (? (= current-target 'lua) "=" ":"))
+  (local sep (? (= current-target :lua) "=" ":"))
   (local str "{")
   (local i 0)
   (while (< i (- (length forms) 1))
     (local k (compile (at forms i)))
     (local v (compile (at forms (+ i 1))))
-    (if (and (= current-target 'lua) (string-literal? k))
+    (if (and (= current-target :lua) (string-literal? k))
 	(set k (cat "[" k "]")))
     (set str (cat str k sep v))
     (if (< i (- (length forms) 2)) (set str (cat str ",")))
@@ -523,7 +523,7 @@
   (local k (at args 1))
   (local v (at args 2))
   (local body (sub forms 1))
-  (if (= current-target 'lua)
+  (if (= current-target :lua)
       (do (local body1 (compile-body body))
 	  (local t1 (compile t))
 	  (cat "for " k "," v " in pairs(" t1 ") do " body1 " end"))
@@ -562,32 +562,32 @@
 (defun compile-special (form stmt? tail?)
   (local name (at form 0))
   (local sp (get special name))
-  (local tr? (and stmt? (not (get sp 'self-tr))))
+  (local tr? (and stmt? (not (get sp :self-tr))))
   (local tr (? tr? ";" ""))
-  (local fn (get sp 'compiler))
+  (local fn (get sp :compiler))
   (cat (fn (sub form 1) tail?) tr))
 
 (set special
   (table
-   "do" (table 'compiler compile-do 'self-tr true 'stmt? true)
-   "if" (table 'compiler compile-if 'self-tr true 'stmt? true)
-   "while" (table 'compiler compile-while 'self-tr true 'stmt? true)
-   "defun" (table 'compiler compile-defun 'self-tr true 'stmt? true)
-   "defmacro" (table 'compiler compile-defmacro 'self-tr true 'stmt? true)
-   "local" (table 'compiler compile-local 'stmt? true)
-   "set" (table 'compiler compile-set 'stmt? true)
-   "each" (table 'compiler compile-each 'stmt? true)
-   "get" (table 'compiler compile-get)
-   "dot" (table 'compiler compile-dot)
-   "not" (table 'compiler compile-not)
-   "list" (table 'compiler compile-list)
-   "table" (table 'compiler compile-table)
-   "quote" (table 'compiler compile-quote)
-   "lambda" (table 'compiler compile-lambda)))
+   "do" (table :compiler compile-do :self-tr true :stmt? true)
+   "if" (table :compiler compile-if :self-tr true :stmt? true)
+   "while" (table :compiler compile-while :self-tr true :stmt? true)
+   "defun" (table :compiler compile-defun :self-tr true :stmt? true)
+   "defmacro" (table :compiler compile-defmacro :self-tr true :stmt? true)
+   "local" (table :compiler compile-local :stmt? true)
+   "set" (table :compiler compile-set :stmt? true)
+   "each" (table :compiler compile-each :stmt? true)
+   "get" (table :compiler compile-get)
+   "dot" (table :compiler compile-dot)
+   "not" (table :compiler compile-not)
+   "list" (table :compiler compile-list)
+   "table" (table :compiler compile-table)
+   "quote" (table :compiler compile-quote)
+   "lambda" (table :compiler compile-lambda)))
 
 (defun can-return? (form)
   (if (macro-call? form) false
-      (special? form) (not (get (get special (at form 0)) 'stmt?))
+      (special? form) (not (get (get special (at form 0)) :stmt?))
     true))
 
 (defun compile (form stmt? tail?)
@@ -736,8 +736,8 @@
       (print (cat "=> " (to-string result)))))
   (target
    (js (do (process.stdin.resume)
-	   (process.stdin.setEncoding 'utf8)
-	   (process.stdin.on 'data execute)))
+	   (process.stdin.setEncoding :utf8)
+	   (process.stdin.on :data execute)))
    (lua (while true
 	  (local str (io.stdin:read))
 	  (if str (execute str) break)))))
