@@ -301,7 +301,6 @@
       (get (get operators current-target) op)))
 
 (set macros (table))
-(set special (table))
 
 (defun call? (form) (string? (at form 0)))
 (defun operator? (form) (not (= (get-op (at form 0)) nil)))
@@ -445,7 +444,7 @@
 
 (defun compile-dot (form)
   (local object (compile (at form 0)))
-  (local key (at form 1))
+  (local key (normalize (at form 1)))
   (cat object "." key))
 
 (defun compile-not (form)
@@ -543,36 +542,32 @@
 (defun compile-special (form stmt? tail?)
   (local name (at form 0))
   (local sp (get special name))
-  (local tr? (and stmt? (not (get sp 'terminated))))
+  (local tr? (and stmt? (not (get sp 'self-tr))))
   (local tr (? tr? ";" ""))
   (local fn (get sp 'compiler))
   (cat (fn (sub form 1) tail?) tr))
 
-(set (get special "do")
-     (table compiler compile-do terminated true statement true))
-(set (get special "if")
-     (table compiler compile-if terminated true statement true))
-(set (get special "while")
-     (table compiler compile-while terminated true statement true))
-(set (get special "defun")
-     (table compiler compile-defun terminated true statement true))
-(set (get special "defmacro")
-     (table compiler compile-defmacro terminated true statement true))
-
-(set (get special "local") (table compiler compile-local statement true))
-(set (get special "set") (table compiler compile-set statement true))
-(set (get special "each") (table compiler compile-each statement true))
-(set (get special "get") (table compiler compile-get))
-(set (get special "dot") (table compiler compile-dot))
-(set (get special "not") (table compiler compile-not))
-(set (get special "list") (table compiler compile-list))
-(set (get special "table") (table compiler compile-table))
-(set (get special "quote") (table compiler compile-quote))
-(set (get special "lambda") (table compiler compile-lambda))
+(set special
+  (table
+   "do" (table 'compiler compile-do 'self-tr true 'stmt? true)
+   "if" (table 'compiler compile-if 'self-tr true 'stmt? true)
+   "while" (table 'compiler compile-while 'self-tr true 'stmt? true)
+   "defun" (table 'compiler compile-defun 'self-tr true 'stmt? true)
+   "defmacro" (table 'compiler compile-defmacro 'self-tr true 'stmt? true)
+   "local" (table 'compiler compile-local 'stmt? true)
+   "set" (table 'compiler compile-set 'stmt? true)
+   "each" (table 'compiler compile-each 'stmt? true)
+   "get" (table 'compiler compile-get)
+   "dot" (table 'compiler compile-dot)
+   "not" (table 'compiler compile-not)
+   "list" (table 'compiler compile-list)
+   "table" (table 'compiler compile-table)
+   "quote" (table 'compiler compile-quote)
+   "lambda" (table 'compiler compile-lambda)))
 
 (defun can-return? (form)
   (if (macro-call? form) false
-      (special? form) (not (get (get special (at form 0)) 'statement))
+      (special? form) (not (get (get special (at form 0)) 'stmt?))
     true))
 
 (defun compile (form stmt? tail?)
