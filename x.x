@@ -33,8 +33,6 @@
     (push form true))
   form)
 
-(defmacro ? (a b c) '(or (and ,a ,b) ,c))
-
 ;; languages
 
 (set current-target :js)
@@ -147,7 +145,7 @@
 
 (defun to-string (x)
   (if (= x nil) "nil"
-      (boolean? x) (? x "true" "false")
+      (boolean? x) (if x "true" "false")
       (atom? x) (cat x "")
     (do (local str "(")
 	(across (x y i)
@@ -195,7 +193,7 @@
   (table pos 0 string str len (length str)))
 
 (defun peek-char (s)
-  (? (< s.pos s.len) (char s.string s.pos) eof))
+  (if (< s.pos s.len) (char s.string s.pos) eof))
 
 (defun read-char (s)
   (local c (peek-char s))
@@ -226,7 +224,7 @@
 (defun read-atom (s)
   (local str (read-symbol s))
   (local n (parse-number str))
-  (? (= n nil) str n))
+  (if (= n nil) str n))
 
 (defun read-list (s)
   (read-char s) ; (
@@ -333,7 +331,7 @@
 (defun compile-args (forms compile?)
   (local str "(")
   (across (forms x i)
-    (local x1 (? compile? (compile x) (normalize x)))
+    (local x1 (if compile? (compile x) (normalize x)))
     (set str (cat str x1))
     (if (< i (- (length forms) 1)) (set str (cat str ","))))
   (cat str ")"))
@@ -361,7 +359,7 @@
 
 (defun compile-atom (form)
   (if (= form "nil")
-      (? (= current-target :js) "undefined" "nil")
+      (if (= current-target :js) "undefined" "nil")
       (and (string? form) (not (string-literal? form)))
       (normalize form)
     (to-string form)))
@@ -397,17 +395,17 @@
   (local body1 (compile body true tail?))
   (local tr "")
   (if (and last? (= current-target :lua)) (set tr " end "))
-  (if first?
-      (? (= current-target :js)
-	 (cat "if(" cond1 "){" body1 "}")
-	 (cat "if " cond1 " then " body1 tr))
+  (if (and first? (= current-target :js))
+      (cat "if(" cond1 "){" body1 "}")
+      first?
+      (cat "if " cond1 " then " body1 tr)
+      (and (= condition nil) (= current-target :js))
+      (cat "else{" body1 "}")
       (= condition nil)
-      (? (= current-target :js)
-         (cat "else{" body1 "}")
-         (cat " else " body1 " end "))
-    (? (= current-target :js)
-       (cat "else if(" cond1 "){" body1 "}")
-       (cat " elseif " cond1 " then " body1 tr))))
+      (cat " else " body1 " end ")
+      (= current-target :js)
+      (cat "else if(" cond1 "){" body1 "}")
+    (cat " elseif " cond1 " then " body1 tr)))
 
 (defun compile-if (form tail?)
   (local str "")
@@ -474,12 +472,12 @@
 
 (defun compile-not (form)
   (local expr (compile (at form 0)))
-  (local open (? (= current-target :js) "!(" "(not "))
+  (local open (if (= current-target :js) "!(" "(not "))
   (cat open expr ")"))
 
 (defun compile-local (form)
   (local lh (compile (at form 0)))
-  (local keyword (? (= current-target :js) "var " "local "))
+  (local keyword (if (= current-target :js) "var " "local "))
   (if (= (at form 1) nil)
       (cat keyword lh)
     (do (local rh (compile (at form 1)))
@@ -488,13 +486,13 @@
 (defun compile-while (form)
   (local condition (compile (at form 0)))
   (local body (compile-body (sub form 1)))
-  (? (= current-target :js)
-     (cat "while(" condition "){" body "}")
-     (cat "while " condition " do " body " end ")))
+  (if (= current-target :js)
+      (cat "while(" condition "){" body "}")
+    (cat "while " condition " do " body " end ")))
 
 (defun compile-list (forms quoted?)
-  (local open (? (= current-target :lua) "{" "["))
-  (local close (? (= current-target :lua) "}" "]"))
+  (local open (if (= current-target :lua) "{" "["))
+  (local close (if (= current-target :lua) "}" "]"))
   (local str "")
   (across (forms x i)
     (if (and (list? x) (= (at x 0) "unquote-splicing"))
@@ -503,13 +501,13 @@
 	    (set open (cat "join(" open))
 	    (set close (cat close ",join(" x1 "," x2 "))"))
 	    break)
-      (do (local x1 (? quoted? (quote-form x) (compile x)))
+      (do (local x1 (if quoted? (quote-form x) (compile x)))
 	  (set str (cat str x1))
 	  (if (< i (- (length forms) 1)) (set str (cat str ","))))))
   (cat open str close))
 
 (defun compile-table (forms)
-  (local sep (? (= current-target :lua) "=" ":"))
+  (local sep (if (= current-target :lua) "=" ":"))
   (local str "{")
   (local i 0)
   (while (< i (- (length forms) 1))
@@ -570,7 +568,7 @@
   (if (and (not stmt?) (get sp :stmt?))
       (compile '((lambda () ,form)) false tail?)
     (do (local tr? (and stmt? (not (get sp :self-tr))))
-	(local tr (? tr? ";" ""))
+	(local tr (if tr? ";" ""))
 	(local fn (get sp :compiler))
 	(cat (fn (sub form 1) tail?) tr))))
 
@@ -598,7 +596,7 @@
     true))
 
 (defun compile (form stmt? tail?)
-  (local tr (? stmt? ";" ""))
+  (local tr (if stmt? ";" ""))
   (if (and tail? (can-return? form))
       (set form '(return ,form)))
   (if (= form nil) ""
@@ -649,9 +647,8 @@
   (assert-equal true (not false))
   (assert-equal true (or true false))
   (assert-equal false (and true false))
-  (assert-equal 17 (? true 17 18))
-  (assert-equal 18 (? false 17 18))
-  (assert-equal 3 (if true 3 59))
+  (assert-equal 17 (if true 17 18))
+  (assert-equal 18 (if false 17 18))
   ;; strings
   (assert-equal "foo" "foo")
   (assert-equal "\"bar\"" "\"bar\"")
