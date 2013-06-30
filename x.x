@@ -25,6 +25,13 @@
       ,@body
       (set ,i (+ ,i 1)))))
 
+(defmacro make-set (elements...)
+  (local form '(table))
+  (across (elements x)
+    (push form x)
+    (push form true))
+  form)
+
 (defmacro ? (a b c) '(or (and ,a ,b) ,c))
 
 ;; languages
@@ -177,19 +184,11 @@
 
 ;;; reader
 
+(set delimiters (make-set "(" ")" ";" "\n"))
 (set eof (table))
-
-(set delimiters (table))
-(set (get delimiters "(") true)
-(set (get delimiters ")") true)
-(set (get delimiters ";") true)
 (set (get delimiters eof) true)
-(set (get delimiters "\n") true)
 
-(set whitespace (table))
-(set (get whitespace " ") true)
-(set (get whitespace "\t") true)
-(set (get whitespace "\n") true)
+(set whitespace (make-set " " "\t" "\n"))
 
 (defun make-stream (str)
   (table pos 0 string str len (length str)))
@@ -492,6 +491,8 @@
   (while (< i (- (length forms) 1))
     (local k (compile (at forms i)))
     (local v (compile (at forms (+ i 1))))
+    (if (and (= current-target 'lua) (string-literal? k))
+	(set k (cat "[" k "]")))
     (set str (cat str k sep v))
     (if (< i (- (length forms) 2)) (set str (cat str ",")))
     (set i (+ i 2)))
@@ -682,7 +683,12 @@
   (set (get t 'foo) 17)
   (assert-equal (table foo 17) t)
   (set (get t 'bar) 42)
-  (assert-equal (table foo 17 bar 42) t)
+  (assert-equal (table foo 17 'bar 42) t)
+  ;; sets
+  (local s (make-set a b c))
+  (assert-equal true (get s 'a))
+  (assert-equal true (get s 'c))
+  (assert-equal nil (get s 'x))
   ;; iteration
   (local x 0)
   (local l '(1 2 3 4 5))
