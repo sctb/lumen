@@ -326,7 +326,6 @@
 (defun operator? (form) (not (= (get-op (at form 0)) nil)))
 (defun special? (form) (not (= (get special (at form 0)) nil)))
 (defun macro-call? (form) (not (= (get macros (at form 0)) nil)))
-(defun macro-definition? (form) (= (at form 0) "defmacro"))
 
 (defun compile-args (forms compile?)
   (local str "(")
