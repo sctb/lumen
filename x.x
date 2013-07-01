@@ -8,7 +8,8 @@
 (defmacro at (arr i)
   (if (and (= current-target :lua) (number? i))
       (set i (+ i 1))
-    (= current-target :lua) (set i '(+ ,i 1)))
+      (= current-target :lua) 
+      (set i '(+ ,i 1)))
   '(get ,arr ,i))
 
 (defmacro across (args body...)
