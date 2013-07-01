@@ -1,9 +1,6 @@
 ;; -*- mode: lisp -*-
 
-
 ;;; library
-
-;; macros
 
 (defmacro at (arr i)
   (if (and (= current-target :lua) (number? i))
