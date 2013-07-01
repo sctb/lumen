@@ -132,6 +132,7 @@
 (defun atom? (x) (not (composite? x)))
 (defun table? (x) (and (composite? x) (= (at x 0) nil)))
 (defun list? (x) (and (composite? x) (not (= (at x 0) nil))))
+(defun keyword? (x) (and (list? x) (= (at x 0) "keyword")))
 
 ;; numbers
 
@@ -262,7 +263,7 @@
 
 (defun read-keyword (s)
   (read-char s) ; :
-  (cat "\"" (read-symbol s) "\""))
+  '(keyword ,(read-symbol s)))
 
 (defun read-eof (s)
   (read-char s)) ; eof
@@ -456,6 +457,9 @@
       (cat "function " name args1 "{" body1 "}")
     (cat "function " name args1 body1 " end ")))
 
+(defun compile-keyword (form)
+  (compile-to-string (at form 0)))
+
 (defun compile-get (form)
   (local object (compile (at form 0)))
   (local key (compile (at form 1)))
@@ -581,6 +585,7 @@
    "local" (table :compiler compile-local :stmt? true)
    "set" (table :compiler compile-set :stmt? true)
    "each" (table :compiler compile-each :stmt? true)
+   "keyword" (table :compiler compile-keyword)
    "get" (table :compiler compile-get)
    "dot" (table :compiler compile-dot)
    "not" (table :compiler compile-not)
