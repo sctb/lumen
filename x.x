@@ -109,12 +109,12 @@
   (target
     (js (fs.readFileSync path :utf8))
     (lua (do (local f (io.open path))
-	     (f:read "*a")))))
+	     (f:read :*a)))))
 
 (defun write-file (path data)
   (target
     (js (fs.writeFileSync path data :utf8))
-    (lua (do (local f (io.open path "w"))
+    (lua (do (local f (io.open path :w))
 	     (f:write data)))))
 
 (target (js (defun print (x) (console.log x))))
@@ -124,15 +124,15 @@
 
 ;; predicates
 
-(defun string? (x) (= (type x) "string"))
+(defun string? (x) (= (type x) :string))
 (defun string-literal? (x) (and (string? x) (= (char x 0) "\"")))
-(defun number? (x) (= (type x) "number"))
-(defun boolean? (x) (= (type x) "boolean"))
-(defun composite? (x) (= (type x) (target (js "object") (lua "table"))))
+(defun number? (x) (= (type x) :number))
+(defun boolean? (x) (= (type x) :boolean))
+(defun composite? (x) (= (type x) (target (js :object) (lua :table))))
 (defun atom? (x) (not (composite? x)))
 (defun table? (x) (and (composite? x) (= (at x 0) nil)))
 (defun list? (x) (and (composite? x) (not (= (at x 0) nil))))
-(defun keyword? (x) (and (list? x) (= (at x 0) "keyword")))
+(defun keyword? (x) (and (list? x) (= (at x 0) :keyword)))
 
 ;; numbers
 
@@ -252,14 +252,14 @@
 
 (defun read-quote (s)
   (read-char s) ; '
-  (list "quote" (read s)))
+  '(quote ,(read s)))
 
 (defun read-unquote (s)
   (read-char s) ; ,
   (if (= (peek-char s) "@")
       (do (read-char s) ; @
-	  (list "unquote-splicing" (read s)))
-    (list "unquote" (read s))))
+	  '(unquote-splicing ,(read s)))
+    (list 'unquote (read s))))
 
 (defun read-keyword (s)
   (read-char s) ; :
@@ -548,7 +548,7 @@
 
 (defun quote-form (form)
   (if (atom? form) (compile-to-string form)
-      (= (at form 0) "unquote") (compile (at form 1))
+      (= (at form 0) 'unquote) (compile (at form 1))
     (compile-list form true)))
 
 (defun compile-quote (forms)
