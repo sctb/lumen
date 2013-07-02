@@ -290,28 +290,11 @@
 
 ;;; compiler
 
-(set operators (table))
-
-(set (get operators 'common) (table))
-(set (get (get operators 'common) "+") "+")
-(set (get (get operators 'common) "-") "-")
-(set (get (get operators 'common) "*") "*")
-(set (get (get operators 'common) "/") "/")
-(set (get (get operators 'common) "<") "<")
-(set (get (get operators 'common) ">") ">")
-(set (get (get operators 'common) "=") "==")
-(set (get (get operators 'common) "<=") "<=")
-(set (get (get operators 'common) ">=") ">=")
-
-(set (get operators :js) (table))
-(set (get (get operators :js) "and") "&&")
-(set (get (get operators :js) "or") "||")
-(set (get (get operators :js) "cat") "+")
-
-(set (get operators :lua) (table))
-(set (get (get operators :lua) "and") " and ")
-(set (get (get operators :lua) "or") " or ")
-(set (get (get operators :lua) "cat") "..")
+(set operators
+  (table :common (table "+" "+" "-" "-" "*" "*" "/" "/" "<" "<"
+			">" ">" "=" "==" "<=" "<=" ">=" ">=")
+	 :js (table "and" "&&" "or" "||" "cat" "+")
+	 :lua (table "and" " and " "or" " or " "cat" "..")))
 
 (defun get-op (op)
   (or (get (get operators 'common) op)
