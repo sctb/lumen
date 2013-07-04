@@ -3,9 +3,9 @@
 ;;; library
 
 (defmacro at (arr i)
-  (if (and (= current-target :lua) (number? i))
+  (if (and (= current-target 'lua) (number? i))
       (set i (+ i 1))
-      (= current-target :lua) 
+      (= current-target 'lua)
       (set i '(+ ,i 1)))
   '(get ,arr ,i))
 
@@ -32,7 +32,7 @@
 
 ;; languages
 
-(set current-target :js)
+(set current-target 'js)
 
 (defmacro target (clauses...)
   (across (clauses clause)
@@ -40,7 +40,7 @@
 	(return (at clause 1)))))
 
 (set current-language
-  (target (js :js) (lua :lua)))
+  (target (js 'js) (lua 'lua)))
 
 ;; sequences
 
@@ -100,18 +100,18 @@
 
 ;; io
 
-(target (js (set fs (require :fs))))
+(target (js (set fs (require 'fs))))
 
 (defun read-file (path)
   (target
-    (js (fs.readFileSync path :utf8))
+    (js (fs.readFileSync path 'utf8))
     (lua (do (local f (io.open path))
-	     (f:read :*a)))))
+	     (f:read '*a)))))
 
 (defun write-file (path data)
   (target
-    (js (fs.writeFileSync path data :utf8))
-    (lua (do (local f (io.open path :w))
+    (js (fs.writeFileSync path data 'utf8))
+    (lua (do (local f (io.open path 'w))
 	     (f:write data)))))
 
 (target (js (defun print (x) (console.log x))))
@@ -121,15 +121,15 @@
 
 ;; predicates
 
-(defun string? (x) (= (type x) :string))
+(defun string? (x) (= (type x) 'string))
 (defun string-literal? (x) (and (string? x) (= (char x 0) "\"")))
-(defun number? (x) (= (type x) :number))
-(defun boolean? (x) (= (type x) :boolean))
-(defun composite? (x) (= (type x) (target (js :object) (lua :table))))
+(defun number? (x) (= (type x) 'number))
+(defun boolean? (x) (= (type x) 'boolean))
+(defun composite? (x) (= (type x) (target (js 'object) (lua 'table))))
 (defun atom? (x) (not (composite? x)))
 (defun table? (x) (and (composite? x) (= (at x 0) nil)))
 (defun list? (x) (and (composite? x) (not (= (at x 0) nil))))
-(defun keyword? (x) (and (list? x) (= (at x 0) :keyword)))
+(defun keyword? (x) (and (list? x) (= (at x 0) 'keyword)))
 
 ;; numbers
 
@@ -297,16 +297,16 @@
 	 :lua (table "and" " and " "or" " or " "cat" "..")))
 
 (defun get-op (op)
-  (or (get (get operators 'common) op)
+  (or (get (get operators :common) op)
       (get (get operators current-target) op)))
 
 (set macros (table))
 
 (defun call? (type form)
   (if (not (list? form)) false
-      (= type :operator) (not (= (get-op (at form 0)) nil))
-      (= type :special) (not (= (get special (at form 0)) nil))
-      (= type :macro) (not (= (get macros (at form 0)) nil))
+      (= type 'operator) (not (= (get-op (at form 0)) nil))
+      (= type 'special) (not (= (get special (at form 0)) nil))
+      (= type 'macro) (not (= (get macros (at form 0)) nil))
     false))
 
 (defun compile-args (forms compile?)
@@ -340,7 +340,7 @@
 
 (defun compile-atom (form)
   (if (= form "nil")
-      (if (= current-target :js) "undefined" "nil")
+      (if (= current-target 'js) "undefined" "nil")
       (and (string? form) (not (string-literal? form)))
       (normalize form)
     (to-string form)))
@@ -348,10 +348,23 @@
 (defun compile-call (form)
   (local fn (at form 0))
   (local fn1 (compile fn))
-  (local args (compile-args (sub form 1) true))
-  (if (list? fn) (cat "(" fn1 ")" args)
-      (string? fn) (cat fn1 args)
+  (local args (collect-args (sub form 1)))
+  (local args1 (compile-args args true))
+  (if (list? fn) (cat "(" fn1 ")" args1)
+      (string? fn) (cat fn1 args1)
     (error "Invalid function call")))
+
+(defun collect-args (args)
+  (local args1 '())
+  (local table '(table))
+  (across (args arg i)
+    (if (keyword? arg)
+	(do (set i (+ i 1))
+	    (push table arg)
+	    (push table (at args i)))
+      (push args1 arg)))
+  (if (> (length table) 1) (push args1 table))
+  args1)
 
 (defun compile-operator (form)
   (local str "(")
@@ -374,16 +387,16 @@
 (defun compile-branch (condition body first? last? tail?)
   (local cond1 (compile condition))
   (local body1 (compile body true tail?))
-  (local tr (if (and last? (= current-target :lua)) " end " ""))
-  (if (and first? (= current-target :js))
+  (local tr (if (and last? (= current-target 'lua)) " end " ""))
+  (if (and first? (= current-target 'js))
       (cat "if(" cond1 "){" body1 "}")
       first?
       (cat "if " cond1 " then " body1 tr)
-      (and (= condition nil) (= current-target :js))
+      (and (= condition nil) (= current-target 'js))
       (cat "else{" body1 "}")
       (= condition nil)
       (cat " else " body1 " end ")
-      (= current-target :js)
+      (= current-target 'js)
       (cat "else if(" cond1 "){" body1 "}")
     (cat " elseif " cond1 " then " body1 tr)))
 
@@ -404,18 +417,46 @@
 (defun vararg? (name)
   (= (sub name (- (length name) 3) (length name)) "..."))
 
+(defun keyarg? (form)
+  (or (keyword? form) (and (list? form) (keyword? (at form 0)))))
+
 (defun bind-arguments (args body)
+  (local args1 '())
+  (local keywords '())
+  (local keyarg)
   (across (args arg i)
     (if (vararg? arg)
-	(do (set args (sub args 0 i))
-	    (local name (sub arg 0 (- (length arg) 3)))
+	(do (local name (sub arg 0 (- (length arg) 3)))
 	    (local expr
-	      (if (= current-target :js)
-		  '(Array.prototype.slice.call arguments ,i)
-		(do (push args '...) '(list ...))))
-	    (set body (join '((local ,name ,expr)) body))
-	    break)))
-  (list args body))
+	      (if (= current-target 'js)
+		  '(Array.prototype.slice.call arguments ,(length args1))
+		(do (push args1 '...) '(list ...))))
+	    (set body '((local ,name ,expr) ,@body))
+	    break)			; no more args
+        (keyarg? arg)
+	(do (if (= keyarg nil)
+		(do (set keyarg (make-unique))
+		    (push args1 keyarg)))
+	    (if (keyword? arg)
+		(push keywords (list arg nil))
+	      (push keywords arg)))
+	(= keyarg nil) (push args1 arg)))
+  (if keyarg
+      (list args1 (join (bind-keywords keyarg keywords) body))
+    (list args1 body)))
+
+(defun bind-keywords (keyarg keywords)
+  (local bindings '((set ,keyarg (or ,keyarg (table)))))
+  (across (keywords pair)
+    (local keyword (at pair 0))
+    (local name (at keyword 1))
+    (local fallback (at pair 1))
+    (local binding
+      (if (= fallback nil)
+	  '(local ,name (get ,keyarg ,keyword))
+	'(local ,name (or (get ,keyarg ,keyword) ,fallback))))
+    (push bindings binding))
+  bindings)
 
 (defun compile-defun (form)
   (local name (normalize (at form 0)))
@@ -433,7 +474,7 @@
   (local expanded (bind-arguments args body))
   (local args1 (compile-args (at expanded 0)))
   (local body1 (compile-body (at expanded 1) true))
-  (if (= current-target :js)
+  (if (= current-target 'js)
       (cat "function " name args1 "{" body1 "}")
     (cat "function " name args1 body1 " end ")))
 
@@ -443,7 +484,7 @@
 (defun compile-get (form)
   (local object (compile (at form 0)))
   (local key (compile (at form 1)))
-  (if (and (= current-target :lua)
+  (if (and (= current-target 'lua)
 	   (= (char object 0) "{"))
       (set object (cat "(" object ")")))
   (cat object "[" key "]"))
@@ -455,12 +496,12 @@
 
 (defun compile-not (form)
   (local expr (compile (at form 0)))
-  (local open (if (= current-target :js) "!(" "(not "))
+  (local open (if (= current-target 'js) "!(" "(not "))
   (cat open expr ")"))
 
 (defun compile-local (form)
   (local lh (compile (at form 0)))
-  (local keyword (if (= current-target :js) "var " "local "))
+  (local keyword (if (= current-target 'js) "var " "local "))
   (if (= (at form 1) nil)
       (cat keyword lh)
     (do (local rh (compile (at form 1)))
@@ -469,13 +510,13 @@
 (defun compile-while (form)
   (local condition (compile (at form 0)))
   (local body (compile-body (sub form 1)))
-  (if (= current-target :js)
+  (if (= current-target 'js)
       (cat "while(" condition "){" body "}")
     (cat "while " condition " do " body " end ")))
 
 (defun compile-list (forms quoted?)
-  (local open (if (= current-target :lua) "{" "["))
-  (local close (if (= current-target :lua) "}" "]"))
+  (local open (if (= current-target 'lua) "{" "["))
+  (local close (if (= current-target 'lua) "}" "]"))
   (local str "")
   (across (forms x i)
     (if (and (list? x) (= (at x 0) "unquote-splicing"))
@@ -490,13 +531,13 @@
   (cat open str close))
 
 (defun compile-table (forms)
-  (local sep (if (= current-target :lua) "=" ":"))
+  (local sep (if (= current-target 'lua) "=" ":"))
   (local str "{")
   (local i 0)
   (while (< i (- (length forms) 1))
     (local k (compile (at forms i)))
     (local v (compile (at forms (+ i 1))))
-    (if (and (= current-target :lua) (string-literal? k))
+    (if (and (= current-target 'lua) (string-literal? k))
 	(set k (cat "[" k "]")))
     (set str (cat str k sep v))
     (if (< i (- (length forms) 2)) (set str (cat str ",")))
@@ -509,7 +550,7 @@
   (local k (at args 1))
   (local v (at args 2))
   (local body (sub forms 1))
-  (if (= current-target :lua)
+  (if (= current-target 'lua)
       (do (local body1 (compile-body body))
 	  (local t1 (compile t))
 	  (cat "for " k "," v " in pairs(" t1 ") do " body1 " end"))
@@ -575,8 +616,8 @@
    "lambda" (table :compiler compile-lambda)))
 
 (defun can-return? (form)
-  (if (call? :macro form) false
-      (call? :special form) (not (get (get special (at form 0)) :stmt?))
+  (if (call? 'macro form) false
+      (call? 'special form) (not (get (get special (at form 0)) :stmt?))
     true))
 
 (defun compile (form stmt? tail?)
@@ -585,11 +626,11 @@
       (set form '(return ,form)))
   (if (= form nil) ""
       (atom? form) (cat (compile-atom form) tr)
-      (call? :operator form)
+      (call? 'operator form)
       (cat (compile-operator form) tr)
-      (call? :special form)
+      (call? 'special form)
       (compile-special form stmt? tail?)
-      (call? :macro form)
+      (call? 'macro form)
       (do (local fn (get macros (at form 0)))
 	  (local form (apply fn (sub form 1)))
 	  (compile form stmt? tail?))
@@ -641,7 +682,6 @@
   (assert-equal "foobar" (cat "foo" "bar"))
   (assert-equal 2 (length (cat "\"" "\"")))
   (assert-equal 'a "a")
-  (assert-equal 'a :a)
   (assert-equal 'a (quote a))
   (assert-equal "a" (char "bar" 1))
   (assert-equal "uu" (sub "quux" 1 3))
@@ -683,6 +723,9 @@
   (set f (lambda (a...) a))
   (assert-equal '(a b) (f 'a 'b))
   (assert-equal 42 ((lambda () 42)))
+  (assert-equal 12 ((lambda (a :b) (+ a b)) 10 :b 2))
+  (set f (lambda (a (:b 5)) (+ a b)))
+  (assert-equal 15 (f 10))
   ;; tables
   (local t (table))
   (set (get t 'foo) 17)
@@ -725,8 +768,8 @@
       (print (cat "=> " (to-string result)))))
   (target
    (js (do (process.stdin.resume)
-	   (process.stdin.setEncoding :utf8)
-	   (process.stdin.on :data execute)))
+	   (process.stdin.setEncoding 'utf8)
+	   (process.stdin.on 'data execute)))
    (lua (while true
 	  (local str (io.stdin:read))
 	  (if str (execute str) break)))))
