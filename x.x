@@ -129,7 +129,6 @@
 (defun atom? (x) (not (composite? x)))
 (defun table? (x) (and (composite? x) (= (at x 0) nil)))
 (defun list? (x) (and (composite? x) (not (= (at x 0) nil))))
-(defun keyword? (x) (and (list? x) (= (at x 0) 'keyword)))
 
 ;; numbers
 
@@ -258,10 +257,6 @@
 	  '(unquote-splicing ,(read s)))
     (list 'unquote (read s))))
 
-(defun read-keyword (s)
-  (read-char s) ; :
-  '(keyword ,(read-symbol s)))
-
 (defun read-eof (s)
   (read-char s)) ; eof
 
@@ -274,7 +269,6 @@
 	 "\"" read-string
 	 "'" read-quote
 	 "," read-unquote
-	 ":" read-keyword
 	 "" read-atom ; default
 	 ))
 (set (get read-table eof) read-eof)
@@ -291,13 +285,13 @@
 ;;; compiler
 
 (set operators
-  (table :common (table "+" "+" "-" "-" "*" "*" "/" "/" "<" "<"
+  (table 'common (table "+" "+" "-" "-" "*" "*" "/" "/" "<" "<"
 			">" ">" "=" "==" "<=" "<=" ">=" ">=")
-	 :js (table "and" "&&" "or" "||" "cat" "+")
-	 :lua (table "and" " and " "or" " or " "cat" "..")))
+	 'js (table "and" "&&" "or" "||" "cat" "+")
+	 'lua (table "and" " and " "or" " or " "cat" "..")))
 
 (defun get-op (op)
-  (or (get (get operators :common) op)
+  (or (get (get operators 'common) op)
       (get (get operators current-target) op)))
 
 (set macros (table))
@@ -348,23 +342,10 @@
 (defun compile-call (form)
   (local fn (at form 0))
   (local fn1 (compile fn))
-  (local args (collect-args (sub form 1)))
-  (local args1 (compile-args args true))
-  (if (list? fn) (cat "(" fn1 ")" args1)
-      (string? fn) (cat fn1 args1)
+  (local args (compile-args (sub form 1) true))
+  (if (list? fn) (cat "(" fn1 ")" args)
+      (string? fn) (cat fn1 args)
     (error "Invalid function call")))
-
-(defun collect-args (args)
-  (local args1 '())
-  (local table '(table))
-  (across (args arg i)
-    (if (keyword? arg)
-	(do (set i (+ i 1))
-	    (push table arg)
-	    (push table (at args i)))
-      (push args1 arg)))
-  (if (> (length table) 1) (push args1 table))
-  args1)
 
 (defun compile-operator (form)
   (local str "(")
@@ -417,14 +398,9 @@
 (defun vararg? (name)
   (= (sub name (- (length name) 3) (length name)) "..."))
 
-(defun keyarg? (form)
-  (or (keyword? form) (and (list? form) (keyword? (at form 0)))))
-
 (defun bind-arguments (args body)
   (local args1 '())
-  (local keywords '())
-  (local keyarg)
-  (across (args arg i)
+  (across (args arg)
     (if (vararg? arg)
 	(do (local name (sub arg 0 (- (length arg) 3)))
 	    (local expr
@@ -433,30 +409,8 @@
 		(do (push args1 '...) '(list ...))))
 	    (set body '((local ,name ,expr) ,@body))
 	    break)			; no more args
-        (keyarg? arg)
-	(do (if (= keyarg nil)
-		(do (set keyarg (make-unique))
-		    (push args1 keyarg)))
-	    (if (keyword? arg)
-		(push keywords (list arg nil))
-	      (push keywords arg)))
-	(= keyarg nil) (push args1 arg)))
-  (if keyarg
-      (list args1 (join (bind-keywords keyarg keywords) body))
-    (list args1 body)))
-
-(defun bind-keywords (keyarg keywords)
-  (local bindings '((set ,keyarg (or ,keyarg (table)))))
-  (across (keywords pair)
-    (local keyword (at pair 0))
-    (local name (at keyword 1))
-    (local fallback (at pair 1))
-    (local binding
-      (if (= fallback nil)
-	  '(local ,name (get ,keyarg ,keyword))
-	'(local ,name (or (get ,keyarg ,keyword) ,fallback))))
-    (push bindings binding))
-  bindings)
+      (push args1 arg)))
+  (list args1 body))
 
 (defun compile-defun (form)
   (local name (normalize (at form 0)))
@@ -477,9 +431,6 @@
   (if (= current-target 'js)
       (cat "function " name args1 "{" body1 "}")
     (cat "function " name args1 body1 " end ")))
-
-(defun compile-keyword (form)
-  (compile-to-string (at form 0)))
 
 (defun compile-get (form)
   (local object (compile (at form 0)))
@@ -589,35 +540,34 @@
 (defun compile-special (form stmt? tail?)
   (local name (at form 0))
   (local sp (get special name))
-  (if (and (not stmt?) (get sp :stmt?))
+  (if (and (not stmt?) (get sp 'stmt?))
       (compile '((lambda () ,form)) false tail?)
-    (do (local tr? (and stmt? (not (get sp :self-tr))))
+    (do (local tr? (and stmt? (not (get sp 'self-tr))))
 	(local tr (if tr? ";" ""))
-	(local fn (get sp :compiler))
+	(local fn (get sp 'compiler))
 	(cat (fn (sub form 1) tail?) tr))))
 
 (set special
   (table
-   "do" (table :compiler compile-do :self-tr true :stmt? true)
-   "if" (table :compiler compile-if :self-tr true :stmt? true)
-   "while" (table :compiler compile-while :self-tr true :stmt? true)
-   "defun" (table :compiler compile-defun :self-tr true :stmt? true)
-   "defmacro" (table :compiler compile-defmacro :self-tr true :stmt? true)
-   "local" (table :compiler compile-local :stmt? true)
-   "set" (table :compiler compile-set :stmt? true)
-   "each" (table :compiler compile-each :stmt? true)
-   "keyword" (table :compiler compile-keyword)
-   "get" (table :compiler compile-get)
-   "dot" (table :compiler compile-dot)
-   "not" (table :compiler compile-not)
-   "list" (table :compiler compile-list)
-   "table" (table :compiler compile-table)
-   "quote" (table :compiler compile-quote)
-   "lambda" (table :compiler compile-lambda)))
+   "do" (table 'compiler compile-do 'self-tr true 'stmt? true)
+   "if" (table 'compiler compile-if 'self-tr true 'stmt? true)
+   "while" (table 'compiler compile-while 'self-tr true 'stmt? true)
+   "defun" (table 'compiler compile-defun 'self-tr true 'stmt? true)
+   "defmacro" (table 'compiler compile-defmacro 'self-tr true 'stmt? true)
+   "local" (table 'compiler compile-local 'stmt? true)
+   "set" (table 'compiler compile-set 'stmt? true)
+   "each" (table 'compiler compile-each 'stmt? true)
+   "get" (table 'compiler compile-get)
+   "dot" (table 'compiler compile-dot)
+   "not" (table 'compiler compile-not)
+   "list" (table 'compiler compile-list)
+   "table" (table 'compiler compile-table)
+   "quote" (table 'compiler compile-quote)
+   "lambda" (table 'compiler compile-lambda)))
 
 (defun can-return? (form)
   (if (call? 'macro form) false
-      (call? 'special form) (not (get (get special (at form 0)) :stmt?))
+      (call? 'special form) (not (get (get special (at form 0)) 'stmt?))
     true))
 
 (defun compile (form stmt? tail?)
@@ -723,9 +673,6 @@
   (set f (lambda (a...) a))
   (assert-equal '(a b) (f 'a 'b))
   (assert-equal 42 ((lambda () 42)))
-  (assert-equal 12 ((lambda (a :b) (+ a b)) 10 :b 2))
-  (set f (lambda (a (:b 5)) (+ a b)))
-  (assert-equal 15 (f 10))
   ;; tables
   (local t (table))
   (set (get t 'foo) 17)
