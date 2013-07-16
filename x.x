@@ -527,14 +527,11 @@
   (quote-form (at forms 0)))
 
 (defun compile-defmacro (form)
-  (local tmp current-target)
-  (set current-target current-language)
   (local name (at form 0))
-  (local lambda (sub form 1))
+  (local lambda '(lambda ,@(sub form 1)))
   (local register
-    '(set (get macros ,(compile-to-string name)) ,(compile-lambda lambda)))
-  (eval (compile register true))
-  (set current-target tmp)
+    '(set (get macros ,(compile-to-string name)) ,lambda))
+  (eval (compile-for-target current-language register true))
   "")
 
 (defun compile-special (form stmt? tail?)
@@ -601,6 +598,13 @@
   (across (files file)
     (set output (cat output (compile-file file))))
   output)
+
+(defun compile-for-target (target args...)
+  (local previous-target current-target)
+  (set current-target target)
+  (local result (apply compile args))
+  (set current-target previous-target)
+  result)
 
 
 ;;; tests
@@ -713,12 +717,8 @@
 ;;; interactive
 
 (defun eval-string (str)
-  (local tmp current-target)
-  (set current-target current-language)
   (local form (read-from-string str))
-  (local result (eval (compile form)))
-  (set current-target tmp)
-  result)
+  (eval (compile-for-target current-language form)))
 
 (defun interactive ()
   (local execute
