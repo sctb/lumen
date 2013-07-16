@@ -19,9 +19,9 @@ diff x.lua x1.lua
 
 test: main
 	@echo js
-	@node x.js -t
+	@node x.js -e "(run-tests)"
 	@echo lua
-	@lua x.lua -t
+	@lua x.lua -e "(run-tests)"
 
 clean:
 	@git checkout x.js
