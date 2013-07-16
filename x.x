@@ -116,6 +116,9 @@
 
 (target (js (defun print (x) (console.log x))))
 
+(defun write (x)
+  (target (js (process.stdout.write x)) (lua (io.write x))))
+
 (defun exit (code)
   (target (js (process.exit code)) (lua (os.exit code))))
 
@@ -723,7 +726,9 @@
 (defun interactive ()
   (local execute
     (lambda (str)
-      (print (cat "=> " (to-string (eval-string str))))))
+      (print (to-string (eval-string str)))
+      (write "> ")))
+  (write "> ")
   (target
    (js (do (process.stdin.resume)
 	   (process.stdin.setEncoding 'utf8)
