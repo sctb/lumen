@@ -2,9 +2,9 @@
 
 main: x.x
 	@echo x.js
-	@node x.js x.x
+	@node x.js x.x -o x.js
 	@echo x.lua
-	@lua x.lua x.x -l lua
+	@lua x.lua x.x -o x.lua -l lua
 
 check: main
 	@echo check...
