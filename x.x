@@ -2,6 +2,9 @@
 
 ;;; library
 
+(set macros (table))
+(set preserve-macros? true)
+
 (defmacro at (arr i)
   (if (and (= current-target 'lua) (number? i))
       (set i (+ i 1))
@@ -297,8 +300,6 @@
   (or (get (get operators 'common) op)
       (get (get operators current-target) op)))
 
-(set macros (table))
-
 (defun call? (type form)
   (if (not (list? form)) false
       (= type 'operator) (not (= (get-op (at form 0)) nil))
@@ -532,10 +533,12 @@
 (defun compile-defmacro (form)
   (local name (at form 0))
   (local lambda '(lambda ,@(sub form 1)))
-  (local register
-    '(set (get macros ,(compile-to-string name)) ,lambda))
-  (eval (compile-for-target current-language register true))
-  "")
+  (local register '(set (get macros ,(compile-to-string name)) ,lambda))
+  (local compiled (compile-for-target current-language register true))
+  (eval compiled)
+  (if (not preserve-macros?) ""
+      (not (= current-language current-target)) (compile register true)
+    compiled))
 
 (defun compile-special (form stmt? tail?)
   (local name (at form 0))
