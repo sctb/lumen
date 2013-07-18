@@ -1,30 +1,35 @@
 .PHONY: clean
 
 sources := lib.x reader.x compiler.x main.x
+jsboot := boot/x.js
+luaboot := boot/x.lua
 
 main: $(sources)
 	@echo x.js
-	@node x.js $(sources) -o x.js
+	@node $(jsboot) $(sources) -o $(jsboot)
 	@echo x.lua
-	@lua x.lua $(sources) -o x.lua
+	@lua $(luaboot) $(sources) -o $(luaboot)
 
 check: main
 	@echo check...
-	@lua x.lua $(sources) -o x.js -t js && \
-node x.js $(sources) -o x.js && \
-node x.js $(sources) -o x1.js && \
-diff x.js x1.js && \
-node x.js $(sources) -o x.lua -t lua && \
-lua x.lua $(sources) -o x.lua && \
-lua x.lua $(sources) -o x1.lua && \
-diff x.lua x1.lua
+	@mkdir -p tmp
+	@lua $(luaboot) $(sources) -o $(jsboot) -t js && \
+node $(jsboot) $(sources) -o $(jsboot) && \
+node $(jsboot) $(sources) -o tmp/x1.js && \
+diff $(jsboot) tmp/x1.js && \
+node $(jsboot) $(sources) -o $(luaboot) -t lua && \
+lua $(luaboot) $(sources) -o $(luaboot) && \
+lua $(luaboot) $(sources) -o tmp/x1.lua && \
+diff $(luaboot) tmp/x1.lua
 
 test: main
 	@echo js
-	@node x.js tests.x -e "(run-tests)"
+	@node $(jsboot) tests.x -e "(run-tests)"
 	@echo lua
-	@lua x.lua tests.x -e "(run-tests)"
+	@lua $(luaboot) tests.x -e "(run-tests)"
 
 clean:
-	@git checkout x.js
-	@git checkout x.lua
+	@git checkout $(jsboot)
+	@git checkout $(luaboot)
+	@rm -f tmp/x1*
+	@rm -d tmp
