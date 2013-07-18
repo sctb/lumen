@@ -3,7 +3,6 @@
 ;;; library
 
 (set macros (table))
-(set preserve-macros? true)
 
 (defmacro at (arr i)
   (if (and (= current-target 'lua) (number? i))
@@ -295,6 +294,8 @@
 			">" ">" "=" "==" "<=" "<=" ">=" ">=")
 	 'js (table "and" "&&" "or" "||" "cat" "+")
 	 'lua (table "and" " and " "or" " or " "cat" "..")))
+
+(set preserve-macros? true)
 
 (defun get-op (op)
   (or (get (get operators 'common) op)
