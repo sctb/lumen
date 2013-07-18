@@ -2,15 +2,19 @@
 
 main: x.x
 	@echo x.js
-	@node x.js x.x -o x.js
+	@node x.js x.x -o x.js -l js
 	@echo x.lua
 	@lua x.lua x.x -o x.lua -l lua
 
 check: main
 	@echo check...
-	@node x.js x.x -o x1.js && \
+	@lua x.lua x.x -o x.js -l js && \
+node x.js x.x -o x.js -l js && \
+node x.js x.x -o x1.js -l js && \
 diff x.js x1.js && \
-lua x.lua x.x -l lua -o x1.lua && \
+node x.js x.x -o x.lua -l lua && \
+lua x.lua x.x -o x.lua -l lua && \
+lua x.lua x.x -o x1.lua -l lua && \
 diff x.lua x1.lua
 
 test: main
