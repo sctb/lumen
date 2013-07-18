@@ -34,15 +34,15 @@
 
 ;; languages
 
-(set current-target 'js)
+(set current-target (current-language))
+
+(defmacro current-language ()
+  (cat "\"" current-target "\""))
 
 (defmacro target (clauses...)
   (across (clauses clause)
     (if (= (at clause 0) current-target)
 	(return (at clause 1)))))
-
-(set current-language
-  (target (js 'js) (lua 'lua)))
 
 ;; sequences
 
@@ -535,10 +535,10 @@
   (local name (at form 0))
   (local lambda '(lambda ,@(sub form 1)))
   (local register '(set (get macros ,(compile-to-string name)) ,lambda))
-  (local compiled (compile-for-target current-language register true))
+  (local compiled (compile-for-target (current-language) register true))
   (eval compiled)
   (if (not preserve-macros?) ""
-      (not (= current-language current-target)) (compile register true)
+      (not (= (current-language) current-target)) (compile register true)
     compiled))
 
 (defun compile-special (form stmt? tail?)
@@ -725,7 +725,7 @@
 
 (defun eval-string (str)
   (local form (read-from-string str))
-  (eval (compile-for-target current-language form)))
+  (eval (compile-for-target (current-language) form)))
 
 (defun interactive ()
   (local execute
