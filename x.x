@@ -721,17 +721,13 @@
   (print (cat " " passed " passed")))
 
 
-;;; interactive
+;;; REPL
 
-(defun eval-string (str)
-  (local form (read-from-string str))
-  (eval (compile-for-target (current-language) form)))
+(defun rep (str)
+  (print (to-string (eval (compile (read-from-string str))))))
 
-(defun interactive ()
-  (local execute
-    (lambda (str)
-      (print (to-string (eval-string str)))
-      (write "> ")))
+(defun repl ()
+  (local execute (lambda (str) (rep str) (write "> ")))
   (write "> ")
   (target
    (js (do (process.stdin.resume)
@@ -747,7 +743,7 @@
 (set args (target (js (sub process.argv 2)) (lua arg)))
 
 (defun usage ()
-  (print "usage: x [<inputs>] [-o <output>] [-l <language>] [-e <expr>]")
+  (print "usage: x [<inputs>] [-o <output>] [-t <target>] [-e <expr>]")
   (exit))
 
 (if (or (= (at args 0) "-h")
@@ -756,26 +752,22 @@
 
 (do (local inputs '())
     (local output nil)
+    (local target nil)
     (local expr nil)
     (across (args arg i)
-      (if (or (= arg "-o") (= arg "-l") (= arg "-e"))
+      (if (or (= arg "-o") (= arg "-t") (= arg "-e"))
 	  (if (= i (- (length args) 1))
 	      (print "missing argument for" arg)
 	    (do (set i (+ i 1))
 		(local arg2 (at args i))
-		(if (= arg "-o")
-		    (set output arg2)
-		    (= arg "-l")
-		    (set current-target arg2)
-		    (= arg "-e")
-		    (set expr arg2))))
+		(if (= arg "-o") (set output arg2)
+		    (= arg "-t") (set target arg2)
+		    (= arg "-e") (set expr arg2))))
 	  (= "-" (sub arg 0 1))
 	  (do (print "unrecognized option:" arg) (usage))
 	(push inputs arg)))
-    (local compiled (compile-files inputs))
     (if output
-	(write-file output compiled)
-      (do (eval compiled)
-	  (if expr
-	      (print (to-string (eval-string expr)))
-	    (interactive)))))
+	(do (if target (set current-target target))
+	    (write-file output (compile-files inputs)))
+      (do (eval (compile-files inputs))
+	  (if expr (rep expr) (repl)))))
