@@ -6,8 +6,6 @@
 	 'js (table "and" "&&" "or" "||" "cat" "+")
 	 'lua (table "and" " and " "or" " or " "cat" "..")))
 
-(set macros (table))
-
 (defun get-op (op)
   (or (get (get operators 'common) op)
       (get (get operators current-target) op)))

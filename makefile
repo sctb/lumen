@@ -1,6 +1,6 @@
 .PHONY: clean
 
-sources := lib.x reader.x compiler.x main.x
+sources := boot.x lib.x reader.x compiler.x main.x
 jsboot := boot/x.js
 luaboot := boot/x.lua
 

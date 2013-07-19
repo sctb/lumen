@@ -15,6 +15,7 @@
 	  (if str (execute str) break)))))
 
 (set args (target (js (sub process.argv 2)) (lua arg)))
+(set standard '(boot.x lib.x reader.x compiler.x))
 
 (defun usage ()
   (print "usage: x [<inputs>] [-o <output>] [-t <target>] [-e <expr>]")
@@ -43,6 +44,6 @@
     (if output
 	(do (if target (set current-target target))
 	    (write-file output (compile-files inputs)))
-      (do (set inputs (join '(lib.x reader.x compiler.x) inputs))
-	  (eval (compile-files inputs))
+      (do (across ((join standard inputs) file)
+	    (eval (compile-file file)))
 	  (if expr (rep expr) (repl)))))

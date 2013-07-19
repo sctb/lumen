@@ -145,6 +145,7 @@
   (if (= x nil) "nil"
       (boolean? x) (if x "true" "false")
       (atom? x) (cat x "")
+      (table? x) "#<table>"
     (do (local str "(")
 	(across (x y i)
 	  (set str (cat str (to-string y)))
