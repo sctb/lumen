@@ -243,7 +243,7 @@
 (defun compile-defmacro (form)
   (local name (at form 0))
   (local lambda '(lambda ,@(sub form 1)))
-  (local register '(set (get macros ,(compile-to-string name)) ,lambda))
+  (local register '(set (get macros ',name) ,lambda))
   (eval (compile-for-target (current-language) register true))
   "")
 
