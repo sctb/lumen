@@ -30,9 +30,7 @@
 
 ;; languages
 
-(defmacro current-language ()
-  (cat "\"" current-target "\""))
-
+(defmacro current-language ()  '',current-target)
 (set current-target (current-language))
 
 (defmacro target (clauses...)
