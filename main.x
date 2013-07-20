@@ -21,15 +21,17 @@
   (print "usage: x [<inputs>] [-o <output>] [-t <target>] [-e <expr>]")
   (exit))
 
-(if (or (= (at args 0) "-h")
-	(= (at args 0) "--help"))
+(set dir (at args 0))
+
+(if (or (= (at args 1) "-h")
+	(= (at args 1) "--help"))
     (usage))
 
 (do (local inputs '())
     (local output nil)
     (local target nil)
     (local expr nil)
-    (across (args arg i)
+    (across (args arg i 1)
       (if (or (= arg "-o") (= arg "-t") (= arg "-e"))
 	  (if (= i (- (length args) 1))
 	      (print "missing argument for" arg)
@@ -44,6 +46,8 @@
     (if output
 	(do (if target (set current-target target))
 	    (write-file output (compile-files inputs)))
-      (do (across ((join standard inputs) file)
+      (do (across (standard file)
+	    (eval (compile-file (cat dir "/" file))))
+	  (across (inputs file)
 	    (eval (compile-file file)))
 	  (if expr (rep expr) (repl)))))
