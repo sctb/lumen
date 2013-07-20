@@ -225,16 +225,14 @@
 (defmacro unquote () (error "UNQUOTE not inside QUOTE"))
 (defmacro unquote-splicing () (error "UNQUOTE-SPLICING not inside QUOTE"))
 
-(defun compile-to-string (form)
-  (if (string-literal? form)
-      (do (local str (sub form 1 (- (length form) 1)))
-	  (cat "\"\\\"" str "\\\"\""))
-      (string? form) (cat "\"" form "\"")
-    (to-string form)))
-
 (defun quote-form (form)
-  (if (atom? form) (compile-to-string form)
-      (= (at form 0) 'unquote) (compile (at form 1))
+  (if (atom? form)
+      (if (string-literal? form)
+	  (do (local str (sub form 1 (- (length form) 1)))
+	      (cat "\"\\\"" str "\\\"\""))
+	(string? form) (cat "\"" form "\"")
+	(to-string form))
+    (= (at form 0) 'unquote) (compile (at form 1))
     (compile-list form true)))
 
 (defun compile-quote (forms)
