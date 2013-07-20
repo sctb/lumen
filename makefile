@@ -1,4 +1,4 @@
-.PHONY: all clean
+.PHONY: all test check clean
 
 SRCS := boot.x lib.x reader.x compiler.x main.x
 LUABOOT := boot/x.lua
