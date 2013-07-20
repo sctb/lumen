@@ -68,13 +68,17 @@
 
 (defun read-quote (s)
   (read-char s) ; '
-  '(quote ,(read s)))
+  `(quote ,(read s)))
+
+(defun read-quasiquote (s)
+  (read-char s) ; '
+  `(quasiquote ,(read s)))
 
 (defun read-unquote (s)
   (read-char s) ; ,
   (if (= (peek-char s) "@")
       (do (read-char s) ; @
-	  '(unquote-splicing ,(read s)))
+	  (list 'unquote-splicing (read s)))
     (list 'unquote (read s))))
 
 (defun read-eof (s)
@@ -88,6 +92,7 @@
 	 ")" read-close-paren-error
 	 "\"" read-string
 	 "'" read-quote
+	 "`" read-quasiquote
 	 "," read-unquote
 	 "" read-atom ; default
 	 ))

@@ -4,8 +4,8 @@
   (if (and (= current-target 'lua) (number? i))
       (set i (+ i 1))
       (= current-target 'lua)
-      (set i '(+ ,i 1)))
-  '(get ,arr ,i))
+      (set i `(+ ,i 1)))
+  `(get ,arr ,i))
 
 (defmacro across (args body...)
   (local l (at args 0))
@@ -13,7 +13,7 @@
   (local i (or (at args 2) (make-unique)))
   (local o (or (at args 3) 0))
   (local l1 (make-unique))
-  '(do
+  `(do
     (local ,i ,o)
     (local ,l1 ,l)
     (while (< ,i (length ,l1))
@@ -30,7 +30,7 @@
 
 ;; languages
 
-(defmacro current-language ()  '',current-target)
+(defmacro current-language ()  `',current-target)
 (set current-target (current-language))
 
 (defmacro target (clauses...)
