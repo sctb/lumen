@@ -41,7 +41,10 @@
 (defun read-atom (s)
   (local str (read-symbol s))
   (local n (parse-number str))
-  (if (= n nil) str n))
+  (if (not (= n nil)) n
+      (= str "true") true
+      (= str "false") false
+    str))
 
 (defun read-list (s)
   (read-char s) ; (
