@@ -1,16 +1,13 @@
 ;; -*- mode: lisp -*-
 
 (set delimiters (make-set "(" ")" ";" "\n"))
-(set eof (table))
-(set (get delimiters eof) true)
-
 (set whitespace (make-set " " "\t" "\n"))
 
 (defun make-stream (str)
   (table pos 0 string str len (length str)))
 
 (defun peek-char (s)
-  (if (< s.pos s.len) (char s.string s.pos) eof))
+  (if (< s.pos s.len) (char s.string s.pos)))
 
 (defun read-char (s)
   (local c (peek-char s))
@@ -99,12 +96,16 @@
 	 "," read-unquote
 	 "" read-atom ; default
 	 ))
-(set (get read-table eof) read-eof)
+
+(set eof (table))
 
 (defun read (s)
   (skip-non-code s)
   (local c (peek-char s))
-  (local f (or (get read-table c) (get read-table "")))
-  (f s))
+  (if c
+      ((or (get read-table c)
+	   (get read-table ""))
+       s)
+    eof))
 
 (defun read-from-string (str) (read (make-stream str)))
