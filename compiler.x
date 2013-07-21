@@ -164,6 +164,9 @@
   (local open (if (= current-target 'js) "!(" "(not "))
   (cat open expr ")"))
 
+(defun compile-return (form)
+  (compile-call `(return ,@form)))
+
 (defun compile-local (form)
   (local lh (compile (at form 0)))
   (local keyword (if (= current-target 'js) "var " "local "))
@@ -267,6 +270,7 @@
    "while" (table 'compiler compile-while 'self-tr true 'stmt? true)
    "defun" (table 'compiler compile-defun 'self-tr true 'stmt? true)
    "defmacro" (table 'compiler compile-defmacro 'self-tr true 'stmt? true)
+   "return" (table 'compiler compile-return 'stmt? true)
    "local" (table 'compiler compile-local 'stmt? true)
    "set" (table 'compiler compile-set 'stmt? true)
    "each" (table 'compiler compile-each 'stmt? true)
