@@ -8,16 +8,14 @@
   `(get ,arr ,i))
 
 (defmacro across (args body...)
-  (local l (at args 0))
-  (local v (at args 1))
   (local i (or (at args 2) (make-unique)))
-  (local o (or (at args 3) 0))
-  (local l1 (make-unique))
+  (local start (or (at args 3) 0))
+  (local list (make-unique))
   `(do
-    (local ,i ,o)
-    (local ,l1 ,l)
-    (while (< ,i (length ,l1))
-      (local ,v (at ,l1 ,i))
+    (local ,i ,start)
+    (local ,list ,(at args 0))
+    (while (< ,i (length ,list))
+      (local ,(at args 1) (at ,list ,i))
       ,@body
       (set ,i (+ ,i 1)))))
 
