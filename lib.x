@@ -172,4 +172,5 @@
 	(local f (load y))
 	(if f
 	    (do (f) eval-result)
-	  (do (local f (load x)) (and f (f)))))))
+	  (do (local f,e (load x))
+	      (if f (f) (error (cat e " in " x))))))))
