@@ -65,8 +65,10 @@
   (local str "(")
   (local op (get-op (at form 0)))
   (across (form arg i 1)
-    (set str (cat str (compile arg)))
-    (if (< i (- (length form) 1)) (set str (cat str op))))
+    (if (and (= op '-) (= (length form) 2))
+	(set str (cat str op (compile arg)))
+      (do (set str (cat str (compile arg)))
+	  (if (< i (- (length form) 1)) (set str (cat str op))))))
   (cat str ")"))
 
 (defun compile-do (forms tail?)
