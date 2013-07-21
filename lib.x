@@ -11,13 +11,12 @@
   (local i (or (at args 2) (make-unique)))
   (local start (or (at args 3) 0))
   (local list (make-unique))
-  `(do
-    (local ,i ,start)
-    (local ,list ,(at args 0))
-    (while (< ,i (length ,list))
-      (local ,(at args 1) (at ,list ,i))
-      ,@body
-      (set ,i (+ ,i 1)))))
+  `(do (local ,i ,start)
+       (local ,list ,(at args 0))
+       (while (< ,i (length ,list))
+	 (local ,(at args 1) (at ,list ,i))
+	 ,@body
+	 (set ,i (+ ,i 1)))))
 
 (defmacro make-set (elements...)
   (local form '(table))

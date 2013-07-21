@@ -20,7 +20,7 @@
 (defun compile-args (forms compile?)
   (local str "(")
   (across (forms x i)
-    (local x1 (if compile? (compile x) (normalize x)))
+    (local x1 (if compile? (compile x) (identifier x)))
     (set str (cat str x1))
     (if (< i (- (length forms) 1)) (set str (cat str ","))))
   (cat str ")"))
@@ -32,7 +32,7 @@
     (set str (cat str (compile x true t?))))
   str)
 
-(defun normalize (id)
+(defun identifier (id)
   (local id2 "")
   (local i 0)
   (while (< i (length id))
@@ -50,7 +50,7 @@
   (if (= form "nil")
       (if (= current-target 'js) "undefined" "nil")
       (and (string? form) (not (string-literal? form)))
-      (normalize form)
+      (identifier form)
     (to-string form)))
 
 (defun compile-call (form)
@@ -127,7 +127,7 @@
   (list args1 body))
 
 (defun compile-defun (form)
-  (local name (normalize (at form 0)))
+  (local name (identifier (at form 0)))
   (local args (at form 1))
   (local body (sub form 2))
   (compile-function args body name))
@@ -156,7 +156,7 @@
 
 (defun compile-dot (form)
   (local object (compile (at form 0)))
-  (local key (normalize (at form 1)))
+  (local key (identifier (at form 1)))
   (cat object "." key))
 
 (defun compile-not (form)
@@ -211,14 +211,13 @@
 
 (defun compile-each (forms)
   (local args (at forms 0))
-  (local t (at args 0))
+  (local t (compile (at args 0)))
   (local k (at args 1))
   (local v (at args 2))
   (local body (sub forms 1))
   (if (= current-target 'lua)
       (do (local body1 (compile-body body))
-	  (local t1 (compile t))
-	  (cat "for " k "," v " in pairs(" t1 ") do " body1 " end"))
+	  (cat "for " k "," v " in pairs(" t ") do " body1 " end"))
     (do (local body1 (compile-body `((set ,v (get ,t ,k)) ,@body)))
 	(cat "for(" k " in " t "){" body1 "}"))))
 
