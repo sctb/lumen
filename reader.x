@@ -68,11 +68,11 @@
 
 (defun read-quote (s)
   (read-char s) ; '
-  `(quote ,(read s)))
+  (list 'quote (read s)))
 
 (defun read-quasiquote (s)
   (read-char s) ; '
-  `(quasiquote ,(read s)))
+  (list 'quasiquote (read s)))
 
 (defun read-unquote (s)
   (read-char s) ; ,
