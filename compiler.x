@@ -232,6 +232,7 @@
 (defmacro unquote-splicing ()
   (error "UNQUOTE-SPLICING not inside QUASIQUOTE"))
 
+;; TODO: quasiquoting depth
 (defun quote-form (form quasi?)
   (if (atom? form)
       (if (string-literal? form)
