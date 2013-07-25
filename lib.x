@@ -51,7 +51,7 @@
       (do (set upto (or upto (length x)))
 	  (local i from)
 	  (local j 0)
-	  (local x2 '())
+	  (local x2 ())
 	  (while (< i upto)
 	    (set (at x2 j) (at x i))
 	    (set i (+ i 1))
@@ -67,7 +67,7 @@
   (target
     (js (a1.concat a2))
     (lua
-     (do (local a3 '())
+     (do (local a3 ())
 	 (local i 0)
 	 (local len (length a1))
 	 (while (< i len)

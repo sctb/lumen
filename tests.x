@@ -4,7 +4,7 @@
 
 (set passed 0)
 (set failed 0)
-(set tests '())
+(set tests ())
 
 (defmacro test (x msg)
   `(if (not ,x)
@@ -88,6 +88,7 @@
 
 (deftest list ()
   (test-equal '() (list))
+  (test-equal () (list))
   (test-equal '(a) (list 'a))
   (test-equal '(()) (list (list)))
   (test-equal 0 (length (list)))
@@ -95,12 +96,13 @@
   (test-equal '(b c) (sub '(a b c) 1))
   (test-equal '(b c) (sub '(a b c d) 1 3))
   (test-equal '(1 2 3) (join '(1 2) '(3)))
-  (test-equal '(1 2) (join '() '(1 2))))
+  (test-equal '(1 2) (join () '(1 2))))
 
 (deftest quasiquote ()
   (test-equal (quote a) (quasiquote a))
   (test-equal 'a `a)
   (test-equal '() `())
+  (test-equal () `())
   (test-equal 2 `,2)
   (local a 42)
   (test-equal 42 `,a)

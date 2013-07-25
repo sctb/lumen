@@ -45,7 +45,7 @@
 
 (defun read-list (s)
   (read-char s) ; (
-  (local l '())
+  (local l ())
   (while true
     (skip-non-code s)
     (local c (peek-char s))

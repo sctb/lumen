@@ -27,7 +27,7 @@
 	(= (at args 1) "--help"))
     (usage))
 
-(do (local inputs '())
+(do (local inputs ())
     (local output nil)
     (local target nil)
     (local expr nil)
