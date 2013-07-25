@@ -43,7 +43,11 @@
   (test-equal 'hi (read-from-string "hi"))
   (test-equal '"hi" (read-from-string "\"hi\""))
   (test-equal '(1 2) (read-from-string "(1 2)"))
-  (test-equal '(1 (a)) (read-from-string "(1 (a))")))
+  (test-equal '(1 (a)) (read-from-string "(1 (a))"))
+  (test-equal '(quote a) (read-from-string "'a"))
+  (test-equal '(quasiquote a) (read-from-string "`a"))
+  (test-equal '(quasiquote (unquote a)) (read-from-string "`,a"))
+  (test-equal '(quasiquote (unquote-splicing a)) (read-from-string "`,@a")))
 
 (deftest boolean ()
   (test-equal true (or true false))
