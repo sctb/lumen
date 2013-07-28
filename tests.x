@@ -190,3 +190,23 @@
   (test-equal 20 (f 10))
   (test-equal 30 (f 20))
   (test-equal 40 ((lambda (n) (+ n 10)) 30)))
+
+
+;;; expressions
+
+(deftest if-expr ()
+  (test-equal 10 (if true 10 20)))
+
+(deftest set-expr ()
+  (local a 5)
+  (test-equal nil (set a 7))
+  (test-equal 10 (do (set a 10) a)))
+
+(deftest while-expr ()
+  (local i 0)
+  (test-equal 10 (do (while (< i 10) (set i (+ i 1))) i)))
+
+(deftest each-expr ()
+  (local t (table 'a 10 'b 20))
+  (local i 0)
+  (test-equal 2 (do (each (t _ _) (set i (+ i 1))) i)))
