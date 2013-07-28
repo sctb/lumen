@@ -94,6 +94,7 @@
   (test-equal '() (list))
   (test-equal () (list))
   (test-equal '(a) (list 'a))
+  (test-equal '(a) (quote (a)))
   (test-equal '(()) (list (list)))
   (test-equal 0 (length (list)))
   (test-equal 2 (length (list 1 2)))
@@ -132,3 +133,60 @@
   (test-equal '((1 2 3) 1 2 3) `((,@c) ,@c))
   (test-equal '(quasiquote ((unquote-splicing (list a)))) ``(,@(list a)))
   (test-equal '(quasiquote ((unquote-splicing (list 42)))) ``(,@(list ,a))))
+
+
+;;; special forms
+
+(deftest local ()
+  (local a 42)
+  (test-equal 42 a))
+
+(deftest set ()
+  (local a 42)
+  (set a 'bar)
+  (test-equal 'bar a))
+
+(deftest do ()
+  (local a 17)
+  (do (set a 10)
+      (test-equal 10 a)))
+
+(deftest if ()
+  (if true
+      (test-equal true true)
+    (test-equal true false)))
+
+(deftest while ()
+  (local i 0)
+  (while (< i 10)
+    (set i (+ i 1)))
+  (test-equal 10 i))
+
+(deftest table ()
+  (test-equal (table 'a 10 'b 20) (table 'a 10 'b 20))
+  (test-equal 10 (get (table 'a 10) 'a)))
+
+(deftest get-set ()
+  (local t (table))
+  (set (get t 'foo) 'bar)
+  (test-equal 'bar (get t 'foo)))
+
+(deftest dot ()
+  (local t (table 'a 10))
+  (test-equal 10 t.a)
+  (test-equal 10 (dot t a)))
+
+(deftest each ()
+  (local a "")
+  (local b 0)
+  (each ((table 'a 10 'b 20 'c 30) k v)
+    (set a (cat a k))
+    (set b (+ b v)))
+  (test-equal 3 (length a))
+  (test-equal 60 b))
+
+(deftest lambda ()
+  (local f (lambda (n) (+ n 10)))
+  (test-equal 20 (f 10))
+  (test-equal 30 (f 20))
+  (test-equal 40 ((lambda (n) (+ n 10)) 30)))
