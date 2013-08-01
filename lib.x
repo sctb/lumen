@@ -66,6 +66,9 @@
 (defun pop (arr)
   (target (js (arr.pop)) (lua (table.remove arr))))
 
+(defun last (arr)
+  (at arr (- (length arr) 1)))
+
 (defun join (a1 a2)
   (target
     (js (a1.concat a2))

@@ -101,7 +101,9 @@
   (test-equal '(b c) (sub '(a b c) 1))
   (test-equal '(b c) (sub '(a b c d) 1 3))
   (test-equal '(1 2 3) (join '(1 2) '(3)))
-  (test-equal '(1 2) (join () '(1 2))))
+  (test-equal '(1 2) (join () '(1 2)))
+  (test-equal 3 (last '(1 2 3)))
+  (test-equal nil (last ())))
 
 (deftest quasiquote ()
   (test-equal (quote a) (quasiquote a))
@@ -149,7 +151,11 @@
 (deftest do ()
   (local a 17)
   (do (set a 10)
-      (test-equal 10 a)))
+      (test-equal 10 a))
+  ;; do cannot introduce a new scope
+  (do (local a 7)
+      (test-equal 7 a))
+  (test-equal 7 a))
 
 (deftest if ()
   (if true
@@ -201,6 +207,10 @@
   (local a 5)
   (test-equal nil (set a 7))
   (test-equal 10 (do (set a 10) a)))
+
+(deftest local-expr ()
+  (local a 5)
+  (test-equal 10 (do (local a 10) a)))
 
 (deftest while-expr ()
   (local i 0)
