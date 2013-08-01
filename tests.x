@@ -210,3 +210,20 @@
   (local t (table 'a 10 'b 20))
   (local i 0)
   (test-equal 2 (do (each (t _ _) (set i (+ i 1))) i)))
+
+
+;;; library
+
+(deftest push ()
+  (local l ())
+  (push l 'a)
+  (push l 'b)
+  (push l 'c)
+  (test-equal '(a b c) l))
+
+(deftest pop ()
+  (local l '(a b c))
+  (test-equal 'c (pop l))
+  (test-equal 'b (pop l))
+  (test-equal 'a (pop l))
+  (test-equal nil (pop l)))

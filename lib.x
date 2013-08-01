@@ -61,7 +61,10 @@
 ;; lists
 
 (defun push (arr x)
-  (set (at arr (length arr)) x))
+  (target (js (arr.push x)) (lua (table.insert arr x))))
+
+(defun pop (arr)
+  (target (js (arr.pop)) (lua (table.remove arr))))
 
 (defun join (a1 a2)
   (target
