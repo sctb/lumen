@@ -12,12 +12,13 @@
 	   (return ,msg))
      (set passed (+ passed 1))))
 
-(defun are-equal? (a b)
-  (if (atom? a) (= a b)
+(defun test-equal? (a b)
+  (if (atom? a)
+      (= a b)
     (= (to-string a) (to-string b))))
 
 (defmacro test-equal (a b)
-  `(test (are-equal? ,a ,b)
+  `(test (test-equal? ,a ,b)
 	 (cat " failed: expected " (to-string ,a) ", was " (to-string ,b))))
 
 (defmacro deftest (name _ body...)
