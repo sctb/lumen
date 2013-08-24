@@ -25,6 +25,21 @@
     (push form true))
   form)
 
+(defmacro bind (list value)
+  (if (list? value)
+      (do (local v (make-unique))
+	  `(do (local ,v ,value)
+	       ,@(bind1 list value)))
+    `(do ,@(bind1 list value))))
+
+(defun bind1 (list value)
+  (local forms ())
+  (across (list x i)
+    (if (list? x)
+	(set forms (join forms (bind1 x `(at ,value ,i))))
+      (push forms `(local ,x (at ,value ,i)))))
+  forms)
+
 ;; languages
 
 (defmacro current-language ()  `',current-target)
