@@ -8,9 +8,9 @@
   `(get ,arr ,i))
 
 (defmacro across (args body...)
-  (local i (or (at args 2) (make-unique)))
+  (local i (or (at args 2) (make-id)))
   (local start (or (at args 3) 0))
-  (local list (make-unique))
+  (local list (make-id))
   `(do (local ,i ,start)
        (local ,list ,(at args 0))
        (while (< ,i (length ,list))
@@ -27,7 +27,7 @@
 
 (defmacro bind (list value)
   (if (list? value)
-      (do (local v (make-unique))
+      (do (local v (make-id))
 	  `(do (local ,v ,value)
 	       ,@(bind1 list value)))
     `(do ,@(bind1 list value))))
@@ -177,11 +177,11 @@
 (defun apply (f args)
   (target (js (f.apply f args)) (lua (f (unpack args)))))
 
-(set unique-counter 0)
+(set id-counter 0)
 
-(defun make-unique (prefix)
-  (set unique-counter (+ unique-counter 1))
-  (cat "_" (or prefix "") unique-counter))
+(defun make-id (prefix)
+  (set id-counter (+ id-counter 1))
+  (cat "_" (or prefix "") id-counter))
 
 (set eval-result nil)
 
