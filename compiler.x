@@ -117,13 +117,17 @@
   (local args1 ())
   (across (args arg)
     (if (vararg? arg)
-	(do (local name (sub arg 0 (- (length arg) 3)))
+	(do (local v (sub arg 0 (- (length arg) 3)))
 	    (local expr
 	      (if (= current-target 'js)
 		  `(Array.prototype.slice.call arguments ,(length args1))
 		(do (push args1 '...) '(list ...))))
-	    (set body `((local ,name ,expr) ,@body))
-	    break)			; no more args
+	    (set body `((local ,v ,expr) ,@body))
+	    break) ; no more args
+        (list? arg)
+	(do (local v (make-id))
+	    (push args1 v)
+	    (set body `((bind ,arg ,v) ,@body)))
       (push args1 arg)))
   (list args1 body))
 

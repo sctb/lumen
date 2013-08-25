@@ -297,3 +297,9 @@
   (bind (w (x y...) z...) '(1 (2 3 4) 5 6 7))
   (test-equal '(3 4) y)
   (test-equal '(5 6 7) z))
+
+(deftest parameters ()
+  (local f (lambda (a (b c)) (list a b c)))
+  (test-equal '(1 2 3) (f 1 '(2 3)))
+  (set f (lambda (a (b c...) d...) (list a b c d)))
+  (test-equal '(1 2 (3 4) (5 6 7)) (f 1 '(2 3 4) 5 6 7)))
