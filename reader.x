@@ -24,7 +24,14 @@
 	    (skip-non-code s))
       break)))
 
-(defun read-symbol (s)
+(set read-table (table))
+(set eof (table))
+
+(defmacro defreader (args body...)
+  `(set (get read-table ,(at args 0))
+	(lambda (,(at args 1)) ,@body)))
+
+(defreader ("" s) ; atom
   (local str "")
   (while true
     (local c (peek-char s))
@@ -33,18 +40,14 @@
 	(do (set str (cat str c))
 	    (read-char s))
       break))
-  str)
-
-(defun read-atom (s)
-  (local str (read-symbol s))
   (local n (parse-number str))
   (if (not (= n nil)) n
       (= str "true") true
       (= str "false") false
     str))
 
-(defun read-list (s)
-  (read-char s) ; (
+(defreader ("(" s)
+  (read-char s)
   (local l ())
   (while true
     (skip-non-code s)
@@ -54,8 +57,11 @@
       (error (cat "Expected ) at " s.pos))))
   l)
 
-(defun read-string (s)
-  (read-char s) ; "
+(defreader (")" s)
+  (error (cat "Unexpected ) at " s.pos)))
+
+(defreader ("\"" s)
+  (read-char s)
   (local str "\"")
   (while true
     (local c (peek-char s))
@@ -66,38 +72,20 @@
       (error (cat "Expected \" at " s.pos))))
   (cat str "\""))
 
-(defun read-quote (s)
-  (read-char s) ; '
+(defreader ("'" s)
+  (read-char s)
   (list 'quote (read s)))
 
-(defun read-quasiquote (s)
-  (read-char s) ; '
+(defreader ("`" s)
+  (read-char s)
   (list 'quasiquote (read s)))
 
-(defun read-unquote (s)
-  (read-char s) ; ,
+(defreader ("," s)
+  (read-char s)
   (if (= (peek-char s) "@")
-      (do (read-char s) ; @
+      (do (read-char s)
 	  (list 'unquote-splicing (read s)))
     (list 'unquote (read s))))
-
-(defun read-eof (s)
-  (read-char s)) ; eof
-
-(defun read-close-paren-error (s)
-  (error (cat "Unexpected ) at " s.pos)))
-
-(set read-table
-  (table "(" read-list
-	 ")" read-close-paren-error
-	 "\"" read-string
-	 "'" read-quote
-	 "`" read-quasiquote
-	 "," read-unquote
-	 "" read-atom ; default
-	 ))
-
-(set eof (table))
 
 (defun read (s)
   (skip-non-code s)
