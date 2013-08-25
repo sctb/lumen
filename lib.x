@@ -25,20 +25,27 @@
     (push form true))
   form)
 
-(defmacro bind (list value)
-  (if (list? value)
-      (do (local v (make-id))
-	  `(do (local ,v ,value)
-	       ,@(bind1 list value)))
-    `(do ,@(bind1 list value))))
+(defun vararg? (name)
+  (= (sub name (- (length name) 3) (length name)) "..."))
 
 (defun bind1 (list value)
   (local forms ())
   (across (list x i)
     (if (list? x)
 	(set forms (join forms (bind1 x `(at ,value ,i))))
+        (vararg? x)
+	(do (local v (sub x 0 (- (length x) 3)))
+	    (push forms `(local ,v (sub ,value ,i)))
+	    break) ; no more args
       (push forms `(local ,x (at ,value ,i)))))
   forms)
+
+(defmacro bind (list value)
+  (if (list? value)
+      (do (local v (make-id))
+	  `(do (local ,v ,value)
+	       ,@(bind1 list value)))
+    `(do ,@(bind1 list value))))
 
 ;; languages
 

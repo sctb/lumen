@@ -113,9 +113,6 @@
     (set str (cat str (compile-branch condition body first? last? tail?))))
   str)
 
-(defun vararg? (name)
-  (= (sub name (- (length name) 3) (length name)) "..."))
-
 (defun bind-arguments (args body)
   (local args1 ())
   (across (args arg)
