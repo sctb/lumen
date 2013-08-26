@@ -27,9 +27,8 @@
 (set read-table (table))
 (set eof (table))
 
-(defmacro defreader (args body...)
-  `(set (get read-table ,(at args 0))
-	(lambda (,(at args 1)) ,@body)))
+(defmacro defreader ((char stream) body...)
+  `(set (get read-table ,char) (lambda (,stream) ,@body)))
 
 (defreader ("" s) ; atom
   (local str "")

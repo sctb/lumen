@@ -1,5 +1,12 @@
 ;; -*- mode: lisp -*-
 
+(defmacro bind (list value)
+  (if (list? value)
+      (do (local v (make-id))
+	  `(do (local ,v ,value)
+	       ,@(bind1 list value)))
+    `(do ,@(bind1 list value))))
+
 (defmacro at (arr i)
   (if (and (= current-target 'lua) (number? i))
       (set i (+ i 1))
@@ -7,14 +14,14 @@
       (set i `(+ ,i 1)))
   `(get ,arr ,i))
 
-(defmacro across (args body...)
-  (local i (or (at args 2) (make-id)))
-  (local start (or (at args 3) 0))
-  (local list (make-id))
+(defmacro across ((list v i start) body...)
+  (local l (make-id))
+  (set i (or i (make-id)))
+  (set start (or start 0))
   `(do (local ,i ,start)
-       (local ,list ,(at args 0))
-       (while (< ,i (length ,list))
-	 (local ,(at args 1) (at ,list ,i))
+       (local ,l ,list)
+       (while (< ,i (length ,l))
+	 (local ,v (at ,l ,i))
 	 ,@body
 	 (set ,i (+ ,i 1)))))
 
@@ -39,13 +46,6 @@
 	    break) ; no more args
       (push forms `(local ,x (at ,value ,i)))))
   forms)
-
-(defmacro bind (list value)
-  (if (list? value)
-      (do (local v (make-id))
-	  `(do (local ,v ,value)
-	       ,@(bind1 list value)))
-    `(do ,@(bind1 list value))))
 
 ;; languages
 
