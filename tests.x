@@ -128,6 +128,15 @@
   (test-equal '(quasiquote ((unquote-splicing (list a)))) ``(,@(list a)))
   (test-equal '(quasiquote ((unquote-splicing (list 42)))) ``(,@(list ,a))))
 
+(deftest calls ()
+  (local f (lambda () 42))
+  (test-equal 42 (f))
+  (local l (list f))
+  (test-equal 42 ((at l 0)))
+  (local t (table 'f f))
+  (test-equal 42 (t.f))
+  (test-equal 42 ((dot t f))))
+
 
 ;;; special forms
 
