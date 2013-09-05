@@ -114,7 +114,7 @@
 (defun find (str pattern start)
   (target
    (js (do (local i (str.indexOf pattern start))
-	   (and (>= i 0) i)))
+	   (if (>= i 0) i)))
    (lua (do (if start (set start (+ start 1)))
 	    (local i (string.find str pattern start true))
 	    (and i (- i 1))))))

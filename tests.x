@@ -249,7 +249,8 @@
 
 (deftest find ()
   (test-equal 0 (find "abc" "a"))
-  (test-equal 2 (find "abcd" "cd")))
+  (test-equal 2 (find "abcd" "cd"))
+  (test-equal nil (find "abc" "z")))
 
 (deftest split ()
   (test-equal (list "a") (split "a" ","))
