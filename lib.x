@@ -114,10 +114,23 @@
 (defun find (str pattern start)
   (target
    (js (do (local i (str.indexOf pattern start))
-	   (and (> i 0) i)))
+	   (and (>= i 0) i)))
    (lua (do (if start (set start (+ start 1)))
 	    (local i (string.find str pattern start true))
 	    (and i (- i 1))))))
+
+(defun split (str sep)
+  (target
+   (js (str.split sep))
+   (lua (do (local strs ())
+            (while true
+              (local i (find str sep))
+              (if (= i nil)
+                  break
+                (do (push strs (sub str 0 i))
+                    (set str (sub str (+ i 1))))))
+            (push strs str)
+            strs))))
 
 ;; io
 

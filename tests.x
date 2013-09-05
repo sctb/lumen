@@ -77,7 +77,10 @@
   (test-equal "a" (char "bar" 1))
   (test-equal "uux" (sub "quux" 1))
   (test-equal "uu" (sub "quux" 1 3))
-  (test-equal "" (sub "quux" 5)))
+  (test-equal "" (sub "quux" 5))
+  (test-equal (list "a") (split "a" ","))
+  (test-equal (list "a" "") (split "a," ","))
+  (test-equal (list "a" "b") (split "a,b" ",")))
 
 (deftest quote ()
   (test-equal 7 (quote 7))
