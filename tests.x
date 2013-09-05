@@ -1,6 +1,6 @@
 ;; -*- mode: lisp -*-
 
-;;; infrastructure
+;; infrastructure
 
 (set passed 0)
 (set failed 0)
@@ -33,8 +33,7 @@
 	(print (cat " " name result))))
   (print (cat passed " passed, " failed " failed")))
 
-
-;;; basic
+;; basic
 
 (deftest reader ()
   (test-equal 17 (read-from-string "17"))
@@ -137,8 +136,7 @@
   (test-equal 42 (t.f))
   (test-equal 42 ((dot t f))))
 
-
-;;; special forms
+;; special forms
 
 (deftest local ()
   (local a 42)
@@ -198,8 +196,7 @@
   (test-equal 30 (f 20))
   (test-equal 40 ((lambda (n) (+ n 10)) 30)))
 
-
-;;; expressions
+;; expressions
 
 (deftest if-expr ()
   (test-equal 10 (if true 10 20)))
@@ -222,8 +219,7 @@
   (local i 0)
   (test-equal 2 (do (each (t _ _) (set i (+ i 1))) i)))
 
-
-;;; library
+;; library
 
 (deftest push ()
   (local l ())
