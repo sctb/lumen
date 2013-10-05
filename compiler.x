@@ -260,15 +260,15 @@
 (defun compile-quasiquote ((form))
   (quote-form form 1))
 
-(defun compile-defmacro ((name body...))
-  (local lambda `(lambda ,@body))
+(defun compile-defmacro ((name args body...))
+  (local lambda `(lambda ,args ,@body))
   (local register `(set (get macros ',name) ,lambda))
   (eval (compile-for-target (current-language) register true))
   "")
 
-(defun compile-define-symbol-macro ((name expansion))
+(defmacro define-symbol-macro (name expansion)
   (set (get symbol-macros name) expansion)
-  "")
+  nil)
 
 (defun compile-macrolet ((macros body...) tail?)
   (across (macros macro)
@@ -280,7 +280,7 @@
 
 (defun compile-symbol-macrolet ((expansions body...) tail?)
   (across (expansions expansion)
-    (compile-define-symbol-macro expansion))
+    (set (get symbol-macros (at expansion 0)) (at expansion 1)))
   (local body1 (compile `(do ,@body) nil tail?))
   (across (expansions expansion)
     (set (get symbol-macros (at expansion 0)) nil))
@@ -303,8 +303,6 @@
    "while" (table 'compiler compile-while 'self-tr true 'stmt? true)
    "defun" (table 'compiler compile-defun 'self-tr true 'stmt? true)
    "defmacro" (table 'compiler compile-defmacro 'self-tr true 'stmt? true)
-   "define-symbol-macro"
-   (table 'compiler compile-define-symbol-macro 'self-tr true 'stmt? true)
    "macrolet" (table 'compiler compile-macrolet 'self-tr true)
    "symbol-macrolet" (table 'compiler compile-symbol-macrolet 'self-tr true)
    "return" (table 'compiler compile-return 'stmt? true)
