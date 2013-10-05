@@ -257,6 +257,9 @@
   (test-equal '(1 2) (join () '(1 2)))
   (test-equal () (join () ())))
 
+(deftest map ()
+  (test-equal '(2 3 4) (map (lambda (x) (+ x 1)) '(1 2 3))))
+
 (deftest sub ()
   (test-equal '(b c) (sub '(a b c) 1))
   (test-equal '(b c) (sub '(a b c d) 1 3))

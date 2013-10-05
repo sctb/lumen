@@ -80,6 +80,12 @@
 	    (set j (+ j 1)))
 	  x2)))))
 
+(defun map (fn arr)
+  (local arr1 ())
+  (across (arr x)
+    (push arr1 (fn x)))
+  arr1)
+
 ;; lists
 
 (defun push (arr x)
