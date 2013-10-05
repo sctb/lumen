@@ -273,7 +273,6 @@
 (defun compile-macrolet ((macros body...) tail?)
   (across (macros macro)
     (compile-defmacro macro))
-  ;; TODO: should have generic expansion in COMPILE
   (local body1 (compile `(do ,@body) nil tail?))
   (across (macros macro)
     (set (get macros (at macro 0)) nil))
@@ -282,7 +281,6 @@
 (defun compile-symbol-macrolet ((expansions body...) tail?)
   (across (expansions expansion)
     (compile-define-symbol-macro expansion))
-  ;; TODO: should have generic expansion in COMPILE
   (local body1 (compile `(do ,@body) nil tail?))
   (across (expansions expansion)
     (set (get symbol-macros (at expansion 0)) nil))
