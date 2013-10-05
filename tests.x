@@ -196,6 +196,18 @@
   (test-equal 30 (f 20))
   (test-equal 40 ((lambda (n) (+ n 10)) 30)))
 
+(deftest macrolet ()
+  (macrolet ((a () 17)
+	     (b (a) `(+ ,a 10)))
+    (test-equal 17 (a))
+    (test-equal 42 (b 32))))
+
+(deftest symbol-macrolet ()
+  (symbol-macrolet ((a 17)
+		    (b (+ 10 7)))
+    (test-equal 17 a)
+    (test-equal 17 b)))
+
 ;; expressions
 
 (deftest if-expr ()

@@ -17,6 +17,9 @@
       (= type 'macro) (not (= (get macros (at form 0)) nil))
     false))
 
+(defun symbol-macro? (form)
+  (not (= (get symbol-macros form) nil)))
+
 (defun compile-args (forms compile?)
   (local str "(")
   (across (forms x i)
@@ -263,6 +266,28 @@
   (eval (compile-for-target (current-language) register true))
   "")
 
+(defun compile-define-symbol-macro ((name expansion))
+  (set (get symbol-macros name) expansion)
+  "")
+
+(defun compile-macrolet ((macros body...) tail?)
+  (across (macros macro)
+    (compile-defmacro macro))
+  ;; TODO: should have generic expansion in COMPILE
+  (local body1 (compile `(do ,@body) nil tail?))
+  (across (macros macro)
+    (set (get macros (at macro 0)) nil))
+  body1)
+
+(defun compile-symbol-macrolet ((expansions body...) tail?)
+  (across (expansions expansion)
+    (compile-define-symbol-macro expansion))
+  ;; TODO: should have generic expansion in COMPILE
+  (local body1 (compile `(do ,@body) nil tail?))
+  (across (expansions expansion)
+    (set (get symbol-macros (at expansion 0)) nil))
+  body1)
+
 (defun compile-special (form stmt? tail?)
   (local name (at form 0))
   (local sp (get special name))
@@ -280,6 +305,10 @@
    "while" (table 'compiler compile-while 'self-tr true 'stmt? true)
    "defun" (table 'compiler compile-defun 'self-tr true 'stmt? true)
    "defmacro" (table 'compiler compile-defmacro 'self-tr true 'stmt? true)
+   "define-symbol-macro"
+   (table 'compiler compile-define-symbol-macro 'self-tr true 'stmt? true)
+   "macrolet" (table 'compiler compile-macrolet 'self-tr true)
+   "symbol-macrolet" (table 'compiler compile-symbol-macrolet 'self-tr true)
    "return" (table 'compiler compile-return 'stmt? true)
    "local" (table 'compiler compile-local 'stmt? true)
    "set" (table 'compiler compile-set 'stmt? true)
@@ -303,6 +332,7 @@
   (if (and tail? (can-return? form))
       (set form `(return ,form)))
   (if (= form nil) ""
+      (symbol-macro? form) (compile (get symbol-macros form) stmt? tail?)
       (atom? form) (cat (compile-atom form) tr)
       (call? 'operator form)
       (cat (compile-operator form) tr)
