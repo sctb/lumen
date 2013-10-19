@@ -12,6 +12,7 @@
 
 (defun call? (type form)
   (if (not (list? form)) false
+      (not (atom? (at form 0))) false
       (= type 'operator) (not (= (get-op (at form 0)) nil))
       (= type 'special) (not (= (get special (at form 0)) nil))
       (= type 'macro) (not (= (get macros (at form 0)) nil))
