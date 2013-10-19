@@ -83,11 +83,10 @@
 	    (set j (+ j 1)))
 	  x2)))))
 
-(defun map (fn arr)
-  (local arr1 ())
-  (across (arr x)
-    (push arr1 (fn x)))
-  arr1)
+(defun map (f a)
+  (local a1 ())
+  (across (a x) (push a1 (f x)))
+  a1)
 
 ;; lists
 
@@ -119,6 +118,24 @@
   (if (empty? x) x
       (= (length x) 1) (at x 0)
     (f (at x 0) (reduce f (sub x 1)))))
+
+(defun filter (f a)
+  (local a1 ())
+  (across (a x) (if (f x) (push a1 x)))
+  a1)
+
+(defmacro join* (xs...)
+  (reduce (lambda (a b) (list 'join a b)) xs))
+
+(defmacro list* (xs...)
+  (if (= (length xs) 0)
+      ()
+    (do (local t ())
+	(across (xs x i)
+	  (if (= i (- (length xs) 1))
+	      (set t (list 'join (join '(list) t) x))
+	    (push t x)))
+	t)))
 
 ;; strings
 

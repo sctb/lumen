@@ -136,6 +136,27 @@
   (test-equal 42 (t.f))
   (test-equal 42 ((dot t f))))
 
+(deftest quasiexpand ()
+  (test-equal 'a (quasiexpand 'a))
+  (test-equal '(17) (quasiexpand '(17)))
+  (test-equal '(1 z) (quasiexpand '(1 z)))
+  (test-equal '(list '1 'z) (quasiexpand '`(1 z)))
+  (test-equal '(list 1 z) (quasiexpand '`(,1 ,z)))
+  (test-equal 'z (quasiexpand '`(,@z)))
+  (test-equal '(join (list 1) z) (quasiexpand '`(,1 ,@z)))
+  (test-equal '(join (list 1) (join x y)) (quasiexpand '`(,1 ,@x ,@y)))
+  (test-equal '(join (list 1) (join z (list 2))) (quasiexpand '`(,1 ,@z ,2)))
+  (test-equal '(join (list 1) (join z (list 'a))) (quasiexpand '`(,1 ,@z a)))
+  (test-equal '(quote x) (quasiexpand '`x))
+  (test-equal '(list 'quasiquote 'x) (quasiexpand '``x))
+  (test-equal '(list 'quasiquote (list 'quasiquote 'x)) (quasiexpand '```x))
+  (test-equal 'x (quasiexpand '`,x))
+  (test-equal '(list 'quote x) (quasiexpand '`',x))
+  (test-equal '(list 'quasiquote (list 'x)) (quasiexpand '``(x)))
+  (test-equal '(list 'quasiquote (list 'unquote 'a)) (quasiexpand '``,a))
+  (test-equal '(list 'quasiquote (list (list 'unquote 'x)))
+	      (quasiexpand '``(,x))))
+
 ;; special forms
 
 (deftest local ()
@@ -258,6 +279,7 @@
   (test-equal () (join () ())))
 
 (deftest map ()
+  (test-equal '(1) (map (lambda (x) x) '(1)))
   (test-equal '(2 3 4) (map (lambda (x) (+ x 1)) '(1 2 3))))
 
 (deftest sub ()
@@ -279,7 +301,24 @@
 
 (deftest reduce ()
   (test-equal 6 (reduce (lambda (a b) (+ a b)) '(1 2 3)))
-  (test-equal '(1 (2 3)) (reduce (lambda (a b) (list a b)) '(1 2 3))))
+  (test-equal '(1 (2 3))
+	      (reduce
+	       (lambda (a b) (list a b))
+	       '(1 2 3)))
+  (test-equal '(1 2 3 4 5)
+	      (reduce
+	       (lambda (a b) (join a b))
+	       '((1) (2 3) (4 5)))))
+
+(deftest list* ()
+  (test-equal () (list*))
+  (test-equal '(2 3) (list* '(2 3)))
+  (test-equal '(1 2 3) (list* 1 '(2 3)))
+  (local a 17)
+  (local b '(5))
+  (test-equal '(5) (list* b))
+  (test-equal '(17 5) (list* a b))
+  (test-equal '((5) 5) (list* b b)))
 
 (deftest type ()
   (test-equal true (string? "abc"))

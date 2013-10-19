@@ -21,6 +21,84 @@
 (defun symbol-macro? (form)
   (not (= (get symbol-macros form) nil)))
 
+(defun quoting? (depth) (number? depth))
+(defun quasiquoting? (depth) (and (quoting? depth) (> depth 0)))
+(defun can-unquote? (depth) (and (quoting? depth) (= depth 1)))
+
+(defun macroexpand (form)
+  (if ;; expand symbol macro
+      (symbol-macro? form) (macroexpand (get symbol-macros form))
+      ;; atom
+      (atom? form) form
+      ;; quote
+      (= (at form 0) 'quote) form
+      ;; expand macro
+      (call? 'macro form)
+      (macroexpand (apply (get macros (at form 0)) (sub form 1)))
+    ;; list
+    (map macroexpand form)))
+
+(defun quasiexpand (form depth)
+  (if ;; quasiquoting atom
+      (and (atom? form)
+	   (quasiquoting? depth))
+      (list 'quote form)
+      ;; atom
+      (atom? form) form
+      ;; quote
+      (and (not (quasiquoting? depth))
+	   (= (at form 0) 'quote))
+      (list 'quote (at form 1))
+      ;; unquote
+      (and (can-unquote? depth)
+	   (= (at form 0) 'unquote))
+      (quasiexpand (at form 1))
+      ;; decrease quasiquoting depth
+      (and (quasiquoting? depth)
+	   (not (can-unquote? depth))
+	   (or (= (at form 0) 'unquote)
+	       (= (at form 0) 'unquote-splicing)))
+      (quasiquote-unquote form depth)
+      ;; increase quasiquoting depth
+      (and (quasiquoting? depth)
+	   (= (at form 0) 'quasiquote))
+      (quasiquote-list form (+ depth 1))
+      ;; begin quasiquoting
+      (= (at form 0) 'quasiquote)
+      (quasiexpand (at form 1) 1)
+      ;; quasiquoting list, possible splicing
+      (quasiquoting? depth)
+      (quasiquote-list form depth)
+    ;; list
+    (map (lambda (x) (quasiexpand x depth)) form)))
+
+(defun quasiquote-unquote (form depth)
+  (list 'list
+	(list 'quote (at form 0))
+	(quasiexpand (at form 1) (- depth 1))))
+
+(defun quasiquote-list (form depth)
+  (do (local xs (list '(list)))
+      ;; collect sibling lists
+      (across (form x)
+	(if (and (list? x)
+		 (can-unquote? depth)
+		 (= (at x 0) 'unquote-splicing))
+	    (do (push xs (quasiexpand (at x 1)))
+		(push xs '(list)))
+	  (push (last xs) (quasiexpand x depth))))
+      (if (= (length xs) 1) ; no splicing
+	  (at xs 0)
+	;; join all
+	(reduce (lambda (a b) (list 'join a b))
+		;; remove empty lists
+		(filter
+		 (lambda (x)
+		   (or (= (length x) 0)
+		       (not (and (= (length x) 1)
+				 (= (at x 0) 'list)))))
+		 xs)))))
+
 (defun compile-args (forms compile?)
   (local str "(")
   (across (forms x i)
@@ -227,16 +305,6 @@
     (do (local body1 (compile-body `((set ,v (get ,t ,k)) ,@body)))
 	(cat "for(" k " in " t1 "){" body1 "}"))))
 
-(defmacro unquote ()
-  (error "UNQUOTE not inside QUASIQUOTE"))
-
-(defmacro unquote-splicing ()
-  (error "UNQUOTE-SPLICING not inside QUASIQUOTE"))
-
-(defun quoting? (depth) (number? depth))
-(defun quasiquoting? (depth) (and (quoting? depth) (> depth 0)))
-(defun can-unquote? (depth) (and (quoting? depth) (= depth 1)))
-
 (defun quote-form (form depth)
   (if (atom? form)
       (if (string-literal? form)
@@ -341,6 +409,10 @@
 	  (compile form stmt? tail?))
     (cat (compile-call form) tr)))
 
+(defun compile1 (form)
+  (set form (quasiexpand form))
+  (compile form true))
+
 (defun compile-file (file)
   (local form)
   (local output "")
@@ -348,7 +420,7 @@
   (while true
     (set form (read s))
     (if (= form eof) break)
-    (set output (cat output (compile form true))))
+    (set output (cat output (compile1 form true))))
   output)
 
 (defun compile-files (files)
