@@ -62,6 +62,9 @@
 (defun length (x)
   (target (js x.length) (lua #x)))
 
+(defun empty? (list)
+  (= (length list) 0))
+
 (defun sub (x from upto)
   (if (string? x)
       (target
@@ -111,6 +114,11 @@
 	   (set (at a3 i) (at a2 (- i len)))
 	   (set i (+ i 1)))
 	 a3))))
+
+(defun reduce (f x)
+  (if (empty? x) x
+      (= (length x) 1) (at x 0)
+    (f (at x 0) (reduce f (sub x 1)))))
 
 ;; strings
 

@@ -277,6 +277,10 @@
   (test-equal (list "a" "") (split "a," ","))
   (test-equal (list "a" "b") (split "a,b" ",")))
 
+(deftest reduce ()
+  (test-equal 6 (reduce (lambda (a b) (+ a b)) '(1 2 3)))
+  (test-equal '(1 (2 3)) (reduce (lambda (a b) (list a b)) '(1 2 3))))
+
 (deftest type ()
   (test-equal true (string? "abc"))
   (test-equal false (string? 17))
