@@ -38,6 +38,9 @@
     ;; list
     (map macroexpand form)))
 
+(defmacro quasiquote (form)
+  (quasiexpand form 1))
+
 (defun quasiexpand (form depth)
   (if (quasiquoting? depth)
       (if (atom? form) (list 'quote form)
