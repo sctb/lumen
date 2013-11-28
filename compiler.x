@@ -209,15 +209,15 @@
 
 (set special (table))
 
-(defmacro define-compiler ((name props...) args body...)
+(defmacro define-compiler (name (props...) args body...)
   `(set (get special ',name) (table 'compiler (lambda ,args ,@body) ,@props)))
 
 (defun compiler (name) (get (get special name) 'compiler))
 
-(define-compiler (do 'stmt? true 'self-tr true) (forms tail?)
+(define-compiler do ('stmt? true 'self-tr true) (forms tail?)
   (compile-body forms tail?))
 
-(define-compiler (if 'stmt? true 'self-tr true) (form tail?)
+(define-compiler if ('stmt? true 'self-tr true) (form tail?)
   (local str "")
   (across (form condition i)
     (local last? (>= i (- (length form) 2)))
@@ -231,27 +231,27 @@
     (set str (cat str (compile-branch condition body first? last? tail?))))
   str)
 
-(define-compiler (while 'stmt? true 'self-tr true) (form)
+(define-compiler while ('stmt? true 'self-tr true) (form)
   (local condition (compile (at form 0)))
   (local body (compile-body (sub form 1)))
   (if (= current-target 'js)
       (cat "while(" condition "){" body "}")
     (cat "while " condition " do " body " end ")))
 
-(define-compiler (defun 'stmt? true 'self-tr true) ((name args body...))
+(define-compiler defun ('stmt? true 'self-tr true) ((name args body...))
   (local id (identifier name))
   (compile-function args body id))
 
-(define-compiler (defmacro 'stmt? true 'self-tr true) ((name args body...))
+(define-compiler defmacro ('stmt? true 'self-tr true) ((name args body...))
   (local lambda `(lambda ,args ,@body))
   (local register `(set (get macros ',name) ,lambda))
   (eval (compile-for-target (current-language) register true))
   "")
 
-(define-compiler (return 'stmt? true) (form)
+(define-compiler return ('stmt? true) (form)
   (compile-call `(return ,@form)))
 
-(define-compiler (local 'stmt? true) ((name value))
+(define-compiler local ('stmt? true) ((name value))
   (local id (identifier name))
   (local keyword (if (= current-target 'js) "var " "local "))
   (if (= value nil)
@@ -259,7 +259,7 @@
     (do (local v (compile value))
 	(cat keyword id "=" v))))
 
-(define-compiler (each 'stmt? true) (((t k v) body...))
+(define-compiler each ('stmt? true) (((t k v) body...))
   (local t1 (compile t))
   (if (= current-target 'lua)
       (do (local body1 (compile-body body))
@@ -267,14 +267,14 @@
     (do (local body1 (compile-body `((set ,v (get ,t ,k)) ,@body)))
 	(cat "for(" k " in " t1 "){" body1 "}"))))
 
-(define-compiler (set 'stmt? true) (form)
+(define-compiler set ('stmt? true) (form)
   (if (< (length form) 2)
       (error "Missing right-hand side in assignment"))
   (local lh (compile (at form 0)))
   (local rh (compile (at form 1)))
   (cat lh "=" rh))
 
-(define-compiler (get) ((object key))
+(define-compiler get () ((object key))
   (local o (compile object))
   (local k (compile key))
   (if (and (= current-target 'lua)
@@ -282,17 +282,17 @@
       (set o (cat "(" o ")")))
   (cat o "[" k "]"))
 
-(define-compiler (dot) ((object key))
+(define-compiler dot () ((object key))
   (local o (compile object))
   (local id (identifier key))
   (cat o "." id))
 
-(define-compiler (not) ((expr))
+(define-compiler not () ((expr))
   (local e (compile expr))
   (local open (if (= current-target 'js) "!(" "(not "))
   (cat open e ")"))
 
-(define-compiler (list) (forms depth)
+(define-compiler list () (forms depth)
   (local open (if (= current-target 'lua) "{" "["))
   (local close (if (= current-target 'lua) "}" "]"))
   (local str "")
@@ -302,7 +302,7 @@
     (if (< i (- (length forms) 1)) (set str (cat str ","))))
   (cat open str close))
 
-(define-compiler (table) (forms)
+(define-compiler table () (forms)
   (local sep (if (= current-target 'lua) "=" ":"))
   (local str "{")
   (local i 0)
@@ -316,10 +316,10 @@
     (set i (+ i 2)))
   (cat str "}"))
 
-(define-compiler (lambda) ((args body...))
+(define-compiler lambda () ((args body...))
   (compile-function args body))
 
-(define-compiler (quote) ((form)) (quote-form form))
+(define-compiler quote () ((form)) (quote-form form))
 
 (defun can-return? (form)
   (if (call? 'macro form) false
