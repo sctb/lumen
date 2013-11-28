@@ -88,6 +88,11 @@
   (across (a x) (push a1 (f x)))
   a1)
 
+(defun collect (f a)
+  (local a1 ())
+  (across (a x) (set a1 (join a1 (f x))))
+  a1)
+
 ;; lists
 
 (defun push (arr x)

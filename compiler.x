@@ -208,17 +208,19 @@
 
 (set special (table))
 
-(defmacro define-compiler (name (props...) args body...)
-  `(set (get special ',name) (table 'compiler (lambda ,args ,@body) ,@props)))
+(defmacro define-compiler (name (keys...) args body...)
+  `(set (get special ',name)
+	(table 'compiler (lambda ,args ,@body)
+	       ,@(collect (lambda (k) (list k true)) keys))))
 
 (defun compiler (name) (get (get special name) 'compiler))
-(defun statement? (name) (get (get special name) 'stmt?))
-(defun self-terminating? (name) (get (get special name) 'self-tr))
+(defun statement? (name) (get (get special name) 'statement))
+(defun self-terminating? (name) (get (get special name) 'terminated))
 
-(define-compiler do ('stmt? true 'self-tr true) (forms tail?)
+(define-compiler do (statement terminated) (forms tail?)
   (compile-body forms tail?))
 
-(define-compiler if ('stmt? true 'self-tr true) (form tail?)
+(define-compiler if (statement terminated) (form tail?)
   (local str "")
   (across (form condition i)
     (local last? (>= i (- (length form) 2)))
@@ -232,27 +234,27 @@
     (set str (cat str (compile-branch condition body first? last? tail?))))
   str)
 
-(define-compiler while ('stmt? true 'self-tr true) (form)
+(define-compiler while (statement terminated) (form)
   (local condition (compile (at form 0)))
   (local body (compile-body (sub form 1)))
   (if (= current-target 'js)
       (cat "while(" condition "){" body "}")
     (cat "while " condition " do " body " end ")))
 
-(define-compiler defun ('stmt? true 'self-tr true) ((name args body...))
+(define-compiler defun (statement terminated) ((name args body...))
   (local id (identifier name))
   (compile-function args body id))
 
-(define-compiler defmacro ('stmt? true 'self-tr true) ((name args body...))
+(define-compiler defmacro (statement terminated) ((name args body...))
   (local lambda `(lambda ,args ,@body))
   (local register `(set (get macros ',name) ,lambda))
   (eval (compile-for-target (current-language) register true))
   "")
 
-(define-compiler return ('stmt? true) (form)
+(define-compiler return (statement) (form)
   (compile-call `(return ,@form)))
 
-(define-compiler local ('stmt? true) ((name value))
+(define-compiler local (statement) ((name value))
   (local id (identifier name))
   (local keyword (if (= current-target 'js) "var " "local "))
   (if (= value nil)
@@ -260,7 +262,7 @@
     (do (local v (compile value))
 	(cat keyword id "=" v))))
 
-(define-compiler each ('stmt? true) (((t k v) body...))
+(define-compiler each (statement) (((t k v) body...))
   (local t1 (compile t))
   (if (= current-target 'lua)
       (do (local body1 (compile-body body))
@@ -268,7 +270,7 @@
     (do (local body1 (compile-body `((set ,v (get ,t ,k)) ,@body)))
 	(cat "for(" k " in " t1 "){" body1 "}"))))
 
-(define-compiler set ('stmt? true) (form)
+(define-compiler set (statement) (form)
   (if (< (length form) 2)
       (error "Missing right-hand side in assignment"))
   (local lh (compile (at form 0)))
