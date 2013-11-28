@@ -388,10 +388,6 @@
 	  (compile form stmt? tail?))
     (cat (compile-call form) tr)))
 
-(defun compile1 (form)
-  (set form (quasiexpand form))
-  (compile form true))
-
 (defun compile-file (file)
   (local form)
   (local output "")
@@ -399,7 +395,7 @@
   (while true
     (set form (read s))
     (if (= form eof) break)
-    (set output (cat output (compile1 form true))))
+    (set output (cat output (compile (quasiexpand form) true))))
   output)
 
 (defun compile-files (files)
