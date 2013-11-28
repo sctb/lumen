@@ -27,10 +27,10 @@
 (set read-table (table))
 (set eof (table))
 
-(defmacro defreader ((char stream) body...)
+(defmacro define-reader ((char stream) body...)
   `(set (get read-table ,char) (lambda (,stream) ,@body)))
 
-(defreader ("" s) ; atom
+(define-reader ("" s) ; atom
   (local str "")
   (while true
     (local c (peek-char s))
@@ -45,7 +45,7 @@
       (= str "false") false
     str))
 
-(defreader ("(" s)
+(define-reader ("(" s)
   (read-char s)
   (local l ())
   (while true
@@ -56,10 +56,10 @@
       (error (cat "Expected ) at " s.pos))))
   l)
 
-(defreader (")" s)
+(define-reader (")" s)
   (error (cat "Unexpected ) at " s.pos)))
 
-(defreader ("\"" s)
+(define-reader ("\"" s)
   (read-char s)
   (local str "\"")
   (while true
@@ -71,15 +71,15 @@
       (error (cat "Expected \" at " s.pos))))
   (cat str "\""))
 
-(defreader ("'" s)
+(define-reader ("'" s)
   (read-char s)
   (list 'quote (read s)))
 
-(defreader ("`" s)
+(define-reader ("`" s)
   (read-char s)
   (list 'quasiquote (read s)))
 
-(defreader ("," s)
+(define-reader ("," s)
   (read-char s)
   (if (= (peek-char s) "@")
       (do (read-char s)
