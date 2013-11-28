@@ -8,7 +8,7 @@
 
 (defun get-op (op)
   (or (get (get operators 'common) op)
-      (get (get operators current-target) op)))
+      (get (get operators target) op)))
 
 (defun call? (type form)
   (if (not (list? form)) false
@@ -127,7 +127,7 @@
 
 (defun compile-atom (form)
   (if (= form "nil")
-      (if (= current-target 'js) "undefined" "nil")
+      (if (= target 'js) "undefined" "nil")
       (and (string? form) (not (string-literal? form)))
       (identifier form)
     (to-string form)))
@@ -155,16 +155,16 @@
 (defun compile-branch (condition body first? last? tail?)
   (local cond1 (compile condition))
   (local body1 (compile body true tail?))
-  (local tr (if (and last? (= current-target 'lua)) " end " ""))
-  (if (and first? (= current-target 'js))
+  (local tr (if (and last? (= target 'lua)) " end " ""))
+  (if (and first? (= target 'js))
       (cat "if(" cond1 "){" body1 "}")
       first?
       (cat "if " cond1 " then " body1 tr)
-      (and (= condition nil) (= current-target 'js))
+      (and (= condition nil) (= target 'js))
       (cat "else{" body1 "}")
       (= condition nil)
       (cat " else " body1 " end ")
-      (= current-target 'js)
+      (= target 'js)
       (cat "else if(" cond1 "){" body1 "}")
     (cat " elseif " cond1 " then " body1 tr)))
 
@@ -174,7 +174,7 @@
     (if (vararg? arg)
 	(do (local v (sub arg 0 (- (length arg) 3)))
 	    (local expr
-	      (if (= current-target 'js)
+	      (if (= target 'js)
 		  `(Array.prototype.slice.call arguments ,(length args1))
 		(do (push args1 '...) '(list ...))))
 	    (set body `((local ,v ,expr) ,@body))
@@ -191,7 +191,7 @@
   (local expanded (bind-arguments args body))
   (local args1 (compile-args (at expanded 0)))
   (local body1 (compile-body (at expanded 1) true))
-  (if (= current-target 'js)
+  (if (= target 'js)
       (cat "function " name args1 "{" body1 "}")
     (cat "function " name args1 body1 " end ")))
 
@@ -224,7 +224,7 @@
 (defun self-terminating? (name) (get (get special name) 'terminated))
 
 (define-compiler language () ()
-  (quote-form current-target))
+  (quote-form target))
 
 (define-compiler do (statement terminated) (forms tail?)
   (compile-body forms tail?))
@@ -246,7 +246,7 @@
 (define-compiler while (statement terminated) (form)
   (local condition (compile (at form 0)))
   (local body (compile-body (sub form 1)))
-  (if (= current-target 'js)
+  (if (= target 'js)
       (cat "while(" condition "){" body "}")
     (cat "while " condition " do " body " end ")))
 
@@ -265,7 +265,7 @@
 
 (define-compiler local (statement) ((name value))
   (local id (identifier name))
-  (local keyword (if (= current-target 'js) "var " "local "))
+  (local keyword (if (= target 'js) "var " "local "))
   (if (= value nil)
       (cat keyword id)
     (do (local v (compile value))
@@ -273,7 +273,7 @@
 
 (define-compiler each (statement) (((t k v) body...))
   (local t1 (compile t))
-  (if (= current-target 'lua)
+  (if (= target 'lua)
       (do (local body1 (compile-body body))
 	  (cat "for " k "," v " in pairs(" t1 ") do " body1 " end"))
     (do (local body1 (compile-body `((set ,v (get ,t ,k)) ,@body)))
@@ -289,7 +289,7 @@
 (define-compiler get () ((object key))
   (local o (compile object))
   (local k (compile key))
-  (if (and (= current-target 'lua)
+  (if (and (= target 'lua)
 	   (= (char o 0) "{"))
       (set o (cat "(" o ")")))
   (cat o "[" k "]"))
@@ -301,12 +301,12 @@
 
 (define-compiler not () ((expr))
   (local e (compile expr))
-  (local open (if (= current-target 'js) "!(" "(not "))
+  (local open (if (= target 'js) "!(" "(not "))
   (cat open e ")"))
 
 (define-compiler list () (forms depth)
-  (local open (if (= current-target 'lua) "{" "["))
-  (local close (if (= current-target 'lua) "}" "]"))
+  (local open (if (= target 'lua) "{" "["))
+  (local close (if (= target 'lua) "}" "]"))
   (local str "")
   (across (forms x i)
     (local x1 (if (quoting? depth) (quote-form x) (compile x)))
@@ -315,14 +315,14 @@
   (cat open str close))
 
 (define-compiler table () (forms)
-  (local sep (if (= current-target 'lua) "=" ":"))
+  (local sep (if (= target 'lua) "=" ":"))
   (local str "{")
   (local i 0)
   (while (< i (- (length forms) 1))
     (local k (at forms i))
     (if (not (string? k)) (error (cat "Illegal table key: " (to-string k))))
     (local v (compile (at forms (+ i 1))))
-    (if (and (= current-target 'lua) (string-literal? k))
+    (if (and (= target 'lua) (string-literal? k))
 	(set k (cat "[" k "]")))
     (set str (cat str k sep v))
     (if (< i (- (length forms) 2)) (set str (cat str ",")))
@@ -372,9 +372,9 @@
     (set output (cat output (compile-file file))))
   output)
 
-(defun compile-for-target (target form stmt?)
-  (local previous-target current-target)
-  (set current-target target)
+(defun compile-for-target (target1 form stmt?)
+  (local previous target)
+  (set target target1)
   (local result (compile (quasiexpand form) stmt?))
-  (set current-target previous-target)
+  (set target previous)
   result)

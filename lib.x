@@ -11,9 +11,9 @@
     `(do ,@(bind1 list value))))
 
 (defmacro at (arr i)
-  (if (and (= current-target 'lua) (number? i))
+  (if (and (= target 'lua) (number? i))
       (set i (+ i 1))
-      (= current-target 'lua)
+      (= target 'lua)
       (set i `(+ ,i 1)))
   `(get ,arr ,i))
 
@@ -48,11 +48,11 @@
 
 ;; languages
 
-(set current-target (language))
+(set target (language))
 
 (defmacro target (clauses...)
   (across (clauses clause)
-    (if (= (at clause 0) current-target)
+    (if (= (at clause 0) target)
 	(return (at clause 1)))))
 
 ;; sequences
