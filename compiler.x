@@ -39,43 +39,31 @@
     (map macroexpand form)))
 
 (defun quasiexpand (form depth)
-  (if ;; quasiquoting atom
-      (and (atom? form)
-	   (quasiquoting? depth))
-      (list 'quote form)
+  (if (quasiquoting? depth)
+      (if (atom? form) (list 'quote form)
+	  ;; unquote
+	  (and (can-unquote? depth)
+	       (= (at form 0) 'unquote))
+	  (quasiexpand (at form 1))
+	  ;; decrease quasiquoting depth
+	  (or (= (at form 0) 'unquote)
+	      (= (at form 0) 'unquote-splicing))
+	  (quasiquote-list form (- depth 1))
+	  ;; increase quasiquoting depth
+	  (= (at form 0) 'quasiquote)
+	  (quasiquote-list form (+ depth 1))
+	;; list
+	(quasiquote-list form depth))
       ;; atom
       (atom? form) form
       ;; quote
-      (and (not (quasiquoting? depth))
-	   (= (at form 0) 'quote))
+      (= (at form 0) 'quote)
       (list 'quote (at form 1))
-      ;; unquote
-      (and (can-unquote? depth)
-	   (= (at form 0) 'unquote))
-      (quasiexpand (at form 1))
-      ;; decrease quasiquoting depth
-      (and (quasiquoting? depth)
-	   (not (can-unquote? depth))
-	   (or (= (at form 0) 'unquote)
-	       (= (at form 0) 'unquote-splicing)))
-      (quasiquote-unquote form depth)
-      ;; increase quasiquoting depth
-      (and (quasiquoting? depth)
-	   (= (at form 0) 'quasiquote))
-      (quasiquote-list form (+ depth 1))
-      ;; begin quasiquoting
+      ;; quasiquote
       (= (at form 0) 'quasiquote)
       (quasiexpand (at form 1) 1)
-      ;; quasiquoting list, possible splicing
-      (quasiquoting? depth)
-      (quasiquote-list form depth)
     ;; list
     (map (lambda (x) (quasiexpand x depth)) form)))
-
-(defun quasiquote-unquote (form depth)
-  (list 'list
-	(list 'quote (at form 0))
-	(quasiexpand (at form 1) (- depth 1))))
 
 (defun quasiquote-list (form depth)
   (do (local xs (list '(list)))
