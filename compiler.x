@@ -200,10 +200,9 @@
 
 (defun compile-special (form stmt? tail?)
   (local name (at form 0))
-  (local sp (get special name))
-  (if (and (not stmt?) (get sp 'stmt?))
+  (if (and (not stmt?) (statement? name))
       (compile `((lambda () ,form)) false tail?)
-    (do (local tr? (and stmt? (not (get sp 'self-tr))))
+    (do (local tr? (and stmt? (not (self-terminating? name))))
 	(local tr (if tr? ";" ""))
 	(cat ((compiler name) (sub form 1) tail?) tr))))
 
@@ -213,6 +212,8 @@
   `(set (get special ',name) (table 'compiler (lambda ,args ,@body) ,@props)))
 
 (defun compiler (name) (get (get special name) 'compiler))
+(defun statement? (name) (get (get special name) 'stmt?))
+(defun self-terminating? (name) (get (get special name) 'self-tr))
 
 (define-compiler do ('stmt? true 'self-tr true) (forms tail?)
   (compile-body forms tail?))
@@ -323,7 +324,7 @@
 
 (defun can-return? (form)
   (if (call? 'macro form) false
-      (call? 'special form) (not (get (get special (at form 0)) 'stmt?))
+      (call? 'special form) (not (statement? (at form 0)))
     true))
 
 (defun compile (form stmt? tail?)
