@@ -182,7 +182,7 @@
         (list? arg)
 	(do (local v (make-id))
 	    (push args1 v)
-	    (set body `((bind ,arg ,v) ,@body)))
+	    (set body (macroexpand `((bind ,arg ,v) ,@body))))
       (push args1 arg)))
   (list args1 body))
 
