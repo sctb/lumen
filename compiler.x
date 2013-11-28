@@ -369,9 +369,9 @@
     (set output (cat output (compile-file file))))
   output)
 
-(defun compile-for-target (target args...)
+(defun compile-for-target (target form stmt?)
   (local previous-target current-target)
   (set current-target target)
-  (local result (apply compile args))
+  (local result (compile (quasiexpand form) stmt?))
   (set current-target previous-target)
   result)
