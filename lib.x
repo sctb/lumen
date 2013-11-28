@@ -26,11 +26,7 @@
 	 (set ,i (+ ,i 1)))))
 
 (defmacro make-set (elements...)
-  (local form '(table))
-  (across (elements x)
-    (push form x)
-    (push form true))
-  form)
+  `(table ,@(collect (lambda (x) (list x true)) elements)))
 
 (defun vararg? (name)
   (= (sub name (- (length name) 3) (length name)) "..."))
