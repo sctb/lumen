@@ -210,10 +210,7 @@
 (set special (table))
 
 (defmacro define-compiler ((name props...) args body...)
-  (local name1 (cat "compile-" name))
-  `(do (defun ,name1 ,args ,@body)
-       (set (get special ',name)
-	    (table 'compiler ,name1 ,@props))))
+  `(set (get special ',name) (table 'compiler (lambda ,args ,@body) ,@props)))
 
 (defun compiler (name) (get (get special name) 'compiler))
 
