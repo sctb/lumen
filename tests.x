@@ -361,6 +361,8 @@
   (test-equal 1 a)
   (test-equal 2 b)
   (test-equal 3 c)
+  (bind (_ b) '(1 2))
+  (test-equal 2 b)
   (bind (w (x (y) z)) '(1 (2 (3) 4)))
   (test-equal 1 w)
   (test-equal 2 x)
