@@ -1,10 +1,10 @@
 ;; -*- mode: lisp -*-
 
 (set operators
-  (table 'common (table "+" "+" "-" "-" "*" "*" "/" "/" "<" "<"
+  (table common (table "+" "+" "-" "-" "*" "*" "/" "/" "<" "<"
 			">" ">" "=" "==" "<=" "<=" ">=" ">=")
-	 'js (table "and" "&&" "or" "||" "cat" "+")
-	 'lua (table "and" " and " "or" " or " "cat" "..")))
+	 js (table "and" "&&" "or" "||" "cat" "+")
+	 lua (table "and" " and " "or" " or " "cat" "..")))
 
 (defun get-op (op)
   (or (get (get operators 'common) op)
@@ -210,7 +210,7 @@
 
 (defmacro define-compiler (name (keys...) args body...)
   `(set (get special ',name)
-	(table 'compiler (lambda ,args ,@body)
+	(table compiler (lambda ,args ,@body)
 	       ,@(collect (lambda (k) (list k true)) keys))))
 
 (defun compiler (name) (get (get special name) 'compiler))

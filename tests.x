@@ -132,7 +132,7 @@
   (test-equal 42 (f))
   (local l (list f))
   (test-equal 42 ((at l 0)))
-  (local t (table 'f f))
+  (local t (table f f))
   (test-equal 42 (t.f))
   (test-equal 42 ((dot t f))))
 
@@ -189,8 +189,8 @@
   (test-equal 10 i))
 
 (deftest table ()
-  (test-equal (table 'a 10 'b 20) (table 'a 10 'b 20))
-  (test-equal 10 (get (table 'a 10) 'a)))
+  (test-equal (table a 10 b 20) (table a 10 b 20))
+  (test-equal 10 (get (table a 10) 'a)))
 
 (deftest get-set ()
   (local t (table))
@@ -198,14 +198,14 @@
   (test-equal 'bar (get t 'foo)))
 
 (deftest dot ()
-  (local t (table 'a 10))
+  (local t (table a 10))
   (test-equal 10 t.a)
   (test-equal 10 (dot t a)))
 
 (deftest each ()
   (local a "")
   (local b 0)
-  (each ((table 'a 10 'b 20 'c 30) k v)
+  (each ((table a 10 b 20 c 30) k v)
     (set a (cat a k))
     (set b (+ b v)))
   (test-equal 3 (length a))
@@ -248,7 +248,7 @@
   (test-equal 10 (do (while (< i 10) (set i (+ i 1))) i)))
 
 (deftest each-expr ()
-  (local t (table 'a 10 'b 20))
+  (local t (table a 10 b 20))
   (local i 0)
   (test-equal 2 (do (each (t _ _) (set i (+ i 1))) i)))
 
