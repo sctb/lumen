@@ -1,5 +1,8 @@
 ;; -*- mode: lisp -*-
 
+(defmacro quasiquote (form)
+  (quasiexpand form 1))
+
 (defmacro bind (list value)
   (if (list? value)
       (do (local v (make-id))
