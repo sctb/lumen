@@ -48,8 +48,7 @@
 
 ;; languages
 
-(defmacro current-language ()  `',current-target)
-(set current-target (current-language))
+(set current-target (language))
 
 (defmacro target (clauses...)
   (across (clauses clause)

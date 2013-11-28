@@ -223,6 +223,9 @@
 (defun statement? (name) (get (get special name) 'statement))
 (defun self-terminating? (name) (get (get special name) 'terminated))
 
+(define-compiler language () ()
+  (quote-form current-target))
+
 (define-compiler do (statement terminated) (forms tail?)
   (compile-body forms tail?))
 
@@ -254,7 +257,7 @@
 (define-compiler defmacro (statement terminated) ((name args body...))
   (local lambda `(lambda ,args ,@body))
   (local register `(set (get macros ',name) ,lambda))
-  (eval (compile-for-target (current-language) register true))
+  (eval (compile-for-target (language) register true))
   "")
 
 (define-compiler return (statement) (form)
