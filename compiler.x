@@ -319,11 +319,11 @@
   (set (get symbol-macros name) expansion)
   nil)
 
-(defun compile-macrolet ((macros body...) tail?)
-  (across (macros macro)
+(defun compile-macrolet ((definitions body...) tail?)
+  (across (definitions macro)
     (compile-defmacro macro))
   (local body1 (compile `(do ,@body) nil tail?))
-  (across (macros macro)
+  (across (definitions macro)
     (set (get macros (at macro 0)) nil))
   body1)
 
