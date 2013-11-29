@@ -44,24 +44,6 @@
 	 ,@body
 	 (set ,i (+ ,i 1)))))
 
-(defmacro make-set (elements...)
-  `(table ,@(collect (lambda (x) (list x true)) elements)))
-
-(defun vararg? (name)
-  (= (sub name (- (length name) 3) (length name)) "..."))
-
-(defun bind1 (list value)
-  (local forms ())
-  (across (list x i)
-    (if (list? x)
-	(set forms (join forms (bind1 x `(at ,value ,i))))
-        (vararg? x)
-	(do (local v (sub x 0 (- (length x) 3)))
-	    (push forms `(local ,v (sub ,value ,i)))
-	    break) ; no more args
-      (push forms `(local ,x (at ,value ,i)))))
-  forms)
-
 (defmacro macrolet (definitions body...)
   (pushenv macros)
   (across (definitions macro)
@@ -81,6 +63,24 @@
 (defmacro define-symbol-macro (name expansion)
   (setenv symbol-macros name expansion)
   nil)
+
+(defmacro make-set (elements...)
+  `(table ,@(collect (lambda (x) (list x true)) elements)))
+
+(defun vararg? (name)
+  (= (sub name (- (length name) 3) (length name)) "..."))
+
+(defun bind1 (list value)
+  (local forms ())
+  (across (list x i)
+    (if (list? x)
+	(set forms (join forms (bind1 x `(at ,value ,i))))
+        (vararg? x)
+	(do (local v (sub x 0 (- (length x) 3)))
+	    (push forms `(local ,v (sub ,value ,i)))
+	    break) ; no more args
+      (push forms `(local ,x (at ,value ,i)))))
+  forms)
 
 ;; languages
 
