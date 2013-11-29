@@ -46,6 +46,26 @@
       (push forms `(local ,x (at ,value ,i)))))
   forms)
 
+(defmacro macrolet (definitions body...)
+  (across (definitions macro)
+    ((compiler 'defmacro) macro))
+  (local body1 (macroexpand body))
+  (across (definitions macro)
+    (set (get macros (at macro 0)) nil))
+  `(do ,@body1))
+
+(defmacro symbol-macrolet (expansions body...)
+  (across (expansions pair)
+    (set (get symbol-macros (at pair 0)) (at pair 1)))
+  (local body1 (macroexpand body))
+  (across (expansions pair)
+    (set (get symbol-macros (at pair 0)) nil))
+  `(do ,@body1))
+
+(defmacro define-symbol-macro (name expansion)
+  (set (get symbol-macros name) expansion)
+  nil)
+
 ;; languages
 
 (defmacro language () `',target)
