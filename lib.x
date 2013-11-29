@@ -197,16 +197,6 @@
 (defun pushenv (env) (push env (table)))
 (defun popenv (env) (pop env))
 
-(defmacro with-scope ((bound) expr)
-  (local result (make-id))
-  (local arg (make-id))
-  `(do (pushenv scopes)
-       (across (,bound ,arg)
-	 (setenv scopes ,arg true))
-       (local ,result ,expr)
-       (popenv scopes)
-       ,result))
-
 ;; strings
 
 (defun char (str n)

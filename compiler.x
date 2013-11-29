@@ -20,6 +20,16 @@
 (defun quasiquoting? (depth) (and (quoting? depth) (> depth 0)))
 (defun can-unquote? (depth) (and (quoting? depth) (= depth 1)))
 
+(defmacro with-scope ((bound) expr)
+  (local result (make-id))
+  (local arg (make-id))
+  `(do (pushenv scopes)
+       (across (,bound ,arg)
+	 (setenv scopes ,arg true))
+       (local ,result ,expr)
+       (popenv scopes)
+       ,result))
+
 (defun macroexpand (form)
   (if ;; expand symbol macro
       (get-symbol-macro form) (macroexpand (get-symbol-macro form))
