@@ -3,13 +3,6 @@
 (defmacro quasiquote (form)
   (quasiexpand form 1))
 
-(defmacro bind (list value)
-  (if (list? value)
-      (do (local v (make-id))
-	  `(do (local ,v ,value)
-	       ,@(bind1 list value)))
-    `(do ,@(bind1 list value))))
-
 (defmacro at (arr i)
   (if (and (= target 'lua) (number? i))
       (set i (+ i 1))
@@ -54,6 +47,13 @@
 (defmacro define-symbol-macro (name expansion)
   (setenv symbol-macros name expansion)
   nil)
+
+(defmacro bind (list value)
+  (if (list? value)
+      (do (local v (make-id))
+	  `(do (local ,v ,value)
+	       ,@(bind1 list value)))
+    `(do ,@(bind1 list value))))
 
 (defmacro across ((list v i start) body...)
   (local l (make-id))
