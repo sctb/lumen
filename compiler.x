@@ -108,15 +108,15 @@
   (local str "(")
   (across (forms x i)
     (local x1 (if compile? (compile x) (identifier x)))
-    (set str (cat str x1))
-    (if (< i (- (length forms) 1)) (set str (cat str ","))))
+    (cat! str x1)
+    (if (< i (- (length forms) 1)) (cat! str ",")))
   (cat str ")"))
 
 (defun compile-body (forms tail?)
   (local str "")
   (across (forms x i)
     (local t? (and tail? (= i (- (length forms) 1))))
-    (set str (cat str (compile x true t?))))
+    (cat! str (compile x true t?)))
   str)
 
 (defun identifier (id)
@@ -125,7 +125,7 @@
   (while (< i (length id))
     (local c (char id i))
     (if (= c "-") (set c "_"))
-    (set id2 (cat id2 c))
+    (cat! id2 c)
     (set i (+ i 1)))
   (local last (- (length id) 1))
   (if (= (char id last) "?")
@@ -155,9 +155,9 @@
   (local op1 (get-op op))
   (across (args arg i)
     (if (and (= op1 '-) (= (length args) 1))
-	(set str (cat str op1 (compile arg)))
-      (do (set str (cat str (compile arg)))
-	  (if (< i (- (length args) 1)) (set str (cat str op1))))))
+	(cat! str op1 (compile arg))
+      (do (cat! str (compile arg))
+	  (if (< i (- (length args) 1)) (cat! str op1)))))
   (cat str ")"))
 
 (defun compile-branch (condition body first? last? tail?)
@@ -248,7 +248,7 @@
 	(do (set body condition)
 	    (set condition nil)))
     (set i (+ i 1))
-    (set str (cat str (compile-branch condition body first? last? tail?))))
+    (cat! str (compile-branch condition body first? last? tail?)))
   str)
 
 (define-compiler while (statement terminated) (form)
@@ -268,9 +268,7 @@
   (local macro `(setenv macros ',name (lambda ,args ,@body)))
   (eval (compile-for-target (language) macro true))
   (if embed-macros
-      (set embedded-macros 
-	   (cat embedded-macros
-		(compile (macroexpand macro) true))))
+      (cat! embedded-macros (compile (macroexpand macro) true)))
   "")
 
 (define-compiler return (statement) (form)
@@ -323,8 +321,8 @@
   (local str "")
   (across (forms x i)
     (local x1 (if (quoting? depth) (quote-form x) (compile x)))
-    (set str (cat str x1))
-    (if (< i (- (length forms) 1)) (set str (cat str ","))))
+    (cat! str x1)
+    (if (< i (- (length forms) 1)) (cat! str ",")))
   (cat open str close))
 
 (define-compiler table () (forms)
@@ -337,8 +335,8 @@
     (local v (compile (at forms (+ i 1))))
     (if (and (= target 'lua) (string-literal? k))
 	(set k (cat "[" k "]")))
-    (set str (cat str k sep v))
-    (if (< i (- (length forms) 2)) (set str (cat str ",")))
+    (cat! str k sep v)
+    (if (< i (- (length forms) 2)) (cat! str ","))
     (set i (+ i 2)))
   (cat str "}"))
 
@@ -369,13 +367,13 @@
   (while true
     (set form (read s))
     (if (= form eof) break)
-    (set output (cat output (compile (macroexpand form) true))))
+    (cat! output (compile (macroexpand form) true)))
   output)
 
 (defun compile-files (files)
   (local output "")
   (across (files file)
-    (set output (cat output (compile-file file))))
+    (cat! output (compile-file file)))
   output)
 
 (defun compile-for-target (target1 form stmt?)

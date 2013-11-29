@@ -36,7 +36,7 @@
     (local c (peek-char s))
     (if (and c (and (not (get whitespace c))
 		    (not (get delimiters c))))
-	(do (set str (cat str c))
+	(do (cat! str c)
 	    (read-char s))
       break))
   (local n (parse-number str))
@@ -65,8 +65,8 @@
   (while true
     (local c (peek-char s))
     (if (and c (not (= c "\"")))
-	(do (if (= c "\\") (set str (cat str (read-char s))))
-	    (set str (cat str (read-char s))))
+	(do (if (= c "\\") (cat! str (read-char s)))
+	    (cat! str (read-char s)))
         c (do (read-char s) break) ; "
       (error (cat "Expected \" at " s.pos))))
   (cat str "\""))

@@ -206,7 +206,7 @@
   (local a "")
   (local b 0)
   (each ((table a 10 b 20 c 30) k v)
-    (set a (cat a k))
+    (cat! a k)
     (set b (+ b v)))
   (test-equal 3 (length a))
   (test-equal 60 b))

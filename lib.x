@@ -232,6 +232,9 @@
             (push strs str)
             strs))))
 
+(defmacro cat! (a bs...)
+  `(set ,a (cat ,a ,@bs)))
+
 ;; io
 
 (target (js (set fs (require 'fs))))
@@ -284,9 +287,9 @@
       (table? x) "#<table>"
     (do (local str "(")
 	(across (x y i)
-	  (set str (cat str (to-string y)))
+	  (cat! str (to-string y))
 	  (if (< i (- (length x) 1))
-	      (set str (cat str " "))))
+	      (cat! str " ")))
 	(cat str  ")"))))
 
 ;; misc
