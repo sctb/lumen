@@ -146,7 +146,7 @@
 (defun char (str n)
   (target (js (str.charAt n)) (lua (sub str n (+ n 1)))))
 
-(defun find (str pattern start)
+(defun search (str pattern start)
   (target
    (js (do (local i (str.indexOf pattern start))
 	   (if (>= i 0) i)))
@@ -159,7 +159,7 @@
    (js (str.split sep))
    (lua (do (local strs ())
             (while true
-              (local i (find str sep))
+              (local i (search str sep))
               (if (= i nil)
                   break
                 (do (push strs (sub str 0 i))

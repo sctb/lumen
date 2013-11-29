@@ -289,10 +289,10 @@
   (test-equal "uu" (sub "quux" 1 3))
   (test-equal "" (sub "quux" 5)))
 
-(deftest find ()
-  (test-equal 0 (find "abc" "a"))
-  (test-equal 2 (find "abcd" "cd"))
-  (test-equal nil (find "abc" "z")))
+(deftest search ()
+  (test-equal 0 (search "abc" "a"))
+  (test-equal 2 (search "abcd" "cd"))
+  (test-equal nil (search "abc" "z")))
 
 (deftest split ()
   (test-equal (list "a") (split "a" ","))
