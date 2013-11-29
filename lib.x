@@ -46,6 +46,7 @@
       (push forms `(local ,x (at ,value ,i)))))
   forms)
 
+;; TODO: macro environments for nested MACROLET
 (defmacro macrolet (definitions body...)
   (across (definitions macro)
     ((compiler 'defmacro) macro))
