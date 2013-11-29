@@ -17,6 +17,22 @@
       (set i `(+ ,i 1)))
   `(get ,arr ,i))
 
+(defmacro let (bindings body...)
+  (local renames ())
+  (local scope (last scopes))
+  (local i 0)
+  (local locals ())
+  (while (< i (length bindings))
+    (local id (at bindings i))
+    (if (get scope id)
+	(do (local rename (make-id))
+	    (push renames (list id rename))
+	    (set id rename))
+      (set (get scope id) true))
+    (push locals `(local ,id ,(at bindings (+ i 1))))
+    (set i (+ i 2)))
+  `(symbol-macrolet ,renames ,@(join locals body)))
+
 (defmacro across ((list v i start) body...)
   (local l (make-id))
   (set i (or i (make-id)))
@@ -180,6 +196,16 @@
 
 (defun pushenv (env) (push env (table)))
 (defun popenv (env) (pop env))
+
+(defmacro with-scope ((bound) expr)
+  (local result (make-id))
+  (local arg (make-id))
+  `(do (pushenv scopes)
+       (across (,bound ,arg)
+	 (setenv scopes ,arg true))
+       (local ,result ,expr)
+       (popenv scopes)
+       ,result))
 
 ;; strings
 

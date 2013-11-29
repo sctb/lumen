@@ -32,14 +32,16 @@
 	    ;; expand macro
 	    (get-macro name)
 	    (macroexpand (apply (get-macro name) (sub form 1)))
-	    ;; skip arglists
+	    ;; scoped forms
 	    (or (= name 'lambda)
 		(= name 'each))
 	    (do (bind (_ args body...) form)
-		`(,name ,args ,@(macroexpand body)))
+		(with-scope (args)
+		  `(,name ,args ,@(macroexpand body))))
 	    (= name 'defun)
 	    (do (bind (_ fn args body...) form)
-		`(defun ,fn ,args ,@(macroexpand body)))
+		(with-scope (args)
+                  `(defun ,fn ,args ,@(macroexpand body))))
 	  ;; list
 	  (map macroexpand form)))))
 
@@ -135,7 +137,7 @@
 	(local fn1 (compile fn))
 	(local args (compile-args (sub form 1) true))
 	(if (list? fn) (cat "(" fn1 ")" args)
-	  (string? fn) (cat fn1 args)
+	    (string? fn) (cat fn1 args)
 	  (error "Invalid function call")))))
 
 (defun compile-operator ((op args...))

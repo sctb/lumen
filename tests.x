@@ -217,6 +217,27 @@
   (test-equal 30 (f 20))
   (test-equal 40 ((lambda (n) (+ n 10)) 30)))
 
+;; macros
+
+(deftest let ()
+  (let (a 10)
+    (test-equal 10 a))
+  (let (a 11
+	b 12)
+    (test-equal 11 a)
+    (test-equal 12 b))
+  (let (a 1)
+    (test-equal 1 a)
+    (let (a 2)
+      (test-equal 2 a))
+    (test-equal 1 a))
+  ((lambda (zz)
+     (test-equal 20 zz)
+     (let (zz 21)
+       (test-equal 21 zz))
+     (test-equal 20 zz))
+   20))
+
 (deftest macrolet ()
   (macrolet ((a () 17)
 	     (b (a) `(+ ,a 10)))
