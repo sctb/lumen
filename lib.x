@@ -48,6 +48,7 @@
 
 ;; languages
 
+(defmacro language () `',target)
 (set target (language))
 
 (defmacro target (clauses...)
