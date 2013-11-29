@@ -1,10 +1,17 @@
 ;; -*- mode: lisp -*-
 
+(defun make-environment ()
+  (list (table)))
+
+(set macros (make-environment))
+(set scopes (make-environment))
+(set symbol-macros (make-environment))
+
+(set embed-macros false)
+
 (defmacro embed-macros ()
   (set embed-macros true))
 
-;; if we're compiling the compiler, persist macro definitions in the
-;; output
 (embed-macros)
 
 (defmacro quasiquote (form)
@@ -35,9 +42,12 @@
 
 (defmacro macrolet (definitions body...)
   (pushenv macros)
+  (local embed? embed-macros)
+  (set embed-macros false)
   (map (lambda (macro)
 	 ((compiler 'defmacro) macro))
        definitions)
+  (set embed-macros embed?)
   (local body1 (macroexpand body))
   (popenv macros)
   `(do ,@body1))
@@ -54,6 +64,9 @@
 (defmacro define-symbol-macro (name expansion)
   (setenv symbol-macros name expansion)
   nil)
+
+(defmacro defvar (name value)
+  `(set ,name ,value))
 
 (defmacro bind (list value)
   (if (list? value)

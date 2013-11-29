@@ -1,6 +1,6 @@
 .PHONY: all test check clean
 
-SRCS := boot.x lib.x reader.x compiler.x main.x
+SRCS := lib.x reader.x compiler.x main.x
 LUABOOT := boot/x.lua
 JSBOOT := boot/x.js
 

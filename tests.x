@@ -24,14 +24,15 @@
 (defmacro deftest (name _ body...)
   `(push tests (list ',name (lambda () ,@body))))
 
-(defun run-tests ()
-  (across (tests test)
-    (local name (at test 0))
-    (local fn (at test 1))
-    (local result (fn))
-    (if (string? result)
-	(print (cat " " name result))))
-  (print (cat passed " passed, " failed " failed")))
+(defvar run-tests
+  (lambda ()
+    (across (tests test)
+      (local name (at test 0))
+      (local fn (at test 1))
+      (local result (fn))
+      (if (string? result)
+	  (print (cat " " name result))))
+    (print (cat passed " passed, " failed " failed"))))
 
 ;; basic
 
