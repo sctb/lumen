@@ -1,4 +1,7 @@
 ;; -*- mode: lisp -*-
 
-(set macros (table))
-(set symbol-macros (table))
+(defun make-environment ()
+  (list (table)))
+
+(set macros (make-environment))
+(set symbol-macros (make-environment))

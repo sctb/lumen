@@ -10,16 +10,11 @@
   (or (get (get operators 'common) op)
       (get (get operators target) op)))
 
-(defun call? (type form)
-  (if (not (list? form)) false
-      (not (atom? (at form 0))) false
-      (= type 'operator) (not (= (get-op (at form 0)) nil))
-      (= type 'special) (not (= (get special (at form 0)) nil))
-      (= type 'macro) (not (= (get macros (at form 0)) nil))
-    false))
+(defun operator? (form)
+  (and (list? form) (not (= (get-op (at form 0)) nil))))
 
-(defun symbol-macro? (form)
-  (not (= (get symbol-macros form) nil)))
+(defun get-symbol-macro (form) (getenv symbol-macros form))
+(defun get-macro (form) (getenv macros form))
 
 (defun quoting? (depth) (number? depth))
 (defun quasiquoting? (depth) (and (quoting? depth) (> depth 0)))
@@ -27,25 +22,26 @@
 
 (defun macroexpand (form)
   (if ;; expand symbol macro
-      (symbol-macro? form) (macroexpand (get symbol-macros form))
+      (get-symbol-macro form) (macroexpand (get-symbol-macro form))
       ;; atom
       (atom? form) form
-      ;; pass-through
-      (= (at form 0) 'quote) form
-      (= (at form 0) 'defmacro) form
-      ;; expand macro
-      (call? 'macro form)
-      (macroexpand (apply (get macros (at form 0)) (sub form 1)))
-      ;; skip arglists
-      (or (= (at form 0) 'lambda)
-	  (= (at form 0) 'each))
-      (do (bind (name args body...) form)
-	  (list* name args (macroexpand body)))
-      (= (at form 0) 'defun)
-      (do (bind (def name args body...) form)
-	  (list* def name args (macroexpand body)))
-    ;; list
-    (map macroexpand form)))
+    (do (local name (at form 0))
+	(if ;; pass-through
+	    (= name 'quote) form
+	    (= name 'defmacro) form
+	    ;; expand macro
+	    (get-macro name)
+	    (macroexpand (apply (get-macro name) (sub form 1)))
+	    ;; skip arglists
+	    (or (= name 'lambda)
+		(= name 'each))
+	    (do (bind (_ args body...) form)
+		`(,name ,args ,@(macroexpand body)))
+	    (= name 'defun)
+	    (do (bind (_ fn args body...) form)
+		`(defun ,fn ,args ,@(macroexpand body)))
+	  ;; list
+	  (map macroexpand form)))))
 
 (defun quasiexpand (form depth)
   (if (quasiquoting? depth)
@@ -214,6 +210,9 @@
 
 (set special (table))
 
+(defun special? (form)
+  (and (list? form) (not (= (get special (at form 0)) nil))))
+
 (defmacro define-compiler (name (keys...) args body...)
   `(set (get special ',name)
 	(table compiler (lambda ,args ,@body)
@@ -253,7 +252,7 @@
 
 (define-compiler defmacro (statement terminated) ((name args body...))
   (local lambda `(lambda ,args ,@body))
-  (local register `(set (get macros ',name) ,lambda))
+  (local register `(setenv macros ',name ,lambda))
   (eval (compile-for-target (language) register true))
   "")
 
@@ -332,8 +331,8 @@
 (define-compiler quote () ((form)) (quote-form form))
 
 (defun can-return? (form)
-  (if (call? 'macro form) false
-      (call? 'special form) (not (statement? (at form 0)))
+  (if (special? form)
+      (not (statement? (at form 0)))
     true))
 
 (defun compile (form stmt? tail?)
@@ -342,10 +341,8 @@
       (set form `(return ,form)))
   (if (= form nil) ""
       (atom? form) (cat (compile-atom form) tr)
-      (call? 'operator form)
-      (cat (compile-operator form) tr)
-      (call? 'special form)
-      (compile-special form stmt? tail?)
+      (operator? form) (cat (compile-operator form) tr)
+      (special? form) (compile-special form stmt? tail?)
     (cat (compile-call form) tr)))
 
 (defun compile-file (file)

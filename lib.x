@@ -46,25 +46,24 @@
       (push forms `(local ,x (at ,value ,i)))))
   forms)
 
-;; TODO: macro environments for nested MACROLET
 (defmacro macrolet (definitions body...)
+  (pushenv macros)
   (across (definitions macro)
     ((compiler 'defmacro) macro))
   (local body1 (macroexpand body))
-  (across (definitions macro)
-    (set (get macros (at macro 0)) nil))
+  (popenv macros)
   `(do ,@body1))
 
 (defmacro symbol-macrolet (expansions body...)
+  (pushenv symbol-macros)
   (across (expansions pair)
-    (set (get symbol-macros (at pair 0)) (at pair 1)))
+    (setenv symbol-macros (at pair 0) (at pair 1)))
   (local body1 (macroexpand body))
-  (across (expansions pair)
-    (set (get symbol-macros (at pair 0)) nil))
+  (popenv symbol-macros)
   `(do ,@body1))
 
 (defmacro define-symbol-macro (name expansion)
-  (set (get symbol-macros name) expansion)
+  (setenv symbol-macros name expansion)
   nil)
 
 ;; languages
@@ -166,6 +165,21 @@
 	      (set t (list 'join (join '(list) t) x))
 	    (push t x)))
 	t)))
+
+;; environments
+
+(defun getenv (env k)
+  (local i (- (length env) 1))
+  (while (>= i 0)
+    (local v (get (at env i) k))
+    (if v (return v))
+    (set i (- i 1))))
+
+(defun setenv (env k v)
+  (set (get (last env) k) v))
+
+(defun pushenv (env) (push env (table)))
+(defun popenv (env) (pop env))
 
 ;; strings
 
