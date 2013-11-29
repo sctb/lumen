@@ -341,16 +341,11 @@
   (if (and tail? (can-return? form))
       (set form `(return ,form)))
   (if (= form nil) ""
-      (symbol-macro? form) (compile (get symbol-macros form) stmt? tail?)
       (atom? form) (cat (compile-atom form) tr)
       (call? 'operator form)
       (cat (compile-operator form) tr)
       (call? 'special form)
       (compile-special form stmt? tail?)
-      (call? 'macro form)
-      (do (local fn (get macros (at form 0)))
-	  (local form (apply fn (sub form 1)))
-	  (compile form stmt? tail?))
     (cat (compile-call form) tr)))
 
 (defun compile-file (file)
@@ -360,7 +355,7 @@
   (while true
     (set form (read s))
     (if (= form eof) break)
-    (set output (cat output (compile (quasiexpand form) true))))
+    (set output (cat output (compile (macroexpand form) true))))
   output)
 
 (defun compile-files (files)
@@ -372,6 +367,6 @@
 (defun compile-for-target (target1 form stmt?)
   (local previous target)
   (set target target1)
-  (local result (compile (quasiexpand form) stmt?))
+  (local result (compile (macroexpand form) stmt?))
   (set target previous)
   result)
