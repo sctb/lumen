@@ -267,7 +267,7 @@
 (define-compiler defmacro (statement terminated) ((name args body...))
   (local macro `(setenv macros ',name (lambda ,args ,@body)))
   (eval (compile-for-target (language) macro true))
-  (if embed-macros
+  (if embed-macros?
       (cat! embedded-macros (compile (macroexpand macro) true)))
   "")
 

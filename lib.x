@@ -7,12 +7,11 @@
 (set scopes (make-environment))
 (set symbol-macros (make-environment))
 
-(set embed-macros false)
+(set embed-macros? false)
 
-(defmacro embed-macros ()
-  (set embed-macros true))
-
-(embed-macros)
+(macrolet ((turn-on-embedded-macros ()
+	     (set embed-macros? true)))
+  (turn-on-embedded-macros))
 
 (defmacro quasiquote (form)
   (quasiexpand form 1))
@@ -42,12 +41,12 @@
 
 (defmacro macrolet (definitions body...)
   (pushenv macros)
-  (local embed? embed-macros)
-  (set embed-macros false)
+  (local embed? embed-macros?)
+  (set embed-macros? false)
   (map (lambda (macro)
 	 ((compiler 'defmacro) macro))
        definitions)
-  (set embed-macros embed?)
+  (set embed-macros? embed?)
   (local body1 (macroexpand body))
   (popenv macros)
   `(do ,@body1))
