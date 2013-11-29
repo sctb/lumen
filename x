@@ -12,4 +12,4 @@ pushd `dirname $0` > /dev/null
 DIR=`pwd`
 popd > /dev/null
 
-$HOST $DIR/$BOOT $DIR "$@"
+$HOST $DIR/$BOOT "$@"
