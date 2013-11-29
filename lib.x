@@ -52,9 +52,9 @@
 (set target (language))
 
 (defmacro target (clauses...)
-  (across (clauses clause)
-    (if (= (at clause 0) target)
-	(return (at clause 1)))))
+  (find (lambda (x)
+	  (if (= (at x 0) target) (at x 1)))
+	clauses))
 
 ;; sequences
 
@@ -117,6 +117,11 @@
   (local a1 ())
   (across (a x) (if (f x) (push a1 x)))
   a1)
+
+(defun find (f a)
+  (across (a x)
+    (local x1 (f x))
+    (if x1 (return x1))))
 
 (defun map (f a)
   (local a1 ())
