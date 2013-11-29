@@ -33,6 +33,28 @@
     (set i (+ i 2)))
   `(symbol-macrolet ,renames ,@(join locals body)))
 
+(defmacro macrolet (definitions body...)
+  (pushenv macros)
+  (map (lambda (macro)
+	 ((compiler 'defmacro) macro))
+       definitions)
+  (local body1 (macroexpand body))
+  (popenv macros)
+  `(do ,@body1))
+
+(defmacro symbol-macrolet (expansions body...)
+  (pushenv symbol-macros)
+  (map (lambda (pair)
+	 (setenv symbol-macros (at pair 0) (at pair 1)))
+       expansions)
+  (local body1 (macroexpand body))
+  (popenv symbol-macros)
+  `(do ,@body1))
+
+(defmacro define-symbol-macro (name expansion)
+  (setenv symbol-macros name expansion)
+  nil)
+
 (defmacro across ((list v i start) body...)
   (local l (make-id))
   (set i (or i (make-id)))
@@ -43,26 +65,6 @@
 	 (local ,v (at ,l ,i))
 	 ,@body
 	 (set ,i (+ ,i 1)))))
-
-(defmacro macrolet (definitions body...)
-  (pushenv macros)
-  (across (definitions macro)
-    ((compiler 'defmacro) macro))
-  (local body1 (macroexpand body))
-  (popenv macros)
-  `(do ,@body1))
-
-(defmacro symbol-macrolet (expansions body...)
-  (pushenv symbol-macros)
-  (across (expansions pair)
-    (setenv symbol-macros (at pair 0) (at pair 1)))
-  (local body1 (macroexpand body))
-  (popenv symbol-macros)
-  `(do ,@body1))
-
-(defmacro define-symbol-macro (name expansion)
-  (setenv symbol-macros name expansion)
-  nil)
 
 (defmacro make-set (elements...)
   `(table ,@(collect (lambda (x) (list x true)) elements)))
