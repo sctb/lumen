@@ -82,16 +82,6 @@
 	    (set j (+ j 1)))
 	  x2)))))
 
-(defun map (f a)
-  (local a1 ())
-  (across (a x) (push a1 (f x)))
-  a1)
-
-(defun collect (f a)
-  (local a1 ())
-  (across (a x) (set a1 (join a1 (f x))))
-  a1)
-
 ;; lists
 
 (defun push (arr x)
@@ -126,6 +116,16 @@
 (defun filter (f a)
   (local a1 ())
   (across (a x) (if (f x) (push a1 x)))
+  a1)
+
+(defun map (f a)
+  (local a1 ())
+  (across (a x) (push a1 (f x)))
+  a1)
+
+(defun collect (f a)
+  (local a1 ())
+  (across (a x) (set a1 (join a1 (f x))))
   a1)
 
 (defmacro join* (xs...)
