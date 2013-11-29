@@ -262,10 +262,15 @@
   (local id (identifier name))
   (compile-function args body id))
 
+(set embedded-macros "")
+
 (define-compiler defmacro (statement terminated) ((name args body...))
-  (local lambda `(lambda ,args ,@body))
-  (local register `(setenv macros ',name ,lambda))
-  (eval (compile-for-target (language) register true))
+  (local macro `(setenv macros ',name (lambda ,args ,@body)))
+  (eval (compile-for-target (language) macro true))
+  (if embed-macros
+      (set embedded-macros 
+	   (cat embedded-macros
+		(compile (macroexpand macro) true))))
   "")
 
 (define-compiler return (statement) (form)

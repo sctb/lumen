@@ -6,3 +6,5 @@
 (set scopes (make-environment))
 (set macros (make-environment))
 (set symbol-macros (make-environment))
+
+(set embed-macros false)

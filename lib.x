@@ -1,5 +1,12 @@
 ;; -*- mode: lisp -*-
 
+(defmacro embed-macros ()
+  (set embed-macros true))
+
+;; if we're compiling the compiler, persist macro definitions in the
+;; output
+(embed-macros)
+
 (defmacro quasiquote (form)
   (quasiexpand form 1))
 

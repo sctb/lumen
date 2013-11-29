@@ -45,7 +45,8 @@
 	(push inputs arg)))
     (if output
 	(do (if target1 (set target target1))
-	    (write-file output (compile-files inputs)))
+	    (local compiled (compile-files inputs))
+	    (write-file output (cat compiled embedded-macros)))
       (do (across (standard file)
 	    (eval (compile-file (cat dir "/" file))))
 	  (across (inputs file)
