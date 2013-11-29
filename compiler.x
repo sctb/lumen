@@ -30,18 +30,18 @@
       (symbol-macro? form) (macroexpand (get symbol-macros form))
       ;; atom
       (atom? form) form
-      ;; quote
+      ;; pass-through
       (= (at form 0) 'quote) form
+      (= (at form 0) 'defmacro) form
       ;; expand macro
       (call? 'macro form)
       (macroexpand (apply (get macros (at form 0)) (sub form 1)))
-      ;; special
+      ;; skip arglists
       (or (= (at form 0) 'lambda)
 	  (= (at form 0) 'each))
       (do (bind (name args body...) form)
 	  (list* name args (macroexpand body)))
-      (or (= (at form 0) 'defun)
-	  (= (at form 0) 'defmacro))
+      (= (at form 0) 'defun)
       (do (bind (def name args body...) form)
 	  (list* def name args (macroexpand body)))
     ;; list
