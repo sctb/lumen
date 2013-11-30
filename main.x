@@ -15,7 +15,12 @@
 	  (if str (execute str) break)))))
 
 (defun usage ()
-  (print "usage: x [<inputs>] [-o <output>] [-t <target>] [-e <expr>]")
+  (print "usage: x [options] [inputs]")
+  (print "options:")
+  (print "  -o <output>\tOutput file")
+  (print "  -t <target>\tTarget language (default: lua)")
+  (print "  -e <expr>\tExpression to evaluate")
+  (print "  -m \t\tEmbed macro definitions in output")
   (exit))
 
 (defun main ()
@@ -36,6 +41,7 @@
 		  (if (= arg "-o") (set output arg2)
 		    (= arg "-t") (set target1 arg2)
 		    (= arg "-e") (set expr arg2))))
+	    (= arg "-m") (set embed-macros? true)
 	    (= "-" (sub arg 0 1))
 	    (do (print "unrecognized option:" arg) (usage))
 	  (push inputs arg)))

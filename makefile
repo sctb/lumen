@@ -7,9 +7,9 @@ JSBOOT := boot/x.js
 
 $(LUABOOT) $(JSBOOT): $(SRCS)
 	@echo $(LUABOOT)
-	@./x $(SRCS) -o $(LUABOOT)
+	@./x $(SRCS) -m -o $(LUABOOT)
 	@echo $(JSBOOT)
-	@X_HOST=node ./x $(SRCS) -o $(JSBOOT)
+	@X_HOST=node ./x $(SRCS) -m -o $(JSBOOT)
 
 all: $(JSBOOT) $(LUABOOT)
 
@@ -21,13 +21,13 @@ test: all
 
 check: all
 	@echo check...
-	@X_HOST=node ./x $(SRCS) -o $(LUABOOT) -t lua && \
-./x $(SRCS) -o $(LUABOOT) && \
-./x $(SRCS) -o x1.lua && \
+	@X_HOST=node ./x $(SRCS) -m -o $(LUABOOT) -t lua && \
+./x $(SRCS) -m -o $(LUABOOT) && \
+./x $(SRCS) -m -o x1.lua && \
 diff $(LUABOOT) x1.lua && \
-./x $(SRCS) -o $(JSBOOT) -t js && \
-X_HOST=node ./x $(SRCS) -o $(JSBOOT) && \
-X_HOST=node ./x $(SRCS) -o x1.js && \
+./x $(SRCS) -m -o $(JSBOOT) -t js && \
+X_HOST=node ./x $(SRCS) -m -o $(JSBOOT) && \
+X_HOST=node ./x $(SRCS) -m -o x1.js && \
 diff $(JSBOOT) x1.js && \
 rm x1.lua x1.js
 

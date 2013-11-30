@@ -9,10 +9,6 @@
 
 (set embed-macros? false)
 
-(macrolet ((turn-on-embedded-macros ()
-	     (set embed-macros? true)))
-  (turn-on-embedded-macros))
-
 (defmacro quasiquote (form)
   (quasiexpand form 1))
 
