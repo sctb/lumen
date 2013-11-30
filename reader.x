@@ -1,7 +1,7 @@
 ;; -*- mode: lisp -*-
 
-(set delimiters (make-set "(" ")" ";" "\n"))
-(set whitespace (make-set " " "\t" "\n"))
+(defvar delimiters (make-set "(" ")" ";" "\n"))
+(defvar whitespace (make-set " " "\t" "\n"))
 
 (defun make-stream (str)
   (table pos 0 string str len (length str)))
@@ -24,8 +24,8 @@
 	    (skip-non-code s))
       break)))
 
-(set read-table (table))
-(set eof (table))
+(defvar read-table (table))
+(defvar eof (table))
 
 (defmacro define-reader ((char stream) body...)
   `(set (get read-table ,char) (lambda (,stream) ,@body)))

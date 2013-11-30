@@ -2,9 +2,9 @@
 
 ;; infrastructure
 
-(set passed 0)
-(set failed 0)
-(set tests ())
+(defvar passed 0)
+(defvar failed 0)
+(defvar tests ())
 
 (defmacro test (x msg)
   `(if (not ,x)

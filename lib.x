@@ -3,11 +3,11 @@
 (defun make-environment ()
   (list (table)))
 
-(set macros (make-environment))
-(set scopes (make-environment))
-(set symbol-macros (make-environment))
+(defvar macros (make-environment))
+(defvar scopes (make-environment))
+(defvar symbol-macros (make-environment))
 
-(set embed-macros? false)
+(defvar embed-macros? false)
 
 (defmacro quasiquote (form)
   (quasiexpand form 1))
@@ -102,7 +102,7 @@
 ;; languages
 
 (defmacro language () `',target)
-(set target (language))
+(defvar target (language))
 
 (defmacro target (clauses...)
   (find (lambda (x)
@@ -308,13 +308,13 @@
 (defun apply (f args)
   (target (js (f.apply f args)) (lua (f (unpack args)))))
 
-(set id-counter 0)
+(defvar id-counter 0)
 
 (defun make-id (prefix)
   (set id-counter (+ id-counter 1))
   (cat "_" (or prefix "") id-counter))
 
-(set eval-result nil)
+(defvar eval-result nil)
 
 (target
  (lua (defun eval (x)

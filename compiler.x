@@ -1,6 +1,6 @@
 ;; -*- mode: lisp -*-
 
-(set operators
+(defvar operators
   (table common (table "+" "+" "-" "-" "*" "*" "/" "/" "<" "<"
 			">" ">" "=" "==" "<=" "<=" ">=" ">=")
 	 js (table "and" "&&" "or" "||" "cat" "+")
@@ -220,7 +220,7 @@
 	(local tr (if tr? ";" ""))
 	(cat ((compiler name) (sub form 1) tail?) tr))))
 
-(set special (table))
+(defvar special (table))
 
 (defun special? (form)
   (and (list? form) (not (= (get special (at form 0)) nil))))
@@ -262,7 +262,7 @@
   (local id (identifier name))
   (compile-function args body id))
 
-(set embedded-macros "")
+(defvar embedded-macros "")
 
 (define-compiler defmacro (statement terminated) ((name args body...))
   (local macro `(setenv macros ',name (lambda ,args ,@body)))
