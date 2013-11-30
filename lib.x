@@ -20,41 +20,41 @@
   `(get ,arr ,i))
 
 (defmacro let (bindings body...)
-  (local renames ())
-  (local scope (last scopes))
-  (local i 0)
-  (local locals ())
-  (while (< i (length bindings))
-    (local id (at bindings i))
-    (if (get scope id)
-	(do (local rename (make-id))
-	    (push renames (list id rename))
-	    (set id rename))
-      (set (get scope id) true))
-    (push locals `(local ,id ,(at bindings (+ i 1))))
-    (set i (+ i 2)))
-  `(symbol-macrolet ,renames ,@(join locals body)))
+  (let (renames ()
+        scope (last scopes)
+	i 0
+	locals ())
+    (while (< i (length bindings))
+      (let (id (at bindings i))
+	(if (get scope id)
+	    (let (rename (make-id))
+	      (push renames (list id rename))
+	      (set id rename))
+	  (set (get scope id) true))
+	(push locals `(local ,id ,(at bindings (+ i 1)))))
+      (set i (+ i 2)))
+    `(symbol-macrolet ,renames ,@(join locals body))))
 
 (defmacro macrolet (definitions body...)
   (pushenv macros)
-  (local embed? embed-macros?)
-  (set embed-macros? false)
-  (map (lambda (macro)
-	 ((compiler 'defmacro) macro))
-       definitions)
-  (set embed-macros? embed?)
-  (local body1 (macroexpand body))
-  (popenv macros)
-  `(do ,@body1))
+  (let (embed? embed-macros?)
+    (set embed-macros? false)
+    (map (lambda (macro)
+	   ((compiler 'defmacro) macro))
+	 definitions)
+    (set embed-macros? embed?))
+  (let (body1 (macroexpand body))
+    (popenv macros)
+    `(do ,@body1)))
 
 (defmacro symbol-macrolet (expansions body...)
   (pushenv symbol-macros)
   (map (lambda (pair)
 	 (setenv symbol-macros (at pair 0) (at pair 1)))
        expansions)
-  (local body1 (macroexpand body))
-  (popenv symbol-macros)
-  `(do ,@body1))
+  (let (body1 (macroexpand body))
+    (popenv symbol-macros)
+    `(do ,@body1)))
 
 (defmacro define-symbol-macro (name expansion)
   (setenv symbol-macros name expansion)
@@ -65,21 +65,20 @@
 
 (defmacro bind (list value)
   (if (list? value)
-      (do (local v (make-id))
-	  `(do (local ,v ,value)
-	       ,@(bind1 list value)))
+      (let (v (make-id))
+	`(do (local ,v ,value)
+	     ,@(bind1 list value)))
     `(do ,@(bind1 list value))))
 
 (defmacro across ((list v i start) body...)
-  (local l (make-id))
-  (set i (or i (make-id)))
-  (set start (or start 0))
-  `(do (local ,i ,start)
-       (local ,l ,list)
+  (let (l (make-id))
+    (set i (or i (make-id)))
+    (set start (or start 0))
+    `(let (,i ,start ,l ,list)
        (while (< ,i (length ,l))
-	 (local ,v (at ,l ,i))
-	 ,@body
-	 (set ,i (+ ,i 1)))))
+	 (let (,v (at ,l ,i))
+	   ,@body
+	   (set ,i (+ ,i 1)))))))
 
 (defmacro make-set (elements...)
   `(table ,@(collect (lambda (x) (list x true)) elements)))
@@ -90,16 +89,16 @@
   (= (sub name (- (length name) 3) (length name)) "..."))
 
 (defun bind1 (list value)
-  (local forms ())
-  (across (list x i)
-    (if (list? x)
-	(set forms (join forms (bind1 x `(at ,value ,i))))
-        (vararg? x)
-	(do (local v (sub x 0 (- (length x) 3)))
+  (let (forms ())
+    (across (list x i)
+      (if (list? x)
+	  (set forms (join forms (bind1 x `(at ,value ,i))))
+          (vararg? x)
+	  (let (v (sub x 0 (- (length x) 3)))
 	    (push forms `(local ,v (sub ,value ,i)))
 	    break) ; no more args
-      (push forms `(local ,x (at ,value ,i)))))
-  forms)
+	(push forms `(local ,x (at ,value ,i)))))
+    forms))
 
 ;; languages
 
@@ -128,14 +127,12 @@
      (js (x.slice from upto))
      (lua
       (do (set upto (or upto (length x)))
-	  (local i from)
-	  (local j 0)
-	  (local x2 ())
-	  (while (< i upto)
-	    (set (at x2 j) (at x i))
-	    (set i (+ i 1))
-	    (set j (+ j 1)))
-	  x2)))))
+	  (let (i from j 0 x2 ())
+	    (while (< i upto)
+	      (set (at x2 j) (at x i))
+	      (set i (+ i 1))
+	      (set j (+ j 1)))
+	    x2))))))
 
 ;; lists
 
@@ -150,18 +147,16 @@
 
 (defun join (a1 a2)
   (target
-    (js (a1.concat a2))
-    (lua
-     (do (local a3 ())
-	 (local i 0)
-	 (local len (length a1))
-	 (while (< i len)
-	   (set (at a3 i) (at a1 i))
-	   (set i (+ i 1)))
-	 (while (< i (+ len (length a2)))
-	   (set (at a3 i) (at a2 (- i len)))
-	   (set i (+ i 1)))
-	 a3))))
+   (js (a1.concat a2))
+   (lua
+    (let (i 0 len (length a1) a3 ())
+      (while (< i len)
+	(set (at a3 i) (at a1 i))
+	(set i (+ i 1)))
+      (while (< i (+ len (length a2)))
+	(set (at a3 i) (at a2 (- i len)))
+	(set i (+ i 1)))
+      a3))))
 
 (defun reduce (f x)
   (if (empty? x) x
@@ -169,24 +164,24 @@
     (f (at x 0) (reduce f (sub x 1)))))
 
 (defun filter (f a)
-  (local a1 ())
-  (across (a x) (if (f x) (push a1 x)))
-  a1)
+  (let (a1 ())
+    (across (a x) (if (f x) (push a1 x)))
+    a1))
 
 (defun find (f a)
   (across (a x)
-    (local x1 (f x))
-    (if x1 (return x1))))
+    (let (x1 (f x))
+      (if x1 (return x1)))))
 
 (defun map (f a)
-  (local a1 ())
-  (across (a x) (push a1 (f x)))
-  a1)
+  (let (a1 ())
+    (across (a x) (push a1 (f x)))
+    a1))
 
 (defun collect (f a)
-  (local a1 ())
-  (across (a x) (set a1 (join a1 (f x))))
-  a1)
+  (let (a1 ())
+    (across (a x) (set a1 (join a1 (f x))))
+    a1))
 
 (defmacro join* (xs...)
   (reduce (lambda (a b) (list 'join a b)) xs))
@@ -194,21 +189,21 @@
 (defmacro list* (xs...)
   (if (= (length xs) 0)
       ()
-    (do (local t ())
-	(across (xs x i)
-	  (if (= i (- (length xs) 1))
-	      (set t (list 'join (join '(list) t) x))
-	    (push t x)))
-	t)))
+    (let (t ())
+      (across (xs x i)
+	(if (= i (- (length xs) 1))
+	    (set t (list 'join (join '(list) t) x))
+	  (push t x)))
+      t)))
 
 ;; environments
 
 (defun getenv (env k)
-  (local i (- (length env) 1))
-  (while (>= i 0)
-    (local v (get (at env i) k))
-    (if v (return v))
-    (set i (- i 1))))
+  (let (i (- (length env) 1))
+    (while (>= i 0)
+      (let (v (get (at env i) k))
+	(if v (return v)))
+      (set i (- i 1)))))
 
 (defun setenv (env k v)
   (set (get (last env) k) v))
@@ -223,24 +218,24 @@
 
 (defun search (str pattern start)
   (target
-   (js (do (local i (str.indexOf pattern start))
-	   (if (>= i 0) i)))
+   (js (let (i (str.indexOf pattern start))
+	 (if (>= i 0) i)))
    (lua (do (if start (set start (+ start 1)))
-	    (local i (string.find str pattern start true))
-	    (and i (- i 1))))))
+	    (let (i (string.find str pattern start true))
+	      (and i (- i 1)))))))
 
 (defun split (str sep)
   (target
    (js (str.split sep))
-   (lua (do (local strs ())
-            (while true
-              (local i (search str sep))
-              (if (= i nil)
-                  break
-                (do (push strs (sub str 0 i))
-                    (set str (sub str (+ i 1))))))
-            (push strs str)
-            strs))))
+   (lua (let (strs ())
+	  (while true
+	    (let (i (search str sep))
+	      (if (= i nil)
+		  break
+		(do (push strs (sub str 0 i))
+		    (set str (sub str (+ i 1)))))))
+	  (push strs str)
+	  strs))))
 
 (defmacro cat! (a bs...)
   `(set ,a (cat ,a ,@bs)))
@@ -252,14 +247,14 @@
 (defun read-file (path)
   (target
     (js (fs.readFileSync path 'utf8))
-    (lua (do (local f (io.open path))
-	     (f:read '*a)))))
+    (lua (let (f (io.open path))
+	   (f:read '*a)))))
 
 (defun write-file (path data)
   (target
     (js (fs.writeFileSync path data 'utf8))
-    (lua (do (local f (io.open path 'w))
-	     (f:write data)))))
+    (lua (let (f (io.open path 'w))
+	   (f:write data)))))
 
 (target (js (defun print (x) (console.log x))))
 
@@ -284,9 +279,9 @@
 
 (defun parse-number (str)
   (target
-    (js (do (local n (parseFloat str))
-	    (if (not (isNaN n)) n)))
-    (lua (tonumber str))))
+   (js (let (n (parseFloat str))
+	 (if (not (isNaN n)) n)))
+   (lua (tonumber str))))
 
 ;; printing
 
@@ -295,12 +290,12 @@
       (boolean? x) (if x "true" "false")
       (atom? x) (cat x "")
       (table? x) "#<table>"
-    (do (local str "(")
-	(across (x y i)
-	  (cat! str (to-string y))
-	  (if (< i (- (length x) 1))
-	      (cat! str " ")))
-	(cat str  ")"))))
+    (let (str "(")
+      (across (x y i)
+	(cat! str (to-string y))
+	(if (< i (- (length x) 1))
+	    (cat! str " ")))
+      (cat str  ")"))))
 
 ;; misc
 
@@ -322,9 +317,9 @@
  (lua (defun eval (x)
 	;; lua does not allow expressions to be evaluated at the
 	;; top-level
-        (local y (cat "eval_result=" x))
-	(local f (load y))
-	(if f
-	    (do (f) eval-result)
-	  (do (local f,e (load x))
-	      (if f (f) (error (cat e " in " x))))))))
+        (let (y (cat "eval_result=" x)
+	      f (load y))
+	  (if f
+	      (do (f) eval-result)
+	    (let (f,e (load x))
+	      (if f (f) (error (cat e " in " x)))))))))
