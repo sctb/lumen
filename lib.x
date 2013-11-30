@@ -1,16 +1,16 @@
 ;; -*- mode: lisp -*-
 
+;; top-level environment
+
 (defun make-environment ()
   (list (table)))
 
 (defvar macros (make-environment))
 (defvar scopes (make-environment))
 (defvar symbol-macros (make-environment))
-
 (defvar embed-macros? false)
 
-(defmacro quasiquote (form)
-  (quasiexpand form 1))
+;; macros
 
 (defmacro at (arr i)
   (if (and (= target 'lua) (number? i))
@@ -83,6 +83,8 @@
 
 (defmacro make-set (elements...)
   `(table ,@(collect (lambda (x) (list x true)) elements)))
+
+;; macro helpers
 
 (defun vararg? (name)
   (= (sub name (- (length name) 3) (length name)) "..."))

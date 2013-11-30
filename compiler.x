@@ -30,6 +30,9 @@
        (popenv scopes)
        ,result))
 
+(defmacro quasiquote (form)
+  (quasiexpand form 1))
+
 (defun macroexpand (form)
   (if ;; expand symbol macro
       (get-symbol-macro form) (macroexpand (get-symbol-macro form))
