@@ -285,6 +285,7 @@
   (if (= x nil) "nil"
       (boolean? x) (if x "true" "false")
       (atom? x) (cat x "")
+      (function? x) "#<function>"
       (table? x) "#<table>"
     (let (str "(")
       (across (x y i)
