@@ -14,11 +14,11 @@
   (and (list? form) (not (= (get-op (at form 0)) nil))))
 
 (defun get-symbol-macro (form) 
-  (let (x (getenv macros form))
+  (let (x (getenv environment form))
     (if (not (or (= x nil) (function? x))) x)))
 
 (defun get-macro (form) 
-  (let (x (getenv macros form))
+  (let (x (getenv environment form))
     (and (function? x) x)))
 
 (defun quoting? (depth) (number? depth))
@@ -272,7 +272,7 @@
 (defvar embedded-macros "")
 
 (define-compiler defmacro (statement terminated) ((name args body...))
-  (let (macro `(setenv macros ',name (lambda ,args ,@body)))
+  (let (macro `(setenv environment ',name (lambda ,args ,@body)))
     (eval (compile-for-target (language) macro true))
     (if embed-macros?
 	(cat! embedded-macros (compile (macroexpand macro) true))))

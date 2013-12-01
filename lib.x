@@ -6,6 +6,7 @@
   (list (table)))
 
 (defvar environment (make-environment))
+(defvar scopes (make-environment))
 
 (defun getenv (env k)
   (let (i (- (length env) 1))
@@ -16,9 +17,6 @@
 
 (defun setenv (env k v)
   (set (get (last env) k) v))
-
-(defvar macros (make-environment))
-(defvar scopes (make-environment))
 
 (defvar embed-macros? false)
 
@@ -48,7 +46,7 @@
     `(symbol-macrolet ,renames ,@(join locals body))))
 
 (defmacro macrolet (definitions body...)
-  (push macros (table))
+  (push environment (table))
   (let (embed? embed-macros?)
     (set embed-macros? false)
     (map (lambda (macro)
@@ -56,20 +54,20 @@
 	 definitions)
     (set embed-macros? embed?))
   (let (body1 (macroexpand body))
-    (pop macros)
+    (pop environment)
     `(do ,@body1)))
 
 (defmacro symbol-macrolet (expansions body...)
-  (push macros (table))
+  (push environment (table))
   (map (lambda (pair)
-	 (setenv macros (at pair 0) (at pair 1)))
+	 (setenv environment (at pair 0) (at pair 1)))
        expansions)
   (let (body1 (macroexpand body))
-    (pop macros)
+    (pop environment)
     `(do ,@body1)))
 
 (defmacro define-symbol-macro (name expansion)
-  (setenv macros name expansion)
+  (setenv environment name expansion)
   nil)
 
 (defmacro defvar (name value)
