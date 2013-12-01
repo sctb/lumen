@@ -1,9 +1,21 @@
 ;; -*- mode: lisp -*-
 
-;; top-level environment
+;; environment
 
 (defun make-environment ()
   (list (table)))
+
+(defvar environment (make-environment))
+
+(defun getenv (env k)
+  (let (i (- (length env) 1))
+    (while (>= i 0)
+      (let (v (get (at env i) k))
+	(if v (return v)))
+      (set i (- i 1)))))
+
+(defun setenv (env k v)
+  (set (get (last env) k) v))
 
 (defvar macros (make-environment))
 (defvar scopes (make-environment))
@@ -36,7 +48,7 @@
     `(symbol-macrolet ,renames ,@(join locals body))))
 
 (defmacro macrolet (definitions body...)
-  (pushenv macros)
+  (push macros (table))
   (let (embed? embed-macros?)
     (set embed-macros? false)
     (map (lambda (macro)
@@ -44,16 +56,16 @@
 	 definitions)
     (set embed-macros? embed?))
   (let (body1 (macroexpand body))
-    (popenv macros)
+    (pop macros)
     `(do ,@body1)))
 
 (defmacro symbol-macrolet (expansions body...)
-  (pushenv symbol-macros)
+  (push symbol-macros (table))
   (map (lambda (pair)
 	 (setenv symbol-macros (at pair 0) (at pair 1)))
        expansions)
   (let (body1 (macroexpand body))
-    (popenv symbol-macros)
+    (pop symbol-macros)
     `(do ,@body1)))
 
 (defmacro define-symbol-macro (name expansion)
@@ -196,21 +208,6 @@
 	  (push t x)))
       t)))
 
-;; environments
-
-(defun getenv (env k)
-  (let (i (- (length env) 1))
-    (while (>= i 0)
-      (let (v (get (at env i) k))
-	(if v (return v)))
-      (set i (- i 1)))))
-
-(defun setenv (env k v)
-  (set (get (last env) k) v))
-
-(defun pushenv (env) (push env (table)))
-(defun popenv (env) (pop env))
-
 ;; strings
 
 (defun char (str n)
@@ -270,6 +267,7 @@
 (defun string-literal? (x) (and (string? x) (= (char x 0) "\"")))
 (defun number? (x) (= (type x) 'number))
 (defun boolean? (x) (= (type x) 'boolean))
+(defun function? (x) (= (type x) 'function))
 (defun composite? (x) (= (type x) (target (js 'object) (lua 'table))))
 (defun atom? (x) (not (composite? x)))
 (defun table? (x) (and (composite? x) (= (at x 0) nil)))

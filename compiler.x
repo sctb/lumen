@@ -23,11 +23,11 @@
 (defmacro with-scope ((bound) expr)
   (let (result (make-id)
 	arg (make-id))
-    `(do (pushenv scopes)
+    `(do (push scopes (table))
 	 (across (,bound ,arg)
 	   (setenv scopes ,arg true))
 	 (let (,result ,expr)
-	   (popenv scopes)
+	   (pop scopes)
 	   ,result))))
 
 (defmacro quasiquote (form)
