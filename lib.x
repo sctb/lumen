@@ -2,11 +2,7 @@
 
 ;; environment
 
-(defun make-environment ()
-  (list (table)))
-
-(defvar environment (make-environment))
-(defvar scopes (make-environment))
+(defvar environment (list (table)))
 
 (defun getenv (env k)
   (let (i (- (length env) 1))
@@ -17,6 +13,25 @@
 
 (defun setenv (env k v)
   (set (get (last env) k) v))
+
+(defvar variable (table))
+
+(defun symbol-macro? (k)
+  (let (v (getenv environment k))
+    (and (not (= v nil))
+	 (not (= v variable))
+	 (not (macro? k)))))
+
+(defun macro? (k)
+  (function? (getenv environment k)))
+
+(defun variable? (k)
+  (= (get (last environment) k) variable))
+
+(defun bound? (x)
+  (or (symbol-macro? x)
+      (macro? x)
+      (variable? x)))
 
 (defvar embed-macros? false)
 
@@ -30,17 +45,16 @@
   `(get ,arr ,i))
 
 (defmacro let (bindings body...)
-  (let (renames ()
-        scope (last scopes)
-	i 0
+  (let (i 0
+	renames ()
 	locals ())
     (while (< i (length bindings))
       (let (id (at bindings i))
-	(if (get scope id)
+	(if (bound? id)
 	    (let (rename (make-id))
 	      (push renames (list id rename))
 	      (set id rename))
-	  (set (get scope id) true))
+	  (setenv environment id variable))
 	(push locals `(local ,id ,(at bindings (+ i 1)))))
       (set i (+ i 2)))
     `(symbol-macrolet ,renames ,@(join locals body))))

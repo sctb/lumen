@@ -13,14 +13,6 @@
 (defun operator? (form)
   (and (list? form) (not (= (get-op (at form 0)) nil))))
 
-(defun get-symbol-macro (form) 
-  (let (x (getenv environment form))
-    (if (not (or (= x nil) (function? x))) x)))
-
-(defun get-macro (form) 
-  (let (x (getenv environment form))
-    (and (function? x) x)))
-
 (defun quoting? (depth) (number? depth))
 (defun quasiquoting? (depth) (and (quoting? depth) (> depth 0)))
 (defun can-unquote? (depth) (and (quoting? depth) (= depth 1)))
@@ -28,11 +20,12 @@
 (defmacro with-scope ((bound) expr)
   (let (result (make-id)
 	arg (make-id))
-    `(do (push scopes (table))
+    `(do (push environment (table))
+	 ;; FIXME: these aren't the final processed arguments
 	 (across (,bound ,arg)
-	   (setenv scopes ,arg true))
+	   (setenv environment ,arg variable))
 	 (let (,result ,expr)
-	   (pop scopes)
+	   (pop environment)
 	   ,result))))
 
 (defmacro quasiquote (form)
@@ -40,7 +33,7 @@
 
 (defun macroexpand (form)
   (if ;; expand symbol macro
-      (get-symbol-macro form) (macroexpand (get-symbol-macro form))
+      (symbol-macro? form) (macroexpand (getenv environment form))
       ;; atom
       (atom? form) form
     (let (name (at form 0))
@@ -48,8 +41,8 @@
 	  (= name 'quote) form
 	  (= name 'defmacro) form
 	  ;; expand macro
-	  (get-macro name)
-	  (macroexpand (apply (get-macro name) (sub form 1)))
+	  (macro? name)
+	  (macroexpand (apply (getenv environment name) (sub form 1)))
 	  ;; scoped forms
 	  (or (= name 'lambda)
 	      (= name 'each))
