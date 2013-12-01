@@ -19,7 +19,7 @@
 
 (defvar macros (make-environment))
 (defvar scopes (make-environment))
-(defvar symbol-macros (make-environment))
+
 (defvar embed-macros? false)
 
 ;; macros
@@ -60,16 +60,16 @@
     `(do ,@body1)))
 
 (defmacro symbol-macrolet (expansions body...)
-  (push symbol-macros (table))
+  (push macros (table))
   (map (lambda (pair)
-	 (setenv symbol-macros (at pair 0) (at pair 1)))
+	 (setenv macros (at pair 0) (at pair 1)))
        expansions)
   (let (body1 (macroexpand body))
-    (pop symbol-macros)
+    (pop macros)
     `(do ,@body1)))
 
 (defmacro define-symbol-macro (name expansion)
-  (setenv symbol-macros name expansion)
+  (setenv macros name expansion)
   nil)
 
 (defmacro defvar (name value)

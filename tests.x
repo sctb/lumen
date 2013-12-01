@@ -265,6 +265,14 @@
       (test-equal 18 a)
       (test-equal 20 b))))
 
+(deftest macros-and-symbol-macros ()
+  (symbol-macrolet ((a 1))
+    (macrolet ((a () 2))
+      (test-equal 2 (a))))
+  (macrolet ((a () 2))
+    (symbol-macrolet ((a 1))
+      (test-equal 1 a))))
+
 ;; expressions
 
 (deftest if-expr ()

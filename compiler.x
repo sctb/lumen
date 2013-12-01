@@ -13,8 +13,13 @@
 (defun operator? (form)
   (and (list? form) (not (= (get-op (at form 0)) nil))))
 
-(defun get-symbol-macro (form) (getenv symbol-macros form))
-(defun get-macro (form) (getenv macros form))
+(defun get-symbol-macro (form) 
+  (let (x (getenv macros form))
+    (if (not (or (= x nil) (function? x))) x)))
+
+(defun get-macro (form) 
+  (let (x (getenv macros form))
+    (and (function? x) x)))
 
 (defun quoting? (depth) (number? depth))
 (defun quasiquoting? (depth) (and (quoting? depth) (> depth 0)))
