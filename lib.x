@@ -4,26 +4,26 @@
 
 (defvar environment (list (table)))
 
-(defun getenv (env k)
-  (let (i (- (length env) 1))
+(defun getenv (k)
+  (let (i (- (length environment) 1))
     (while (>= i 0)
-      (let (v (get (at env i) k))
+      (let (v (get (at environment i) k))
 	(if v (return v)))
       (set i (- i 1)))))
 
-(defun setenv (env k v)
-  (set (get (last env) k) v))
+(defun setenv (k v)
+  (set (get (last environment) k) v))
 
 (defvar variable (table))
 
 (defun symbol-macro? (k)
-  (let (v (getenv environment k))
+  (let (v (getenv k))
     (and (not (= v nil))
 	 (not (= v variable))
 	 (not (macro? k)))))
 
 (defun macro? (k)
-  (function? (getenv environment k)))
+  (function? (getenv k)))
 
 (defun variable? (k)
   (= (get (last environment) k) variable))
@@ -54,7 +54,7 @@
 	    (let (rename (make-id))
 	      (push renames (list id rename))
 	      (set id rename))
-	  (setenv environment id variable))
+	  (setenv id variable))
 	(push locals `(local ,id ,(at bindings (+ i 1)))))
       (set i (+ i 2)))
     `(symbol-macrolet ,renames ,@(join locals body))))
@@ -74,14 +74,14 @@
 (defmacro symbol-macrolet (expansions body...)
   (push environment (table))
   (map (lambda (pair)
-	 (setenv environment (at pair 0) (at pair 1)))
+	 (setenv (at pair 0) (at pair 1)))
        expansions)
   (let (body1 (macroexpand body))
     (pop environment)
     `(do ,@body1)))
 
 (defmacro define-symbol-macro (name expansion)
-  (setenv environment name expansion)
+  (setenv name expansion)
   nil)
 
 (defmacro defvar (name value)

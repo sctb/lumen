@@ -23,7 +23,7 @@
     `(do (push environment (table))
 	 ;; FIXME: these aren't the final processed arguments
 	 (across (,bound ,arg)
-	   (setenv environment ,arg variable))
+	   (setenv ,arg variable))
 	 (let (,result ,expr)
 	   (pop environment)
 	   ,result))))
@@ -33,7 +33,7 @@
 
 (defun macroexpand (form)
   (if ;; expand symbol macro
-      (symbol-macro? form) (macroexpand (getenv environment form))
+      (symbol-macro? form) (macroexpand (getenv form))
       ;; atom
       (atom? form) form
     (let (name (at form 0))
@@ -42,7 +42,7 @@
 	  (= name 'defmacro) form
 	  ;; expand macro
 	  (macro? name)
-	  (macroexpand (apply (getenv environment name) (sub form 1)))
+	  (macroexpand (apply (getenv name) (sub form 1)))
 	  ;; scoped forms
 	  (or (= name 'lambda)
 	      (= name 'each))
@@ -265,7 +265,7 @@
 (defvar embedded-macros "")
 
 (define-compiler defmacro (statement terminated) ((name args body...))
-  (let (macro `(setenv environment ',name (lambda ,args ,@body)))
+  (let (macro `(setenv ',name (lambda ,args ,@body)))
     (eval (compile-for-target (language) macro true))
     (if embed-macros?
 	(cat! embedded-macros (compile (macroexpand macro) true))))
