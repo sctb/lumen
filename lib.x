@@ -2,49 +2,49 @@
 
 ;; environment
 
-(defvar environment (list (table)))
+(set environment (list (table)))
 
-(defun getenv (k)
+(def getenv (k)
   (let (i (- (length environment) 1))
     (while (>= i 0)
       (let (v (get (at environment i) k))
 	(if v (return v)))
       (set i (- i 1)))))
 
-(defun setenv (k v)
+(def setenv (k v)
   (set (get (last environment) k) v))
 
-(defvar variable (table))
+(set variable (table))
 
-(defun symbol-macro? (k)
+(def symbol-macro? (k)
   (let (v (getenv k))
     (and (not (= v nil))
 	 (not (= v variable))
 	 (not (macro? k)))))
 
-(defun macro? (k)
+(def macro? (k)
   (function? (getenv k)))
 
-(defun variable? (k)
+(def variable? (k)
   (= (get (last environment) k) variable))
 
-(defun bound? (x)
+(def bound? (x)
   (or (symbol-macro? x)
       (macro? x)
       (variable? x)))
 
-(defvar embed-macros? false)
+(set embed-macros? false)
 
 ;; macros
 
-(defmacro at (arr i)
+(mac at (arr i)
   (if (and (= target 'lua) (number? i))
       (set i (+ i 1))
       (= target 'lua)
       (set i `(+ ,i 1)))
   `(get ,arr ,i))
 
-(defmacro let (bindings body...)
+(mac let (bindings body...)
   (let (i 0
 	renames ()
 	locals ())
@@ -57,44 +57,44 @@
 	  (setenv id variable))
 	(push locals `(local ,id ,(at bindings (+ i 1)))))
       (set i (+ i 2)))
-    `(symbol-macrolet ,renames ,@(join locals body))))
+    `(letsym ,renames ,@(join locals body))))
 
-(defmacro macrolet (definitions body...)
+(mac letmac (definitions body...)
   (push environment (table))
   (let (embed? embed-macros?)
     (set embed-macros? false)
-    (map (lambda (macro)
-	   ((compiler 'defmacro) macro))
+    (map (fn (macro)
+	   ((compiler 'mac) macro))
 	 definitions)
     (set embed-macros? embed?))
   (let (body1 (macroexpand body))
     (pop environment)
     `(do ,@body1)))
 
-(defmacro symbol-macrolet (expansions body...)
+(mac letsym (expansions body...)
   (push environment (table))
-  (map (lambda (pair)
+  (map (fn (pair)
 	 (setenv (at pair 0) (at pair 1)))
        expansions)
   (let (body1 (macroexpand body))
     (pop environment)
     `(do ,@body1)))
 
-(defmacro define-symbol-macro (name expansion)
+(mac sym (name expansion)
   (setenv name expansion)
   nil)
 
-(defmacro defvar (name value)
+(mac defvar (name value)
   `(set ,name ,value))
 
-(defmacro bind (list value)
+(mac bind (list value)
   (if (list? value)
       (let (v (make-id))
 	`(do (local ,v ,value)
 	     ,@(bind1 list value)))
     `(do ,@(bind1 list value))))
 
-(defmacro across ((list v i start) body...)
+(mac across ((list v i start) body...)
   (let (l (make-id))
     (set i (or i (make-id)))
     (set start (or start 0))
@@ -104,15 +104,15 @@
 	   ,@body
 	   (set ,i (+ ,i 1)))))))
 
-(defmacro make-set (elements...)
-  `(table ,@(collect (lambda (x) (list x true)) elements)))
+(mac make-set (elements...)
+  `(table ,@(collect (fn (x) (list x true)) elements)))
 
 ;; macro helpers
 
-(defun vararg? (name)
+(def vararg? (name)
   (= (sub name (- (length name) 3) (length name)) "..."))
 
-(defun bind1 (list value)
+(def bind1 (list value)
   (let (forms ())
     (across (list x i)
       (if (list? x)
@@ -126,23 +126,23 @@
 
 ;; languages
 
-(defmacro language () `',target)
-(defvar target (language))
+(mac language () `',target)
+(set target (language))
 
-(defmacro target (clauses...)
-  (find (lambda (x)
+(mac target (clauses...)
+  (find (fn (x)
 	  (if (= (at x 0) target) (at x 1)))
 	clauses))
 
 ;; sequences
 
-(defun length (x)
+(def length (x)
   (target (js x.length) (lua #x)))
 
-(defun empty? (list)
+(def empty? (list)
   (= (length list) 0))
 
-(defun sub (x from upto)
+(def sub (x from upto)
   (if (string? x)
       (target
        (js (x.substring from upto))
@@ -160,16 +160,16 @@
 
 ;; lists
 
-(defun push (arr x)
+(def push (arr x)
   (target (js (arr.push x)) (lua (table.insert arr x))))
 
-(defun pop (arr)
+(def pop (arr)
   (target (js (arr.pop)) (lua (table.remove arr))))
 
-(defun last (arr)
+(def last (arr)
   (at arr (- (length arr) 1)))
 
-(defun join (a1 a2)
+(def join (a1 a2)
   (target
    (js (a1.concat a2))
    (lua
@@ -182,35 +182,35 @@
 	(set i (+ i 1)))
       a3))))
 
-(defun reduce (f x)
+(def reduce (f x)
   (if (empty? x) x
       (= (length x) 1) (at x 0)
     (f (at x 0) (reduce f (sub x 1)))))
 
-(defun filter (f a)
+(def keep (f a)
   (let (a1 ())
     (across (a x) (if (f x) (push a1 x)))
     a1))
 
-(defun find (f a)
+(def find (f a)
   (across (a x)
     (let (x1 (f x))
       (if x1 (return x1)))))
 
-(defun map (f a)
+(def map (f a)
   (let (a1 ())
     (across (a x) (push a1 (f x)))
     a1))
 
-(defun collect (f a)
+(def collect (f a)
   (let (a1 ())
     (across (a x) (set a1 (join a1 (f x))))
     a1))
 
-(defmacro join* (xs...)
-  (reduce (lambda (a b) (list 'join a b)) xs))
+(mac join* (xs...)
+  (reduce (fn (a b) (list 'join a b)) xs))
 
-(defmacro list* (xs...)
+(mac list* (xs...)
   (if (= (length xs) 0)
       ()
     (let (t ())
@@ -222,10 +222,10 @@
 
 ;; strings
 
-(defun char (str n)
+(def char (str n)
   (target (js (str.charAt n)) (lua (sub str n (+ n 1)))))
 
-(defun search (str pattern start)
+(def search (str pattern start)
   (target
    (js (let (i (str.indexOf pattern start))
 	 (if (>= i 0) i)))
@@ -233,7 +233,7 @@
 	    (let (i (string.find str pattern start true))
 	      (and i (- i 1)))))))
 
-(defun split (str sep)
+(def split (str sep)
   (target
    (js (str.split sep))
    (lua (let (strs ())
@@ -246,48 +246,48 @@
 	  (push strs str)
 	  strs))))
 
-(defmacro cat! (a bs...)
+(mac cat! (a bs...)
   `(set ,a (cat ,a ,@bs)))
 
 ;; io
 
 (target (js (set fs (require 'fs))))
 
-(defun read-file (path)
+(def read-file (path)
   (target
     (js (fs.readFileSync path 'utf8))
     (lua (let (f (io.open path))
 	   (f:read '*a)))))
 
-(defun write-file (path data)
+(def write-file (path data)
   (target
     (js (fs.writeFileSync path data 'utf8))
     (lua (let (f (io.open path 'w))
 	   (f:write data)))))
 
-(target (js (defun print (x) (console.log x))))
+(target (js (def print (x) (console.log x))))
 
-(defun write (x)
+(def write (x)
   (target (js (process.stdout.write x)) (lua (io.write x))))
 
-(defun exit (code)
+(def exit (code)
   (target (js (process.exit code)) (lua (os.exit code))))
 
 ;; predicates
 
-(defun string? (x) (= (type x) 'string))
-(defun string-literal? (x) (and (string? x) (= (char x 0) "\"")))
-(defun number? (x) (= (type x) 'number))
-(defun boolean? (x) (= (type x) 'boolean))
-(defun function? (x) (= (type x) 'function))
-(defun composite? (x) (= (type x) (target (js 'object) (lua 'table))))
-(defun atom? (x) (not (composite? x)))
-(defun table? (x) (and (composite? x) (= (at x 0) nil)))
-(defun list? (x) (and (composite? x) (not (= (at x 0) nil))))
+(def string? (x) (= (type x) 'string))
+(def string-literal? (x) (and (string? x) (= (char x 0) "\"")))
+(def number? (x) (= (type x) 'number))
+(def boolean? (x) (= (type x) 'boolean))
+(def function? (x) (= (type x) 'function))
+(def composite? (x) (= (type x) (target (js 'object) (lua 'table))))
+(def atom? (x) (not (composite? x)))
+(def table? (x) (and (composite? x) (= (at x 0) nil)))
+(def list? (x) (and (composite? x) (not (= (at x 0) nil))))
 
 ;; numbers
 
-(defun parse-number (str)
+(def parse-number (str)
   (target
    (js (let (n (parseFloat str))
 	 (if (not (isNaN n)) n)))
@@ -295,7 +295,7 @@
 
 ;; printing
 
-(defun to-string (x)
+(def to-string (x)
   (if (= x nil) "nil"
       (boolean? x) (if x "true" "false")
       (atom? x) (cat x "")
@@ -310,22 +310,22 @@
 
 ;; misc
 
-(target (js (defun error (msg) (throw msg) nil)))
-(target (js (defun type (x) (typeof x))))
+(target (js (def error (msg) (throw msg) nil)))
+(target (js (def type (x) (typeof x))))
 
-(defun apply (f args)
+(def apply (f args)
   (target (js (f.apply f args)) (lua (f (unpack args)))))
 
-(defvar id-counter 0)
+(set id-counter 0)
 
-(defun make-id (prefix)
+(def make-id (prefix)
   (set id-counter (+ id-counter 1))
   (cat "_" (or prefix "") id-counter))
 
-(defvar eval-result nil)
+(set eval-result nil)
 
 (target
- (lua (defun eval (x)
+ (lua (def eval (x)
 	;; lua does not allow expressions to be evaluated at the
 	;; top-level
         (let (y (cat "eval_result=" x)

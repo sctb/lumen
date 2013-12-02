@@ -1,10 +1,10 @@
 ;; -*- mode: lisp -*-
 
-(defun rep (str)
+(def rep (str)
   (print (to-string (eval (compile (macroexpand (read-from-string str)))))))
 
-(defun repl ()
-  (let (execute (lambda (str) (rep str) (write "> ")))
+(def repl ()
+  (let (execute (fn (str) (rep str) (write "> ")))
     (write "> ")
     (target
      (js (do (process.stdin.resume)
@@ -14,7 +14,7 @@
 	    (let (str (io.stdin:read))
 	      (if str (execute str) break)))))))
 
-(defun usage ()
+(def usage ()
   (print "usage: x [options] [inputs]")
   (print "options:")
   (print "  -o <output>\tOutput file")
@@ -23,7 +23,7 @@
   (print "  -m \t\tEmbed macro definitions in output")
   (exit))
 
-(defun main ()
+(def main ()
   (set args (target (js (sub process.argv 2)) (lua arg)))
   (if (or (= (at args 0) "-h")
 	  (= (at args 0) "--help"))
@@ -49,7 +49,7 @@
 	(do (if target1 (set target target1))
 	    (let (compiled (compile-files inputs)
 		  main (compile '(main) true))
-	      (write-file output (cat compiled embedded-macros main))))
+	      (write-file output (cat compiled macros main))))
       (do (across (inputs file)
 	    (eval (compile-file file)))
 	  (if expr (rep expr) (repl))))))

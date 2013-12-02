@@ -1,19 +1,19 @@
 ;; -*- mode: lisp -*-
 
-(defvar delimiters (make-set "(" ")" ";" "\n"))
-(defvar whitespace (make-set " " "\t" "\n"))
+(set delimiters (make-set "(" ")" ";" "\n"))
+(set whitespace (make-set " " "\t" "\n"))
 
-(defun make-stream (str)
+(def make-stream (str)
   (table pos 0 string str len (length str)))
 
-(defun peek-char (s)
+(def peek-char (s)
   (if (< s.pos s.len) (char s.string s.pos)))
 
-(defun read-char (s)
+(def read-char (s)
   (let (c (peek-char s))
     (if c (do (set s.pos (+ s.pos 1)) c))))
 
-(defun skip-non-code (s)
+(def skip-non-code (s)
   (while true
     (let (c (peek-char s))
       (if (not c) break
@@ -24,13 +24,13 @@
 	    (skip-non-code s))
 	break))))
 
-(defvar read-table (table))
-(defvar eof (table))
+(set read-table (table))
+(set eof (table))
 
-(defmacro define-reader ((char stream) body...)
-  `(set (get read-table ,char) (lambda (,stream) ,@body)))
+(mac defr ((char stream) body...)
+  `(set (get read-table ,char) (fn (,stream) ,@body)))
 
-(define-reader ("" s) ; atom
+(defr ("" s) ; atom
   (let (str "")
     (while true
       (let (c (peek-char s))
@@ -45,7 +45,7 @@
 	  (= str "false") false
 	str))))
 
-(define-reader ("(" s)
+(defr ("(" s)
   (read-char s)
   (let (l ())
     (while true
@@ -56,10 +56,10 @@
 	  (error (cat "Expected ) at " s.pos)))))
     l))
 
-(define-reader (")" s)
+(defr (")" s)
   (error (cat "Unexpected ) at " s.pos)))
 
-(define-reader ("\"" s)
+(defr ("\"" s)
   (read-char s)
   (let (str "\"")
     (while true
@@ -71,22 +71,22 @@
 	  (error (cat "Expected \" at " s.pos)))))
     (cat str "\"")))
 
-(define-reader ("'" s)
+(defr ("'" s)
   (read-char s)
   (list 'quote (read s)))
 
-(define-reader ("`" s)
+(defr ("`" s)
   (read-char s)
   (list 'quasiquote (read s)))
 
-(define-reader ("," s)
+(defr ("," s)
   (read-char s)
   (if (= (peek-char s) "@")
       (do (read-char s)
 	  (list 'unquote-splicing (read s)))
     (list 'unquote (read s))))
 
-(defun read (s)
+(def read (s)
   (skip-non-code s)
   (let (c (peek-char s))
     (if c
@@ -95,5 +95,5 @@
 	 s)
       eof)))
 
-(defun read-from-string (str)
+(def read-from-string (str)
   (read (make-stream str)))
