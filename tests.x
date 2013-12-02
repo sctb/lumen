@@ -273,6 +273,28 @@
     (symbol-macrolet ((a 1))
       (test-equal 1 a))))
 
+(deftest macros-and-let ()
+  (let (a 10)
+    (test-equal a 10)
+    (macrolet ((a () 12))
+      (test-equal 12 (a)))
+    (test-equal a 10))
+  (let (b 20)
+    (test-equal b 20)
+    (symbol-macrolet ((b 22))
+      (test-equal 22 b))
+    (test-equal b 20))
+  (macrolet ((c () 30))
+    (test-equal 30 (c))
+    (let (c 32)
+      (test-equal 32 c))
+    (test-equal 30 (c)))
+  (symbol-macrolet ((d 40))
+    (test-equal 40 d)
+    (let (d 42)
+      (test-equal 42 d))
+    (test-equal 40 d)))
+
 ;; expressions
 
 (deftest if-expr ()
