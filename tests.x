@@ -31,8 +31,8 @@
 	    f (at test 1)
 	    result (f))
 	(if (string? result)
-	    (print (cat " " name result)))))
-    (print (cat passed " passed, " failed " failed"))))
+	    (prn  " " name result))))
+    (prn passed " passed, " failed " failed")))
 
 ;; basic
 

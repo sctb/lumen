@@ -1,7 +1,7 @@
 ;; -*- mode: lisp -*-
 
 (def rep (str)
-  (print (to-string (eval (compile (macroexpand (read-from-string str)))))))
+  (prn (eval (compile (macroexpand (read-from-string str))))))
 
 (def repl ()
   (let (execute (fn (str) (rep str) (write "> ")))
@@ -15,12 +15,12 @@
 	      (if str (execute str) break)))))))
 
 (def usage ()
-  (print "usage: x [options] [inputs]")
-  (print "options:")
-  (print "  -o <output>\tOutput file")
-  (print "  -t <target>\tTarget language (default: lua)")
-  (print "  -e <expr>\tExpression to evaluate")
-  (print "  -m \t\tEmbed macro definitions in output")
+  (prn "usage: x [options] [inputs]")
+  (prn "options:")
+  (prn "  -o <output>\tOutput file")
+  (prn "  -t <target>\tTarget language (default: lua)")
+  (prn "  -e <expr>\tExpression to evaluate")
+  (prn "  -m \t\tEmbed macro definitions in output")
   (exit))
 
 (def main ()
@@ -35,7 +35,7 @@
     (across (args arg i)
       (if (or (= arg "-o") (= arg "-t") (= arg "-e"))
 	  (if (= i (- (length args) 1))
-	      (print "missing argument for" arg)
+	      (prn "missing argument for" arg)
 	    (do (set i (+ i 1))
 		(let (arg2 (at args i))
 		  (if (= arg "-o") (set output arg2)
@@ -43,7 +43,7 @@
 		      (= arg "-e") (set expr arg2)))))
 	  (= arg "-m") (set embed-macros? true)
 	  (= "-" (sub arg 0 1))
-	  (do (print "unrecognized option:" arg) (usage))
+	  (do (prn "unrecognized option:" arg) (usage))
 	(push inputs arg)))
     (if output
 	(do (if target1 (set target target1))

@@ -11,7 +11,7 @@
       (get (get operators target) op)))
 
 (def operator? (form)
-  (and (list? form) (not (= (get-op (at form 0)) nil))))
+  (and (list? form) (is? (get-op (at form 0)))))
 
 (def quoting? (depth) (number? depth))
 (def quasiquoting? (depth) (and (quoting? depth) (> depth 0)))
@@ -168,9 +168,9 @@
 	(cat "if(" cond1 "){" body1 "}")
         first?
 	(cat "if " cond1 " then " body1 tr)
-	(and (= condition nil) (= target 'js))
+	(and (nil? condition) (= target 'js))
 	(cat "else{" body1 "}")
-	(= condition nil)
+	(nil? condition)
 	(cat " else " body1 " end ")
 	(= target 'js)
 	(cat "else if(" cond1 "){" body1 "}")
@@ -223,7 +223,7 @@
 (set special (table))
 
 (def special? (form)
-  (and (list? form) (not (= (get special (at form 0)) nil))))
+  (and (list? form) (is? (get special (at form 0)))))
 
 (mac defc (name (keys...) args body...)
   `(set (get special ',name)
@@ -277,7 +277,7 @@
 (defc local (statement) ((name value))
   (let (id (identifier name)
 	keyword (if (= target 'js) "var " "local "))
-    (if (= value nil)
+    (if (nil? value)
 	(cat keyword id)
       (let (v (compile value))
 	(cat keyword id "=" v)))))
@@ -353,7 +353,7 @@
   (let (tr (if stmt? ";" ""))
     (if (and tail? (can-return? form))
 	(set form `(return ,form)))
-    (if (= form nil) ""
+    (if (nil? form) ""
         (atom? form) (cat (compile-atom form) tr)
         (operator? form) (cat (compile-operator form) tr)
         (special? form) (compile-special form stmt? tail?)

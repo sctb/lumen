@@ -18,7 +18,7 @@
 
 (def symbol-macro? (k)
   (let (v (getenv k))
-    (and (not (= v nil))
+    (and (is? v)
 	 (not (= v variable))
 	 (not (macro? k)))))
 
@@ -239,7 +239,7 @@
    (lua (let (strs ())
 	  (while true
 	    (let (i (search str sep))
-	      (if (= i nil)
+	      (if (nil? i)
 		  break
 		(do (push strs (sub str 0 i))
 		    (set str (sub str (+ i 1)))))))
@@ -275,6 +275,8 @@
 
 ;; predicates
 
+(def nil? (x) (= x nil))
+(def is? (x) (not (nil? x)))
 (def string? (x) (= (type x) 'string))
 (def string-literal? (x) (and (string? x) (= (char x 0) "\"")))
 (def number? (x) (= (type x) 'number))
@@ -282,8 +284,8 @@
 (def function? (x) (= (type x) 'function))
 (def composite? (x) (= (type x) (target (js 'object) (lua 'table))))
 (def atom? (x) (not (composite? x)))
-(def table? (x) (and (composite? x) (= (at x 0) nil)))
-(def list? (x) (and (composite? x) (not (= (at x 0) nil))))
+(def table? (x) (and (composite? x) (nil? (at x 0))))
+(def list? (x) (and (composite? x) (is? (at x 0))))
 
 ;; numbers
 
@@ -296,7 +298,7 @@
 ;; printing
 
 (def to-string (x)
-  (if (= x nil) "nil"
+  (if (nil? x) "nil"
       (boolean? x) (if x "true" "false")
       (atom? x) (cat x "")
       (function? x) "#<function>"
@@ -307,6 +309,9 @@
 	(if (< i (- (length x) 1))
 	    (cat! str " ")))
       (cat str  ")"))))
+
+(mac prn (xs...)
+  `(print (cat ,@(map (fn (x) `(to-string ,x)) xs))))
 
 ;; misc
 

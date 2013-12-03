@@ -40,7 +40,7 @@
 		(read-char s))
 	  break)))
     (let (n (parse-number str))
-      (if (not (= n nil)) n
+      (if (is? n) n
 	  (= str "true") true
 	  (= str "false") false
 	str))))
