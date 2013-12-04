@@ -1,36 +1,36 @@
 ;; -*- mode: lisp -*-
 
-(set delimiters (make-set "(" ")" ";" "\n"))
-(set whitespace (make-set " " "\t" "\n"))
+(global delimiters (set "(" ")" ";" "\n"))
+(global whitespace (set " " "\t" "\n"))
 
-(def make-stream (str)
+(define make-stream (str)
   (table pos 0 string str len (length str)))
 
-(def peek-char (s)
+(define peek-char (s)
   (if (< s.pos s.len) (char s.string s.pos)))
 
-(def read-char (s)
+(define read-char (s)
   (let (c (peek-char s))
-    (if c (do (set s.pos (+ s.pos 1)) c))))
+    (if c (do (set! s.pos (+ s.pos 1)) c))))
 
-(def skip-non-code (s)
+(define skip-non-code (s)
   (while true
     (let (c (peek-char s))
       (if (not c) break
         (get whitespace c) (read-char s)
 	(= c ";")
 	(do (while (and c (not (= c "\n")))
-	      (set c (read-char s)))
+	      (set! c (read-char s)))
 	    (skip-non-code s))
 	break))))
 
-(set read-table (table))
-(set eof (table))
+(global read-table (table))
+(global eof (table))
 
-(mac defr ((char stream) body...)
-  `(set (get read-table ,char) (fn (,stream) ,@body)))
+(macro define-reader ((char stream) body...)
+  `(global (get read-table ,char) (fn (,stream) ,@body)))
 
-(defr ("" s) ; atom
+(define-reader ("" s) ; atom
   (let (str "")
     (while true
       (let (c (peek-char s))
@@ -45,7 +45,7 @@
 	  (= str "false") false
 	str))))
 
-(defr ("(" s)
+(define-reader ("(" s)
   (read-char s)
   (let (l ())
     (while true
@@ -56,10 +56,10 @@
 	  (error (cat "Expected ) at " s.pos)))))
     l))
 
-(defr (")" s)
+(define-reader (")" s)
   (error (cat "Unexpected ) at " s.pos)))
 
-(defr ("\"" s)
+(define-reader ("\"" s)
   (read-char s)
   (let (str "\"")
     (while true
@@ -71,22 +71,22 @@
 	  (error (cat "Expected \" at " s.pos)))))
     (cat str "\"")))
 
-(defr ("'" s)
+(define-reader ("'" s)
   (read-char s)
   (list 'quote (read s)))
 
-(defr ("`" s)
+(define-reader ("`" s)
   (read-char s)
   (list 'quasiquote (read s)))
 
-(defr ("," s)
+(define-reader ("," s)
   (read-char s)
   (if (= (peek-char s) "@")
       (do (read-char s)
 	  (list 'unquote-splicing (read s)))
     (list 'unquote (read s))))
 
-(def read (s)
+(global read (s)
   (skip-non-code s)
   (let (c (peek-char s))
     (if c
@@ -95,5 +95,5 @@
 	 s)
       eof)))
 
-(def read-from-string (str)
+(global read-from-string (str)
   (read (make-stream str)))
