@@ -242,16 +242,16 @@
     (across (a x) (push a1 (f x)))
     a1))
 
-(global collect (f a)
-  (let (a1 ())
-    (across (a x) (set! a1 (join a1 (f x))))
-    a1))
-
 (macro join* (xs...)
   (reduce (fn (a b) (list 'join a b)) xs))
 
 (macro join! (a bs...)
   `(set! ,a (join* ,a ,@bs)))
+
+(global collect (f a)
+  (let (a1 ())
+    (across (a x) (join! a1 (f x)))
+    a1))
 
 (macro list* (xs...)
   (if (= (length xs) 0)
