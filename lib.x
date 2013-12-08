@@ -199,6 +199,13 @@
 (global pop (arr)
   (target (js (arr.pop)) (lua (table.remove arr))))
 
+;; TODO: need identifier support for !
+;; (global push! (arr x)
+;;   (target (js (arr.push x)) (lua (table.insert arr x))))
+;;
+;; (global pop! (arr)
+;;   (target (js (arr.pop)) (lua (table.remove arr))))
+
 (global last (arr)
   (at arr (- (length arr) 1)))
 
@@ -242,6 +249,9 @@
 
 (macro join* (xs...)
   (reduce (fn (a b) (list 'join a b)) xs))
+
+(macro join! (a bs...)
+  `(set! ,a (join* ,a ,@bs)))
 
 (macro list* (xs...)
   (if (= (length xs) 0)
