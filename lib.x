@@ -120,9 +120,30 @@
 
 ;; macro helpers
 
-(define vararg? (name)
-  (and (> (length name) 3)
-       (= (sub name (- (length name) 3) (length name)) "...")))
+(define vararg? (x)
+  (and (> (length x) 3)
+       (= (sub x (- (length x) 3) (length x)) "...")))
+
+(define vararg-name (x)
+  (sub x 0 (- (length x) 3)))
+
+(global bind-arguments (args body)
+  (let (args1 ())
+    (across (args arg)
+      (if (vararg? arg)
+	  (let (v (vararg-name arg)
+		expr
+		(if (= target 'js)
+		    `(Array.prototype.slice.call arguments ,(length args1))
+		  (do (push args1 '...) '(list ...))))
+	      (set! body `((local ,v ,expr) ,@body))
+	      break) ; no more args allowed
+          (list? arg)
+	  (let (v (make-id))
+	    (push args1 v)
+	    (set! body `((bind ,arg ,v) ,@body)))
+	(push args1 arg)))
+    (list args1 body)))
 
 (global bind1 (list value)
   (let (forms ())
@@ -130,7 +151,7 @@
       (if (list? x)
 	  (set! forms (join forms (bind1 x `(at ,value ,i))))
           (vararg? x)
-	  (let (v (sub x 0 (- (length x) 3)))
+	  (let (v (vararg-name x))
 	    (push forms `(local ,v (sub ,value ,i)))
 	    break) ; no more args
 	(push forms `(local ,x (at ,value ,i)))))

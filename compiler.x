@@ -176,25 +176,6 @@
 	(cat "else if(" cond1 "){" body1 "}")
       (cat " elseif " cond1 " then " body1 tr))))
 
-(global bind-arguments (args body)
-  (let (args1 ())
-    (across (args arg)
-      (if (vararg? arg)
-	  (let (v (sub arg 0 (- (length arg) 3))
-		expr
-		(if (= target 'js)
-		    `(Array.prototype.slice.call arguments ,(length args1))
-		  (do (push args1 '...) '(list ...))))
-	      (set! body `((local ,v ,expr) ,@body))
-	      break) ; no more args
-          (list? arg)
-	  (let (v (make-id))
-	    (push args1 v)
-	    ;; TODO: remove the call to macroexpand
-	    (set! body (macroexpand `((bind ,arg ,v) ,@body))))
-	(push args1 arg)))
-    (list args1 body)))
-
 (define compile-function (args body name local?)
   (set! name (or name ""))
   (let (args1 (compile-args args)
