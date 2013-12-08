@@ -3,8 +3,8 @@
 (global operators
   (table common (table "+" "+" "-" "-" "*" "*" "/" "/" "<" "<"
 			">" ">" "=" "==" "<=" "<=" ">=" ">=")
-	 js (table "and" "&&" "or" "||" "cat" "+")
-	 lua (table "and" " and " "or" " or " "cat" "..")))
+	 js (table "~=" "!=" "and" "&&" "or" "||" "cat" "+")
+	 lua (table "~=" "~=" "and" " and " "or" " or " "cat" "..")))
 
 (define getop (op)
   (or (get (get operators 'common) op)
@@ -45,14 +45,14 @@
 	  ;; scoped forms
 	  (or (= name 'function)
 	      (= name 'each))
-	  (do (bind (_ args body...) form)
-	      (w/scope (args)
-	        `(,name ,args ,@(macroexpand body))))
+	  (let ((_ args body...) form)
+	    (w/scope (args)
+	      `(,name ,args ,@(macroexpand body))))
 	  (or (= name 'local-function)
 	      (= name 'global-function))
-	  (do (bind (_ f args body...) form)
-	      (w/scope (args)
-	        `(,name ,f ,args ,@(macroexpand body))))
+	  (let ((_ f args body...) form)
+	    (w/scope (args)
+	      `(,name ,f ,args ,@(macroexpand body))))
 	;; list
 	(map macroexpand form)))))
 
