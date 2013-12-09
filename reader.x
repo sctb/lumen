@@ -16,13 +16,13 @@
 (define skip-non-code (s)
   (while true
     (let (c (peek-char s))
-      (if (not c) break
+      (if (nil? c) break
         (get whitespace c) (read-char s)
 	(= c ";")
 	(do (while (and c (not (= c "\n")))
 	      (set! c (read-char s)))
 	    (skip-non-code s))
-	break))))
+      break))))
 
 (global read-table (table))
 (global eof (table))
@@ -89,7 +89,7 @@
 (global read (s)
   (skip-non-code s)
   (let (c (peek-char s))
-    (if c
+    (if (is? c)
 	((or (get read-table c)
 	     (get read-table ""))
 	 s)

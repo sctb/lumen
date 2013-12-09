@@ -108,8 +108,7 @@
 (define compile-args (forms compile?)
   (let (str "(")
     (across (forms x i)
-      (let (x1 (if compile? (compile x) (identifier x)))
-	(cat! str x1))
+      (cat! str (if compile? (compile x) (identifier x)))
       (if (< i (- (length forms) 1)) (cat! str ",")))
     (cat str ")")))
 
@@ -273,8 +272,7 @@
 	keyword (if (= target 'js) "var " "local "))
     (if (nil? value)
 	(cat keyword id)
-      (let (v (compile value))
-	(cat keyword id "=" v)))))
+      (cat keyword id "=" (compile value)))))
 
 (define-compiler each (statement) (((t k v) body...))
   (let (t1 (compile t))
@@ -284,10 +282,10 @@
       (let (body1 (compile-body `((set! ,v (get ,t ,k)) ,@body)))
 	(cat "for(" k " in " t1 "){" body1 "}")))))
 
-(define-compiler set! (statement) (form)
-  (if (< (length form) 2)
+(define-compiler set! (statement) ((lh rh))
+  (if (nil? rh)
       (error "Missing right-hand side in assignment"))
-  (cat (compile (at form 0)) "=" (compile (at form 1))))
+  (cat (compile lh) "=" (compile rh)))
 
 (define-compiler get () ((object key))
   (let (o (compile object)
@@ -298,9 +296,7 @@
     (cat o "[" k "]")))
 
 (define-compiler dot () ((object key))
-  (let (o (compile object)
-	id (identifier key))
-    (cat o "." id)))
+  (cat (compile object) "." (identifier key)))
 
 (define-compiler not () ((expr))
   (let (e (compile expr)
@@ -312,8 +308,7 @@
 	close (if (= target 'lua) "}" "]")
 	str "")
     (across (forms x i)
-      (let (x1 (if (quoting? depth) (quote-form x) (compile x)))
-	(cat! str x1))
+      (cat! str (if (quoting? depth) (quote-form x) (compile x)))
       (if (< i (- (length forms) 1)) (cat! str ",")))
     (cat open str close)))
 
