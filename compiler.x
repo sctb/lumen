@@ -30,7 +30,7 @@
 (macro quasiquote (form)
   (quasiexpand form 1))
 
-(global macroexpand (form)
+(define macroexpand (form)
   (if ;; expand symbol macro
       (symbol-macro? form) (macroexpand (getenv form))
       ;; atom
@@ -48,15 +48,14 @@
 	  (let ((_ args body...) form)
 	    (w/scope (args)
 	      `(,name ,args ,@(macroexpand body))))
-	  (or (= name 'local-function)
-	      (= name 'global-function))
+	  (= name 'function-definition)
 	  (let ((_ f args body...) form)
 	    (w/scope (args)
 	      `(,name ,f ,args ,@(macroexpand body))))
 	;; list
 	(map macroexpand form)))))
 
-(global quasiexpand (form depth)
+(define quasiexpand (form depth)
   (if (quasiquoting? depth)
       (if (atom? form) (list 'quote form)
 	  ;; unquote
@@ -83,7 +82,7 @@
     ;; list
     (map (fn (x) (quasiexpand x depth)) form)))
 
-(global quasiquote-list (form depth)
+(define quasiquote-list (form depth)
   (let (xs (list '(list)))
     ;; collect sibling lists
     (across (form x)
@@ -119,7 +118,7 @@
 	(cat! str (compile x true t?))))
     str))
 
-(global identifier (id)
+(define identifier (id)
   (let (id2 "" i 0)
     (while (< i (length id))
       (let (c (char id i))
@@ -193,13 +192,13 @@
 	(to-string form))
     ((compiler 'list) form 0)))
 
-(define compile-special (form stmt? tail?)
+(define compile-special (form stmt? tail? toplevel?)
   (let (name (at form 0))
     (if (and (not stmt?) (statement? name))
 	(compile `((function () ,form)) false tail?)
       (let (tr? (and stmt? (not (self-terminating? name)))
 	    tr (if tr? ";" ""))
-	(cat ((compiler name) (sub form 1) tail?) tr)))))
+	(cat ((compiler name) (sub form 1) tail? toplevel?) tr)))))
 
 (global special (table))
 
@@ -211,9 +210,9 @@
 	(table compiler (fn ,args ,@body)
 	       ,@(collect (fn (k) (list k true)) keys))))
 
-(global compiler (name) (get (get special name) 'compiler))
-(global statement? (name) (get (get special name) 'statement))
-(global self-terminating? (name) (get (get special name) 'terminated))
+(define compiler (name) (get (get special name) 'compiler))
+(define statement? (name) (get (get special name) 'statement))
+(define self-terminating? (name) (get (get special name) 'terminated))
 
 (define-compiler do (statement terminated) (forms tail?)
   (compile-body forms tail?))
@@ -242,18 +241,10 @@
 (define-compiler function () ((args body...))
   (compile-function args body))
 
-(define-compiler local-function
+(define-compiler function-definition
     (statement terminated)
-    ((name args body...))
-  (compile-function args body (identifier name) true))
-
-(define-compiler global-function
-    (statement terminated)
-    ((name args body...))
-  (let (id (identifier name))
-    (if (= target 'js)
-	(compile `(set! ,id (function ,args ,@body)) true)
-      (compile-function args body id))))
+    ((name args body...) _ toplevel?)
+  (compile-function args body (identifier name) (not toplevel?)))
 
 (global macros "")
 
@@ -335,35 +326,35 @@
       (not (statement? (at form 0)))
     true))
 
-(global compile (form stmt? tail?)
+(define compile (form stmt? tail? toplevel?)
   (let (tr (if stmt? ";" ""))
     (if (and tail? (can-return? form))
 	(set! form `(return ,form)))
     (if (nil? form) ""
         (atom? form) (cat (compile-atom form) tr)
         (operator? form) (cat (compile-operator form) tr)
-        (special? form) (compile-special form stmt? tail?)
+        (special? form) (compile-special form stmt? tail? toplevel?)
       (cat (compile-call form) tr))))
 
-(global compile-file (file)
+(define compile-file (file)
   (let (form nil
 	output ""
 	s (make-stream (read-file file)))
     (while true
       (set! form (read s))
       (if (= form eof) break)
-      (cat! output (compile (macroexpand form) true)))
+      (cat! output (compile (macroexpand form) true false true)))
     output))
 
-(global compile-files (files)
+(define compile-files (files)
   (let (output "")
     (across (files file)
       (cat! output (compile-file file)))
     output))
 
-(global compile-for-target (target1 form stmt?)
+(define compile-for-target (target1 form stmt?)
   (let (previous target)
     (set! target target1)
-    (let (result (compile (macroexpand form) stmt?))
+    (let (result (compile (macroexpand form) stmt? false true))
       (set! target previous)
       result)))

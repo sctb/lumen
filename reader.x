@@ -86,7 +86,7 @@
 	  (list 'unquote-splicing (read s)))
     (list 'unquote (read s))))
 
-(global read (s)
+(define read (s)
   (skip-non-code s)
   (let (c (peek-char s))
     (if (is? c)
@@ -95,5 +95,5 @@
 	 s)
       eof)))
 
-(global read-from-string (str)
+(define read-from-string (str)
   (read (make-stream str)))

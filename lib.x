@@ -22,13 +22,13 @@
 	 (not (= v variable))
 	 (not (macro? k)))))
 
-(global macro? (k)
+(define macro? (k)
   (function? (getenv k)))
 
 (define variable? (k)
   (= (get (last environment) k) variable))
 
-(global bound? (x)
+(define bound? (x)
   (or (symbol-macro? x)
       (macro? x)
       (variable? x)))
@@ -84,17 +84,14 @@
   (setenv! name expansion)
   nil)
 
-(macro global (name x body...)
-  (if (empty? body)
-      `(set! ,name ,x)
-    (let ((args body1) (bind-arguments x body))
-      `(global-function ,name ,args ,@body1))))
+(macro global (name value)
+  `(set! ,name ,value))
 
 (macro define (name x body...)
   (if (empty? body)
       `(local ,name ,x)
     (let ((args body1) (bind-arguments x body))
-      `(local-function ,name ,args ,@body1))))
+      `(function-definition ,name ,args ,@body1))))
 
 (macro fn (args body...)
   (let ((args1 body1) (bind-arguments args body))
@@ -122,7 +119,7 @@
 (define vararg-name (x)
   (sub x 0 (- (length x) 3)))
 
-(global bind-arguments (args body)
+(define bind-arguments (args body)
   (let (args1 ()
 	bindings ())
     (across (args arg)
@@ -143,7 +140,7 @@
 	(list args1 body)
       (list args1 `((let ,bindings ,@body))))))
 
-(global bind (lh rh)
+(define bind (lh rh)
   (if (and (list? lh) (list? rh))
       (let (id (make-id))
 	`((,id ,rh) ,@(bind lh id)))
@@ -168,13 +165,13 @@
 
 ;; sequences
 
-(global length (x)
+(define length (x)
   (target (js x.length) (lua #x)))
 
-(global empty? (list)
+(define empty? (list)
   (= (length list) 0))
 
-(global sub (x from upto)
+(define sub (x from upto)
   (if (string? x)
       (target
        (js (x.substring from upto))
@@ -192,23 +189,23 @@
 
 ;; lists
 
-(global push (arr x)
+(define push (arr x)
   (target (js (arr.push x)) (lua (table.insert arr x))))
 
-(global pop (arr)
+(define pop (arr)
   (target (js (arr.pop)) (lua (table.remove arr))))
 
 ;; TODO: need identifier support for !
-;; (global push! (arr x)
+;; (define push! (arr x)
 ;;   (target (js (arr.push x)) (lua (table.insert arr x))))
 ;;
-;; (global pop! (arr)
+;; (define pop! (arr)
 ;;   (target (js (arr.pop)) (lua (table.remove arr))))
 
-(global last (arr)
+(define last (arr)
   (at arr (- (length arr) 1)))
 
-(global join (a1 a2)
+(define join (a1 a2)
   (target
    (js (a1.concat a2))
    (lua
@@ -221,22 +218,22 @@
 	(set! i (+ i 1)))
       a3))))
 
-(global reduce (f x)
+(define reduce (f x)
   (if (empty? x) x
       (= (length x) 1) (at x 0)
     (f (at x 0) (reduce f (sub x 1)))))
 
-(global keep (f a)
+(define keep (f a)
   (let (a1 ())
     (across (a x) (if (f x) (push a1 x)))
     a1))
 
-(global find (f a)
+(define find (f a)
   (across (a x)
     (let (x1 (f x))
       (if x1 (return x1)))))
 
-(global map (f a)
+(define map (f a)
   (let (a1 ())
     (across (a x) (push a1 (f x)))
     a1))
@@ -247,7 +244,7 @@
 (macro join! (a bs...)
   `(set! ,a (join* ,a ,@bs)))
 
-(global collect (f a)
+(define collect (f a)
   (let (a1 ())
     (across (a x) (join! a1 (f x)))
     a1))
@@ -264,10 +261,10 @@
 
 ;; strings
 
-(global char (str n)
+(define char (str n)
   (target (js (str.charAt n)) (lua (sub str n (+ n 1)))))
 
-(global search (str pattern start)
+(define search (str pattern start)
   (target
    (js (let (i (str.indexOf pattern start))
 	 (if (>= i 0) i)))
@@ -275,7 +272,7 @@
 	    (let (i (string.find str pattern start true))
 	      (and i (- i 1)))))))
 
-(global split (str sep)
+(define split (str sep)
   (target
    (js (str.split sep))
    (lua (let (strs ())
@@ -317,21 +314,21 @@
 
 ;; predicates
 
-(global nil? (x) (= x nil))
-(global is? (x) (not (nil? x)))
-(global string? (x) (= (type x) 'string))
-(global string-literal? (x) (and (string? x) (= (char x 0) "\"")))
-(global number? (x) (= (type x) 'number))
-(global boolean? (x) (= (type x) 'boolean))
-(global function? (x) (= (type x) 'function))
-(global composite? (x) (= (type x) (target (js 'object) (lua 'table))))
-(global atom? (x) (not (composite? x)))
-(global table? (x) (and (composite? x) (nil? (at x 0))))
-(global list? (x) (and (composite? x) (is? (at x 0))))
+(define nil? (x) (= x nil))
+(define is? (x) (not (nil? x)))
+(define string? (x) (= (type x) 'string))
+(define string-literal? (x) (and (string? x) (= (char x 0) "\"")))
+(define number? (x) (= (type x) 'number))
+(define boolean? (x) (= (type x) 'boolean))
+(define function? (x) (= (type x) 'function))
+(define composite? (x) (= (type x) (target (js 'object) (lua 'table))))
+(define atom? (x) (not (composite? x)))
+(define table? (x) (and (composite? x) (nil? (at x 0))))
+(define list? (x) (and (composite? x) (is? (at x 0))))
 
 ;; numbers
 
-(global parse-number (str)
+(define parse-number (str)
   (target
    (js (let (n (parseFloat str))
 	 (if (not (isNaN n)) n)))
@@ -339,7 +336,7 @@
 
 ;; printing
 
-(global to-string (x)
+(define to-string (x)
   (if (nil? x) "nil"
       (boolean? x) (if x "true" "false")
       (atom? x) (cat x "")
@@ -357,22 +354,22 @@
 
 ;; misc
 
-(target (js (global error (msg) (throw msg) nil)))
-(target (js (global type (x) (typeof x))))
+(target (js (define error (msg) (throw msg) nil)))
+(target (js (define type (x) (typeof x))))
 
-(global apply (f args)
+(define apply (f args)
   (target (js (f.apply f args)) (lua (f (unpack args)))))
 
 (global id-counter 0)
 
-(global make-id (prefix)
+(define make-id (prefix)
   (set! id-counter (+ id-counter 1))
   (cat "_" (or prefix "") id-counter))
 
 (global eval-result nil)
 
 (target
- (lua (global eval (x)
+ (lua (define eval (x)
 	;; lua does not allow expressions to be evaluated at the
 	;; top-level
         (let (y (cat "eval_result=" x)

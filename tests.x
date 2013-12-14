@@ -24,14 +24,15 @@
 (macro define-test (name _ body...)
   `(push tests (list ',name (fn () ,@body))))
 
-(global run-tests ()
-  (across (tests test)
-    (let (name (at test 0)
-	  f (at test 1)
-	  result (f))
-      (if (string? result)
-	  (pr  " " name result))))
-  (pr passed " passed, " failed " failed"))
+(global run-tests
+  (fn () 				; TODO: fix EVAL scoping in JS
+    (across (tests test)
+      (let (name (at test 0)
+		 f (at test 1)
+		 result (f))
+	(if (string? result)
+	    (pr  " " name result))))
+    (pr passed " passed, " failed " failed")))
 
 ;; basic
 
