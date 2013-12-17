@@ -250,7 +250,7 @@
 
 (define-compiler macro (statement terminated) ((name args body...))
   (let (macro `(setenv! ',name (fn ,args ,@body)))
-    (eval (compile-for-target (language) macro true))
+    (eval (compile-for-target (language) macro))
     (if embed-macros?
 	(cat! macros (compile (macroexpand macro) true))))
   "")
@@ -343,7 +343,8 @@
     (while true
       (set! form (read s))
       (if (= form eof) break)
-      (cat! output (compile (macroexpand form) true false true)))
+      (let (result (compile (macroexpand form) true false true))
+	(cat! output result)))
     output))
 
 (define compile-files (files)
@@ -352,9 +353,9 @@
       (cat! output (compile-file file)))
     output))
 
-(define compile-for-target (target1 form stmt?)
+(define compile-for-target (target1 form)
   (let (previous target)
     (set! target target1)
-    (let (result (compile (macroexpand form) stmt? false true))
+    (let (result (compile (macroexpand form) true false true))
       (set! target previous)
       result)))
