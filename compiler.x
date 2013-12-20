@@ -252,7 +252,7 @@
   (let (macro `(setenv! ',name (fn ,args ,@body)))
     (eval (compile-for-target (language) macro))
     (if embed-macros?
-	(cat! macros (compile (macroexpand macro) true))))
+	(cat! macros (compile-toplevel macro))))
   "")
 
 (define-compiler return (statement) (form)
@@ -343,7 +343,7 @@
     (while true
       (set! form (read s))
       (if (= form eof) break)
-      (let (result (compile (macroexpand form) true false true))
+      (let (result (compile-toplevel form))
 	(cat! output result)))
     output))
 
@@ -353,9 +353,12 @@
       (cat! output (compile-file file)))
     output))
 
+(define compile-toplevel (form)
+  (compile (macroexpand form) true false true))
+
 (define compile-for-target (target1 form)
   (let (previous target)
     (set! target target1)
-    (let (result (compile (macroexpand form) true false true))
+    (let (result (compile-toplevel form))
       (set! target previous)
       result)))
