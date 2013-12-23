@@ -50,7 +50,6 @@
 	    (let (compiled (compile-files inputs)
 		  main (compile '(main) true))
 	      (write-file output (cat compiled macros main))))
-      ;; TODO: rethink evaluation strategy
       (do (across (inputs file)
 	    (eval (compile-file file)))
 	  (if expr (rep expr) (repl))))))
