@@ -4,8 +4,8 @@
 
 (global environment (list (table)))
 
-(macro setenv! (k v)
-  `(set! (get (last environment) ,k) ,v))
+(define setenv! (k v)
+  (set! (get (last environment) k) v))
 
 (define getenv (k)
   (let (i (- (length environment) 1))
