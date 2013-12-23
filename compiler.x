@@ -1,6 +1,6 @@
 ;; -*- mode: lisp -*-
 
-(global operators
+(define operators
   (table common (table "+" "+" "-" "-" "*" "*" "/" "/" "<" "<"
 			">" ">" "=" "==" "<=" "<=" ">=" ">=")
 	 js (table "~=" "!=" "and" "&&" "or" "||" "cat" "+")
@@ -48,10 +48,6 @@
 	  (let ((_ args body...) form)
 	    (w/scope (args)
 	      `(,name ,args ,@(macroexpand body))))
-	  (= name 'function-definition)
-	  (let ((_ f args body...) form)
-	    (w/scope (args)
-	      `(,name ,f ,args ,@(macroexpand body))))
 	;; list
 	(map macroexpand form)))))
 
@@ -175,14 +171,13 @@
 	(cat "else if(" cond1 "){" body1 "}")
       (cat " elseif " cond1 " then " body1 tr))))
 
-(define compile-function (args body name local?)
+(define compile-function (args body name)
   (set! name (or name ""))
   (let (args1 (compile-args args)
 	body1 (compile-body body true))
     (if (= target 'js)
 	(cat "function " name args1 "{" body1 "}")
-      (let (pre (if local? "local " ""))
-	(cat pre "function " name args1 body1 " end ")))))
+      (cat "function " name args1 body1 " end "))))
 
 (define quote-form (form)
   (if (atom? form)
@@ -193,15 +188,15 @@
 	(to-string form))
     ((compiler 'list) form 0)))
 
-(define compile-special (form stmt? tail? toplevel?)
+(define compile-special (form stmt? tail?)
   (let (name (at form 0))
     (if (and (not stmt?) (statement? name))
 	(compile `((function () ,form)) false tail?)
       (let (tr? (and stmt? (not (self-terminating? name)))
 	    tr (if tr? ";" ""))
-	(cat ((compiler name) (sub form 1) tail? toplevel?) tr)))))
+	(cat ((compiler name) (sub form 1) tail?) tr)))))
 
-(global special (table))
+(define special (table))
 
 (define special? (form)
   (and (list? form) (is? (get special (at form 0)))))
@@ -242,12 +237,7 @@
 (define-compiler function () ((args body...))
   (compile-function args body))
 
-(define-compiler function-definition
-    (statement terminated)
-    ((name args body...) _ toplevel?)
-  (compile-function args body (identifier name) (not toplevel?)))
-
-(global macros "")
+(define macros "")
 
 (define-compiler macro (statement terminated) ((name args body...))
   (let (macro `(setenv! ',name (fn ,args ,@body)))
@@ -327,14 +317,14 @@
       (not (statement? (at form 0)))
     true))
 
-(define compile (form stmt? tail? toplevel?)
+(define compile (form stmt? tail?)
   (let (tr (if stmt? ";" ""))
     (if (and tail? (can-return? form))
 	(set! form `(return ,form)))
     (if (nil? form) ""
         (atom? form) (cat (compile-atom form) tr)
         (operator? form) (cat (compile-operator form) tr)
-        (special? form) (compile-special form stmt? tail? toplevel?)
+        (special? form) (compile-special form stmt? tail?)
       (cat (compile-call form) tr))))
 
 (define compile-file (file)

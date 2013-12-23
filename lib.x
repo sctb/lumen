@@ -2,7 +2,7 @@
 
 ;; environment
 
-(global environment (list (table)))
+(define environment (list (table)))
 
 (define setenv! (k v)
   (set! (get (last environment) k) v))
@@ -14,7 +14,7 @@
 	(if v (return v)))
       (set! i (- i 1)))))
 
-(global variable (table))
+(define variable (table))
 
 (define symbol-macro? (k)
   (let (v (getenv k))
@@ -33,7 +33,7 @@
       (macro? x)
       (variable? x)))
 
-(global embed-macros? false)
+(define embed-macros? false)
 
 ;; macros
 
@@ -84,14 +84,10 @@
   (setenv! name expansion)
   nil)
 
-(macro global (name value)
-  `(set! ,name ,value))
-
 (macro define (name x body...)
-  (if (empty? body)
-      `(local ,name ,x)
-    (let ((args body1) (bind-arguments x body))
-      `(function-definition ,name ,args ,@body1))))
+  (if (not (empty? body))
+      (set! x `(fn ,x ,@body)))
+  `(set! ,name ,x))
 
 (macro fn (args body...)
   (let ((args1 body1) (bind-arguments args body))
@@ -156,7 +152,7 @@
 ;; languages
 
 (macro language () `',target)
-(global target (language))
+(define target (language))
 
 (macro target (clauses...)
   (find (fn (x)
@@ -283,7 +279,7 @@
 
 ;; io
 
-(target (js (global fs (require 'fs))))
+(target (js (define fs (require 'fs))))
 
 (define read-file (path)
   (target
@@ -353,13 +349,13 @@
 (define apply (f args)
   (target (js (f.apply f args)) (lua (f (unpack args)))))
 
-(global id-counter 0)
+(define id-counter 0)
 
 (define make-id (prefix)
   (set! id-counter (+ id-counter 1))
   (cat "_" (or prefix "") id-counter))
 
-(global eval-result nil)
+(define eval-result nil)
 
 (target
  (lua (define eval (x)

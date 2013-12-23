@@ -2,9 +2,9 @@
 
 ;; infrastructure
 
-(global passed 0)
-(global failed 0)
-(global tests ())
+(define passed 0)
+(define failed 0)
+(define tests ())
 
 (macro test (x msg)
   `(if (not ,x)
@@ -24,15 +24,14 @@
 (macro define-test (name _ body...)
   `(push! tests (list ',name (fn () ,@body))))
 
-(global run-tests
-  (fn () 				; TODO: fix EVAL scoping in JS
-    (across (tests test)
-      (let (name (at test 0)
-		 f (at test 1)
-		 result (f))
-	(if (string? result)
-	    (pr  " " name result))))
-    (pr passed " passed, " failed " failed")))
+(define run-tests ()
+  (across (tests test)
+    (let (name (at test 0)
+	  f (at test 1)
+	  result (f))
+      (if (string? result)
+	  (pr  " " name result))))
+  (pr passed " passed, " failed " failed"))
 
 ;; basic
 

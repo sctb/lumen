@@ -1,7 +1,7 @@
 ;; -*- mode: lisp -*-
 
-(global delimiters (set "(" ")" ";" "\n"))
-(global whitespace (set " " "\t" "\n"))
+(define delimiters (set "(" ")" ";" "\n"))
+(define whitespace (set " " "\t" "\n"))
 
 (define make-stream (str)
   (table pos 0 string str len (length str)))
@@ -24,11 +24,11 @@
 	    (skip-non-code s))
       break))))
 
-(global read-table (table))
-(global eof (table))
+(define read-table (table))
+(define eof (table))
 
 (macro define-reader ((char stream) body...)
-  `(global (get read-table ,char) (fn (,stream) ,@body)))
+  `(set! (get read-table ,char) (fn (,stream) ,@body)))
 
 (define-reader ("" s) ; atom
   (let (str "")
