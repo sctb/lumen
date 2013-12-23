@@ -22,7 +22,7 @@
 	 (cat " failed: expected " (to-string ,a) ", was " (to-string ,b))))
 
 (macro define-test (name _ body...)
-  `(push tests (list ',name (fn () ,@body))))
+  `(push! tests (list ',name (fn () ,@body))))
 
 (global run-tests
   (fn () 				; TODO: fix EVAL scoping in JS
@@ -336,19 +336,19 @@
 
 ;; library
 
-(define-test push ()
+(define-test push! ()
   (let (l ())
-    (push l 'a)
-    (push l 'b)
-    (push l 'c)
+    (push! l 'a)
+    (push! l 'b)
+    (push! l 'c)
     (test= '(a b c) l)))
 
-(define-test pop ()
+(define-test pop! ()
   (let (l '(a b c))
-    (test= 'c (pop l))
-    (test= 'b (pop l))
-    (test= 'a (pop l))
-    (test= nil (pop l))))
+    (test= 'c (pop! l))
+    (test= 'b (pop! l))
+    (test= 'a (pop! l))
+    (test= nil (pop! l))))
 
 (define-test last ()
   (test= 3 (last '(1 2 3)))

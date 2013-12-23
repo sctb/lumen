@@ -57,27 +57,27 @@
     (across (bindings1 (id rh))
       (if (bound? id)
 	  (let (rename (make-id))
-	    (push renames (list id rename))
+	    (push! renames (list id rename))
 	    (set! id rename))
 	(setenv! id variable))
-      (push locals `(local ,id ,rh)))
+      (push! locals `(local ,id ,rh)))
     `(let-symbol ,renames ,@(join locals body))))
 
 (macro let-macro (definitions body...)
-  (push environment (table))
+  (push! environment (table))
   (let (embed? embed-macros?)
     (set! embed-macros? false)
     (map (fn (m) ((compiler 'macro) m)) definitions)
     (set! embed-macros? embed?))
   (let (body1 (macroexpand body))
-    (pop environment)
+    (pop! environment)
     `(do ,@body1)))
 
 (macro let-symbol (expansions body...)
-  (push environment (table))
+  (push! environment (table))
   (map (fn ((name expr)) (setenv! name expr)) expansions)
   (let (body1 (macroexpand body))
-    (pop environment)
+    (pop! environment)
     `(do ,@body1)))
 
 (macro symbol (name expansion)
@@ -128,14 +128,14 @@
 		expr
 		(if (= target 'js)
 		    `(Array.prototype.slice.call arguments ,(length args1))
-		  (do (push args1 '...) '(list ...))))
+		  (do (push! args1 '...) '(list ...))))
 	    (join! bindings (list v expr))
 	    break) ; no more args allowed
           (list? arg)
 	  (let (v (make-id))
-	    (push args1 v)
+	    (push! args1 v)
 	    (join! bindings (list arg v)))
-	(push args1 arg)))
+	(push! args1 arg)))
     (if (empty? bindings)
 	(list args1 body)
       (list args1 `((let ,bindings ,@body))))))
@@ -189,18 +189,11 @@
 
 ;; lists
 
-(define push (arr x)
+(define push! (arr x)
   (target (js (arr.push x)) (lua (table.insert arr x))))
 
-(define pop (arr)
+(define pop! (arr)
   (target (js (arr.pop)) (lua (table.remove arr))))
-
-;; TODO: need identifier support for !
-;; (define push! (arr x)
-;;   (target (js (arr.push x)) (lua (table.insert arr x))))
-;;
-;; (define pop! (arr)
-;;   (target (js (arr.pop)) (lua (table.remove arr))))
 
 (define last (arr)
   (at arr (- (length arr) 1)))
@@ -225,7 +218,7 @@
 
 (define keep (f a)
   (let (a1 ())
-    (across (a x) (if (f x) (push a1 x)))
+    (across (a x) (if (f x) (push! a1 x)))
     a1))
 
 (define find (f a)
@@ -235,7 +228,7 @@
 
 (define map (f a)
   (let (a1 ())
-    (across (a x) (push a1 (f x)))
+    (across (a x) (push! a1 (f x)))
     a1))
 
 (macro join* (xs...)
@@ -256,7 +249,7 @@
       (across (xs x i)
 	(if (= i (- (length xs) 1))
 	    (set! t (list 'join (join '(list) t) x))
-	  (push t x)))
+	  (push! t x)))
       t)))
 
 ;; strings
@@ -280,9 +273,9 @@
 	    (let (i (search str sep))
 	      (if (nil? i)
 		  break
-		(do (push strs (sub str 0 i))
+		(do (push! strs (sub str 0 i))
 		    (set! str (sub str (+ i 1)))))))
-	  (push strs str)
+	  (push! strs str)
 	  strs))))
 
 (macro cat! (a bs...)

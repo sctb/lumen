@@ -51,7 +51,7 @@
     (while true
       (skip-non-code s)
       (let (c (peek-char s))
-	(if (and c (not (= c ")"))) (push l (read s))
+	(if (and c (not (= c ")"))) (push! l (read s))
 	    c (do (read-char s) break) ; )
 	  (error (cat "Expected ) at " s.pos)))))
     l))
