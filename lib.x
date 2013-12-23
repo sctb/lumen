@@ -168,8 +168,8 @@
 (define length (x)
   (target (js x.length) (lua #x)))
 
-(define empty? (list)
-  (= (length list) 0))
+(define empty? (x)
+  (= (length x) 0))
 
 (define sub (x from upto)
   (if (string? x)
