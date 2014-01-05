@@ -1,8 +1,9 @@
 ;; -*- mode: lisp -*-
 
 (define operators
-  (table common (table "+" "+" "-" "-" "*" "*" "/" "/" "<" "<"
-			">" ">" "=" "==" "<=" "<=" ">=" ">=")
+  (table common (table "+" "+" "-" "-" "%" "%" "*" "*" "/" "/"
+		       "<" "<" ">" ">" "<=" "<=" ">=" ">="
+		       "=" "==")
 	 js (table "~=" "!=" "and" "&&" "or" "||" "cat" "+")
 	 lua (table "~=" "~=" "and" " and " "or" " or " "cat" "..")))
 
