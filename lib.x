@@ -417,8 +417,8 @@
 (define to-string (x)
   (if (nil? x) "nil"
       (boolean? x) (if x "true" "false")
-      (atom? x) (cat x "")
       (function? x) "#<function>"
+      (atom? x) (cat x "")
       (table? x) "#<table>"
     (let (str "(")
       (across (x y i)
