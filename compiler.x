@@ -118,7 +118,7 @@
 (macro define-compiler (name (keys...) args body...)
   `(set! (get special ',name)
 	(table compiler (fn ,args ,@body)
-	       ,@(collect (fn (k) (list k true)) keys))))
+	       ,@(merge (fn (k) (list k true)) keys))))
 
 (define compiler (name) (get (get special name) 'compiler))
 (define statement? (name) (get (get special name) 'statement))

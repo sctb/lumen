@@ -104,7 +104,7 @@
 	   (set! ,i (+ ,i 1)))))))
 
 (macro set (elements...)
-  `(table ,@(collect (fn (x) (list x true)) elements)))
+  `(table ,@(merge (fn (x) (list x true)) elements)))
 
 ;; macro helpers
 
@@ -322,7 +322,7 @@
 (macro join! (a bs...)
   `(set! ,a (join* ,a ,@bs)))
 
-(define collect (f a)
+(define merge (f a)
   (let (a1 ())
     (across (a x) (join! a1 (f x)))
     a1))
