@@ -27,6 +27,11 @@
 (define read-table (table))
 (define eof (table))
 
+(define key? (atom)
+  (and (string? atom)
+       (> (length atom) 1)
+       (= (char atom (- (length atom) 1)) ":")))
+
 (macro define-reader ((char stream) body...)
   `(set! (get read-table ,char) (fn (,stream) ,@body)))
 

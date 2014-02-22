@@ -47,7 +47,12 @@
   (test= '(quote a) (read-from-string "'a"))
   (test= '(quasiquote a) (read-from-string "`a"))
   (test= '(quasiquote (unquote a)) (read-from-string "`,a"))
-  (test= '(quasiquote (unquote-splicing a)) (read-from-string "`,@a")))
+  (test= '(quasiquote (unquote-splicing a)) (read-from-string "`,@a"))
+  (test= true (key? "foo:"))
+  (test= false (key? "foo:a"))
+  (test= false (key? ":a"))
+  (test= false (key? ":"))
+  (test= false (key? "")))
 
 (define-test boolean ()
   (test= true (or true false))
