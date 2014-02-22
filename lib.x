@@ -284,17 +284,19 @@
   (at arr (- (length arr) 1)))
 
 (define join (a1 a2)
-  (target
-   (js (a1.concat a2))
-   (lua
-    (let (i 0 len (length a1) a3 ())
-      (while (< i len)
-	(set! (at a3 i) (at a1 i))
-	(set! i (+ i 1)))
-      (while (< i (+ len (length a2)))
-	(set! (at a3 i) (at a2 (- i len)))
-	(set! i (+ i 1)))
-      a3))))
+  (if (nil? a1) a2
+      (nil? a2) a1
+    (target
+     (js (a1.concat a2))
+     (lua
+      (let (i 0 len (length a1) a3 ())
+	(while (< i len)
+	  (set! (at a3 i) (at a1 i))
+	  (set! i (+ i 1)))
+	(while (< i (+ len (length a2)))
+	  (set! (at a3 i) (at a2 (- i len)))
+	  (set! i (+ i 1)))
+	a3)))))
 
 (define reduce (f x)
   (if (empty? x) x
