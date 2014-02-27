@@ -126,7 +126,7 @@
 		    `(Array.prototype.slice.call arguments ,(length args1))
 		  (do (push! args1 '...) '(list ...))))
 	    (join! bindings (list v expr))
-	    break) ; no more args allowed
+	    break)                      ; no more args allowed
           (list? arg)
 	  (let (v (make-id))
 	    (push! args1 v)
@@ -155,7 +155,7 @@
 (define quasiquoting? (depth) (and (quoting? depth) (> depth 0)))
 (define can-unquote? (depth) (and (quoting? depth) (= depth 1)))
 
-(macro w/scope ((bound) expr)
+(macro with-scope ((bound) expr)
   (let (result (make-id)
 	arg (make-id))
     `(do (push! environment (table))
@@ -184,7 +184,7 @@
 	  (or (= name 'function)
 	      (= name 'each))
 	  (let ((_ args body...) form)
-	    (w/scope (args)
+	    (with-scope (args)
 	      `(,name ,args ,@(macroexpand body))))
 	;; list
 	(map macroexpand form)))))
@@ -226,17 +226,16 @@
 	  (do (push! xs (quasiexpand (at x 1)))
 	      (push! xs '(list)))
 	(push! (last xs) (quasiexpand x depth))))
-    (if (= (length xs) 1)		; no splicing
+    (if (= (length xs) 1)		; no splicing needed
 	(at xs 0)
       ;; join all
       (reduce (fn (a b) (list 'join a b))
 	      ;; remove empty lists
-	      (keep
-	       (fn (x)
-		 (or (= (length x) 0)
-		     (not (and (= (length x) 1)
-			       (= (at x 0) 'list)))))
-	       xs)))))
+	      (keep (fn (x)
+                      (or (= (length x) 0)
+                          (not (and (= (length x) 1)
+                                    (= (at x 0) 'list)))))
+                    xs)))))
 
 ;; languages
 
