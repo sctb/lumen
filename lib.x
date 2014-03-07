@@ -420,7 +420,14 @@
       (boolean? x) (if x "true" "false")
       (function? x) "#<function>"
       (atom? x) (cat x "")
-      (table? x) "#<table>"
+      (table? x)
+      (let (a ())
+        (each (x k v)
+          (push! a (cat (to-string k) ":"))
+          (push! a v))
+        (if (> (length a) 0)
+            (to-string a)
+          "()"))
     (let (str "(")
       (across (x y i)
 	(cat! str (to-string y))
