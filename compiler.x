@@ -72,26 +72,29 @@
 (define compile-branch (condition body first? last? tail?)
   (let (cond1 (compile condition)
         body1 (compile body true tail?)
-        tr (if (and last? (= target 'lua)) " end " ""))
+        tr (if (and last? (= target 'lua))
+               "end\n"
+               last? "\n"
+             ""))
     (if (and first? (= target 'js))
-        (cat "if(" cond1 "){" body1 "}")
+        (cat "if (" cond1 ") {\n" body1 "}" tr)
         first?
-        (cat "if " cond1 " then " body1 tr)
+        (cat "if " cond1 " then\n" body1 tr)
         (and (nil? condition) (= target 'js))
-        (cat "else{" body1 "}")
+        (cat " else {\n" body1 "}\n")
         (nil? condition)
-        (cat " else " body1 " end ")
+        (cat "else\n" body1 "end\n")
         (= target 'js)
-        (cat "else if(" cond1 "){" body1 "}")
-      (cat " elseif " cond1 " then " body1 tr))))
+        (cat " else if (" cond1 ") {\n" body1 "}" tr)
+      (cat "elseif " cond1 " then\n" body1 tr))))
 
 (define compile-function (args body name)
   (set! name (or name ""))
   (let (args1 (compile-args args)
         body1 (compile-body body true))
     (if (= target 'js)
-        (cat "function " name args1 "{" body1 "}")
-      (cat "function " name args1 body1 " end "))))
+        (cat "function " name args1 " {\n" body1 "}")
+      (cat "function " name args1 "\n" body1 "end"))))
 
 (define quote-form (form)
   (if (atom? form)
@@ -102,12 +105,15 @@
         (to-string form))
     ((compiler 'list) form 0)))
 
+(define terminator (stmt?)
+  (if (not stmt?) ""
+    (target (js ";\n") (lua "\n"))))
+
 (define compile-special (form stmt? tail?)
   (let (name (at form 0))
     (if (and (not stmt?) (statement? name))
         (compile `((function () ,form)) false tail?)
-      (let (tr? (and stmt? (not (self-terminating? name)))
-            tr (if tr? ";\n" ""))
+      (let (tr (terminator (and stmt? (not (self-terminating? name)))))
         (cat ((compiler name) (sub form 1) tail?) tr)))))
 
 (define special (table))
@@ -145,8 +151,8 @@
   (let (condition (compile (at form 0))
         body (compile-body (sub form 1)))
     (if (= target 'js)
-	(cat "while(" condition "){" body "}")
-      (cat "while " condition " do " body " end "))))
+	(cat "while (" condition ") {\n" body "}\n")
+      (cat "while " condition " do\n" body "end\n"))))
 
 (define-compiler function () ((args body...))
   (compile-function args body))
@@ -168,20 +174,20 @@
 	keyword (if (= target 'js) "var " "local "))
     (if (nil? value)
 	(cat keyword id)
-      (cat keyword id "=" (compile value)))))
+      (cat keyword id " = " (compile value)))))
 
-(define-compiler each (statement) (((t k v) body...))
+(define-compiler each (statement terminated) (((t k v) body...))
   (let (t1 (compile t))
     (if (= target 'lua)
 	(let (body1 (compile-body body))
-	  (cat "for " k "," v " in pairs(" t1 ") do " body1 " end"))
+	  (cat "for " k "," v " in pairs(" t1 ") do\n" body1 "end\n"))
       (let (body1 (compile-body `((set! ,v (get ,t ,k)) ,@body)))
-	(cat "for(" k " in " t1 "){" body1 "}")))))
+	(cat "for (" k " in " t1 ") {\n" body1 "}\n")))))
 
 (define-compiler set! (statement) ((lh rh))
   (if (nil? rh)
       (error "Missing right-hand side in assignment"))
-  (cat (compile lh) "=" (compile rh)))
+  (cat (compile lh) " = " (compile rh)))
 
 (define-compiler get () ((object key))
   (let (o (compile object)
@@ -202,11 +208,11 @@
 	str "")
     (across (forms x i)
       (cat! str (if (quoting? depth) (quote-form x) (compile x)))
-      (if (< i (- (length forms) 1)) (cat! str ",")))
+      (if (< i (- (length forms) 1)) (cat! str ", ")))
     (cat open str close)))
 
 (define-compiler table () (forms)
-  (let (sep (if (= target 'lua) "=" ":")
+  (let (sep (if (= target 'lua) " = " " : ")
 	str "{"
 	i 0)
     (while (< i (- (length forms) 1))
@@ -217,7 +223,7 @@
 	(if (and (= target 'lua) (string-literal? k))
 	    (set! k (cat "[" k "]")))
 	(cat! str k sep v)
-	(if (< i (- (length forms) 2)) (cat! str ","))
+	(if (< i (- (length forms) 2)) (cat! str ", "))
 	(set! i (+ i 2))))
     (cat str "}")))
 
@@ -229,7 +235,7 @@
     true))
 
 (define compile (form stmt? tail?)
-  (let (tr (if stmt? ";\n" ""))
+  (let (tr (terminator stmt?))
     (if (and tail? (can-return? form))
 	(set! form `(return ,form)))
     (if (nil? form) ""
