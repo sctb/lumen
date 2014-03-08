@@ -202,7 +202,11 @@
 (define-test get-set ()
   (let (t (table))
     (set! (get t 'foo) 'bar)
-    (test= 'bar (get t 'foo))))
+    (test= 'bar (get t 'foo))
+    (test= 'bar (get t "foo"))
+    (let (k 'foo)
+      (test= 'bar (get t k)))
+    (test= 'bar (get t (cat "f" "oo")))))
 
 (define-test each ()
   (let (a "" b 0)
