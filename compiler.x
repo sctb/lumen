@@ -107,7 +107,7 @@
     (if (and (not stmt?) (statement? name))
         (compile `((function () ,form)) false tail?)
       (let (tr? (and stmt? (not (self-terminating? name)))
-            tr (if tr? ";" ""))
+            tr (if tr? ";\n" ""))
         (cat ((compiler name) (sub form 1) tail?) tr)))))
 
 (define special (table))
@@ -229,7 +229,7 @@
     true))
 
 (define compile (form stmt? tail?)
-  (let (tr (if stmt? ";" ""))
+  (let (tr (if stmt? ";\n" ""))
     (if (and tail? (can-return? form))
 	(set! form `(return ,form)))
     (if (nil? form) ""
