@@ -142,7 +142,7 @@
     (test= 42 (f))
     (test= 42 ((at l 0)))
     (test= 42 (t.f))
-    (test= 42 ((dot t f)))))
+    (test= 42 ((get t 'f)))))
 
 (define-test quasiexpand ()
   (test= 'a (macroexpand 'a))
@@ -203,11 +203,6 @@
   (let (t (table))
     (set! (get t 'foo) 'bar)
     (test= 'bar (get t 'foo))))
-
-(define-test dot ()
-  (let (t (table a 10))
-    (test= 10 t.a)
-    (test= 10 (dot t a))))
 
 (define-test each ()
   (let (a "" b 0)

@@ -191,9 +191,6 @@
 	(set! o (cat "(" o ")")))
     (cat o "[" k "]")))
 
-(define-compiler dot () ((object key))
-  (cat (compile object) "." (identifier key)))
-
 (define-compiler not () ((expr))
   (let (e (compile expr)
 	open (if (= target 'js) "!(" "(not "))
