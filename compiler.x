@@ -5,7 +5,7 @@
 		       "<" "<" ">" ">" "<=" "<=" ">=" ">="
 		       "=" "==")
 	 js (table "~=" "!=" "and" "&&" "or" "||" "cat" "+")
-	 lua (table "~=" "~=" "and" " and " "or" " or " "cat" "..")))
+	 lua (table "~=" "~=" "and" "and" "or" "or" "cat" "..")))
 
 (define getop (op)
   (or (get (get operators 'common) op)
@@ -14,11 +14,25 @@
 (define operator? (form)
   (and (list? form) (is? (getop (at form 0)))))
 
+(define indent-level 0)
+
+(define indentation ()
+  (let (str "")
+    (iterate (fn () (cat! str "  ")) indent-level)
+    str))
+
+(macro with-indent (form)
+  (let (result (make-id))
+    `(do (set! indent-level (+ indent-level 1))
+         (let (,result ,form)
+           (set! indent-level (- indent-level 1))
+           ,result))))
+
 (define compile-args (forms compile?)
   (let (str "(")
     (across (forms x i)
       (cat! str (if compile? (compile x) (identifier x)))
-      (if (< i (- (length forms) 1)) (cat! str ",")))
+      (if (< i (- (length forms) 1)) (cat! str ", ")))
     (cat str ")")))
 
 (define compile-body (forms tail?)
@@ -66,35 +80,38 @@
       (if (and (= op1 '-) (= (length args) 1))
           (cat! str op1 (compile arg))
         (do (cat! str (compile arg))
-            (if (< i (- (length args) 1)) (cat! str op1)))))
+            (if (< i (- (length args) 1)) 
+                (cat! str " " op1 " ")))))
     (cat str ")")))
 
 (define compile-branch (condition body first? last? tail?)
   (let (cond1 (compile condition)
-        body1 (compile body true tail?)
+        body1 (with-indent (compile body true tail?))
+        ind (indentation)
         tr (if (and last? (= target 'lua))
-               "end\n"
+               (cat ind "end\n")
                last? "\n"
              ""))
     (if (and first? (= target 'js))
-        (cat "if (" cond1 ") {\n" body1 "}" tr)
+        (cat ind "if (" cond1 ") {\n" body1 ind "}" tr)
         first?
-        (cat "if " cond1 " then\n" body1 tr)
+        (cat ind "if " cond1 " then\n" body1 tr)
         (and (nil? condition) (= target 'js))
-        (cat " else {\n" body1 "}\n")
+        (cat " else {\n" body1 ind "}\n")
         (nil? condition)
-        (cat "else\n" body1 "end\n")
+        (cat ind "else\n" body1 tr)
         (= target 'js)
-        (cat " else if (" cond1 ") {\n" body1 "}" tr)
-      (cat "elseif " cond1 " then\n" body1 tr))))
+        (cat " else if (" cond1 ") {\n" body1 ind "}" tr)
+      (cat ind "elseif " cond1 " then\n" body1 tr))))
 
 (define compile-function (args body name)
   (set! name (or name ""))
   (let (args1 (compile-args args)
-        body1 (compile-body body true))
+        body1 (with-indent (compile-body body true))
+        ind (indentation))
     (if (= target 'js)
-        (cat "function " name args1 " {\n" body1 "}")
-      (cat "function " name args1 "\n" body1 "end"))))
+        (cat "function " name args1 " {\n" body1 ind "}")
+      (cat "function " name args1 "\n" body1 ind "end"))))
 
 (define quote-form (form)
   (if (atom? form)
@@ -149,10 +166,11 @@
 
 (define-compiler while (statement terminated) (form)
   (let (condition (compile (at form 0))
-        body (compile-body (sub form 1)))
+        body (with-indent (compile-body (sub form 1)))
+        ind (indentation))
     (if (= target 'js)
-	(cat "while (" condition ") {\n" body "}\n")
-      (cat "while " condition " do\n" body "end\n"))))
+	(cat ind "while (" condition ") {\n" body ind "}\n")
+      (cat ind "while " condition " do\n" body ind "end\n"))))
 
 (define-compiler function () ((args body...))
   (compile-function args body))
@@ -167,27 +185,29 @@
   "")
 
 (define-compiler return (statement) (form)
-  (compile-call `(return ,@form)))
+  (cat (indentation) (compile-call `(return ,@form))))
 
 (define-compiler local (statement) ((name value))
   (let (id (identifier name)
-	keyword (if (= target 'js) "var " "local "))
+	keyword (if (= target 'js) "var " "local ")
+        ind (indentation))
     (if (nil? value)
-	(cat keyword id)
-      (cat keyword id " = " (compile value)))))
+	(cat ind keyword id)
+      (cat ind keyword id " = " (compile value)))))
 
 (define-compiler each (statement terminated) (((t k v) body...))
-  (let (t1 (compile t))
+  (let (t1 (compile t)
+        ind (indentation))
     (if (= target 'lua)
-	(let (body1 (compile-body body))
-	  (cat "for " k "," v " in pairs(" t1 ") do\n" body1 "end\n"))
-      (let (body1 (compile-body `((set! ,v (get ,t ,k)) ,@body)))
-	(cat "for (" k " in " t1 ") {\n" body1 "}\n")))))
+	(let (body1 (with-indent (compile-body body)))
+	  (cat ind "for " k ", " v " in pairs(" t1 ") do\n" body1 ind "end\n"))
+      (let (body1 (with-indent (compile-body `((set! ,v (get ,t ,k)) ,@body))))
+	(cat ind "for (" k " in " t1 ") {\n" body1 ind "}\n")))))
 
 (define-compiler set! (statement) ((lh rh))
   (if (nil? rh)
       (error "Missing right-hand side in assignment"))
-  (cat (compile lh) " = " (compile rh)))
+  (cat (indentation) (compile lh) " = " (compile rh)))
 
 (define-compiler get () ((object key))
   (let (o (compile object)
@@ -235,14 +255,15 @@
     true))
 
 (define compile (form stmt? tail?)
-  (let (tr (terminator stmt?))
+  (let (tr (terminator stmt?)
+        ind (if stmt? (indentation) ""))
     (if (and tail? (can-return? form))
 	(set! form `(return ,form)))
     (if (nil? form) ""
-        (atom? form) (cat (compile-atom form) tr)
-        (operator? form) (cat (compile-operator form) tr)
+        (atom? form) (cat ind (compile-atom form) tr)
+        (operator? form) (cat ind (compile-operator form) tr)
         (special? form) (compile-special form stmt? tail?)
-      (cat (compile-call form) tr))))
+      (cat ind (compile-call form) tr))))
 
 (define compile-file (file)
   (let (form nil
@@ -262,7 +283,9 @@
     output))
 
 (define compile-toplevel (form)
-  (compile (macroexpand form) true false true))
+  (let (form1 (compile (macroexpand form) true false true))
+    (if (= form1 "") ""
+      (cat form1 "\n"))))
 
 (define compile-for-target (target1 form)
   (let (previous target)

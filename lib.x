@@ -317,6 +317,12 @@
     (across (a x) (push! a1 (f x)))
     a1))
 
+(define iterate (f count)
+  (let (i 0)
+    (while (< i count)
+      (f i)
+      (set! i (+ i 1)))))
+
 (macro join* (xs...)
   (reduce (fn (a b) (list 'join a b)) xs))
 
