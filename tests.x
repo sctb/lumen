@@ -6,7 +6,7 @@
 (define failed 0)
 (define tests ())
 
-(macro test (x msg)
+(define-macro test (x msg)
   `(if (not ,x)
        (do (set! failed (+ failed 1))
 	   (return ,msg))
@@ -17,11 +17,11 @@
       (= a b)
     (= (to-string a) (to-string b))))
 
-(macro test= (a b)
+(define-macro test= (a b)
   `(test (equal? ,a ,b)
 	 (cat " failed: expected " (to-string ,a) ", was " (to-string ,b))))
 
-(macro define-test (name _ body...)
+(define-macro define-test (name _ body...)
   `(push! tests (list ',name (fn () ,@body))))
 
 (define run-tests ()

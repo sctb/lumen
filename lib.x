@@ -37,14 +37,14 @@
 
 ;; macros
 
-(macro at (arr i)
+(define-macro at (arr i)
   (if (and (= target 'lua) (number? i))
       (set! i (+ i 1))
       (= target 'lua)
       (set! i `(+ ,i 1)))
   `(get ,arr ,i))
 
-(macro let (bindings body...)
+(define-macro let (bindings body...)
   (let (i 0
 	renames ()
 	locals ()
@@ -63,37 +63,37 @@
       (push! locals `(local ,id ,rh)))
     `(let-symbol ,renames ,@(join locals body))))
 
-(macro let-macro (definitions body...)
+(define-macro let-macro (definitions body...)
   (push! environment (table))
   (let (embed? embed-macros?)
     (set! embed-macros? false)
-    (map (fn (m) ((compiler 'macro) m)) definitions)
+    (map (fn (m) ((compiler 'define-macro) m)) definitions)
     (set! embed-macros? embed?))
   (let (body1 (macroexpand body))
     (pop! environment)
     `(do ,@body1)))
 
-(macro let-symbol (expansions body...)
+(define-macro let-symbol (expansions body...)
   (push! environment (table))
   (map (fn ((name expr)) (setenv! name expr)) expansions)
   (let (body1 (macroexpand body))
     (pop! environment)
     `(do ,@body1)))
 
-(macro symbol (name expansion)
+(define-macro symbol (name expansion)
   (setenv! name expansion)
   nil)
 
-(macro define (name x body...)
+(define-macro define (name x body...)
   (if (not (empty? body))
       (set! x `(fn ,x ,@body)))
   `(set! ,name ,x))
 
-(macro fn (args body...)
+(define-macro fn (args body...)
   (let ((args1 body1) (bind-arguments args body))
     `(function ,args1 ,@body1)))
 
-(macro across ((list v i start) body...)
+(define-macro across ((list v i start) body...)
   (let (l (make-id))
     (set! i (or i (make-id)))
     (set! start (or start 0))
@@ -103,7 +103,7 @@
 	   ,@body
 	   (set! ,i (+ ,i 1)))))))
 
-(macro set (elements...)
+(define-macro set (elements...)
   `(table ,@(merge (fn (x) (list x true)) elements)))
 
 ;; macro helpers
@@ -155,7 +155,7 @@
 (define quasiquoting? (depth) (and (quoting? depth) (> depth 0)))
 (define can-unquote? (depth) (and (quoting? depth) (= depth 1)))
 
-(macro with-scope ((bound) expr)
+(define-macro with-scope ((bound) expr)
   (let (result (make-id)
 	arg (make-id))
     `(do (push! environment (table))
@@ -165,7 +165,7 @@
 	   (pop! environment)
 	   ,result))))
 
-(macro quasiquote (form)
+(define-macro quasiquote (form)
   (quasiexpand form 1))
 
 (define macroexpand (form)
@@ -176,7 +176,7 @@
     (let (name (at form 0))
       (if ;; pass-through
 	  (= name 'quote) form
-	  (= name 'macro) form
+	  (= name 'define-macro) form
 	  ;; expand macro
 	  (macro? name)
 	  (macroexpand (apply (getenv name) (sub form 1)))
@@ -239,10 +239,10 @@
 
 ;; languages
 
-(macro language () `',target)
+(define-macro language () `',target)
 (define target (language))
 
-(macro target (clauses...)
+(define-macro target (clauses...)
   (find (fn (x)
 	  (if (= (at x 0) target) (at x 1)))
 	clauses))
@@ -323,10 +323,10 @@
       (f i)
       (set! i (+ i 1)))))
 
-(macro join* (xs...)
+(define-macro join* (xs...)
   (reduce (fn (a b) (list 'join a b)) xs))
 
-(macro join! (a bs...)
+(define-macro join! (a bs...)
   `(set! ,a (join* ,a ,@bs)))
 
 (define merge (f a)
@@ -334,7 +334,7 @@
     (across (a x) (join! a1 (f x)))
     a1))
 
-(macro list* (xs...)
+(define-macro list* (xs...)
   (if (= (length xs) 0)
       ()
     (let (t ())
@@ -370,7 +370,7 @@
 	  (push! strs str)
 	  strs))))
 
-(macro cat! (a bs...)
+(define-macro cat! (a bs...)
   `(set! ,a (cat ,a ,@bs)))
 
 ;; io
@@ -441,7 +441,7 @@
 	    (cat! str " ")))
       (cat str  ")"))))
 
-(macro pr (xs...)
+(define-macro pr (xs...)
   `(print (cat ,@(map (fn (x) `(to-string ,x)) xs))))
 
 ;; misc

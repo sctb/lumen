@@ -126,7 +126,7 @@ macroexpand = function (form)
     local name = form[1]
     if (name == "quote") then
       return(form)
-    elseif (name == "macro") then
+    elseif (name == "define-macro") then
       return(form)
     elseif is_macro(name) then
       return(macroexpand(apply(getenv(name), sub(form, 1))))
@@ -927,7 +927,7 @@ end}
 
 macros = ""
 
-special["macro"] = {compiler = function (_49)
+special["define-macro"] = {compiler = function (_49)
   local name = _49[1]
   local args = _49[2]
   local body = sub(_49, 2)
@@ -1303,7 +1303,7 @@ n_setenv("let-macro", function (definitions, ...)
   local is_embed = is_embed_macros
   is_embed_macros = false
   map(function (m)
-    return((compiler("macro"))(m))
+    return((compiler("define-macro"))(m))
   end, definitions)
   is_embed_macros = is_embed
   local body1 = macroexpand(body)

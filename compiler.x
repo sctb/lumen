@@ -21,7 +21,7 @@
     (iterate (fn () (cat! str "  ")) indent-level)
     str))
 
-(macro with-indent (form)
+(define-macro with-indent (form)
   (let (result (make-id))
     `(do (set! indent-level (+ indent-level 1))
          (let (,result ,form)
@@ -138,7 +138,7 @@
 (define special? (form)
   (and (list? form) (is? (get special (at form 0)))))
 
-(macro define-compiler (name (keys...) args body...)
+(define-macro define-compiler (name (keys...) args body...)
   `(set! (get special ',name)
          (table compiler (fn ,args ,@body)
 		,@(merge (fn (k) (list k true)) keys))))
@@ -177,7 +177,7 @@
 
 (define macros "")
 
-(define-compiler macro (statement terminated) ((name args body...))
+(define-compiler define-macro (statement terminated) ((name args body...))
   (let (macro `(setenv! ',name (fn ,args ,@body)))
     (eval (compile-for-target (language) macro))
     (if embed-macros?

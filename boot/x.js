@@ -126,7 +126,7 @@ macroexpand = function (form) {
     var name = form[0];
     if ((name == "quote")) {
       return(form);
-    } else if ((name == "macro")) {
+    } else if ((name == "define-macro")) {
       return(form);
     } else if (is_macro(name)) {
       return(macroexpand(apply(getenv(name), sub(form, 1))));
@@ -896,7 +896,7 @@ special["function"] = {compiler : function (_48) {
 
 macros = "";
 
-special["macro"] = {compiler : function (_49) {
+special["define-macro"] = {compiler : function (_49) {
   var name = _49[0];
   var args = _49[1];
   var body = sub(_49, 2);
@@ -1267,7 +1267,7 @@ n_setenv("let-macro", function (definitions) {
   var is_embed = is_embed_macros;
   is_embed_macros = false;
   map(function (m) {
-    return((compiler("macro"))(m));
+    return((compiler("define-macro"))(m));
   }, definitions);
   is_embed_macros = is_embed;
   var body1 = macroexpand(body);
