@@ -42,9 +42,7 @@
 		      (= arg "-t") (set target1 arg2)
 		      (= arg "-e") (set expr arg2)))))
 	  (= arg "-m") (set embed-macros? true)
-	  (= "-" (sub arg 0 1))
-	  (do (pr "unrecognized option: " arg) (usage))
-	(add inputs arg)))
+	  (~= "-" (sub arg 0 1)) (add inputs arg)))
     (if output
 	(do (if target1 (set target target1))
 	    (let (compiled (compile-files inputs)

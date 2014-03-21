@@ -1197,10 +1197,7 @@ main = function () {
       }
     } else if ((arg == "-m")) {
       is_embed_macros = true;
-    } else if (("-" == sub(arg, 0, 1))) {
-      print((to_string("unrecognized option: ") + to_string(arg)));
-      usage();
-    } else {
+    } else if (("-" != sub(arg, 0, 1))) {
       add(inputs, arg);
     }
     i = (i + 1);

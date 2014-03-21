@@ -1238,10 +1238,7 @@ main = function ()
       end
     elseif (arg == "-m") then
       is_embed_macros = true
-    elseif ("-" == sub(arg, 0, 1)) then
-      print((to_string("unrecognized option: ") .. to_string(arg)))
-      usage()
-    else
+    elseif ("-" ~= sub(arg, 0, 1)) then
       add(inputs, arg)
     end
     i = (i + 1)
