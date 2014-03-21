@@ -1,11 +1,11 @@
 #!/bin/sh
 
 HOST=${X_HOST:-lua}
-BOOT=boot/x.lua
+BOOT=boot/lumen.lua
 
 if [ "$HOST" = "node" ]
 then
-    BOOT=boot/x.js
+    BOOT=boot/lumen.js
 fi
 
 pushd `dirname $0` > /dev/null
