@@ -103,7 +103,7 @@
 	   ,@body
 	   (set! ,i (+ ,i 1)))))))
 
-(define-macro set (elements...)
+(define-macro set-of (elements...)
   `(table ,@(merge (fn (x) (list x true)) elements)))
 
 ;; macro helpers

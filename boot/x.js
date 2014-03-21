@@ -1328,6 +1328,13 @@ n_setenv("set", function () {
   }, elements)));
 });
 
+n_setenv("set-of", function () {
+  var elements = Array.prototype.slice.call(arguments, 0);
+  return(join(["table"], merge(function (x) {
+    return([x, true]);
+  }, elements)));
+});
+
 n_setenv("with-scope", function (_18, expr) {
   var bound = _18[0];
   var result = make_id();

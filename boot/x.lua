@@ -1364,6 +1364,13 @@ n_setenv("set", function (...)
   end, elements)))
 end)
 
+n_setenv("set-of", function (...)
+  local elements = {...}
+  return(join({"table"}, merge(function (x)
+    return({x, true})
+  end, elements)))
+end)
+
 n_setenv("with-scope", function (_18, expr)
   local bound = _18[1]
   local result = make_id()

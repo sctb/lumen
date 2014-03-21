@@ -1,7 +1,7 @@
 ;; -*- mode: lisp -*-
 
-(define delimiters (set "(" ")" ";" "\n"))
-(define whitespace (set " " "\t" "\n"))
+(define delimiters (set-of "(" ")" ";" "\n"))
+(define whitespace (set-of " " "\t" "\n"))
 
 (define make-stream (str)
   (table pos 0 string str len (length str)))
