@@ -187,6 +187,12 @@
 (define-compiler return (statement) (form)
   (cat (indentation) (compile-call `(return ,@form))))
 
+(define-compiler error (statement) ((expr))
+  (let (e (if (= target 'js)
+              (cat "throw " (compile expr))
+            (compile-call `(error ,expr))))
+    (cat (indentation) e)))
+
 (define-compiler local (statement) ((name value))
   (let (id (identifier name)
 	keyword (if (= target 'js) "var " "local ")

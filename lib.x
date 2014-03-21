@@ -446,7 +446,6 @@
 
 ;; misc
 
-(target (js (define error (msg) (throw msg) nil)))
 (target (js (define type (x) (typeof x))))
 
 (define apply (f args)
