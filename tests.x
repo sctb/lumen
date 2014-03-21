@@ -8,9 +8,9 @@
 
 (define-macro test (x msg)
   `(if (not ,x)
-       (do (set! failed (+ failed 1))
+       (do (set failed (+ failed 1))
 	   (return ,msg))
-     (set! passed (+ passed 1))))
+     (set passed (+ passed 1))))
 
 (define equal? (a b)
   (if (atom? a)
@@ -170,14 +170,14 @@
   (local a 42)
   (test= 42 a))
 
-(define-test set! ()
+(define-test set ()
   (let (a 42)
-    (set! a 'bar)
+    (set a 'bar)
     (test= 'bar a)))
 
 (define-test do ()
   (let (a 17)
-    (do (set! a 10)
+    (do (set a 10)
 	(test= 10 a))
     ;; do cannot introduce a new scope
     (do (local a 7)
@@ -192,7 +192,7 @@
 (define-test while ()
   (let (i 0)
     (while (< i 10)
-      (set! i (+ i 1)))
+      (set i (+ i 1)))
     (test= 10 i)))
 
 (define-test table ()
@@ -201,7 +201,7 @@
 
 (define-test get-set ()
   (let (t (table))
-    (set! (get t 'foo) 'bar)
+    (set (get t 'foo) 'bar)
     (test= 'bar (get t 'foo))
     (test= 'bar (get t "foo"))
     (let (k 'foo)
@@ -212,7 +212,7 @@
   (let (a "" b 0)
     (each ((table a 10 b 20 c 30) k v)
       (cat! a k)
-      (set! b (+ b v)))
+      (set b (+ b v)))
     (test= 3 (length a))
     (test= 60 b)))
 
@@ -326,8 +326,8 @@
 
 (define-test set-expr ()
   (let (a 5)
-    (test= nil (set! a 7))
-    (test= 10 (do (set! a 10) a))))
+    (test= nil (set a 7))
+    (test= 10 (do (set a 10) a))))
 
 (define-test local-expr ()
   (let (a 5)
@@ -335,11 +335,11 @@
 
 (define-test while-expr ()
   (let (i 0)
-    (test= 10 (do (while (< i 10) (set! i (+ i 1))) i))))
+    (test= 10 (do (while (< i 10) (set i (+ i 1))) i))))
 
 (define-test each-expr ()
   (let (i 0 t (table a 10 b 20))
-    (test= 2 (do (each (t _ _) (set! i (+ i 1))) i))))
+    (test= 2 (do (each (t _ _) (set i (+ i 1))) i))))
 
 ;; library
 
@@ -452,7 +452,7 @@
 (define-test parameters ()
   (let (f (fn (a (b c)) (list a b c)))
     (test= '(1 2 3) (f 1 '(2 3)))
-    (set! f (fn (a (b c...) d...) (list a b c d)))
+    (set f (fn (a (b c...) d...) (list a b c d)))
     (test= '(1 2 (3 4) (5 6 7)) (f 1 '(2 3 4) 5 6 7))
     (test= '(3 4) ((fn (a b c...) c) 1 2 3 4))
     (test= '((3 4) (5 6 7))

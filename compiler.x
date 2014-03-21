@@ -23,9 +23,9 @@
 
 (define-macro with-indent (form)
   (let (result (make-id))
-    `(do (set! indent-level (+ indent-level 1))
+    `(do (set indent-level (+ indent-level 1))
          (let (,result ,form)
-           (set! indent-level (- indent-level 1))
+           (set indent-level (- indent-level 1))
            ,result))))
 
 (define compile-args (forms compile?)
@@ -46,9 +46,9 @@
   (let (id2 "" i 0)
     (while (< i (length id))
       (let (c (char id i))
-	(if (= c "-") (set! c "_"))
+	(if (= c "-") (set c "_"))
 	(cat! id2 c))
-      (set! i (+ i 1)))
+      (set i (+ i 1)))
     (let (last (- (length id) 1)
 	  suffix (char id last)
 	  name (sub id2 0 last))
@@ -105,7 +105,7 @@
       (cat ind "elseif " cond1 " then\n" body1 tr))))
 
 (define compile-function (args body name)
-  (set! name (or name ""))
+  (set name (or name ""))
   (let (args1 (compile-args args)
         body1 (with-indent (compile-body body true))
         ind (indentation))
@@ -139,9 +139,9 @@
   (and (list? form) (is? (get special (at form 0)))))
 
 (define-macro define-compiler (name (keys...) args body...)
-  `(set! (get special ',name)
-         (table compiler (fn ,args ,@body)
-		,@(merge (fn (k) (list k true)) keys))))
+  `(set (get special ',name)
+        (table compiler (fn ,args ,@body)
+               ,@(merge (fn (k) (list k true)) keys))))
 
 (define compiler (name) (get (get special name) 'compiler))
 (define statement? (name) (get (get special name) 'statement))
@@ -158,10 +158,10 @@
 	    first? (= i 0)
 	    body (at form (+ i 1)))
 	(if else?
-	    (do (set! body condition)
-		(set! condition nil)))
+	    (do (set body condition)
+		(set condition nil)))
 	(cat! str (compile-branch condition body first? last? tail?)))
-      (set! i (+ i 1)))
+      (set i (+ i 1)))
     str))
 
 (define-compiler while (statement terminated) (form)
@@ -201,10 +201,10 @@
     (if (= target 'lua)
 	(let (body1 (with-indent (compile-body body)))
 	  (cat ind "for " k ", " v " in pairs(" t1 ") do\n" body1 ind "end\n"))
-      (let (body1 (with-indent (compile-body `((set! ,v (get ,t ,k)) ,@body))))
+      (let (body1 (with-indent (compile-body `((set ,v (get ,t ,k)) ,@body))))
 	(cat ind "for (" k " in " t1 ") {\n" body1 ind "}\n")))))
 
-(define-compiler set! (statement) ((lh rh))
+(define-compiler set (statement) ((lh rh))
   (if (nil? rh)
       (error "Missing right-hand side in assignment"))
   (cat (indentation) (compile lh) " = " (compile rh)))
@@ -214,7 +214,7 @@
 	k (compile key))
     (if (and (= target 'lua)
 	     (= (char o 0) "{"))
-	(set! o (cat "(" o ")")))
+	(set o (cat "(" o ")")))
     (cat o "[" k "]")))
 
 (define-compiler not () ((expr))
@@ -241,10 +241,10 @@
 	(if (not (string? k))
 	    (error (cat "Illegal table key: " (to-string k))))
 	(if (and (= target 'lua) (string-literal? k))
-	    (set! k (cat "[" k "]")))
+	    (set k (cat "[" k "]")))
 	(cat! str k sep v)
 	(if (< i (- (length forms) 2)) (cat! str ", "))
-	(set! i (+ i 2))))
+	(set i (+ i 2))))
     (cat str "}")))
 
 (define-compiler quote () ((form)) (quote-form form))
@@ -258,7 +258,7 @@
   (let (tr (terminator stmt?)
         ind (if stmt? (indentation) ""))
     (if (and tail? (can-return? form))
-	(set! form `(return ,form)))
+	(set form `(return ,form)))
     (if (nil? form) ""
         (atom? form) (cat ind (compile-atom form) tr)
         (operator? form) (cat ind (compile-operator form) tr)
@@ -270,7 +270,7 @@
 	output ""
 	s (make-stream (read-file file)))
     (while true
-      (set! form (read s))
+      (set form (read s))
       (if (= form eof) break)
       (let (result (compile-toplevel form))
 	(cat! output result)))
@@ -289,7 +289,7 @@
 
 (define compile-for-target (target1 form)
   (let (previous target)
-    (set! target target1)
+    (set target target1)
     (let (result (compile-toplevel form))
-      (set! target previous)
+      (set target previous)
       result)))

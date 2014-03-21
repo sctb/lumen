@@ -950,7 +950,7 @@ special["each"] = {compiler : function (_51) {
   } else {
     var _54 = (function () {
       indent_level = (indent_level + 1);
-      var _55 = compile_body(join([["set!", v, ["get", t, k]]], body));
+      var _55 = compile_body(join([["set", v, ["get", t, k]]], body));
       indent_level = (indent_level - 1);
       return(_55);
     })();
@@ -958,7 +958,7 @@ special["each"] = {compiler : function (_51) {
   }
 }, statement : true, terminated : true};
 
-special["set!"] = {compiler : function (_56) {
+special["set"] = {compiler : function (_56) {
   var lh = _56[0];
   var rh = _56[1];
   if (is_nil(rh)) {
@@ -1298,7 +1298,7 @@ n_setenv("define", function (name, x) {
   if (!(is_empty(body))) {
     x = join(["fn", x], body);
   }
-  return(["set!", name, x]);
+  return(["set", name, x]);
 });
 
 n_setenv("fn", function (args) {
@@ -1318,14 +1318,7 @@ n_setenv("across", function (_12) {
   var l = make_id();
   i = (i || make_id());
   start = (start || 0);
-  return(["let", [i, start, l, list], ["while", ["<", i, ["length", l]], join(["let", [v, ["at", l, i]]], join(body, [["set!", i, ["+", i, 1]]]))]]);
-});
-
-n_setenv("set", function () {
-  var elements = Array.prototype.slice.call(arguments, 0);
-  return(join(["table"], merge(function (x) {
-    return([x, true]);
-  }, elements)));
+  return(["let", [i, start, l, list], ["while", ["<", i, ["length", l]], join(["let", [v, ["at", l, i]]], join(body, [["set", i, ["+", i, 1]]]))]]);
 });
 
 n_setenv("set-of", function () {
@@ -1368,7 +1361,7 @@ n_setenv("join*", function () {
 
 n_setenv("join!", function (a) {
   var bs = Array.prototype.slice.call(arguments, 1);
-  return(["set!", a, join(["join*", a], bs)]);
+  return(["set", a, join(["join*", a], bs)]);
 });
 
 n_setenv("list*", function () {
@@ -1394,7 +1387,7 @@ n_setenv("list*", function () {
 
 n_setenv("cat!", function (a) {
   var bs = Array.prototype.slice.call(arguments, 1);
-  return(["set!", a, join(["cat", a], bs)]);
+  return(["set", a, join(["cat", a], bs)]);
 });
 
 n_setenv("pr", function () {
@@ -1408,18 +1401,18 @@ n_setenv("define-reader", function (_37) {
   var char = _37[0];
   var stream = _37[1];
   var body = Array.prototype.slice.call(arguments, 1);
-  return(["set!", ["get", "read-table", char], join(["fn", [stream]], body)]);
+  return(["set", ["get", "read-table", char], join(["fn", [stream]], body)]);
 });
 
 n_setenv("with-indent", function (form) {
   var result = make_id();
-  return(["do", ["set!", "indent-level", ["+", "indent-level", 1]], ["let", [result, form], ["set!", "indent-level", ["-", "indent-level", 1]], result]]);
+  return(["do", ["set", "indent-level", ["+", "indent-level", 1]], ["let", [result, form], ["set", "indent-level", ["-", "indent-level", 1]], result]]);
 });
 
 n_setenv("define-compiler", function (name, _45, args) {
   var keys = sub(_45, 0);
   var body = Array.prototype.slice.call(arguments, 3);
-  return(["set!", ["get", "special", ["quote", name]], join(["table", "compiler", join(["fn", args], body)], merge(function (k) {
+  return(["set", ["get", "special", ["quote", name]], join(["table", "compiler", join(["fn", args], body)], merge(function (k) {
     return([k, true]);
   }, keys))]);
 });

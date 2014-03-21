@@ -11,7 +11,7 @@
 
 (define read-char (s)
   (let (c (peek-char s))
-    (if c (do (set! s.pos (+ s.pos 1)) c))))
+    (if c (do (set s.pos (+ s.pos 1)) c))))
 
 (define skip-non-code (s)
   (while true
@@ -20,7 +20,7 @@
         (get whitespace c) (read-char s)
 	(= c ";")
 	(do (while (and c (not (= c "\n")))
-	      (set! c (read-char s)))
+	      (set c (read-char s)))
 	    (skip-non-code s))
       break))))
 
@@ -33,7 +33,7 @@
        (= (char atom (- (length atom) 1)) ":")))
 
 (define-macro define-reader ((char stream) body...)
-  `(set! (get read-table ,char) (fn (,stream) ,@body)))
+  `(set (get read-table ,char) (fn (,stream) ,@body)))
 
 (define-reader ("" s) ; atom
   (let (str "")
@@ -61,7 +61,7 @@
 	      (if (key? x)
 		  (let (key (sub x 0 (- (length x) 1))
 			val (read s))
-		    (set! (get l key) val))
+		    (set (get l key) val))
 		  (push! l x)))
 	    c (do (read-char s) break) ; )
 	  (error (cat "Expected ) at " s.pos)))))

@@ -981,7 +981,7 @@ special["each"] = {compiler = function (_51)
   else
     local _54 = (function ()
       indent_level = (indent_level + 1)
-      local _55 = compile_body(join({{"set!", v, {"get", t, k}}}, body))
+      local _55 = compile_body(join({{"set", v, {"get", t, k}}}, body))
       indent_level = (indent_level - 1)
       return(_55)
     end)()
@@ -989,7 +989,7 @@ special["each"] = {compiler = function (_51)
   end
 end, statement = true, terminated = true}
 
-special["set!"] = {compiler = function (_56)
+special["set"] = {compiler = function (_56)
   local lh = _56[1]
   local rh = _56[2]
   if is_nil(rh) then
@@ -1334,7 +1334,7 @@ n_setenv("define", function (name, x, ...)
   if (not is_empty(body)) then
     x = join({"fn", x}, body)
   end
-  return({"set!", name, x})
+  return({"set", name, x})
 end)
 
 n_setenv("fn", function (args, ...)
@@ -1354,14 +1354,7 @@ n_setenv("across", function (_12, ...)
   local l = make_id()
   i = (i or make_id())
   start = (start or 0)
-  return({"let", {i, start, l, list}, {"while", {"<", i, {"length", l}}, join({"let", {v, {"at", l, i}}}, join(body, {{"set!", i, {"+", i, 1}}}))}})
-end)
-
-n_setenv("set", function (...)
-  local elements = {...}
-  return(join({"table"}, merge(function (x)
-    return({x, true})
-  end, elements)))
+  return({"let", {i, start, l, list}, {"while", {"<", i, {"length", l}}, join({"let", {v, {"at", l, i}}}, join(body, {{"set", i, {"+", i, 1}}}))}})
 end)
 
 n_setenv("set-of", function (...)
@@ -1404,7 +1397,7 @@ end)
 
 n_setenv("join!", function (a, ...)
   local bs = {...}
-  return({"set!", a, join({"join*", a}, bs)})
+  return({"set", a, join({"join*", a}, bs)})
 end)
 
 n_setenv("list*", function (...)
@@ -1430,7 +1423,7 @@ end)
 
 n_setenv("cat!", function (a, ...)
   local bs = {...}
-  return({"set!", a, join({"cat", a}, bs)})
+  return({"set", a, join({"cat", a}, bs)})
 end)
 
 n_setenv("pr", function (...)
@@ -1444,18 +1437,18 @@ n_setenv("define-reader", function (_37, ...)
   local char = _37[1]
   local stream = _37[2]
   local body = {...}
-  return({"set!", {"get", "read-table", char}, join({"fn", {stream}}, body)})
+  return({"set", {"get", "read-table", char}, join({"fn", {stream}}, body)})
 end)
 
 n_setenv("with-indent", function (form)
   local result = make_id()
-  return({"do", {"set!", "indent-level", {"+", "indent-level", 1}}, {"let", {result, form}, {"set!", "indent-level", {"-", "indent-level", 1}}, result}})
+  return({"do", {"set", "indent-level", {"+", "indent-level", 1}}, {"let", {result, form}, {"set", "indent-level", {"-", "indent-level", 1}}, result}})
 end)
 
 n_setenv("define-compiler", function (name, _45, args, ...)
   local keys = sub(_45, 0)
   local body = {...}
-  return({"set!", {"get", "special", {"quote", name}}, join({"table", "compiler", join({"fn", args}, body)}, merge(function (k)
+  return({"set", {"get", "special", {"quote", name}}, join({"table", "compiler", join({"fn", args}, body)}, merge(function (k)
     return({k, true})
   end, keys))})
 end)

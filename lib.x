@@ -5,14 +5,14 @@
 (define environment (list (table)))
 
 (define setenv! (k v)
-  (set! (get (last environment) k) v))
+  (set (get (last environment) k) v))
 
 (define getenv (k)
   (let (i (- (length environment) 1))
     (while (>= i 0)
       (let (v (get (at environment i) k))
 	(if v (return v)))
-      (set! i (- i 1)))))
+      (set i (- i 1)))))
 
 (define variable (table))
 
@@ -39,9 +39,9 @@
 
 (define-macro at (arr i)
   (if (and (= target 'lua) (number? i))
-      (set! i (+ i 1))
+      (set i (+ i 1))
       (= target 'lua)
-      (set! i `(+ ,i 1)))
+      (set i `(+ ,i 1)))
   `(get ,arr ,i))
 
 (define-macro let (bindings body...)
@@ -53,12 +53,12 @@
       (let (lh (at bindings i)
 	    rh (at bindings (+ i 1)))
        (join! bindings1 (bind lh rh)))
-      (set! i (+ i 2)))
+      (set i (+ i 2)))
     (across (bindings1 (id rh))
       (if (bound? id)
 	  (let (rename (make-id))
 	    (push! renames (list id rename))
-	    (set! id rename))
+	    (set id rename))
 	(setenv! id variable))
       (push! locals `(local ,id ,rh)))
     `(let-symbol ,renames ,@(join locals body))))
@@ -66,9 +66,9 @@
 (define-macro let-macro (definitions body...)
   (push! environment (table))
   (let (embed? embed-macros?)
-    (set! embed-macros? false)
+    (set embed-macros? false)
     (map (fn (m) ((compiler 'define-macro) m)) definitions)
-    (set! embed-macros? embed?))
+    (set embed-macros? embed?))
   (let (body1 (macroexpand body))
     (pop! environment)
     `(do ,@body1)))
@@ -86,8 +86,8 @@
 
 (define-macro define (name x body...)
   (if (not (empty? body))
-      (set! x `(fn ,x ,@body)))
-  `(set! ,name ,x))
+      (set x `(fn ,x ,@body)))
+  `(set ,name ,x))
 
 (define-macro fn (args body...)
   (let ((args1 body1) (bind-arguments args body))
@@ -95,13 +95,13 @@
 
 (define-macro across ((list v i start) body...)
   (let (l (make-id))
-    (set! i (or i (make-id)))
-    (set! start (or start 0))
+    (set i (or i (make-id)))
+    (set start (or start 0))
     `(let (,i ,start ,l ,list)
        (while (< ,i (length ,l))
 	 (let (,v (at ,l ,i))
 	   ,@body
-	   (set! ,i (+ ,i 1)))))))
+	   (set ,i (+ ,i 1)))))))
 
 (define-macro set-of (elements...)
   `(table ,@(merge (fn (x) (list x true)) elements)))
@@ -263,12 +263,12 @@
     (target
      (js (x.slice from upto))
      (lua
-      (do (set! upto (or upto (length x)))
+      (do (set upto (or upto (length x)))
 	  (let (i from j 0 x2 ())
 	    (while (< i upto)
-	      (set! (at x2 j) (at x i))
-	      (set! i (+ i 1))
-	      (set! j (+ j 1)))
+	      (set (at x2 j) (at x i))
+	      (set i (+ i 1))
+	      (set j (+ j 1)))
 	    x2))))))
 
 ;; lists
@@ -290,11 +290,11 @@
      (lua
       (let (i 0 len (length a1) a3 ())
 	(while (< i len)
-	  (set! (at a3 i) (at a1 i))
-	  (set! i (+ i 1)))
+	  (set (at a3 i) (at a1 i))
+	  (set i (+ i 1)))
 	(while (< i (+ len (length a2)))
-	  (set! (at a3 i) (at a2 (- i len)))
-	  (set! i (+ i 1)))
+	  (set (at a3 i) (at a2 (- i len)))
+	  (set i (+ i 1)))
 	a3)))))
 
 (define reduce (f x)
@@ -321,13 +321,13 @@
   (let (i 0)
     (while (< i count)
       (f i)
-      (set! i (+ i 1)))))
+      (set i (+ i 1)))))
 
 (define-macro join* (xs...)
   (reduce (fn (a b) (list 'join a b)) xs))
 
 (define-macro join! (a bs...)
-  `(set! ,a (join* ,a ,@bs)))
+  `(set ,a (join* ,a ,@bs)))
 
 (define merge (f a)
   (let (a1 ())
@@ -340,7 +340,7 @@
     (let (t ())
       (across (xs x i)
 	(if (= i (- (length xs) 1))
-	    (set! t (list 'join (join '(list) t) x))
+	    (set t (list 'join (join '(list) t) x))
 	  (push! t x)))
       t)))
 
@@ -353,7 +353,7 @@
   (target
    (js (let (i (str.indexOf pattern start))
 	 (if (>= i 0) i)))
-   (lua (do (if start (set! start (+ start 1)))
+   (lua (do (if start (set start (+ start 1)))
 	    (let (i (string.find str pattern start true))
 	      (and i (- i 1)))))))
 
@@ -366,12 +366,12 @@
 	      (if (nil? i)
 		  break
 		(do (push! strs (sub str 0 i))
-		    (set! str (sub str (+ i 1)))))))
+		    (set str (sub str (+ i 1)))))))
 	  (push! strs str)
 	  strs))))
 
 (define-macro cat! (a bs...)
-  `(set! ,a (cat ,a ,@bs)))
+  `(set ,a (cat ,a ,@bs)))
 
 ;; io
 
@@ -455,7 +455,7 @@
 (define id-counter 0)
 
 (define make-id (prefix)
-  (set! id-counter (+ id-counter 1))
+  (set id-counter (+ id-counter 1))
   (cat "_" (or prefix "") id-counter))
 
 (define eval-result nil)
