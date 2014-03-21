@@ -1,6 +1,6 @@
 environment = [{}];
 
-n_setenv = function (k, v) {
+setenv = function (k, v) {
   last(environment)[k] = v;
 };
 
@@ -57,7 +57,7 @@ bind_arguments = function (args, body) {
         if ((target == "js")) {
           return(["Array.prototype.slice.call", "arguments", length(args1)]);
         } else {
-          n_push(args1, "...");
+          add(args1, "...");
           return(["list", "..."]);
         }
       })();
@@ -65,10 +65,10 @@ bind_arguments = function (args, body) {
       break;
     } else if (is_list(arg)) {
       var _15 = make_id();
-      n_push(args1, _15);
+      add(args1, _15);
       bindings = join(bindings, [arg, _15]);
     } else {
-      n_push(args1, arg);
+      add(args1, arg);
     }
     _14 = (_14 + 1);
   }
@@ -134,16 +134,16 @@ macroexpand = function (form) {
       var _ = form[0];
       var args = form[1];
       var body = sub(form, 2);
-      n_push(environment, {});
+      add(environment, {});
       var _22 = 0;
       var _21 = args;
       while ((_22 < length(_21))) {
         var _20 = _21[_22];
-        n_setenv(_20, variable);
+        setenv(_20, variable);
         _22 = (_22 + 1);
       }
       var _19 = join([name, args], macroexpand(body));
-      n_pop(environment);
+      drop(environment);
       return(_19);
     } else {
       return(map(macroexpand, form));
@@ -184,10 +184,10 @@ quasiquote_list = function (form, depth) {
   while ((_24 < length(_23))) {
     var x = _23[_24];
     if ((is_list(x) && is_can_unquote(depth) && (x[0] == "unquote-splicing"))) {
-      n_push(xs, quasiexpand(x[1]));
-      n_push(xs, ["list"]);
+      add(xs, quasiexpand(x[1]));
+      add(xs, ["list"]);
     } else {
-      n_push(last(xs), quasiexpand(x, depth));
+      add(last(xs), quasiexpand(x, depth));
     }
     _24 = (_24 + 1);
   }
@@ -220,11 +220,11 @@ sub = function (x, from, upto) {
   }
 };
 
-n_push = function (arr, x) {
+add = function (arr, x) {
   return(arr.push(x));
 };
 
-n_pop = function (arr) {
+drop = function (arr) {
   return(arr.pop());
 };
 
@@ -259,7 +259,7 @@ keep = function (f, a) {
   while ((_26 < length(_25))) {
     var x = _25[_26];
     if (f(x)) {
-      n_push(a1, x);
+      add(a1, x);
     }
     _26 = (_26 + 1);
   }
@@ -285,7 +285,7 @@ map = function (f, a) {
   var _29 = a;
   while ((_30 < length(_29))) {
     var x = _29[_30];
-    n_push(a1, f(x));
+    add(a1, f(x));
     _30 = (_30 + 1);
   }
   return(a1);
@@ -416,8 +416,8 @@ to_string = function (x) {
     var a = [];
     for (k in x) {
       v = x[k];
-      n_push(a, (to_string(k) + ":"));
-      n_push(a, v);
+      add(a, (to_string(k) + ":"));
+      add(a, v);
     }
     if ((length(a) > 0)) {
       return(to_string(a));
@@ -546,7 +546,7 @@ read_table["("] = function (s) {
         var val = read(s);
         l[key] = val;
       } else {
-        n_push(l, x);
+        add(l, x);
       }
     } else if (c) {
       read_char(s);
@@ -900,7 +900,7 @@ special["define-macro"] = {compiler : function (_49) {
   var name = _49[0];
   var args = _49[1];
   var body = sub(_49, 2);
-  var macro = ["setenv!", ["quote", name], join(["fn", args], body)];
+  var macro = ["setenv", ["quote", name], join(["fn", args], body)];
   eval(compile_for_target("js", macro));
   if (is_embed_macros) {
     macros = (macros + compile_toplevel(macro));
@@ -1194,7 +1194,7 @@ main = function () {
       print((to_string("unrecognized option: ") + to_string(arg)));
       usage();
     } else {
-      n_push(inputs, arg);
+      add(inputs, arg);
     }
     i = (i + 1);
   }
@@ -1221,7 +1221,7 @@ main = function () {
   }
 };
 
-n_setenv("at", function (arr, i) {
+setenv("at", function (arr, i) {
   if (((target == "lua") && is_number(i))) {
     i = (i + 1);
   } else if ((target == "lua")) {
@@ -1230,7 +1230,7 @@ n_setenv("at", function (arr, i) {
   return(["get", arr, i]);
 });
 
-n_setenv("let", function (bindings) {
+setenv("let", function (bindings) {
   var body = Array.prototype.slice.call(arguments, 1);
   var i = 0;
   var renames = [];
@@ -1250,20 +1250,20 @@ n_setenv("let", function (bindings) {
     var rh = _6[1];
     if (is_bound(id)) {
       var rename = make_id();
-      n_push(renames, [id, rename]);
+      add(renames, [id, rename]);
       id = rename;
     } else {
-      n_setenv(id, variable);
+      setenv(id, variable);
     }
-    n_push(locals, ["local", id, rh]);
+    add(locals, ["local", id, rh]);
     _5 = (_5 + 1);
   }
   return(join(["let-symbol", renames], join(locals, body)));
 });
 
-n_setenv("let-macro", function (definitions) {
+setenv("let-macro", function (definitions) {
   var body = Array.prototype.slice.call(arguments, 1);
-  n_push(environment, {});
+  add(environment, {});
   var is_embed = is_embed_macros;
   is_embed_macros = false;
   map(function (m) {
@@ -1271,29 +1271,29 @@ n_setenv("let-macro", function (definitions) {
   }, definitions);
   is_embed_macros = is_embed;
   var body1 = macroexpand(body);
-  n_pop(environment);
+  drop(environment);
   return(join(["do"], body1));
 });
 
-n_setenv("let-symbol", function (expansions) {
+setenv("let-symbol", function (expansions) {
   var body = Array.prototype.slice.call(arguments, 1);
-  n_push(environment, {});
+  add(environment, {});
   map(function (_8) {
     var name = _8[0];
     var expr = _8[1];
-    return(n_setenv(name, expr));
+    return(setenv(name, expr));
   }, expansions);
   var body1 = macroexpand(body);
-  n_pop(environment);
+  drop(environment);
   return(join(["do"], body1));
 });
 
-n_setenv("symbol", function (name, expansion) {
-  n_setenv(name, expansion);
+setenv("symbol", function (name, expansion) {
+  setenv(name, expansion);
   return(undefined);
 });
 
-n_setenv("define", function (name, x) {
+setenv("define", function (name, x) {
   var body = Array.prototype.slice.call(arguments, 2);
   if (!(is_empty(body))) {
     x = join(["fn", x], body);
@@ -1301,7 +1301,7 @@ n_setenv("define", function (name, x) {
   return(["set", name, x]);
 });
 
-n_setenv("fn", function (args) {
+setenv("fn", function (args) {
   var body = Array.prototype.slice.call(arguments, 1);
   var _10 = bind_arguments(args, body);
   var args1 = _10[0];
@@ -1309,7 +1309,7 @@ n_setenv("fn", function (args) {
   return(join(["function", args1], body1));
 });
 
-n_setenv("across", function (_12) {
+setenv("across", function (_12) {
   var list = _12[0];
   var v = _12[1];
   var i = _12[2];
@@ -1321,29 +1321,29 @@ n_setenv("across", function (_12) {
   return(["let", [i, start, l, list], ["while", ["<", i, ["length", l]], join(["let", [v, ["at", l, i]]], join(body, [["set", i, ["+", i, 1]]]))]]);
 });
 
-n_setenv("set-of", function () {
+setenv("set-of", function () {
   var elements = Array.prototype.slice.call(arguments, 0);
   return(join(["table"], merge(function (x) {
     return([x, true]);
   }, elements)));
 });
 
-n_setenv("with-scope", function (_18, expr) {
+setenv("with-scope", function (_18, expr) {
   var bound = _18[0];
   var result = make_id();
   var arg = make_id();
-  return(["do", ["push!", "environment", ["table"]], ["across", [bound, arg], ["setenv!", arg, "variable"]], ["let", [result, expr], ["pop!", "environment"], result]]);
+  return(["do", ["add", "environment", ["table"]], ["across", [bound, arg], ["setenv", arg, "variable"]], ["let", [result, expr], ["drop", "environment"], result]]);
 });
 
-n_setenv("quasiquote", function (form) {
+setenv("quasiquote", function (form) {
   return(quasiexpand(form, 1));
 });
 
-n_setenv("language", function () {
+setenv("language", function () {
   return(["quote", target]);
 });
 
-n_setenv("target", function () {
+setenv("target", function () {
   var clauses = Array.prototype.slice.call(arguments, 0);
   return(find(function (x) {
     if ((x[0] == target)) {
@@ -1352,19 +1352,19 @@ n_setenv("target", function () {
   }, clauses));
 });
 
-n_setenv("join*", function () {
+setenv("join*", function () {
   var xs = Array.prototype.slice.call(arguments, 0);
   return(reduce(function (a, b) {
     return(["join", a, b]);
   }, xs));
 });
 
-n_setenv("join!", function (a) {
+setenv("join!", function (a) {
   var bs = Array.prototype.slice.call(arguments, 1);
   return(["set", a, join(["join*", a], bs)]);
 });
 
-n_setenv("list*", function () {
+setenv("list*", function () {
   var xs = Array.prototype.slice.call(arguments, 0);
   if ((length(xs) == 0)) {
     return([]);
@@ -1377,7 +1377,7 @@ n_setenv("list*", function () {
       if ((i == (length(xs) - 1))) {
         t = ["join", join(["list"], t), x];
       } else {
-        n_push(t, x);
+        add(t, x);
       }
       i = (i + 1);
     }
@@ -1385,31 +1385,31 @@ n_setenv("list*", function () {
   }
 });
 
-n_setenv("cat!", function (a) {
+setenv("cat!", function (a) {
   var bs = Array.prototype.slice.call(arguments, 1);
   return(["set", a, join(["cat", a], bs)]);
 });
 
-n_setenv("pr", function () {
+setenv("pr", function () {
   var xs = Array.prototype.slice.call(arguments, 0);
   return(["print", join(["cat"], map(function (x) {
     return(["to-string", x]);
   }, xs))]);
 });
 
-n_setenv("define-reader", function (_37) {
+setenv("define-reader", function (_37) {
   var char = _37[0];
   var stream = _37[1];
   var body = Array.prototype.slice.call(arguments, 1);
   return(["set", ["get", "read-table", char], join(["fn", [stream]], body)]);
 });
 
-n_setenv("with-indent", function (form) {
+setenv("with-indent", function (form) {
   var result = make_id();
   return(["do", ["set", "indent-level", ["+", "indent-level", 1]], ["let", [result, form], ["set", "indent-level", ["-", "indent-level", 1]], result]]);
 });
 
-n_setenv("define-compiler", function (name, _45, args) {
+setenv("define-compiler", function (name, _45, args) {
   var keys = sub(_45, 0);
   var body = Array.prototype.slice.call(arguments, 3);
   return(["set", ["get", "special", ["quote", name]], join(["table", "compiler", join(["fn", args], body)], merge(function (k) {

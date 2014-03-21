@@ -44,7 +44,7 @@
 	  (= arg "-m") (set embed-macros? true)
 	  (= "-" (sub arg 0 1))
 	  (do (pr "unrecognized option: " arg) (usage))
-	(push! inputs arg)))
+	(add inputs arg)))
     (if output
 	(do (if target1 (set target target1))
 	    (let (compiled (compile-files inputs)

@@ -178,7 +178,7 @@
 (define macros "")
 
 (define-compiler define-macro (statement terminated) ((name args body...))
-  (let (macro `(setenv! ',name (fn ,args ,@body)))
+  (let (macro `(setenv ',name (fn ,args ,@body)))
     (eval (compile-for-target (language) macro))
     (if embed-macros?
 	(cat! macros (compile-toplevel macro))))

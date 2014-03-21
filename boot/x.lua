@@ -1,6 +1,6 @@
 environment = {{}}
 
-n_setenv = function (k, v)
+setenv = function (k, v)
   last(environment)[k] = v
 end
 
@@ -57,7 +57,7 @@ bind_arguments = function (args, body)
         if (target == "js") then
           return({"Array.prototype.slice.call", "arguments", length(args1)})
         else
-          n_push(args1, "...")
+          add(args1, "...")
           return({"list", "..."})
         end
       end)()
@@ -65,10 +65,10 @@ bind_arguments = function (args, body)
       break
     elseif is_list(arg) then
       local _15 = make_id()
-      n_push(args1, _15)
+      add(args1, _15)
       bindings = join(bindings, {arg, _15})
     else
-      n_push(args1, arg)
+      add(args1, arg)
     end
     _14 = (_14 + 1)
   end
@@ -134,16 +134,16 @@ macroexpand = function (form)
       local _ = form[1]
       local args = form[2]
       local body = sub(form, 2)
-      n_push(environment, {})
+      add(environment, {})
       local _22 = 0
       local _21 = args
       while (_22 < length(_21)) do
         local _20 = _21[(_22 + 1)]
-        n_setenv(_20, variable)
+        setenv(_20, variable)
         _22 = (_22 + 1)
       end
       local _19 = join({name, args}, macroexpand(body))
-      n_pop(environment)
+      drop(environment)
       return(_19)
     else
       return(map(macroexpand, form))
@@ -184,10 +184,10 @@ quasiquote_list = function (form, depth)
   while (_24 < length(_23)) do
     local x = _23[(_24 + 1)]
     if (is_list(x) and is_can_unquote(depth) and (x[1] == "unquote-splicing")) then
-      n_push(xs, quasiexpand(x[2]))
-      n_push(xs, {"list"})
+      add(xs, quasiexpand(x[2]))
+      add(xs, {"list"})
     else
-      n_push(last(xs), quasiexpand(x, depth))
+      add(last(xs), quasiexpand(x, depth))
     end
     _24 = (_24 + 1)
   end
@@ -229,11 +229,11 @@ sub = function (x, from, upto)
   end
 end
 
-n_push = function (arr, x)
+add = function (arr, x)
   return(table.insert(arr, x))
 end
 
-n_pop = function (arr)
+drop = function (arr)
   return(table.remove(arr))
 end
 
@@ -279,7 +279,7 @@ keep = function (f, a)
   while (_26 < length(_25)) do
     local x = _25[(_26 + 1)]
     if f(x) then
-      n_push(a1, x)
+      add(a1, x)
     end
     _26 = (_26 + 1)
   end
@@ -305,7 +305,7 @@ map = function (f, a)
   local _29 = a
   while (_30 < length(_29)) do
     local x = _29[(_30 + 1)]
-    n_push(a1, f(x))
+    add(a1, f(x))
     _30 = (_30 + 1)
   end
   return(a1)
@@ -350,11 +350,11 @@ split = function (str, sep)
     if is_nil(i) then
       break
     else
-      n_push(strs, sub(str, 0, i))
+      add(strs, sub(str, 0, i))
       str = sub(str, (i + 1))
     end
   end
-  n_push(strs, str)
+  add(strs, str)
   return(strs)
 end
 
@@ -440,8 +440,8 @@ to_string = function (x)
   elseif is_table(x) then
     local a = {}
     for k, v in pairs(x) do
-      n_push(a, (to_string(k) .. ":"))
-      n_push(a, v)
+      add(a, (to_string(k) .. ":"))
+      add(a, v)
     end
     if (length(a) > 0) then
       return(to_string(a))
@@ -577,7 +577,7 @@ read_table["("] = function (s)
         local val = read(s)
         l[key] = val
       else
-        n_push(l, x)
+        add(l, x)
       end
     elseif c then
       read_char(s)
@@ -931,7 +931,7 @@ special["define-macro"] = {compiler = function (_49)
   local name = _49[1]
   local args = _49[2]
   local body = sub(_49, 2)
-  local macro = {"setenv!", {"quote", name}, join({"fn", args}, body)}
+  local macro = {"setenv", {"quote", name}, join({"fn", args}, body)}
   eval(compile_for_target("lua", macro))
   if is_embed_macros then
     macros = (macros .. compile_toplevel(macro))
@@ -1230,7 +1230,7 @@ main = function ()
       print((to_string("unrecognized option: ") .. to_string(arg)))
       usage()
     else
-      n_push(inputs, arg)
+      add(inputs, arg)
     end
     i = (i + 1)
   end
@@ -1257,7 +1257,7 @@ main = function ()
   end
 end
 
-n_setenv("at", function (arr, i)
+setenv("at", function (arr, i)
   if ((target == "lua") and is_number(i)) then
     i = (i + 1)
   elseif (target == "lua") then
@@ -1266,7 +1266,7 @@ n_setenv("at", function (arr, i)
   return({"get", arr, i})
 end)
 
-n_setenv("let", function (bindings, ...)
+setenv("let", function (bindings, ...)
   local body = {...}
   local i = 0
   local renames = {}
@@ -1286,20 +1286,20 @@ n_setenv("let", function (bindings, ...)
     local rh = _6[2]
     if is_bound(id) then
       local rename = make_id()
-      n_push(renames, {id, rename})
+      add(renames, {id, rename})
       id = rename
     else
-      n_setenv(id, variable)
+      setenv(id, variable)
     end
-    n_push(locals, {"local", id, rh})
+    add(locals, {"local", id, rh})
     _5 = (_5 + 1)
   end
   return(join({"let-symbol", renames}, join(locals, body)))
 end)
 
-n_setenv("let-macro", function (definitions, ...)
+setenv("let-macro", function (definitions, ...)
   local body = {...}
-  n_push(environment, {})
+  add(environment, {})
   local is_embed = is_embed_macros
   is_embed_macros = false
   map(function (m)
@@ -1307,29 +1307,29 @@ n_setenv("let-macro", function (definitions, ...)
   end, definitions)
   is_embed_macros = is_embed
   local body1 = macroexpand(body)
-  n_pop(environment)
+  drop(environment)
   return(join({"do"}, body1))
 end)
 
-n_setenv("let-symbol", function (expansions, ...)
+setenv("let-symbol", function (expansions, ...)
   local body = {...}
-  n_push(environment, {})
+  add(environment, {})
   map(function (_8)
     local name = _8[1]
     local expr = _8[2]
-    return(n_setenv(name, expr))
+    return(setenv(name, expr))
   end, expansions)
   local body1 = macroexpand(body)
-  n_pop(environment)
+  drop(environment)
   return(join({"do"}, body1))
 end)
 
-n_setenv("symbol", function (name, expansion)
-  n_setenv(name, expansion)
+setenv("symbol", function (name, expansion)
+  setenv(name, expansion)
   return(nil)
 end)
 
-n_setenv("define", function (name, x, ...)
+setenv("define", function (name, x, ...)
   local body = {...}
   if (not is_empty(body)) then
     x = join({"fn", x}, body)
@@ -1337,7 +1337,7 @@ n_setenv("define", function (name, x, ...)
   return({"set", name, x})
 end)
 
-n_setenv("fn", function (args, ...)
+setenv("fn", function (args, ...)
   local body = {...}
   local _10 = bind_arguments(args, body)
   local args1 = _10[1]
@@ -1345,7 +1345,7 @@ n_setenv("fn", function (args, ...)
   return(join({"function", args1}, body1))
 end)
 
-n_setenv("across", function (_12, ...)
+setenv("across", function (_12, ...)
   local list = _12[1]
   local v = _12[2]
   local i = _12[3]
@@ -1357,29 +1357,29 @@ n_setenv("across", function (_12, ...)
   return({"let", {i, start, l, list}, {"while", {"<", i, {"length", l}}, join({"let", {v, {"at", l, i}}}, join(body, {{"set", i, {"+", i, 1}}}))}})
 end)
 
-n_setenv("set-of", function (...)
+setenv("set-of", function (...)
   local elements = {...}
   return(join({"table"}, merge(function (x)
     return({x, true})
   end, elements)))
 end)
 
-n_setenv("with-scope", function (_18, expr)
+setenv("with-scope", function (_18, expr)
   local bound = _18[1]
   local result = make_id()
   local arg = make_id()
-  return({"do", {"push!", "environment", {"table"}}, {"across", {bound, arg}, {"setenv!", arg, "variable"}}, {"let", {result, expr}, {"pop!", "environment"}, result}})
+  return({"do", {"add", "environment", {"table"}}, {"across", {bound, arg}, {"setenv", arg, "variable"}}, {"let", {result, expr}, {"drop", "environment"}, result}})
 end)
 
-n_setenv("quasiquote", function (form)
+setenv("quasiquote", function (form)
   return(quasiexpand(form, 1))
 end)
 
-n_setenv("language", function ()
+setenv("language", function ()
   return({"quote", target})
 end)
 
-n_setenv("target", function (...)
+setenv("target", function (...)
   local clauses = {...}
   return(find(function (x)
     if (x[1] == target) then
@@ -1388,19 +1388,19 @@ n_setenv("target", function (...)
   end, clauses))
 end)
 
-n_setenv("join*", function (...)
+setenv("join*", function (...)
   local xs = {...}
   return(reduce(function (a, b)
     return({"join", a, b})
   end, xs))
 end)
 
-n_setenv("join!", function (a, ...)
+setenv("join!", function (a, ...)
   local bs = {...}
   return({"set", a, join({"join*", a}, bs)})
 end)
 
-n_setenv("list*", function (...)
+setenv("list*", function (...)
   local xs = {...}
   if (length(xs) == 0) then
     return({})
@@ -1413,7 +1413,7 @@ n_setenv("list*", function (...)
       if (i == (length(xs) - 1)) then
         t = {"join", join({"list"}, t), x}
       else
-        n_push(t, x)
+        add(t, x)
       end
       i = (i + 1)
     end
@@ -1421,31 +1421,31 @@ n_setenv("list*", function (...)
   end
 end)
 
-n_setenv("cat!", function (a, ...)
+setenv("cat!", function (a, ...)
   local bs = {...}
   return({"set", a, join({"cat", a}, bs)})
 end)
 
-n_setenv("pr", function (...)
+setenv("pr", function (...)
   local xs = {...}
   return({"print", join({"cat"}, map(function (x)
     return({"to-string", x})
   end, xs))})
 end)
 
-n_setenv("define-reader", function (_37, ...)
+setenv("define-reader", function (_37, ...)
   local char = _37[1]
   local stream = _37[2]
   local body = {...}
   return({"set", {"get", "read-table", char}, join({"fn", {stream}}, body)})
 end)
 
-n_setenv("with-indent", function (form)
+setenv("with-indent", function (form)
   local result = make_id()
   return({"do", {"set", "indent-level", {"+", "indent-level", 1}}, {"let", {result, form}, {"set", "indent-level", {"-", "indent-level", 1}}, result}})
 end)
 
-n_setenv("define-compiler", function (name, _45, args, ...)
+setenv("define-compiler", function (name, _45, args, ...)
   local keys = sub(_45, 0)
   local body = {...}
   return({"set", {"get", "special", {"quote", name}}, join({"table", "compiler", join({"fn", args}, body)}, merge(function (k)

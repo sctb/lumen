@@ -4,7 +4,7 @@
 
 (define environment (list (table)))
 
-(define setenv! (k v)
+(define setenv (k v)
   (set (get (last environment) k) v))
 
 (define getenv (k)
@@ -57,31 +57,31 @@
     (across (bindings1 (id rh))
       (if (bound? id)
 	  (let (rename (make-id))
-	    (push! renames (list id rename))
+	    (add renames (list id rename))
 	    (set id rename))
-	(setenv! id variable))
-      (push! locals `(local ,id ,rh)))
+	(setenv id variable))
+      (add locals `(local ,id ,rh)))
     `(let-symbol ,renames ,@(join locals body))))
 
 (define-macro let-macro (definitions body...)
-  (push! environment (table))
+  (add environment (table))
   (let (embed? embed-macros?)
     (set embed-macros? false)
     (map (fn (m) ((compiler 'define-macro) m)) definitions)
     (set embed-macros? embed?))
   (let (body1 (macroexpand body))
-    (pop! environment)
+    (drop environment)
     `(do ,@body1)))
 
 (define-macro let-symbol (expansions body...)
-  (push! environment (table))
-  (map (fn ((name expr)) (setenv! name expr)) expansions)
+  (add environment (table))
+  (map (fn ((name expr)) (setenv name expr)) expansions)
   (let (body1 (macroexpand body))
-    (pop! environment)
+    (drop environment)
     `(do ,@body1)))
 
 (define-macro symbol (name expansion)
-  (setenv! name expansion)
+  (setenv name expansion)
   nil)
 
 (define-macro define (name x body...)
@@ -124,14 +124,14 @@
 		expr
 		(if (= target 'js)
 		    `(Array.prototype.slice.call arguments ,(length args1))
-		  (do (push! args1 '...) '(list ...))))
+		  (do (add args1 '...) '(list ...))))
 	    (join! bindings (list v expr))
 	    break)                      ; no more args allowed
           (list? arg)
 	  (let (v (make-id))
-	    (push! args1 v)
+	    (add args1 v)
 	    (join! bindings (list arg v)))
-	(push! args1 arg)))
+	(add args1 arg)))
     (if (empty? bindings)
 	(list args1 body)
       (list args1 `((let ,bindings ,@body))))))
@@ -158,11 +158,11 @@
 (define-macro with-scope ((bound) expr)
   (let (result (make-id)
 	arg (make-id))
-    `(do (push! environment (table))
+    `(do (add environment (table))
 	 (across (,bound ,arg)
-	   (setenv! ,arg variable))
+	   (setenv ,arg variable))
 	 (let (,result ,expr)
-	   (pop! environment)
+	   (drop environment)
 	   ,result))))
 
 (define-macro quasiquote (form)
@@ -223,9 +223,9 @@
       (if (and (list? x)
 	       (can-unquote? depth)
 	       (= (at x 0) 'unquote-splicing))
-	  (do (push! xs (quasiexpand (at x 1)))
-	      (push! xs '(list)))
-	(push! (last xs) (quasiexpand x depth))))
+	  (do (add xs (quasiexpand (at x 1)))
+	      (add xs '(list)))
+	(add (last xs) (quasiexpand x depth))))
     (if (= (length xs) 1)		; no splicing needed
 	(at xs 0)
       ;; join all
@@ -273,10 +273,10 @@
 
 ;; lists
 
-(define push! (arr x)
+(define add (arr x)
   (target (js (arr.push x)) (lua (table.insert arr x))))
 
-(define pop! (arr)
+(define drop (arr)
   (target (js (arr.pop)) (lua (table.remove arr))))
 
 (define last (arr)
@@ -304,7 +304,7 @@
 
 (define keep (f a)
   (let (a1 ())
-    (across (a x) (if (f x) (push! a1 x)))
+    (across (a x) (if (f x) (add a1 x)))
     a1))
 
 (define find (f a)
@@ -314,7 +314,7 @@
 
 (define map (f a)
   (let (a1 ())
-    (across (a x) (push! a1 (f x)))
+    (across (a x) (add a1 (f x)))
     a1))
 
 (define iterate (f count)
@@ -341,7 +341,7 @@
       (across (xs x i)
 	(if (= i (- (length xs) 1))
 	    (set t (list 'join (join '(list) t) x))
-	  (push! t x)))
+	  (add t x)))
       t)))
 
 ;; strings
@@ -365,9 +365,9 @@
 	    (let (i (search str sep))
 	      (if (nil? i)
 		  break
-		(do (push! strs (sub str 0 i))
+		(do (add strs (sub str 0 i))
 		    (set str (sub str (+ i 1)))))))
-	  (push! strs str)
+	  (add strs str)
 	  strs))))
 
 (define-macro cat! (a bs...)
@@ -429,8 +429,8 @@
       (table? x)
       (let (a ())
         (each (x k v)
-          (push! a (cat (to-string k) ":"))
-          (push! a v))
+          (add a (cat (to-string k) ":"))
+          (add a v))
         (if (> (length a) 0)
             (to-string a)
           "()"))

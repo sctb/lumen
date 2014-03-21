@@ -62,7 +62,7 @@
 		  (let (key (sub x 0 (- (length x) 1))
 			val (read s))
 		    (set (get l key) val))
-		  (push! l x)))
+		  (add l x)))
 	    c (do (read-char s) break) ; )
 	  (error (cat "Expected ) at " s.pos)))))
     l))

@@ -22,7 +22,7 @@
 	 (cat " failed: expected " (to-string ,a) ", was " (to-string ,b))))
 
 (define-macro define-test (name _ body...)
-  `(push! tests (list ',name (fn () ,@body))))
+  `(add tests (list ',name (fn () ,@body))))
 
 (define run-tests ()
   (across (tests test)
@@ -343,19 +343,19 @@
 
 ;; library
 
-(define-test push! ()
+(define-test add ()
   (let (l ())
-    (push! l 'a)
-    (push! l 'b)
-    (push! l 'c)
+    (add l 'a)
+    (add l 'b)
+    (add l 'c)
     (test= '(a b c) l)))
 
-(define-test pop! ()
+(define-test drop ()
   (let (l '(a b c))
-    (test= 'c (pop! l))
-    (test= 'b (pop! l))
-    (test= 'a (pop! l))
-    (test= nil (pop! l))))
+    (test= 'c (drop l))
+    (test= 'b (drop l))
+    (test= 'a (drop l))
+    (test= nil (drop l))))
 
 (define-test last ()
   (test= 3 (last '(1 2 3)))
