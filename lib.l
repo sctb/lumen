@@ -53,7 +53,8 @@
        (across ((bind lh rh) (id val))
          (if (bound? id)
              (let (rename (make-id))
-               (add renames (list id rename))
+               (add renames id)
+               (add renames rename)
                (set id rename))
            (setenv id variable))
          (add locals `(local ,id ,val))))
@@ -72,7 +73,7 @@
 
 (define-macro let-symbol (expansions body...)
   (add environment (table))
-  (map (fn ((name expr)) (setenv name expr)) expansions)
+  (map2 (fn (name expr) (setenv name expr)) expansions)
   (let (body1 (macroexpand body))
     (drop environment)
     `(do ,@body1)))

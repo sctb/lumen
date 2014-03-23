@@ -47,10 +47,10 @@ vararg_name = function (x) {
 bind_arguments = function (args, body) {
   var args1 = [];
   var bindings = [];
-  var _14 = 0;
-  var _13 = args;
-  while ((_14 < length(_13))) {
-    var arg = _13[_14];
+  var _12 = 0;
+  var _11 = args;
+  while ((_12 < length(_11))) {
+    var arg = _11[_12];
     if (is_vararg(arg)) {
       var v = vararg_name(arg);
       var expr = (function () {
@@ -64,13 +64,13 @@ bind_arguments = function (args, body) {
       bindings = join(bindings, [v, expr]);
       break;
     } else if (is_list(arg)) {
-      var _15 = make_id();
-      add(args1, _15);
-      bindings = join(bindings, [arg, _15]);
+      var _13 = make_id();
+      add(args1, _13);
+      bindings = join(bindings, [arg, _13]);
     } else {
       add(args1, arg);
     }
-    _14 = (_14 + 1);
+    _12 = (_12 + 1);
   }
   if (is_empty(bindings)) {
     return([args1, body]);
@@ -88,9 +88,9 @@ bind = function (lh, rh) {
   } else {
     var bindings = [];
     var i = 0;
-    var _16 = lh;
-    while ((i < length(_16))) {
-      var x = _16[i];
+    var _14 = lh;
+    while ((i < length(_14))) {
+      var x = _14[i];
       var b = (function () {
         if (is_vararg(x)) {
           return([[vararg_name(x), ["sub", rh, i]]]);
@@ -135,16 +135,16 @@ macroexpand = function (form) {
       var args = form[1];
       var body = sub(form, 2);
       add(environment, {});
-      var _22 = 0;
-      var _21 = args;
-      while ((_22 < length(_21))) {
-        var _20 = _21[_22];
-        setenv(_20, variable);
-        _22 = (_22 + 1);
+      var _20 = 0;
+      var _19 = args;
+      while ((_20 < length(_19))) {
+        var _18 = _19[_20];
+        setenv(_18, variable);
+        _20 = (_20 + 1);
       }
-      var _19 = join([name, args], macroexpand(body));
+      var _17 = join([name, args], macroexpand(body));
       drop(environment);
-      return(_19);
+      return(_17);
     } else {
       return(map(macroexpand, form));
     }
@@ -179,17 +179,17 @@ quasiexpand = function (form, depth) {
 
 quasiquote_list = function (form, depth) {
   var xs = [["list"]];
-  var _24 = 0;
-  var _23 = form;
-  while ((_24 < length(_23))) {
-    var x = _23[_24];
+  var _22 = 0;
+  var _21 = form;
+  while ((_22 < length(_21))) {
+    var x = _21[_22];
     if ((is_list(x) && is_can_unquote(depth) && (x[0] == "unquote-splicing"))) {
       add(xs, quasiexpand(x[1]));
       add(xs, ["list"]);
     } else {
       add(last(xs), quasiexpand(x, depth));
     }
-    _24 = (_24 + 1);
+    _22 = (_22 + 1);
   }
   if ((length(xs) == 1)) {
     return(xs[0]);
@@ -254,39 +254,39 @@ reduce = function (f, x) {
 
 keep = function (f, a) {
   var a1 = [];
-  var _26 = 0;
-  var _25 = a;
-  while ((_26 < length(_25))) {
-    var x = _25[_26];
+  var _24 = 0;
+  var _23 = a;
+  while ((_24 < length(_23))) {
+    var x = _23[_24];
     if (f(x)) {
       add(a1, x);
     }
-    _26 = (_26 + 1);
+    _24 = (_24 + 1);
   }
   return(a1);
 };
 
 find = function (f, a) {
-  var _28 = 0;
-  var _27 = a;
-  while ((_28 < length(_27))) {
-    var x = _27[_28];
+  var _26 = 0;
+  var _25 = a;
+  while ((_26 < length(_25))) {
+    var x = _25[_26];
     var x1 = f(x);
     if (x1) {
       return(x1);
     }
-    _28 = (_28 + 1);
+    _26 = (_26 + 1);
   }
 };
 
 map = function (f, a) {
   var a1 = [];
-  var _30 = 0;
-  var _29 = a;
-  while ((_30 < length(_29))) {
-    var x = _29[_30];
+  var _28 = 0;
+  var _27 = a;
+  while ((_28 < length(_27))) {
+    var x = _27[_28];
     add(a1, f(x));
-    _30 = (_30 + 1);
+    _28 = (_28 + 1);
   }
   return(a1);
 };
@@ -309,12 +309,12 @@ iterate = function (f, count) {
 
 merge = function (f, a) {
   var a1 = [];
-  var _32 = 0;
-  var _31 = a;
-  while ((_32 < length(_31))) {
-    var x = _31[_32];
+  var _30 = 0;
+  var _29 = a;
+  while ((_30 < length(_29))) {
+    var x = _29[_30];
     a1 = join(a1, f(x));
-    _32 = (_32 + 1);
+    _30 = (_30 + 1);
   }
   return(a1);
 };
@@ -435,9 +435,9 @@ to_string = function (x) {
   } else {
     var str = "(";
     var i = 0;
-    var _35 = x;
-    while ((i < length(_35))) {
-      var y = _35[i];
+    var _33 = x;
+    while ((i < length(_33))) {
+      var y = _33[i];
       str = (str + to_string(y));
       if ((i < (length(x) - 1))) {
         str = (str + " ");
@@ -642,9 +642,9 @@ indentation = function () {
 compile_args = function (forms, is_compile) {
   var str = "(";
   var i = 0;
-  var _38 = forms;
-  while ((i < length(_38))) {
-    var x = _38[i];
+  var _36 = forms;
+  while ((i < length(_36))) {
+    var x = _36[i];
     str = (str + (function () {
       if (is_compile) {
         return(compile(x));
@@ -663,9 +663,9 @@ compile_args = function (forms, is_compile) {
 compile_body = function (forms, is_tail) {
   var str = "";
   var i = 0;
-  var _39 = forms;
-  while ((i < length(_39))) {
-    var x = _39[i];
+  var _37 = forms;
+  while ((i < length(_37))) {
+    var x = _37[i];
     var is_t = (is_tail && (i == (length(forms) - 1)));
     str = (str + compile(x, true, is_t));
     i = (i + 1);
@@ -727,15 +727,15 @@ compile_call = function (form) {
   }
 };
 
-compile_operator = function (_40) {
-  var op = _40[0];
-  var args = sub(_40, 1);
+compile_operator = function (_38) {
+  var op = _38[0];
+  var args = sub(_38, 1);
   var str = "(";
   var op1 = getop(op);
   var i = 0;
-  var _41 = args;
-  while ((i < length(_41))) {
-    var arg = _41[i];
+  var _39 = args;
+  while ((i < length(_39))) {
+    var arg = _39[i];
     if (((op1 == "-") && (length(args) == 1))) {
       str = (str + op1 + compile(arg));
     } else {
@@ -753,9 +753,9 @@ compile_branch = function (condition, body, is_first, is_last, is_tail) {
   var cond1 = compile(condition);
   var body1 = (function () {
     indent_level = (indent_level + 1);
-    var _42 = compile(body, true, is_tail);
+    var _40 = compile(body, true, is_tail);
     indent_level = (indent_level - 1);
-    return(_42);
+    return(_40);
   })();
   var ind = indentation();
   var tr = (function () {
@@ -787,9 +787,9 @@ compile_function = function (args, body, name) {
   var args1 = compile_args(args);
   var body1 = (function () {
     indent_level = (indent_level + 1);
-    var _43 = compile_body(body, true);
+    var _41 = compile_body(body, true);
     indent_level = (indent_level - 1);
-    return(_43);
+    return(_41);
   })();
   var ind = indentation();
   if ((target == "js")) {
@@ -857,9 +857,9 @@ special["do"] = {compiler : function (forms, is_tail) {
 special["if"] = {compiler : function (form, is_tail) {
   var str = "";
   var i = 0;
-  var _46 = form;
-  while ((i < length(_46))) {
-    var condition = _46[i];
+  var _44 = form;
+  while ((i < length(_44))) {
+    var condition = _44[i];
     var is_last = (i >= (length(form) - 2));
     var is_else = (i == (length(form) - 1));
     var is_first = (i == 0);
@@ -879,9 +879,9 @@ special["while"] = {compiler : function (form) {
   var condition = compile(form[0]);
   var body = (function () {
     indent_level = (indent_level + 1);
-    var _47 = compile_body(sub(form, 1));
+    var _45 = compile_body(sub(form, 1));
     indent_level = (indent_level - 1);
-    return(_47);
+    return(_45);
   })();
   var ind = indentation();
   if ((target == "js")) {
@@ -891,18 +891,18 @@ special["while"] = {compiler : function (form) {
   }
 }, statement : true, terminated : true};
 
-special["function"] = {compiler : function (_48) {
-  var args = _48[0];
-  var body = sub(_48, 1);
+special["function"] = {compiler : function (_46) {
+  var args = _46[0];
+  var body = sub(_46, 1);
   return(compile_function(args, body));
 }};
 
 macros = "";
 
-special["define-macro"] = {compiler : function (_49) {
-  var name = _49[0];
-  var args = _49[1];
-  var body = sub(_49, 2);
+special["define-macro"] = {compiler : function (_47) {
+  var name = _47[0];
+  var args = _47[1];
+  var body = sub(_47, 2);
   var macro = ["setenv", ["quote", name], join(["fn", args], body)];
   eval(compile_for_target("js", macro));
   if (is_embed_macros) {
@@ -915,8 +915,8 @@ special["return"] = {compiler : function (form) {
   return((indentation() + compile_call(join(["return"], form))));
 }, statement : true};
 
-special["error"] = {compiler : function (_50) {
-  var expr = _50[0];
+special["error"] = {compiler : function (_48) {
+  var expr = _48[0];
   var e = (function () {
     if ((target == "js")) {
       return(("throw " + compile(expr)));
@@ -927,9 +927,9 @@ special["error"] = {compiler : function (_50) {
   return((indentation() + e));
 }, statement : true};
 
-special["local"] = {compiler : function (_51) {
-  var name = _51[0];
-  var value = _51[1];
+special["local"] = {compiler : function (_49) {
+  var name = _49[0];
+  var value = _49[1];
   var id = identifier(name);
   var keyword = (function () {
     if ((target == "js")) {
@@ -946,45 +946,45 @@ special["local"] = {compiler : function (_51) {
   }
 }, statement : true};
 
-special["each"] = {compiler : function (_52) {
-  var _53 = _52[0];
-  var t = _53[0];
-  var k = _53[1];
-  var v = _53[2];
-  var body = sub(_52, 1);
+special["each"] = {compiler : function (_50) {
+  var _51 = _50[0];
+  var t = _51[0];
+  var k = _51[1];
+  var v = _51[2];
+  var body = sub(_50, 1);
   var t1 = compile(t);
   var ind = indentation();
   if ((target == "lua")) {
     var body1 = (function () {
       indent_level = (indent_level + 1);
-      var _54 = compile_body(body);
+      var _52 = compile_body(body);
       indent_level = (indent_level - 1);
-      return(_54);
+      return(_52);
     })();
     return((ind + "for " + k + ", " + v + " in pairs(" + t1 + ") do\n" + body1 + ind + "end\n"));
   } else {
-    var _55 = (function () {
+    var _53 = (function () {
       indent_level = (indent_level + 1);
-      var _56 = compile_body(join([["set", v, ["get", t, k]]], body));
+      var _54 = compile_body(join([["set", v, ["get", t, k]]], body));
       indent_level = (indent_level - 1);
-      return(_56);
+      return(_54);
     })();
-    return((ind + "for (" + k + " in " + t1 + ") {\n" + _55 + ind + "}\n"));
+    return((ind + "for (" + k + " in " + t1 + ") {\n" + _53 + ind + "}\n"));
   }
 }, statement : true, terminated : true};
 
-special["set"] = {compiler : function (_57) {
-  var lh = _57[0];
-  var rh = _57[1];
+special["set"] = {compiler : function (_55) {
+  var lh = _55[0];
+  var rh = _55[1];
   if (is_nil(rh)) {
     throw "Missing right-hand side in assignment";
   }
   return((indentation() + compile(lh) + " = " + compile(rh)));
 }, statement : true};
 
-special["get"] = {compiler : function (_58) {
-  var object = _58[0];
-  var key = _58[1];
+special["get"] = {compiler : function (_56) {
+  var object = _56[0];
+  var key = _56[1];
   var o = compile(object);
   var k = compile(key);
   if (((target == "lua") && (char(o, 0) == "{"))) {
@@ -993,8 +993,8 @@ special["get"] = {compiler : function (_58) {
   return((o + "[" + k + "]"));
 }};
 
-special["not"] = {compiler : function (_59) {
-  var expr = _59[0];
+special["not"] = {compiler : function (_57) {
+  var expr = _57[0];
   var e = compile(expr);
   var open = (function () {
     if ((target == "js")) {
@@ -1023,9 +1023,9 @@ special["list"] = {compiler : function (forms, depth) {
   })();
   var str = "";
   var i = 0;
-  var _60 = forms;
-  while ((i < length(_60))) {
-    var x = _60[i];
+  var _58 = forms;
+  while ((i < length(_58))) {
+    var x = _58[i];
     str = (str + (function () {
       if (is_quoting(depth)) {
         return(quote_form(x));
@@ -1069,8 +1069,8 @@ special["table"] = {compiler : function (forms) {
   return((str + "}"));
 }};
 
-special["quote"] = {compiler : function (_61) {
-  var form = _61[0];
+special["quote"] = {compiler : function (_59) {
+  var form = _59[0];
   return(quote_form(form));
 }};
 
@@ -1124,12 +1124,12 @@ compile_file = function (file) {
 
 compile_files = function (files) {
   var output = "";
-  var _63 = 0;
-  var _62 = files;
-  while ((_63 < length(_62))) {
-    var file = _62[_63];
+  var _61 = 0;
+  var _60 = files;
+  while ((_61 < length(_60))) {
+    var file = _60[_61];
     output = (output + compile_file(file));
-    _63 = (_63 + 1);
+    _61 = (_61 + 1);
   }
   return(output);
 };
@@ -1186,9 +1186,9 @@ main = function () {
   var target1 = undefined;
   var expr = undefined;
   var i = 0;
-  var _64 = args;
-  while ((i < length(_64))) {
-    var arg = _64[i];
+  var _62 = args;
+  while ((i < length(_62))) {
+    var arg = _62[i];
     if (((arg == "-o") || (arg == "-t") || (arg == "-e"))) {
       if ((i == (length(args) - 1))) {
         print((to_string("missing argument for") + to_string(arg)));
@@ -1218,12 +1218,12 @@ main = function () {
     var main = compile(["main"], true);
     return(write_file(output, (compiled + macros + main)));
   } else {
-    var _66 = 0;
-    var _65 = inputs;
-    while ((_66 < length(_65))) {
-      var file = _65[_66];
+    var _64 = 0;
+    var _63 = inputs;
+    while ((_64 < length(_63))) {
+      var file = _63[_64];
       eval(compile_file(file));
-      _66 = (_66 + 1);
+      _64 = (_64 + 1);
     }
     if (expr) {
       return(rep(expr));
@@ -1256,7 +1256,8 @@ setenv("let", function (bindings) {
       var val = _6[1];
       if (is_bound(id)) {
         var rename = make_id();
-        add(renames, [id, rename]);
+        add(renames, id);
+        add(renames, rename);
         id = rename;
       } else {
         setenv(id, variable);
@@ -1285,9 +1286,7 @@ setenv("let-macro", function (definitions) {
 setenv("let-symbol", function (expansions) {
   var body = Array.prototype.slice.call(arguments, 1);
   add(environment, {});
-  map(function (_8) {
-    var name = _8[0];
-    var expr = _8[1];
+  map2(function (name, expr) {
     return(setenv(name, expr));
   }, expansions);
   var body1 = macroexpand(body);
@@ -1310,17 +1309,17 @@ setenv("define", function (name, x) {
 
 setenv("fn", function (args) {
   var body = Array.prototype.slice.call(arguments, 1);
-  var _10 = bind_arguments(args, body);
-  var args1 = _10[0];
-  var body1 = _10[1];
+  var _8 = bind_arguments(args, body);
+  var args1 = _8[0];
+  var body1 = _8[1];
   return(join(["function", args1], body1));
 });
 
-setenv("across", function (_12) {
-  var list = _12[0];
-  var v = _12[1];
-  var i = _12[2];
-  var start = _12[3];
+setenv("across", function (_10) {
+  var list = _10[0];
+  var v = _10[1];
+  var i = _10[2];
+  var start = _10[3];
   var body = Array.prototype.slice.call(arguments, 1);
   var l = make_id();
   i = (i || make_id());
@@ -1335,8 +1334,8 @@ setenv("set-of", function () {
   }, elements)));
 });
 
-setenv("with-scope", function (_18, expr) {
-  var bound = _18[0];
+setenv("with-scope", function (_16, expr) {
+  var bound = _16[0];
   var result = make_id();
   var arg = make_id();
   return(["do", ["add", "environment", ["table"]], ["across", [bound, arg], ["setenv", arg, "variable"]], ["let", [result, expr], ["drop", "environment"], result]]);
@@ -1378,9 +1377,9 @@ setenv("list*", function () {
   } else {
     var t = [];
     var i = 0;
-    var _34 = xs;
-    while ((i < length(_34))) {
-      var x = _34[i];
+    var _32 = xs;
+    while ((i < length(_32))) {
+      var x = _32[i];
       if ((i == (length(xs) - 1))) {
         t = ["join", join(["list"], t), x];
       } else {
@@ -1404,9 +1403,9 @@ setenv("pr", function () {
   }, xs))]);
 });
 
-setenv("define-reader", function (_37) {
-  var char = _37[0];
-  var stream = _37[1];
+setenv("define-reader", function (_35) {
+  var char = _35[0];
+  var stream = _35[1];
   var body = Array.prototype.slice.call(arguments, 1);
   return(["set", ["get", "read-table", char], join(["fn", [stream]], body)]);
 });
@@ -1416,8 +1415,8 @@ setenv("with-indent", function (form) {
   return(["do", ["set", "indent-level", ["+", "indent-level", 1]], ["let", [result, form], ["set", "indent-level", ["-", "indent-level", 1]], result]]);
 });
 
-setenv("define-compiler", function (name, _45, args) {
-  var keys = sub(_45, 0);
+setenv("define-compiler", function (name, _43, args) {
+  var keys = sub(_43, 0);
   var body = Array.prototype.slice.call(arguments, 3);
   return(["set", ["get", "special", ["quote", name]], join(["table", "compiler", join(["fn", args], body)], merge(function (k) {
     return([k, true]);
