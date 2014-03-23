@@ -291,6 +291,14 @@ map = function (f, a) {
   return(a1);
 };
 
+map2 = function (f, a) {
+  var i = 0;
+  while ((i < length(a))) {
+    f(a[i], a[(i + 1)]);
+    i = (i + 2);
+  }
+};
+
 iterate = function (f, count) {
   var i = 0;
   while ((i < count)) {
@@ -1239,29 +1247,24 @@ setenv("let", function (bindings) {
   var i = 0;
   var renames = [];
   var locals = [];
-  var bindings1 = [];
-  while ((i < length(bindings))) {
-    var lh = bindings[i];
-    var rh = bindings[(i + 1)];
-    bindings1 = join(bindings1, bind(lh, rh));
-    i = (i + 2);
-  }
-  var _5 = 0;
-  var _4 = bindings1;
-  while ((_5 < length(_4))) {
-    var _6 = _4[_5];
-    var id = _6[0];
-    var rh = _6[1];
-    if (is_bound(id)) {
-      var rename = make_id();
-      add(renames, [id, rename]);
-      id = rename;
-    } else {
-      setenv(id, variable);
+  map2(function (lh, rh) {
+    var _5 = 0;
+    var _4 = bind(lh, rh);
+    while ((_5 < length(_4))) {
+      var _6 = _4[_5];
+      var id = _6[0];
+      var val = _6[1];
+      if (is_bound(id)) {
+        var rename = make_id();
+        add(renames, [id, rename]);
+        id = rename;
+      } else {
+        setenv(id, variable);
+      }
+      add(locals, ["local", id, val]);
+      _5 = (_5 + 1);
     }
-    add(locals, ["local", id, rh]);
-    _5 = (_5 + 1);
-  }
+  }, bindings);
   return(join(["let-symbol", renames], join(locals, body)));
 });
 

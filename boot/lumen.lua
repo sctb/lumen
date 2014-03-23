@@ -311,6 +311,14 @@ map = function (f, a)
   return(a1)
 end
 
+map2 = function (f, a)
+  local i = 0
+  while (i < length(a)) do
+    f(a[(i + 1)], a[((i + 1) + 1)])
+    i = (i + 2)
+  end
+end
+
 iterate = function (f, count)
   local i = 0
   while (i < count) do
@@ -1280,29 +1288,24 @@ setenv("let", function (bindings, ...)
   local i = 0
   local renames = {}
   local locals = {}
-  local bindings1 = {}
-  while (i < length(bindings)) do
-    local lh = bindings[(i + 1)]
-    local rh = bindings[((i + 1) + 1)]
-    bindings1 = join(bindings1, bind(lh, rh))
-    i = (i + 2)
-  end
-  local _5 = 0
-  local _4 = bindings1
-  while (_5 < length(_4)) do
-    local _6 = _4[(_5 + 1)]
-    local id = _6[1]
-    local rh = _6[2]
-    if is_bound(id) then
-      local rename = make_id()
-      add(renames, {id, rename})
-      id = rename
-    else
-      setenv(id, variable)
+  map2(function (lh, rh)
+    local _5 = 0
+    local _4 = bind(lh, rh)
+    while (_5 < length(_4)) do
+      local _6 = _4[(_5 + 1)]
+      local id = _6[1]
+      local val = _6[2]
+      if is_bound(id) then
+        local rename = make_id()
+        add(renames, {id, rename})
+        id = rename
+      else
+        setenv(id, variable)
+      end
+      add(locals, {"local", id, val})
+      _5 = (_5 + 1)
     end
-    add(locals, {"local", id, rh})
-    _5 = (_5 + 1)
-  end
+  end, bindings)
   return(join({"let-symbol", renames}, join(locals, body)))
 end)
 
