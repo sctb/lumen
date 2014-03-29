@@ -31,7 +31,7 @@
 	  f (at test 1)
 	  result (f))
       (if (string? result)
-	  (pr  " " name result))))
+	  (pr  "  " name result))))
   (pr "  " passed " passed, " failed " failed"))
 
 ;; basic
