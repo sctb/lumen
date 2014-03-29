@@ -1188,7 +1188,11 @@ compile_for_target = function (target1, form)
 end
 
 rep = function (str)
-  return(print((to_string(eval(compile_toplevel(read_from_string(str)))))))
+  local form = read_from_string(str)
+  local result = eval(compile_toplevel(form))
+  if result then
+    return(print((to_string(result))))
+  end
 end
 
 repl = function ()

@@ -1152,7 +1152,11 @@ compile_for_target = function (target1, form) {
 };
 
 rep = function (str) {
-  return(print((to_string(eval(compile_toplevel(read_from_string(str)))))));
+  var form = read_from_string(str);
+  var result = eval(compile_toplevel(form));
+  if (result) {
+    return(print((to_string(result))));
+  }
 };
 
 repl = function () {

@@ -14,9 +14,7 @@ $(LUABOOT) $(JSBOOT): $(SRCS)
 all: $(JSBOOT) $(LUABOOT)
 
 test: all
-	@echo lua
 	@./lumen tests.l -e "(run-tests)"
-	@echo js
 	@LUMEN_HOST=node ./lumen tests.l -e "(run-tests)"
 
 check: all

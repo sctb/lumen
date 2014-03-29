@@ -1,7 +1,9 @@
 ;; -*- mode: lisp -*-
 
 (define rep (str)
-  (pr (eval (compile-toplevel (read-from-string str)))))
+  (let (form (read-from-string str)
+        result (eval (compile-toplevel form)))
+    (if result (pr result))))
 
 (define repl ()
   (let (execute (fn (str) (rep str) (write "> ")))

@@ -25,13 +25,14 @@
   `(add tests (list ',name (fn () ,@body))))
 
 (define run-tests ()
+  (pr (language) ":")
   (across (tests test)
     (let (name (at test 0)
 	  f (at test 1)
 	  result (f))
       (if (string? result)
 	  (pr  " " name result))))
-  (pr passed " passed, " failed " failed"))
+  (pr "  " passed " passed, " failed " failed"))
 
 ;; basic
 
