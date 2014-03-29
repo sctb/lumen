@@ -1298,7 +1298,7 @@ setenv("let-symbol", function (expansions) {
   return(join(["do"], body1));
 });
 
-setenv("symbol", function (name, expansion) {
+setenv("define-symbol", function (name, expansion) {
   setenv(name, expansion);
   return(undefined);
 });

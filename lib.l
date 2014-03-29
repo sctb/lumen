@@ -78,7 +78,7 @@
     (drop environment)
     `(do ,@body1)))
 
-(define-macro symbol (name expansion)
+(define-macro define-symbol (name expansion)
   (setenv name expansion)
   nil)
 

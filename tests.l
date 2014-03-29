@@ -300,6 +300,10 @@
       (test= 18 a)
       (test= 20 b))))
 
+(define-test define-symbol ()
+  (define-symbol zzz 42)
+  (test= zzz 42))
+
 (define-test macros-and-symbol-macros ()
   (let-symbol (a 1)
     (let-macro ((a () 2))

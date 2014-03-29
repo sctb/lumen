@@ -1339,7 +1339,7 @@ setenv("let-symbol", function (expansions, ...)
   return(join({"do"}, body1))
 end)
 
-setenv("symbol", function (name, expansion)
+setenv("define-symbol", function (name, expansion)
   setenv(name, expansion)
   return(nil)
 end)
