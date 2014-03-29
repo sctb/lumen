@@ -1,6 +1,6 @@
 #!/bin/sh
 
-HOST=${X_HOST:-lua}
+HOST=${LUMEN_HOST:-lua}
 BOOT=boot/lumen.lua
 
 if [ "$HOST" = "node" ]
