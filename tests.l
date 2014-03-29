@@ -243,6 +243,18 @@
      (test= 20 zz))
    20))
 
+(define-test let-expr ()
+  (test= 10 (let (a 10) a))
+  (let (a (let (b 12) b))
+    (test= 12 a))
+  (let (a (let (a 10) a))
+    (test= 10 a))
+  (let (a (+ (let (a 0)
+               (set a 10)
+               (+ a 2))
+             3))
+    (test= a 15)))
+
 (define-test destructuring-let ()
   (let ((a b c) '(1 2 3))
     (test= 1 a)
