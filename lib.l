@@ -37,12 +37,12 @@
 
 ;; macros
 
-(define-macro at (arr i)
+(define-macro at (a i)
   (if (and (= target 'lua) (number? i))
       (set i (+ i 1))
       (= target 'lua)
       (set i `(+ ,i 1)))
-  `(get ,arr ,i))
+  `(get ,a ,i))
 
 (define-macro let (bindings body...)
   (let (i 0
@@ -271,14 +271,17 @@
 
 ;; lists
 
-(define add (arr x)
-  (target (js (arr.push x)) (lua (table.insert arr x))))
+(define add (a x)
+  (target (js (a.push x)) (lua (table.insert a x))))
 
-(define drop (arr)
-  (target (js (arr.pop)) (lua (table.remove arr))))
+(define drop (a)
+  (target (js (a.pop)) (lua (table.remove a))))
 
-(define last (arr)
-  (at arr (- (length arr) 1)))
+(define shift (a)
+  (target (js (a.shift)) (lua (table.remove a 1))))
+
+(define last (a)
+  (at a (- (length a) 1)))
 
 (define join (a1 a2)
   (if (nil? a1) a2

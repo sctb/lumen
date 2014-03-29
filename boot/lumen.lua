@@ -229,16 +229,20 @@ sub = function (x, from, upto)
   end
 end
 
-add = function (arr, x)
-  return(table.insert(arr, x))
+add = function (a, x)
+  return(table.insert(a, x))
 end
 
-drop = function (arr)
-  return(table.remove(arr))
+drop = function (a)
+  return(table.remove(a))
 end
 
-last = function (arr)
-  return(arr[((length(arr) - 1) + 1)])
+shift = function (a)
+  return(table.remove(a, 1))
+end
+
+last = function (a)
+  return(a[((length(a) - 1) + 1)])
 end
 
 join = function (a1, a2)
@@ -1278,13 +1282,13 @@ main = function ()
   end
 end
 
-setenv("at", function (arr, i)
+setenv("at", function (a, i)
   if ((target == "lua") and is_number(i)) then
     i = (i + 1)
   elseif (target == "lua") then
     i = {"+", i, 1}
   end
-  return({"get", arr, i})
+  return({"get", a, i})
 end)
 
 setenv("let", function (bindings, ...)

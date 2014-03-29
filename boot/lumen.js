@@ -220,16 +220,20 @@ sub = function (x, from, upto) {
   }
 };
 
-add = function (arr, x) {
-  return(arr.push(x));
+add = function (a, x) {
+  return(a.push(x));
 };
 
-drop = function (arr) {
-  return(arr.pop());
+drop = function (a) {
+  return(a.pop());
 };
 
-last = function (arr) {
-  return(arr[(length(arr) - 1)]);
+shift = function (a) {
+  return(a.shift());
+};
+
+last = function (a) {
+  return(a[(length(a) - 1)]);
 };
 
 join = function (a1, a2) {
@@ -1237,13 +1241,13 @@ main = function () {
   }
 };
 
-setenv("at", function (arr, i) {
+setenv("at", function (a, i) {
   if (((target == "lua") && is_number(i))) {
     i = (i + 1);
   } else if ((target == "lua")) {
     i = ["+", i, 1];
   }
-  return(["get", arr, i]);
+  return(["get", a, i]);
 });
 
 setenv("let", function (bindings) {
