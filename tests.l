@@ -464,7 +464,7 @@
 
 (define-test apply ()
   (test= 4 (apply (fn (a b) (+ a b)) '(2 2)))
-  (test= '(2 2) (apply (fn (a...) a) '(2 2))))
+  (test= '(2 2) (apply (fn a a) '(2 2))))
 
 (define-test eval ()
   (let (f (fn (x) (eval (compile (macroexpand x)))))

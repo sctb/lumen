@@ -101,7 +101,7 @@
 	   ,@body
 	   (set ,i (+ ,i 1)))))))
 
-(define-macro set-of (elements...)
+(define-macro set-of elements
   `(table ,@(merge (fn (x) (list x true)) elements)))
 
 ;; macro helpers
@@ -114,25 +114,32 @@
   (sub x 0 (- (length x) 3)))
 
 (define bind-arguments (args body)
-  (let (args1 ()
-	bindings ())
-    (across (args arg)
-      (if (vararg? arg)
-	  (let (v (vararg-name arg)
-		expr
-		(if (= target 'js)
-		    `(Array.prototype.slice.call arguments ,(length args1))
-		  (do (add args1 '...) '(list ...))))
-	    (join! bindings (list v expr))
-	    break)                      ; no more args allowed
-          (list? arg)
-	  (let (v (make-id))
-	    (add args1 v)
-	    (join! bindings (list arg v)))
-	(add args1 arg)))
-    (if (empty? bindings)
-	(list args1 body)
-      (list args1 `((let ,bindings ,@body))))))
+  (let (args1 ())
+    (if (atom? args)
+        (let (expr
+              (if (= target 'js)
+                  `(Array.prototype.slice.call arguments 0)
+                (do (add args1 '...) '(list ...))))
+          (list args1 `((let ,(list args expr) ,@body))))
+      (let (bindings ())
+        (across (args arg)
+          (if (vararg? arg)
+              (let (v (vararg-name arg)
+                      expr
+                      (if (= target 'js)
+                          `(Array.prototype.slice.call
+                            arguments ,(length args1))
+                        (do (add args1 '...) '(list ...))))
+                (join! bindings (list v expr))
+                break)                  ; no more args allowed
+            (list? arg)
+            (let (v (make-id))
+              (add args1 v)
+              (join! bindings (list arg v)))
+            (add args1 arg)))
+        (if (empty? bindings)
+            (list args1 body)
+          (list args1 `((let ,bindings ,@body))))))))
 
 (define bind (lh rh)
   (if (and (list? lh) (list? rh))
@@ -240,7 +247,7 @@
 (define-macro language () `',target)
 (define target (language))
 
-(define-macro target (clauses...)
+(define-macro target clauses
   (find (fn (x)
 	  (if (= (at x 0) target) (at x 1)))
 	clauses))
@@ -337,7 +344,7 @@
       (f i)
       (set i (+ i 1)))))
 
-(define-macro join* (xs...)
+(define-macro join* xs
   (reduce (fn (a b) (list 'join a b)) xs))
 
 (define-macro join! (a bs...)
@@ -348,7 +355,7 @@
     (across (a x) (join! a1 (f x)))
     a1))
 
-(define-macro list* (xs...)
+(define-macro list* xs
   (if (empty? xs)
       ()
     (let (t ())
@@ -465,7 +472,7 @@
               (cat! str " "))))
       (cat str  ")"))))
 
-(define-macro pr (xs...)
+(define-macro pr xs
   `(print (cat ,@(map (fn (x) `(to-string ,x)) xs))))
 
 ;; misc

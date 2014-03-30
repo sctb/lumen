@@ -137,7 +137,7 @@
 (define special? (form)
   (and (list? form) (is? (get special (at form 0)))))
 
-(define-macro define-compiler (name (keys...) args body...)
+(define-macro define-compiler (name keys args body...)
   `(set (get special ',name)
         (table compiler (fn ,args ,@body)
                ,@(merge (fn (k) (list k true)) keys))))
