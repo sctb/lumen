@@ -177,7 +177,7 @@
 	  (= name 'define-macro) form
 	  ;; expand macro
 	  (macro? name)
-	  (macroexpand (apply (getenv name) (sub form 1)))
+          (macroexpand (apply (getenv name) (sub form 1)))
 	  ;; scoped forms
 	  (or (= name 'function)
 	      (= name 'each))
@@ -254,20 +254,25 @@
   (= (length x) 0))
 
 (define sub (x from upto)
+  (set from (or from 0))
   (if (string? x)
       (target
        (js (x.substring from upto))
        (lua (string.sub x (+ from 1) upto)))
-    (target
-     (js (x.slice from upto))
-     (lua
-      (do (set upto (or upto (length x)))
-	  (let (i from j 0 x2 ())
-	    (while (< i upto)
-	      (set (at x2 j) (at x i))
-	      (set i (+ i 1))
-	      (set j (+ j 1)))
-	    x2))))))
+    (let (l (target
+             (js (x.slice from upto))
+             (lua
+              (do (set upto (or upto (length x)))
+                  (let (i from j 0 x2 ())
+                    (while (< i upto)
+                      (set (at x2 j) (at x i))
+                      (set i (+ i 1))
+                      (set j (+ j 1)))
+                    x2)))))
+      (map2 (fn (k v)
+              (set (get l k) v))
+            (properties x))
+      l)))
 
 ;; lists
 
@@ -319,10 +324,12 @@
     a1))
 
 (define map2 (f a)
-  (let (i 0)
+  (let (i 0
+        a1 ())
     (while (< i (length a))
-      (f (at a i) (at a (+ i 1)))
-      (set i (+ i 2)))))
+      (add a1 (f (at a i) (at a (+ i 1))))
+      (set i (+ i 2)))
+    a1))
 
 (define iterate (f count)
   (let (i 0)
@@ -350,6 +357,17 @@
 	    (set t (list 'join (join '(list) t) x))
 	  (add t x)))
       t)))
+
+(define properties (x)
+  (if (composite? x)
+      (let (l ())
+        (each (x k v)
+          (if (target
+               (lua (not (number? k)))
+               (js (isNaN (parseInt k))))
+              (do (add l k)
+                  (add l v))))
+        l)))
 
 ;; strings
 
@@ -433,19 +451,18 @@
       (boolean? x) (if x "true" "false")
       (function? x) "#<function>"
       (atom? x) (cat x "")
-      (table? x)
-      (let (a ())
-        (each (x k v)
-          (add a (cat (to-string k) ":"))
-          (add a v))
-        (if (> (length a) 0)
-            (to-string a)
-          "()"))
-    (let (str "(")
-      (across (x y i)
-	(cat! str (to-string y))
-	(if (< i (- (length x) 1))
-	    (cat! str " ")))
+    (let (str "(" p ())
+      (map2 (fn (k v)
+              (add p (cat k ":"))
+              (add p v))
+            (properties x))
+      (let (x1 (if (list? x)
+                   (join x p)
+                 p))
+        (across (x1 y i)
+          (cat! str (to-string y))
+          (if (< i (- (length x1) 1))
+              (cat! str " "))))
       (cat str  ")"))))
 
 (define-macro pr (xs...)

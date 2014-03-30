@@ -54,7 +54,7 @@
   (test= false (key? ":a"))
   (test= false (key? ":"))
   (test= false (key? ""))
-  (test= '(1 2) (read-from-string "(1 2 a: 7)"))
+  (test= 2 (length (read-from-string "(1 2 a: 7)")))
   (test= 7 (get (read-from-string "(1 2 a: 7)") 'a)))
 
 (define-test boolean ()

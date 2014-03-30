@@ -213,10 +213,15 @@ is_empty = function (x) {
 };
 
 sub = function (x, from, upto) {
+  from = (from || 0);
   if (is_string(x)) {
     return(x.substring(from, upto));
   } else {
-    return(x.slice(from, upto));
+    var l = x.slice(from, upto);
+    map2(function (k, v) {
+      l[k] = v;
+    }, properties(x));
+    return(l);
   }
 };
 
@@ -297,10 +302,12 @@ map = function (f, a) {
 
 map2 = function (f, a) {
   var i = 0;
+  var a1 = [];
   while ((i < length(a))) {
-    f(a[i], a[(i + 1)]);
+    add(a1, f(a[i], a[(i + 1)]));
     i = (i + 2);
   }
+  return(a1);
 };
 
 iterate = function (f, count) {
@@ -321,6 +328,20 @@ merge = function (f, a) {
     _30 = (_30 + 1);
   }
   return(a1);
+};
+
+properties = function (x) {
+  if (is_composite(x)) {
+    var l = [];
+    for (k in x) {
+      v = x[k];
+      if (isNaN(parseInt(k))) {
+        add(l, k);
+        add(l, v);
+      }
+    }
+    return(l);
+  }
 };
 
 char = function (str, n) {
@@ -424,26 +445,26 @@ to_string = function (x) {
     return("#<function>");
   } else if (is_atom(x)) {
     return((x + ""));
-  } else if (is_table(x)) {
-    var a = [];
-    for (k in x) {
-      v = x[k];
-      add(a, (to_string(k) + ":"));
-      add(a, v);
-    }
-    if ((length(a) > 0)) {
-      return(to_string(a));
-    } else {
-      return("()");
-    }
   } else {
     var str = "(";
+    var p = [];
+    map2(function (k, v) {
+      add(p, (k + ":"));
+      return(add(p, v));
+    }, properties(x));
+    var x1 = (function () {
+      if (is_list(x)) {
+        return(join(x, p));
+      } else {
+        return(p);
+      }
+    })();
     var i = 0;
-    var _33 = x;
+    var _33 = x1;
     while ((i < length(_33))) {
       var y = _33[i];
       str = (str + to_string(y));
-      if ((i < (length(x) - 1))) {
+      if ((i < (length(x1) - 1))) {
         str = (str + " ");
       }
       i = (i + 1);

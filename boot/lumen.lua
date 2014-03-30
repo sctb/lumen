@@ -213,19 +213,26 @@ is_empty = function (x)
 end
 
 sub = function (x, from, upto)
+  from = (from or 0)
   if is_string(x) then
     return(string.sub(x, (from + 1), upto))
   else
-    upto = (upto or length(x))
-    local i = from
-    local j = 0
-    local x2 = {}
-    while (i < upto) do
-      x2[(j + 1)] = x[(i + 1)]
-      i = (i + 1)
-      j = (j + 1)
-    end
-    return(x2)
+    local l = (function ()
+      upto = (upto or length(x))
+      local i = from
+      local j = 0
+      local x2 = {}
+      while (i < upto) do
+        x2[(j + 1)] = x[(i + 1)]
+        i = (i + 1)
+        j = (j + 1)
+      end
+      return(x2)
+    end)()
+    map2(function (k, v)
+      l[k] = v
+    end, properties(x))
+    return(l)
   end
 end
 
@@ -317,10 +324,12 @@ end
 
 map2 = function (f, a)
   local i = 0
+  local a1 = {}
   while (i < length(a)) do
-    f(a[(i + 1)], a[((i + 1) + 1)])
+    add(a1, f(a[(i + 1)], a[((i + 1) + 1)]))
     i = (i + 2)
   end
+  return(a1)
 end
 
 iterate = function (f, count)
@@ -341,6 +350,19 @@ merge = function (f, a)
     _30 = (_30 + 1)
   end
   return(a1)
+end
+
+properties = function (x)
+  if is_composite(x) then
+    local l = {}
+    for k, v in pairs(x) do
+      if (not is_number(k)) then
+        add(l, k)
+        add(l, v)
+      end
+    end
+    return(l)
+  end
 end
 
 char = function (str, n)
@@ -449,25 +471,26 @@ to_string = function (x)
     return("#<function>")
   elseif is_atom(x) then
     return((x .. ""))
-  elseif is_table(x) then
-    local a = {}
-    for k, v in pairs(x) do
-      add(a, (to_string(k) .. ":"))
-      add(a, v)
-    end
-    if (length(a) > 0) then
-      return(to_string(a))
-    else
-      return("()")
-    end
   else
     local str = "("
+    local p = {}
+    map2(function (k, v)
+      add(p, (k .. ":"))
+      return(add(p, v))
+    end, properties(x))
+    local x1 = (function ()
+      if is_list(x) then
+        return(join(x, p))
+      else
+        return(p)
+      end
+    end)()
     local i = 0
-    local _33 = x
+    local _33 = x1
     while (i < length(_33)) do
       local y = _33[(i + 1)]
       str = (str .. to_string(y))
-      if (i < (length(x) - 1)) then
+      if (i < (length(x1) - 1)) then
         str = (str .. " ")
       end
       i = (i + 1)
