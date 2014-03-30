@@ -3,7 +3,7 @@
 (define rep (str)
   (let (form (read-from-string str)
         result (eval (compile-toplevel form)))
-    (if result (pr result))))
+    (if (is? result) (pr result))))
 
 (define repl ()
   (let (execute (fn (str) (rep str) (write "> ")))
