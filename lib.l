@@ -114,11 +114,11 @@
   (sub x 0 (- (length x) 3)))
 
 (define stash (args)
-  (if (empty? (properties args))
-      args
-    (let (p (mapkv (fn (k v) v) args))
-      (set (get p "_") true)
-      (join args (list p)))))
+  (if (keys? args)
+      (let (p (properties args))
+        (set (get p "_") true)
+        (join args (list p)))
+    args))
 
 (define unstash (args)
   (if (empty? args)
@@ -126,10 +126,10 @@
     (let (l (last args))
       (if (and (composite? l) (get l "_"))
           (let (args1 (sub args 0 (- (length args) 1)))
-            (mapkv (fn (k v)
-                    (if (~= k "_")
-                        (set (get args1 k) v)))
-                   l)
+            (map (fn (k v)
+                   (if (~= k "_")
+                       (set (get args1 k) v)))
+                 (properties l))
             args1)
         args))))
 
@@ -293,9 +293,9 @@
                       (set i (+ i 1))
                       (set j (+ j 1)))
                     x2)))))
-      (mapkv (fn (k v)
-               (set (get l k) v))
-             x)
+      (map (fn (k v)
+             (set (get l k) v))
+           (properties x))
       l)))
 
 ;; lists
@@ -315,17 +315,22 @@
 (define join (a1 a2)
   (if (nil? a1) a2
       (nil? a2) a1
-    (target
-     (js (a1.concat a2))
-     (lua
-      (let (i 0 len (length a1) a3 ())
-	(while (< i len)
-	  (set (at a3 i) (at a1 i))
-	  (set i (+ i 1)))
-	(while (< i (+ len (length a2)))
-	  (set (at a3 i) (at a2 (- i len)))
-	  (set i (+ i 1)))
-	a3)))))
+    (let (a3 ())
+      (target
+       (js (set a3 (a1.concat a2)))
+       (lua
+        (let (i 0 len (length a1))
+          (while (< i len)
+            (set (at a3 i) (at a1 i))
+            (set i (+ i 1)))
+          (while (< i (+ len (length a2)))
+            (set (at a3 i) (at a2 (- i len)))
+            (set i (+ i 1))))))
+      ;; (let (f (fn (k v)
+      ;;           (set (get a3 k) v)))
+      ;;   (map f (properties a1))
+      ;;   (map f (properties a2)))
+      a3)))
 
 (define reduce (f x)
   (if (empty? x) x
@@ -341,11 +346,6 @@
   (across (a x)
     (let (x1 (f x))
       (if x1 (return x1)))))
-
-(define map (f a)
-  (let (a1 ())
-    (across (a x) (add a1 (f x)))
-    a1))
 
 (define map2 (f a)
   (let (i 0
@@ -384,34 +384,65 @@
 
 ;; tables
 
-(define mapkv (f x)
-  (if (composite? x)
-      (let (t ())
-        (for (x k v)
-          (if (target
-               (lua (not (number? k)))
-               (js (isNaN (parseInt k))))
-              (set (get t k) (f k v))))
-        t)))
+(define-macro each ((t k v) body...)
+  `(for (,t ,k ,v)
+     (if (target
+          (lua (not (number? ,k)))
+          (js (isNaN (parseInt ,k))))
+         (do ,@body))))
+
+(define pair (k v)
+  (table _key k _value v))
+
+(define pair? (x)
+  (and (composite? x)
+       (let (k (get x '_key)
+             v (get x '_value))
+         (and (is? k) (is? v) (list k v)))))
+
+(define splice (x)
+  (table _splice x))
+
+(define splice? (x)
+  (and (composite? x) (is? (get x '_splice))))
+
+(define map (f t)
+  (let (t1 ()
+        acc (fn (k v)
+              (let (x (f k v)
+                    p (pair? x))
+                (if p
+                    (let ((k1 v1) p)
+                      (set (get t1 k1) v1))
+                    (splice? x) (join! t1 x)
+                    (is? x) (add t1 x)))))
+    (across (t x)
+      (acc x))
+    (each (t k v)
+      (acc k v))
+    t1))
+
+(define keys? (t)
+  (let (k? false)
+    (each (t k v)
+      (set k? true)
+      break)
+    k?))
 
 (define properties (t)
-  (let (l ())
-    (mapkv (fn (k v)
-             (add l k)
-             (add l v))
-           t)
-    l))
+  (map (fn (k v)
+         (if (is? v) (pair k v)))
+       t))
 
 (define-macro make body
-  (let (p (properties body)
-        l `(list ,@body))
-    (if (empty? p)
+  (let (l `(list ,@body))
+    (if (not (keys? body))
         l
       (let (id (make-id))
         `(let (,id ,l)
-           ,@(map2 (fn (k v)
-                     `(set (get ,id ',k) ,v))
-                   p)
+           ,@(map (fn (k v)
+                    `(set (get ,id ',k) ,v))
+                  (properties body))
            ,id)))))
 
 ;; strings
@@ -496,18 +527,15 @@
       (boolean? x) (if x "true" "false")
       (function? x) "#<function>"
       (atom? x) (cat x "")
-    (let (str "(" p ())
-      (mapkv (fn (k v)
-               (add p (cat k ":"))
-               (add p v))
-             x)
-      (let (x1 (if (list? x)
-                   (join x p)
-                 p))
-        (across (x1 y i)
-          (cat! str (to-string y))
-          (if (< i (- (length x1) 1))
-              (cat! str " "))))
+    (let (str "(" x1 (sub x))
+      (map (fn (k v)
+             (add x1 (cat k ":"))
+             (add x1 v))
+           (properties x))
+      (across (x1 y i)
+        (cat! str (to-string y))
+        (if (< i (- (length x1) 1))
+            (cat! str " ")))
       (cat str  ")"))))
 
 (define-macro pr xs
