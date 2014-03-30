@@ -197,7 +197,7 @@ quasiquote_list = function (form, depth) {
     return(reduce(function (a, b) {
       return(["join", a, b]);
     }, keep(function (x) {
-      return(((length(x) == 0) || !(((length(x) == 1) && (x[0] == "list")))));
+      return((is_empty(x) || !(((length(x) == 1) && (x[0] == "list")))));
     }, xs)));
   }
 };
@@ -736,7 +736,7 @@ compile_atom = function (form) {
 };
 
 compile_call = function (form) {
-  if ((length(form) == 0)) {
+  if (is_empty(form)) {
     return((compiler("list"))(form));
   } else {
     var f = form[0];
@@ -1401,7 +1401,7 @@ setenv("join!", function (a) {
 
 setenv("list*", function () {
   var xs = Array.prototype.slice.call(arguments, 0);
-  if ((length(xs) == 0)) {
+  if (is_empty(xs)) {
     return([]);
   } else {
     var t = [];

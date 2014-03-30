@@ -64,7 +64,7 @@
     (to-string form)))
 
 (define compile-call (form)
-  (if (= (length form) 0)
+  (if (empty? form)
       ((compiler 'list) form) ; ()
     (let (f (at form 0)
           f1 (compile f)

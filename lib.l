@@ -230,7 +230,7 @@
       (reduce (fn (a b) (list 'join a b))
 	      ;; remove empty lists
 	      (keep (fn (x)
-                      (or (= (length x) 0)
+                      (or (empty? x)
                           (not (and (= (length x) 1)
                                     (= (at x 0) 'list)))))
                     xs)))))
@@ -349,7 +349,7 @@
     a1))
 
 (define-macro list* (xs...)
-  (if (= (length xs) 0)
+  (if (empty? xs)
       ()
     (let (t ())
       (across (xs x i)

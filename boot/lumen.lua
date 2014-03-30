@@ -197,7 +197,7 @@ quasiquote_list = function (form, depth)
     return(reduce(function (a, b)
       return({"join", a, b})
     end, keep(function (x)
-      return(((length(x) == 0) or (not ((length(x) == 1) and (x[1] == "list")))))
+      return((is_empty(x) or (not ((length(x) == 1) and (x[1] == "list")))))
     end, xs)))
   end
 end
@@ -774,7 +774,7 @@ compile_atom = function (form)
 end
 
 compile_call = function (form)
-  if (length(form) == 0) then
+  if is_empty(form) then
     return((compiler("list"))(form))
   else
     local f = form[1]
@@ -1444,7 +1444,7 @@ end)
 
 setenv("list*", function (...)
   local xs = {...}
-  if (length(xs) == 0) then
+  if is_empty(xs) then
     return({})
   else
     local t = {}
