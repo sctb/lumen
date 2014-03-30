@@ -19,7 +19,7 @@ variable = {};
 
 is_symbol_macro = function (k) {
   var v = getenv(k);
-  return((is_is(v) && !((v == variable)) && !(is_macro(k))));
+  return((is_is(v) && !((v === variable)) && !(is_macro(k))));
 };
 
 is_macro = function (k) {
@@ -27,7 +27,7 @@ is_macro = function (k) {
 };
 
 is_variable = function (k) {
-  return((last(environment)[k] == variable));
+  return((last(environment)[k] === variable));
 };
 
 is_bound = function (x) {
@@ -37,7 +37,7 @@ is_bound = function (x) {
 is_embed_macros = false;
 
 is_vararg = function (x) {
-  return(((length(x) > 3) && (sub(x, (length(x) - 3), length(x)) == "...")));
+  return(((length(x) > 3) && (sub(x, (length(x) - 3), length(x)) === "...")));
 };
 
 vararg_name = function (x) {
@@ -54,7 +54,7 @@ bind_arguments = function (args, body) {
     if (is_vararg(arg)) {
       var v = vararg_name(arg);
       var expr = (function () {
-        if ((target == "js")) {
+        if ((target === "js")) {
           return(["Array.prototype.slice.call", "arguments", length(args1)]);
         } else {
           add(args1, "...");
@@ -114,7 +114,7 @@ is_quasiquoting = function (depth) {
 };
 
 is_can_unquote = function (depth) {
-  return((is_quoting(depth) && (depth == 1)));
+  return((is_quoting(depth) && (depth === 1)));
 };
 
 macroexpand = function (form) {
@@ -124,13 +124,13 @@ macroexpand = function (form) {
     return(form);
   } else {
     var name = form[0];
-    if ((name == "quote")) {
+    if ((name === "quote")) {
       return(form);
-    } else if ((name == "define-macro")) {
+    } else if ((name === "define-macro")) {
       return(form);
     } else if (is_macro(name)) {
       return(macroexpand(apply(getenv(name), sub(form, 1))));
-    } else if (((name == "function") || (name == "each"))) {
+    } else if (((name === "function") || (name === "each"))) {
       var _ = form[0];
       var args = form[1];
       var body = sub(form, 2);
@@ -155,20 +155,20 @@ quasiexpand = function (form, depth) {
   if (is_quasiquoting(depth)) {
     if (is_atom(form)) {
       return(["quote", form]);
-    } else if ((is_can_unquote(depth) && (form[0] == "unquote"))) {
+    } else if ((is_can_unquote(depth) && (form[0] === "unquote"))) {
       return(quasiexpand(form[1]));
-    } else if (((form[0] == "unquote") || (form[0] == "unquote-splicing"))) {
+    } else if (((form[0] === "unquote") || (form[0] === "unquote-splicing"))) {
       return(quasiquote_list(form, (depth - 1)));
-    } else if ((form[0] == "quasiquote")) {
+    } else if ((form[0] === "quasiquote")) {
       return(quasiquote_list(form, (depth + 1)));
     } else {
       return(quasiquote_list(form, depth));
     }
   } else if (is_atom(form)) {
     return(form);
-  } else if ((form[0] == "quote")) {
+  } else if ((form[0] === "quote")) {
     return(["quote", form[1]]);
-  } else if ((form[0] == "quasiquote")) {
+  } else if ((form[0] === "quasiquote")) {
     return(quasiexpand(form[1], 1));
   } else {
     return(map(function (x) {
@@ -183,7 +183,7 @@ quasiquote_list = function (form, depth) {
   var _21 = form;
   while ((_22 < length(_21))) {
     var x = _21[_22];
-    if ((is_list(x) && is_can_unquote(depth) && (x[0] == "unquote-splicing"))) {
+    if ((is_list(x) && is_can_unquote(depth) && (x[0] === "unquote-splicing"))) {
       add(xs, quasiexpand(x[1]));
       add(xs, ["list"]);
     } else {
@@ -191,13 +191,13 @@ quasiquote_list = function (form, depth) {
     }
     _22 = (_22 + 1);
   }
-  if ((length(xs) == 1)) {
+  if ((length(xs) === 1)) {
     return(xs[0]);
   } else {
     return(reduce(function (a, b) {
       return(["join", a, b]);
     }, keep(function (x) {
-      return((is_empty(x) || !(((length(x) == 1) && (x[0] == "list")))));
+      return((is_empty(x) || !(((length(x) === 1) && (x[0] === "list")))));
     }, xs)));
   }
 };
@@ -209,7 +209,7 @@ length = function (x) {
 };
 
 is_empty = function (x) {
-  return((length(x) == 0));
+  return((length(x) === 0));
 };
 
 sub = function (x, from, upto) {
@@ -254,7 +254,7 @@ join = function (a1, a2) {
 reduce = function (f, x) {
   if (is_empty(x)) {
     return(x);
-  } else if ((length(x) == 1)) {
+  } else if ((length(x) === 1)) {
     return(x[0]);
   } else {
     return(f(x[0], reduce(f, sub(x, 1))));
@@ -382,7 +382,7 @@ exit = function (code) {
 };
 
 is_nil = function (x) {
-  return((x == undefined));
+  return((x === undefined));
 };
 
 is_is = function (x) {
@@ -390,27 +390,27 @@ is_is = function (x) {
 };
 
 is_string = function (x) {
-  return((type(x) == "string"));
+  return((type(x) === "string"));
 };
 
 is_string_literal = function (x) {
-  return((is_string(x) && (char(x, 0) == "\"")));
+  return((is_string(x) && (char(x, 0) === "\"")));
 };
 
 is_number = function (x) {
-  return((type(x) == "number"));
+  return((type(x) === "number"));
 };
 
 is_boolean = function (x) {
-  return((type(x) == "boolean"));
+  return((type(x) === "boolean"));
 };
 
 is_function = function (x) {
-  return((type(x) == "function"));
+  return((type(x) === "function"));
 };
 
 is_composite = function (x) {
-  return((type(x) == "object"));
+  return((type(x) === "object"));
 };
 
 is_atom = function (x) {
@@ -519,8 +519,8 @@ skip_non_code = function (s) {
       break;
     } else if (whitespace[c]) {
       read_char(s);
-    } else if ((c == ";")) {
-      while ((c && !((c == "\n")))) {
+    } else if ((c === ";")) {
+      while ((c && !((c === "\n")))) {
         c = read_char(s);
       }
       skip_non_code(s);
@@ -535,7 +535,7 @@ read_table = {};
 eof = {};
 
 is_key = function (atom) {
-  return((is_string(atom) && (length(atom) > 1) && (char(atom, (length(atom) - 1)) == ":")));
+  return((is_string(atom) && (length(atom) > 1) && (char(atom, (length(atom) - 1)) === ":")));
 };
 
 read_table[""] = function (s) {
@@ -552,9 +552,9 @@ read_table[""] = function (s) {
   var n = parse_number(str);
   if (is_is(n)) {
     return(n);
-  } else if ((str == "true")) {
+  } else if ((str === "true")) {
     return(true);
-  } else if ((str == "false")) {
+  } else if ((str === "false")) {
     return(false);
   } else {
     return(str);
@@ -567,7 +567,7 @@ read_table["("] = function (s) {
   while (true) {
     skip_non_code(s);
     var c = peek_char(s);
-    if ((c && !((c == ")")))) {
+    if ((c && !((c === ")")))) {
       var x = read(s);
       if (is_key(x)) {
         var key = sub(x, 0, (length(x) - 1));
@@ -595,8 +595,8 @@ read_table["\""] = function (s) {
   var str = "\"";
   while (true) {
     var c = peek_char(s);
-    if ((c && !((c == "\"")))) {
-      if ((c == "\\")) {
+    if ((c && !((c === "\"")))) {
+      if ((c === "\\")) {
         str = (str + read_char(s));
       }
       str = (str + read_char(s));
@@ -622,7 +622,7 @@ read_table["`"] = function (s) {
 
 read_table[","] = function (s) {
   read_char(s);
-  if ((peek_char(s) == "@")) {
+  if ((peek_char(s) === "@")) {
     read_char(s);
     return(["unquote-splicing", read(s)]);
   } else {
@@ -644,7 +644,7 @@ read_from_string = function (str) {
   return(read(make_stream(str)));
 };
 
-operators = {common : {"+" : "+", "-" : "-", "%" : "%", "*" : "*", "/" : "/", "<" : "<", ">" : ">", "<=" : "<=", ">=" : ">=", "=" : "=="}, js : {"~=" : "!=", "and" : "&&", "or" : "||", "cat" : "+"}, lua : {"~=" : "~=", "and" : "and", "or" : "or", "cat" : ".."}};
+operators = {common : {"+" : "+", "-" : "-", "%" : "%", "*" : "*", "/" : "/", "<" : "<", ">" : ">", "<=" : "<=", ">=" : ">="}, js : {"=" : "===", "~=" : "!=", "and" : "&&", "or" : "||", "cat" : "+"}, lua : {"=" : "==", "~=" : "~=", "and" : "and", "or" : "or", "cat" : ".."}};
 
 getop = function (op) {
   return((operators["common"][op] || operators[target][op]));
@@ -691,7 +691,7 @@ compile_body = function (forms, is_tail) {
   var _37 = forms;
   while ((i < length(_37))) {
     var x = _37[i];
-    var is_t = (is_tail && (i == (length(forms) - 1)));
+    var is_t = (is_tail && (i === (length(forms) - 1)));
     str = (str + compile(x, true, is_t));
     i = (i + 1);
   }
@@ -703,7 +703,7 @@ identifier = function (id) {
   var i = 0;
   while ((i < length(id))) {
     var c = char(id, i);
-    if ((c == "-")) {
+    if ((c === "-")) {
       c = "_";
     }
     id2 = (id2 + c);
@@ -712,9 +712,9 @@ identifier = function (id) {
   var last = (length(id) - 1);
   var suffix = char(id, last);
   var name = sub(id2, 0, last);
-  if ((suffix == "?")) {
+  if ((suffix === "?")) {
     return(("is_" + name));
-  } else if ((suffix == "!")) {
+  } else if ((suffix === "!")) {
     return(("n_" + name));
   } else {
     return(id2);
@@ -722,8 +722,8 @@ identifier = function (id) {
 };
 
 compile_atom = function (form) {
-  if ((form == "nil")) {
-    if ((target == "js")) {
+  if ((form === "nil")) {
+    if ((target === "js")) {
       return("undefined");
     } else {
       return("nil");
@@ -761,7 +761,7 @@ compile_operator = function (_38) {
   var _39 = args;
   while ((i < length(_39))) {
     var arg = _39[i];
-    if (((op1 == "-") && (length(args) == 1))) {
+    if (((op1 === "-") && (length(args) === 1))) {
       str = (str + op1 + compile(arg));
     } else {
       str = (str + compile(arg));
@@ -784,7 +784,7 @@ compile_branch = function (condition, body, is_first, is_last, is_tail) {
   })();
   var ind = indentation();
   var tr = (function () {
-    if ((is_last && (target == "lua"))) {
+    if ((is_last && (target === "lua"))) {
       return((ind + "end\n"));
     } else if (is_last) {
       return("\n");
@@ -792,15 +792,15 @@ compile_branch = function (condition, body, is_first, is_last, is_tail) {
       return("");
     }
   })();
-  if ((is_first && (target == "js"))) {
+  if ((is_first && (target === "js"))) {
     return((ind + "if (" + cond1 + ") {\n" + body1 + ind + "}" + tr));
   } else if (is_first) {
     return((ind + "if " + cond1 + " then\n" + body1 + tr));
-  } else if ((is_nil(condition) && (target == "js"))) {
+  } else if ((is_nil(condition) && (target === "js"))) {
     return((" else {\n" + body1 + ind + "}\n"));
   } else if (is_nil(condition)) {
     return((ind + "else\n" + body1 + tr));
-  } else if ((target == "js")) {
+  } else if ((target === "js")) {
     return((" else if (" + cond1 + ") {\n" + body1 + ind + "}" + tr));
   } else {
     return((ind + "elseif " + cond1 + " then\n" + body1 + tr));
@@ -817,7 +817,7 @@ compile_function = function (args, body, name) {
     return(_41);
   })();
   var ind = indentation();
-  if ((target == "js")) {
+  if ((target === "js")) {
     return(("function " + name + args1 + " {\n" + body1 + ind + "}"));
   } else {
     return(("function " + name + args1 + "\n" + body1 + ind + "end"));
@@ -886,8 +886,8 @@ special["if"] = {compiler : function (form, is_tail) {
   while ((i < length(_44))) {
     var condition = _44[i];
     var is_last = (i >= (length(form) - 2));
-    var is_else = (i == (length(form) - 1));
-    var is_first = (i == 0);
+    var is_else = (i === (length(form) - 1));
+    var is_first = (i === 0);
     var body = form[(i + 1)];
     if (is_else) {
       body = condition;
@@ -909,7 +909,7 @@ special["while"] = {compiler : function (form) {
     return(_45);
   })();
   var ind = indentation();
-  if ((target == "js")) {
+  if ((target === "js")) {
     return((ind + "while (" + condition + ") {\n" + body + ind + "}\n"));
   } else {
     return((ind + "while " + condition + " do\n" + body + ind + "end\n"));
@@ -943,7 +943,7 @@ special["return"] = {compiler : function (form) {
 special["error"] = {compiler : function (_48) {
   var expr = _48[0];
   var e = (function () {
-    if ((target == "js")) {
+    if ((target === "js")) {
       return(("throw " + compile(expr)));
     } else {
       return(compile_call(["error", expr]));
@@ -957,7 +957,7 @@ special["local"] = {compiler : function (_49) {
   var value = _49[1];
   var id = identifier(name);
   var keyword = (function () {
-    if ((target == "js")) {
+    if ((target === "js")) {
       return("var ");
     } else {
       return("local ");
@@ -979,7 +979,7 @@ special["each"] = {compiler : function (_50) {
   var body = sub(_50, 1);
   var t1 = compile(t);
   var ind = indentation();
-  if ((target == "lua")) {
+  if ((target === "lua")) {
     var body1 = (function () {
       indent_level = (indent_level + 1);
       var _52 = compile_body(body);
@@ -1012,7 +1012,7 @@ special["get"] = {compiler : function (_56) {
   var key = _56[1];
   var o = compile(object);
   var k = compile(key);
-  if (((target == "lua") && (char(o, 0) == "{"))) {
+  if (((target === "lua") && (char(o, 0) === "{"))) {
     o = ("(" + o + ")");
   }
   return((o + "[" + k + "]"));
@@ -1022,7 +1022,7 @@ special["not"] = {compiler : function (_57) {
   var expr = _57[0];
   var e = compile(expr);
   var open = (function () {
-    if ((target == "js")) {
+    if ((target === "js")) {
       return("!(");
     } else {
       return("(not ");
@@ -1033,14 +1033,14 @@ special["not"] = {compiler : function (_57) {
 
 special["list"] = {compiler : function (forms, depth) {
   var open = (function () {
-    if ((target == "lua")) {
+    if ((target === "lua")) {
       return("{");
     } else {
       return("[");
     }
   })();
   var close = (function () {
-    if ((target == "lua")) {
+    if ((target === "lua")) {
       return("}");
     } else {
       return("]");
@@ -1068,7 +1068,7 @@ special["list"] = {compiler : function (forms, depth) {
 
 special["table"] = {compiler : function (forms) {
   var sep = (function () {
-    if ((target == "lua")) {
+    if ((target === "lua")) {
       return(" = ");
     } else {
       return(" : ");
@@ -1082,7 +1082,7 @@ special["table"] = {compiler : function (forms) {
     if (!(is_string(k))) {
       throw ("Illegal table key: " + to_string(k));
     }
-    if (((target == "lua") && is_string_literal(k))) {
+    if (((target === "lua") && is_string_literal(k))) {
       k = ("[" + k + "]");
     }
     str = (str + k + sep + v);
@@ -1138,7 +1138,7 @@ compile_file = function (file) {
   var s = make_stream(read_file(file));
   while (true) {
     form = read(s);
-    if ((form == eof)) {
+    if ((form === eof)) {
       break;
     }
     var result = compile_toplevel(form);
@@ -1161,7 +1161,7 @@ compile_files = function (files) {
 
 compile_toplevel = function (form) {
   var form1 = compile(macroexpand(form), true, false, true);
-  if ((form1 == "")) {
+  if ((form1 === "")) {
     return("");
   } else {
     return((form1 + "\n"));
@@ -1207,7 +1207,7 @@ usage = function () {
 
 main = function () {
   args = sub(process.argv, 2);
-  if (((args[0] == "-h") || (args[0] == "--help"))) {
+  if (((args[0] === "-h") || (args[0] === "--help"))) {
     usage();
   }
   var inputs = [];
@@ -1218,21 +1218,21 @@ main = function () {
   var _62 = args;
   while ((i < length(_62))) {
     var arg = _62[i];
-    if (((arg == "-o") || (arg == "-t") || (arg == "-e"))) {
-      if ((i == (length(args) - 1))) {
+    if (((arg === "-o") || (arg === "-t") || (arg === "-e"))) {
+      if ((i === (length(args) - 1))) {
         print((to_string("missing argument for") + to_string(arg)));
       } else {
         i = (i + 1);
         var arg2 = args[i];
-        if ((arg == "-o")) {
+        if ((arg === "-o")) {
           output = arg2;
-        } else if ((arg == "-t")) {
+        } else if ((arg === "-t")) {
           target1 = arg2;
-        } else if ((arg == "-e")) {
+        } else if ((arg === "-e")) {
           expr = arg2;
         }
       }
-    } else if ((arg == "-m")) {
+    } else if ((arg === "-m")) {
       is_embed_macros = true;
     } else if (("-" != sub(arg, 0, 1))) {
       add(inputs, arg);
@@ -1263,9 +1263,9 @@ main = function () {
 };
 
 setenv("at", function (a, i) {
-  if (((target == "lua") && is_number(i))) {
+  if (((target === "lua") && is_number(i))) {
     i = (i + 1);
-  } else if ((target == "lua")) {
+  } else if ((target === "lua")) {
     i = ["+", i, 1];
   }
   return(["get", a, i]);
@@ -1381,7 +1381,7 @@ setenv("language", function () {
 setenv("target", function () {
   var clauses = Array.prototype.slice.call(arguments, 0);
   return(find(function (x) {
-    if ((x[0] == target)) {
+    if ((x[0] === target)) {
       return(x[1]);
     }
   }, clauses));
@@ -1409,7 +1409,7 @@ setenv("list*", function () {
     var _32 = xs;
     while ((i < length(_32))) {
       var x = _32[i];
-      if ((i == (length(xs) - 1))) {
+      if ((i === (length(xs) - 1))) {
         t = ["join", join(["list"], t), x];
       } else {
         add(t, x);

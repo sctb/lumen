@@ -2,10 +2,9 @@
 
 (define operators
   (table common (table "+" "+" "-" "-" "%" "%" "*" "*" "/" "/"
-		       "<" "<" ">" ">" "<=" "<=" ">=" ">="
-		       "=" "==")
-	 js (table "~=" "!=" "and" "&&" "or" "||" "cat" "+")
-	 lua (table "~=" "~=" "and" "and" "or" "or" "cat" "..")))
+		       "<" "<" ">" ">" "<=" "<=" ">=" ">=")
+	 js (table "=" "===" "~=" "!=" "and" "&&" "or" "||" "cat" "+")
+	 lua (table "=" "==" "~=" "~=" "and" "and" "or" "or" "cat" "..")))
 
 (define getop (op)
   (or (get (get operators 'common) op)
