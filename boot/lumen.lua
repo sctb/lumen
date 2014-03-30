@@ -166,7 +166,7 @@ macroexpand = function (form)
       return(form)
     elseif is_macro(name) then
       return(macroexpand(apply(getenv(name), sub(form, 1))))
-    elseif ((name == "function") or (name == "each")) then
+    elseif ((name == "function") or (name == "for")) then
       local _ = form[1]
       local args = form[2]
       local body = sub(form, 2)
@@ -1054,7 +1054,7 @@ special["local"] = {compiler = function (_47)
   end
 end, statement = true}
 
-special["each"] = {compiler = function (_48)
+special["for"] = {compiler = function (_48)
   local _49 = _48[1]
   local t = _49[1]
   local k = _49[2]

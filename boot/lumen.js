@@ -166,7 +166,7 @@ macroexpand = function (form) {
       return(form);
     } else if (is_macro(name)) {
       return(macroexpand(apply(getenv(name), sub(form, 1))));
-    } else if (((name === "function") || (name === "each"))) {
+    } else if (((name === "function") || (name === "for"))) {
       var _ = form[0];
       var args = form[1];
       var body = sub(form, 2);
@@ -1016,7 +1016,7 @@ special["local"] = {compiler : function (_47) {
   }
 }, statement : true};
 
-special["each"] = {compiler : function (_48) {
+special["for"] = {compiler : function (_48) {
   var _49 = _48[0];
   var t = _49[0];
   var k = _49[1];

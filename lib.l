@@ -204,7 +204,7 @@
           (macroexpand (apply (getenv name) (sub form 1)))
 	  ;; scoped forms
 	  (or (= name 'function)
-	      (= name 'each))
+	      (= name 'for))
 	  (let ((_ args body...) form)
 	    (with-scope (args)
 	      `(,name ,args ,@(macroexpand body))))
@@ -387,7 +387,7 @@
 (define mapkv (f x)
   (if (composite? x)
       (let (t ())
-        (each (x k v)
+        (for (x k v)
           (if (target
                (lua (not (number? k)))
                (js (isNaN (parseInt k))))

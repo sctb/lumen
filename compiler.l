@@ -200,7 +200,7 @@
 	(cat ind keyword id)
       (cat ind keyword id " = " (compile value)))))
 
-(define-compiler each (statement terminated) (((t k v) body...))
+(define-compiler for (statement terminated) (((t k v) body...))
   (let (t1 (compile t)
         ind (indentation))
     (if (= target 'lua)

@@ -209,9 +209,9 @@
       (test= 'bar (get t k)))
     (test= 'bar (get t (cat "f" "oo")))))
 
-(define-test each ()
+(define-test for ()
   (let (a "" b 0)
-    (each ((table a 10 b 20 c 30) k v)
+    (for ((table a 10 b 20 c 30) k v)
       (cat! a k)
       (set b (+ b v)))
     (test= 3 (length a))
@@ -359,9 +359,9 @@
   (let (i 0)
     (test= 10 (do (while (< i 10) (set i (+ i 1))) i))))
 
-(define-test each-expr ()
+(define-test for-expr ()
   (let (i 0 t (table a 10 b 20))
-    (test= 2 (do (each (t _ _) (set i (+ i 1))) i))))
+    (test= 2 (do (for (t _ _) (set i (+ i 1))) i))))
 
 ;; library
 
