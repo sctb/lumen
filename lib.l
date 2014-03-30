@@ -402,6 +402,18 @@
            t)
     l))
 
+(define-macro make body
+  (let (p (properties body)
+        l `(list ,@body))
+    (if (empty? p)
+        l
+      (let (id (make-id))
+        `(let (,id ,l)
+           ,@(map2 (fn (k v)
+                     `(set (get ,id ',k) ,v))
+                   p)
+           ,id)))))
+
 ;; strings
 
 (define char (str n)

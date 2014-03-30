@@ -1465,6 +1465,20 @@ setenv("list*", function () {
   }
 });
 
+setenv("make", function () {
+  var body = unstash(sub(arguments, 0));
+  var p = properties(body);
+  var l = join(["list"], body);
+  if (is_empty(p)) {
+    return(l);
+  } else {
+    var id = make_id();
+    return(join(["let", [id, l]], join(map2(function (k, v) {
+      return(["set", ["get", id, ["quote", k]], v]);
+    }, p), [id])));
+  }
+});
+
 setenv("cat!", function (a) {
   var bs = unstash(sub(arguments, 1));
   return(["set", a, join(["cat", a], bs)]);

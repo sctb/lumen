@@ -1508,6 +1508,20 @@ setenv("list*", function (...)
   end
 end)
 
+setenv("make", function (...)
+  local body = unstash({...})
+  local p = properties(body)
+  local l = join({"list"}, body)
+  if is_empty(p) then
+    return(l)
+  else
+    local id = make_id()
+    return(join({"let", {id, l}}, join(map2(function (k, v)
+      return({"set", {"get", id, {"quote", k}}, v})
+    end, p), {id})))
+  end
+end)
+
 setenv("cat!", function (a, ...)
   local bs = unstash({...})
   return({"set", a, join({"cat", a}, bs)})
