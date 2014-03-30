@@ -44,18 +44,47 @@ vararg_name = function (x)
   return(sub(x, 0, (length(x) - 3)))
 end
 
+stash = function (args)
+  if is_empty(keys(args)) then
+    return(args)
+  else
+    local p = properties(args)
+    p["_"] = true
+    return(join(args, {p}))
+  end
+end
+
+unstash = function (args)
+  if is_empty(args) then
+    return({})
+  else
+    local l = last(args)
+    if (is_composite(l) and l["_"]) then
+      local args1 = sub(args, 0, (length(args) - 1))
+      mapkv(function (k, v)
+        if (k ~= "_") then
+          args1[k] = v
+        end
+      end, l)
+      return(args1)
+    else
+      return(args)
+    end
+  end
+end
+
 bind_arguments = function (args, body)
   local args1 = {}
+  local rest = function ()
+    if (target == "js") then
+      return({"unstash", {"sub", "arguments", length(args1)}})
+    else
+      add(args1, "...")
+      return({"unstash", {"list", "..."}})
+    end
+  end
   if is_atom(args) then
-    local expr = (function ()
-      if (target == "js") then
-        return({"Array.prototype.slice.call", "arguments", 0})
-      else
-        add(args1, "...")
-        return({"list", "..."})
-      end
-    end)()
-    return({args1, {join({"let", {args, expr}}, body)}})
+    return({args1, {join({"let", {args, rest()}}, body)}})
   else
     local bindings = {}
     local _12 = 0
@@ -64,14 +93,7 @@ bind_arguments = function (args, body)
       local arg = _11[(_12 + 1)]
       if is_vararg(arg) then
         local v = vararg_name(arg)
-        local expr = (function ()
-          if (target == "js") then
-            return({"Array.prototype.slice.call", "arguments", length(args1)})
-          else
-            add(args1, "...")
-            return({"list", "..."})
-          end
-        end)()
+        local expr = rest()
         bindings = join(bindings, {v, expr})
         break
       elseif is_list(arg) then
@@ -241,9 +263,9 @@ sub = function (x, from, upto)
       end
       return(x2)
     end)()
-    map2(function (k, v)
+    mapkv(function (k, v)
       l[k] = v
-    end, properties(x))
+    end, x)
     return(l)
   end
 end
@@ -364,17 +386,30 @@ merge = function (f, a)
   return(a1)
 end
 
-properties = function (x)
+mapkv = function (f, x)
   if is_composite(x) then
-    local l = {}
+    local t = {}
     for k, v in pairs(x) do
       if (not is_number(k)) then
-        add(l, k)
-        add(l, v)
+        t[k] = f(k, v)
       end
     end
-    return(l)
+    return(t)
   end
+end
+
+properties = function (t)
+  return(mapkv(function (k, v)
+    return(v)
+  end, t))
+end
+
+keys = function (t)
+  local l = {}
+  mapkv(function (k, v)
+    return(add(l, k))
+  end, t)
+  return(l)
 end
 
 char = function (str, n)
@@ -486,10 +521,10 @@ to_string = function (x)
   else
     local str = "("
     local p = {}
-    map2(function (k, v)
+    mapkv(function (k, v)
       add(p, (k .. ":"))
       return(add(p, v))
-    end, properties(x))
+    end, x)
     local x1 = (function ()
       if is_list(x) then
         return(join(x, p))
@@ -512,7 +547,8 @@ to_string = function (x)
 end
 
 apply = function (f, args)
-  return(f(unpack(args)))
+  local args1 = stash(args)
+  return(f(unpack(args1)))
 end
 
 id_counter = 0
@@ -1327,7 +1363,7 @@ setenv("at", function (a, i)
 end)
 
 setenv("let", function (bindings, ...)
-  local body = {...}
+  local body = unstash({...})
   local i = 0
   local renames = {}
   local locals = {}
@@ -1354,7 +1390,7 @@ setenv("let", function (bindings, ...)
 end)
 
 setenv("let-macro", function (definitions, ...)
-  local body = {...}
+  local body = unstash({...})
   add(environment, {})
   local is_embed = is_embed_macros
   is_embed_macros = false
@@ -1368,7 +1404,7 @@ setenv("let-macro", function (definitions, ...)
 end)
 
 setenv("let-symbol", function (expansions, ...)
-  local body = {...}
+  local body = unstash({...})
   add(environment, {})
   map2(function (name, expr)
     return(setenv(name, expr))
@@ -1384,7 +1420,7 @@ setenv("define-symbol", function (name, expansion)
 end)
 
 setenv("define", function (name, x, ...)
-  local body = {...}
+  local body = unstash({...})
   if (not is_empty(body)) then
     x = join({"fn", x}, body)
   end
@@ -1392,7 +1428,7 @@ setenv("define", function (name, x, ...)
 end)
 
 setenv("fn", function (args, ...)
-  local body = {...}
+  local body = unstash({...})
   local _8 = bind_arguments(args, body)
   local args1 = _8[1]
   local body1 = _8[2]
@@ -1404,7 +1440,7 @@ setenv("across", function (_10, ...)
   local v = _10[2]
   local i = _10[3]
   local start = _10[4]
-  local body = {...}
+  local body = unstash({...})
   local l = make_id()
   i = (i or make_id())
   start = (start or 0)
@@ -1412,7 +1448,7 @@ setenv("across", function (_10, ...)
 end)
 
 setenv("set-of", function (...)
-  local elements = {...}
+  local elements = unstash({...})
   return(join({"table"}, merge(function (x)
     return({x, true})
   end, elements)))
@@ -1434,7 +1470,7 @@ setenv("language", function ()
 end)
 
 setenv("target", function (...)
-  local clauses = {...}
+  local clauses = unstash({...})
   return(find(function (x)
     if (x[1] == target) then
       return(x[2])
@@ -1443,19 +1479,19 @@ setenv("target", function (...)
 end)
 
 setenv("join*", function (...)
-  local xs = {...}
+  local xs = unstash({...})
   return(reduce(function (a, b)
     return({"join", a, b})
   end, xs))
 end)
 
 setenv("join!", function (a, ...)
-  local bs = {...}
+  local bs = unstash({...})
   return({"set", a, join({"join*", a}, bs)})
 end)
 
 setenv("list*", function (...)
-  local xs = {...}
+  local xs = unstash({...})
   if is_empty(xs) then
     return({})
   else
@@ -1476,12 +1512,12 @@ setenv("list*", function (...)
 end)
 
 setenv("cat!", function (a, ...)
-  local bs = {...}
+  local bs = unstash({...})
   return({"set", a, join({"cat", a}, bs)})
 end)
 
 setenv("pr", function (...)
-  local xs = {...}
+  local xs = unstash({...})
   return({"print", join({"cat"}, map(function (x)
     return({"to-string", x})
   end, xs))})
@@ -1490,7 +1526,7 @@ end)
 setenv("define-reader", function (_35, ...)
   local char = _35[1]
   local stream = _35[2]
-  local body = {...}
+  local body = unstash({...})
   return({"set", {"get", "read-table", char}, join({"fn", {stream}}, body)})
 end)
 
@@ -1500,7 +1536,7 @@ setenv("with-indent", function (form)
 end)
 
 setenv("define-compiler", function (name, keys, args, ...)
-  local body = {...}
+  local body = unstash({...})
   return({"set", {"get", "special", {"quote", name}}, join({"table", "compiler", join({"fn", args}, body)}, merge(function (k)
     return({k, true})
   end, keys))})

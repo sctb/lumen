@@ -44,18 +44,47 @@ vararg_name = function (x) {
   return(sub(x, 0, (length(x) - 3)));
 };
 
+stash = function (args) {
+  if (is_empty(keys(args))) {
+    return(args);
+  } else {
+    var p = properties(args);
+    p["_"] = true;
+    return(join(args, [p]));
+  }
+};
+
+unstash = function (args) {
+  if (is_empty(args)) {
+    return([]);
+  } else {
+    var l = last(args);
+    if ((is_composite(l) && l["_"])) {
+      var args1 = sub(args, 0, (length(args) - 1));
+      mapkv(function (k, v) {
+        if ((k != "_")) {
+          args1[k] = v;
+        }
+      }, l);
+      return(args1);
+    } else {
+      return(args);
+    }
+  }
+};
+
 bind_arguments = function (args, body) {
   var args1 = [];
+  var rest = function () {
+    if ((target === "js")) {
+      return(["unstash", ["sub", "arguments", length(args1)]]);
+    } else {
+      add(args1, "...");
+      return(["unstash", ["list", "..."]]);
+    }
+  };
   if (is_atom(args)) {
-    var expr = (function () {
-      if ((target === "js")) {
-        return(["Array.prototype.slice.call", "arguments", 0]);
-      } else {
-        add(args1, "...");
-        return(["list", "..."]);
-      }
-    })();
-    return([args1, [join(["let", [args, expr]], body)]]);
+    return([args1, [join(["let", [args, rest()]], body)]]);
   } else {
     var bindings = [];
     var _12 = 0;
@@ -64,14 +93,7 @@ bind_arguments = function (args, body) {
       var arg = _11[_12];
       if (is_vararg(arg)) {
         var v = vararg_name(arg);
-        var expr = (function () {
-          if ((target === "js")) {
-            return(["Array.prototype.slice.call", "arguments", length(args1)]);
-          } else {
-            add(args1, "...");
-            return(["list", "..."]);
-          }
-        })();
+        var expr = rest();
         bindings = join(bindings, [v, expr]);
         break;
       } else if (is_list(arg)) {
@@ -229,10 +251,10 @@ sub = function (x, from, upto) {
   if (is_string(x)) {
     return(x.substring(from, upto));
   } else {
-    var l = x.slice(from, upto);
-    map2(function (k, v) {
+    var l = Array.prototype.slice.call(x, from, upto);
+    mapkv(function (k, v) {
       l[k] = v;
-    }, properties(x));
+    }, x);
     return(l);
   }
 };
@@ -342,18 +364,31 @@ merge = function (f, a) {
   return(a1);
 };
 
-properties = function (x) {
+mapkv = function (f, x) {
   if (is_composite(x)) {
-    var l = [];
+    var t = [];
     for (k in x) {
       v = x[k];
       if (isNaN(parseInt(k))) {
-        add(l, k);
-        add(l, v);
+        t[k] = f(k, v);
       }
     }
-    return(l);
+    return(t);
   }
+};
+
+properties = function (t) {
+  return(mapkv(function (k, v) {
+    return(v);
+  }, t));
+};
+
+keys = function (t) {
+  var l = [];
+  mapkv(function (k, v) {
+    return(add(l, k));
+  }, t);
+  return(l);
 };
 
 char = function (str, n) {
@@ -460,10 +495,10 @@ to_string = function (x) {
   } else {
     var str = "(";
     var p = [];
-    map2(function (k, v) {
+    mapkv(function (k, v) {
       add(p, (k + ":"));
       return(add(p, v));
-    }, properties(x));
+    }, x);
     var x1 = (function () {
       if (is_list(x)) {
         return(join(x, p));
@@ -490,7 +525,8 @@ type = function (x) {
 };
 
 apply = function (f, args) {
-  return(f.apply(f, args));
+  var args1 = stash(args);
+  return(f.apply(f, args1));
 };
 
 id_counter = 0;
@@ -1284,7 +1320,7 @@ setenv("at", function (a, i) {
 });
 
 setenv("let", function (bindings) {
-  var body = Array.prototype.slice.call(arguments, 1);
+  var body = unstash(sub(arguments, 1));
   var i = 0;
   var renames = [];
   var locals = [];
@@ -1311,7 +1347,7 @@ setenv("let", function (bindings) {
 });
 
 setenv("let-macro", function (definitions) {
-  var body = Array.prototype.slice.call(arguments, 1);
+  var body = unstash(sub(arguments, 1));
   add(environment, {});
   var is_embed = is_embed_macros;
   is_embed_macros = false;
@@ -1325,7 +1361,7 @@ setenv("let-macro", function (definitions) {
 });
 
 setenv("let-symbol", function (expansions) {
-  var body = Array.prototype.slice.call(arguments, 1);
+  var body = unstash(sub(arguments, 1));
   add(environment, {});
   map2(function (name, expr) {
     return(setenv(name, expr));
@@ -1341,7 +1377,7 @@ setenv("define-symbol", function (name, expansion) {
 });
 
 setenv("define", function (name, x) {
-  var body = Array.prototype.slice.call(arguments, 2);
+  var body = unstash(sub(arguments, 2));
   if (!(is_empty(body))) {
     x = join(["fn", x], body);
   }
@@ -1349,7 +1385,7 @@ setenv("define", function (name, x) {
 });
 
 setenv("fn", function (args) {
-  var body = Array.prototype.slice.call(arguments, 1);
+  var body = unstash(sub(arguments, 1));
   var _8 = bind_arguments(args, body);
   var args1 = _8[0];
   var body1 = _8[1];
@@ -1361,7 +1397,7 @@ setenv("across", function (_10) {
   var v = _10[1];
   var i = _10[2];
   var start = _10[3];
-  var body = Array.prototype.slice.call(arguments, 1);
+  var body = unstash(sub(arguments, 1));
   var l = make_id();
   i = (i || make_id());
   start = (start || 0);
@@ -1369,7 +1405,7 @@ setenv("across", function (_10) {
 });
 
 setenv("set-of", function () {
-  var elements = Array.prototype.slice.call(arguments, 0);
+  var elements = unstash(sub(arguments, 0));
   return(join(["table"], merge(function (x) {
     return([x, true]);
   }, elements)));
@@ -1391,7 +1427,7 @@ setenv("language", function () {
 });
 
 setenv("target", function () {
-  var clauses = Array.prototype.slice.call(arguments, 0);
+  var clauses = unstash(sub(arguments, 0));
   return(find(function (x) {
     if ((x[0] === target)) {
       return(x[1]);
@@ -1400,19 +1436,19 @@ setenv("target", function () {
 });
 
 setenv("join*", function () {
-  var xs = Array.prototype.slice.call(arguments, 0);
+  var xs = unstash(sub(arguments, 0));
   return(reduce(function (a, b) {
     return(["join", a, b]);
   }, xs));
 });
 
 setenv("join!", function (a) {
-  var bs = Array.prototype.slice.call(arguments, 1);
+  var bs = unstash(sub(arguments, 1));
   return(["set", a, join(["join*", a], bs)]);
 });
 
 setenv("list*", function () {
-  var xs = Array.prototype.slice.call(arguments, 0);
+  var xs = unstash(sub(arguments, 0));
   if (is_empty(xs)) {
     return([]);
   } else {
@@ -1433,12 +1469,12 @@ setenv("list*", function () {
 });
 
 setenv("cat!", function (a) {
-  var bs = Array.prototype.slice.call(arguments, 1);
+  var bs = unstash(sub(arguments, 1));
   return(["set", a, join(["cat", a], bs)]);
 });
 
 setenv("pr", function () {
-  var xs = Array.prototype.slice.call(arguments, 0);
+  var xs = unstash(sub(arguments, 0));
   return(["print", join(["cat"], map(function (x) {
     return(["to-string", x]);
   }, xs))]);
@@ -1447,7 +1483,7 @@ setenv("pr", function () {
 setenv("define-reader", function (_35) {
   var char = _35[0];
   var stream = _35[1];
-  var body = Array.prototype.slice.call(arguments, 1);
+  var body = unstash(sub(arguments, 1));
   return(["set", ["get", "read-table", char], join(["fn", [stream]], body)]);
 });
 
@@ -1457,7 +1493,7 @@ setenv("with-indent", function (form) {
 });
 
 setenv("define-compiler", function (name, keys, args) {
-  var body = Array.prototype.slice.call(arguments, 3);
+  var body = unstash(sub(arguments, 3));
   return(["set", ["get", "special", ["quote", name]], join(["table", "compiler", join(["fn", args], body)], merge(function (k) {
     return([k, true]);
   }, keys))]);

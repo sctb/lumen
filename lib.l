@@ -113,23 +113,40 @@
 (define vararg-name (x)
   (sub x 0 (- (length x) 3)))
 
+(define stash (args)
+  (if (empty? (keys args))
+      args
+    (let (p (properties args))
+      (set (get p "_") true)
+      (join args (list p)))))
+
+(define unstash (args)
+  (if (empty? args)
+      ()
+    (let (l (last args))
+      (if (and (composite? l) (get l "_"))
+          (let (args1 (sub args 0 (- (length args) 1)))
+            (mapkv (fn (k v)
+                    (if (~= k "_")
+                        (set (get args1 k) v)))
+                   l)
+            args1)
+        args))))
+
 (define bind-arguments (args body)
-  (let (args1 ())
+  (let (args1 ()
+        rest (fn ()
+               (if (= target 'js)
+                   `(unstash (sub arguments ,(length args1)))
+                 (do (add args1 '...)
+                     '(unstash (list ...))))))
     (if (atom? args)
-        (let (expr
-              (if (= target 'js)
-                  `(Array.prototype.slice.call arguments 0)
-                (do (add args1 '...) '(list ...))))
-          (list args1 `((let ,(list args expr) ,@body))))
+        (list args1 `((let ,(list args (rest)) ,@body)))
       (let (bindings ())
         (across (args arg)
           (if (vararg? arg)
               (let (v (vararg-name arg)
-                      expr
-                      (if (= target 'js)
-                          `(Array.prototype.slice.call
-                            arguments ,(length args1))
-                        (do (add args1 '...) '(list ...))))
+                    expr (rest))
                 (join! bindings (list v expr))
                 break)                  ; no more args allowed
             (list? arg)
@@ -267,7 +284,7 @@
        (js (x.substring from upto))
        (lua (string.sub x (+ from 1) upto)))
     (let (l (target
-             (js (x.slice from upto))
+             (js (Array.prototype.slice.call x from upto))
              (lua
               (do (set upto (or upto (length x)))
                   (let (i from j 0 x2 ())
@@ -276,9 +293,9 @@
                       (set i (+ i 1))
                       (set j (+ j 1)))
                     x2)))))
-      (map2 (fn (k v)
-              (set (get l k) v))
-            (properties x))
+      (mapkv (fn (k v)
+               (set (get l k) v))
+             x)
       l)))
 
 ;; lists
@@ -365,16 +382,25 @@
 	  (add t x)))
       t)))
 
-(define properties (x)
+;; tables
+
+(define mapkv (f x)
   (if (composite? x)
-      (let (l ())
+      (let (t ())
         (each (x k v)
           (if (target
                (lua (not (number? k)))
                (js (isNaN (parseInt k))))
-              (do (add l k)
-                  (add l v))))
-        l)))
+              (set (get t k) (f k v))))
+        t)))
+
+(define properties (t)
+  (mapkv (fn (k v) v) t))
+
+(define keys (t)
+  (let (l ())
+    (mapkv (fn (k v) (add l k)) t)
+    l))
 
 ;; strings
 
@@ -459,10 +485,10 @@
       (function? x) "#<function>"
       (atom? x) (cat x "")
     (let (str "(" p ())
-      (map2 (fn (k v)
-              (add p (cat k ":"))
-              (add p v))
-            (properties x))
+      (mapkv (fn (k v)
+               (add p (cat k ":"))
+               (add p v))
+             x)
       (let (x1 (if (list? x)
                    (join x p)
                  p))
@@ -480,7 +506,8 @@
 (target (js (define type (x) (typeof x))))
 
 (define apply (f args)
-  (target (js (f.apply f args)) (lua (f (unpack args)))))
+  (let (args1 (stash args))
+    (target (js (f.apply f args1)) (lua (f (unpack args1))))))
 
 (define id-counter 0)
 
