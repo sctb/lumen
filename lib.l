@@ -114,9 +114,9 @@
   (sub x 0 (- (length x) 3)))
 
 (define stash (args)
-  (if (empty? (keys args))
+  (if (empty? (properties args))
       args
-    (let (p (properties args))
+    (let (p (mapkv (fn (k v) v) args))
       (set (get p "_") true)
       (join args (list p)))))
 
@@ -395,11 +395,11 @@
         t)))
 
 (define properties (t)
-  (mapkv (fn (k v) v) t))
-
-(define keys (t)
   (let (l ())
-    (mapkv (fn (k v) (add l k)) t)
+    (mapkv (fn (k v)
+             (add l k)
+             (add l v))
+           t)
     l))
 
 ;; strings

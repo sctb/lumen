@@ -45,10 +45,12 @@ vararg_name = function (x) {
 };
 
 stash = function (args) {
-  if (is_empty(keys(args))) {
+  if (is_empty(properties(args))) {
     return(args);
   } else {
-    var p = properties(args);
+    var p = mapkv(function (k, v) {
+      return(v);
+    }, args);
     p["_"] = true;
     return(join(args, [p]));
   }
@@ -378,15 +380,10 @@ mapkv = function (f, x) {
 };
 
 properties = function (t) {
-  return(mapkv(function (k, v) {
-    return(v);
-  }, t));
-};
-
-keys = function (t) {
   var l = [];
   mapkv(function (k, v) {
-    return(add(l, k));
+    add(l, k);
+    return(add(l, v));
   }, t);
   return(l);
 };

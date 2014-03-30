@@ -45,10 +45,12 @@ vararg_name = function (x)
 end
 
 stash = function (args)
-  if is_empty(keys(args)) then
+  if is_empty(properties(args)) then
     return(args)
   else
-    local p = properties(args)
+    local p = mapkv(function (k, v)
+      return(v)
+    end, args)
     p["_"] = true
     return(join(args, {p}))
   end
@@ -399,15 +401,10 @@ mapkv = function (f, x)
 end
 
 properties = function (t)
-  return(mapkv(function (k, v)
-    return(v)
-  end, t))
-end
-
-keys = function (t)
   local l = {}
   mapkv(function (k, v)
-    return(add(l, k))
+    add(l, k)
+    return(add(l, v))
   end, t)
   return(l)
 end
