@@ -1,5 +1,12 @@
 ;; -*- mode: lisp -*-
 
+;; TODO:
+;;  MAPK/MAPI
+;;  Delete ITERATE?
+;;  Properties in JOIN
+;;  MAPI usage vs. ACROSS, SPLICE, MERGE
+;;  Rename "_" to '_stash
+
 ;; environment
 
 (define environment (list (table)))
