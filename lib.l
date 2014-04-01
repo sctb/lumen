@@ -2,10 +2,8 @@
 
 ;; TODO:
 ;;  MAPK/MAPI
-;;  Delete ITERATE?
 ;;  Properties in JOIN
 ;;  MAPI usage vs. ACROSS, SPLICE, MERGE
-;;  Rename "_" to '_stash
 
 ;; environment
 
@@ -123,7 +121,7 @@
 (define stash (args)
   (if (keys? args)
       (let (p (properties args))
-        (set (get p "_") true)
+        (set (get p '_stash) true)
         (join args (list p)))
     args))
 
@@ -131,10 +129,10 @@
   (if (empty? args)
       ()
     (let (l (last args))
-      (if (and (composite? l) (get l "_"))
+      (if (and (composite? l) (get l '_stash))
           (let (args1 (sub args 0 (- (length args) 1)))
             (map (fn (k v)
-                   (if (~= k "_")
+                   (if (~= k '_stash)
                        (set (get args1 k) v)))
                  (properties l))
             args1)
