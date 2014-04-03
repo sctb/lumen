@@ -1,9 +1,5 @@
 ;; -*- mode: lisp -*-
 
-;; TODO:
-;;  Properties in JOIN
-;;  MAPI usage vs. ACROSS, SPLICE, MERGE
-
 ;; environment
 
 (define environment (list (table)))
