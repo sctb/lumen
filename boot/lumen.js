@@ -359,11 +359,11 @@ pair = function (k, v) {
 };
 
 is_pair = function (x) {
-  return((is_composite(x) && (function () {
+  if (is_composite(x)) {
     var k = x["_key"];
     var v = x["_value"];
     return((is_is(k) && is_is(v) && [k, v]));
-  })()));
+  }
 };
 
 splice = function (x) {
@@ -371,7 +371,9 @@ splice = function (x) {
 };
 
 is_splice = function (x) {
-  return((is_composite(x) && is_is(x["_splice"])));
+  if (is_composite(x)) {
+    return(x["_splice"]);
+  }
 };
 
 map = function (f, t) {
@@ -379,12 +381,15 @@ map = function (f, t) {
   var step = function (k, v) {
     var x = f(k, v);
     var p = is_pair(x);
+    var s = is_splice(x);
     if (p) {
       var k1 = p[0];
       var v1 = p[1];
       t1[k1] = v1;
-    } else if (is_splice(x)) {
-      t1 = join(t1, x);
+    } else if (is_composite(s)) {
+      t1 = join(t1, s);
+    } else if (is_is(s)) {
+      return(add(t1, s));
     } else if (is_is(x)) {
       return(add(t1, x));
     }

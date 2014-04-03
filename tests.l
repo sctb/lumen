@@ -399,6 +399,10 @@
   (test= '(1) (map (fn (x) x) '(1)))
   (test= '(2 3 4) (map (fn (x) (+ x 1)) '(1 2 3))))
 
+(define-test map-splice ()
+  (test= '(1 2) (map (fn (x) (splice (list x))) '(1 2)))
+  (test= '(1 2) (map (fn (x) (splice x)) '(1 2))))
+
 (define-test sub ()
   (test= '(b c) (sub '(a b c) 1))
   (test= '(b c) (sub '(a b c d) 1 3))

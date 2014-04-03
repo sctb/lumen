@@ -379,11 +379,11 @@ pair = function (k, v)
 end
 
 is_pair = function (x)
-  return((is_composite(x) and (function ()
+  if is_composite(x) then
     local k = x["_key"]
     local v = x["_value"]
     return((is_is(k) and is_is(v) and {k, v}))
-  end)()))
+  end
 end
 
 splice = function (x)
@@ -391,7 +391,9 @@ splice = function (x)
 end
 
 is_splice = function (x)
-  return((is_composite(x) and is_is(x["_splice"])))
+  if is_composite(x) then
+    return(x["_splice"])
+  end
 end
 
 map = function (f, t)
@@ -399,12 +401,15 @@ map = function (f, t)
   local step = function (k, v)
     local x = f(k, v)
     local p = is_pair(x)
+    local s = is_splice(x)
     if p then
       local k1 = p[1]
       local v1 = p[2]
       t1[k1] = v1
-    elseif is_splice(x) then
-      t1 = join(t1, x)
+    elseif is_composite(s) then
+      t1 = join(t1, s)
+    elseif is_is(s) then
+      return(add(t1, s))
     elseif is_is(x) then
       return(add(t1, x))
     end
