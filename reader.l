@@ -17,12 +17,12 @@
   (while true
     (let (c (peek-char s))
       (if (nil? c) break
-        (get whitespace c) (read-char s)
-	(= c ";")
-	(do (while (and c (not (= c "\n")))
-	      (set c (read-char s)))
-	    (skip-non-code s))
-      break))))
+          (get whitespace c) (read-char s)
+          (= c ";")
+          (do (while (and c (not (= c "\n")))
+                (set c (read-char s)))
+              (skip-non-code s))
+        break))))
 
 (define read-table (table))
 (define eof (table))
