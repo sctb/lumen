@@ -337,6 +337,7 @@
     (test= 40 d)))
 
 (define-test make ()
+  (test= () (make))
   (test= '(1 2 3) (make 1 2 3))
   (test= 17 (get (make foo: 17) 'foo))
   (test= 17 (get (make 1 foo: 17) 'foo)))

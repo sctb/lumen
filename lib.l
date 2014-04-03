@@ -1,7 +1,6 @@
 ;; -*- mode: lisp -*-
 
 ;; TODO:
-;;  MAPK/MAPI
 ;;  Properties in JOIN
 ;;  MAPI usage vs. ACROSS, SPLICE, MERGE
 
@@ -131,10 +130,10 @@
     (let (l (last args))
       (if (and (composite? l) (get l '_stash))
           (let (args1 (sub args 0 (- (length args) 1)))
-            (map (fn (k v)
-                   (if (~= k '_stash)
-                       (set (get args1 k) v)))
-                 (properties l))
+            (mapk (fn (k v)
+                    (if (~= k '_stash)
+                        (set (get args1 k) v)))
+                  l)
             args1)
         args))))
 
@@ -298,9 +297,9 @@
                       (set i (+ i 1))
                       (set j (+ j 1)))
                     x2)))))
-      (map (fn (k v)
-             (set (get l k) v))
-           (properties x))
+      (mapk (fn (k v)
+              (set (get l k) v))
+            x)
       l)))
 
 ;; lists
@@ -427,6 +426,16 @@
       (acc k v))
     t1))
 
+(define mapi (f t)
+  (map (fn (k v)
+         (if (nil? v) (f k)))
+       t))
+
+(define mapk (f t)
+  (map (fn (k v)
+         (if (is? v) (f k v)))
+       t))
+
 (define keys? (t)
   (let (k? false)
     (each (t k v)
@@ -445,9 +454,9 @@
         l
       (let (id (make-id))
         `(let (,id ,l)
-           ,@(map (fn (k v)
-                    `(set (get ,id ',k) ,v))
-                  (properties body))
+           ,@(mapk (fn (k v)
+                     `(set (get ,id ',k) ,v))
+                   body)
            ,id)))))
 
 ;; strings
@@ -533,10 +542,10 @@
       (function? x) "#<function>"
       (atom? x) (cat x "")
     (let (str "(" x1 (sub x))
-      (map (fn (k v)
-             (add x1 (cat k ":"))
-             (add x1 v))
-           (properties x))
+      (mapk (fn (k v)
+              (add x1 (cat k ":"))
+              (add x1 v))
+            x)
       (across (x1 y i)
         (cat! str (to-string y))
         (if (< i (- (length x1) 1))
