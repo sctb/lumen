@@ -180,7 +180,7 @@ macroexpand = function (form)
       drop(environment)
       return(_17)
     else
-      return(map(macroexpand, form))
+      return(mapi(macroexpand, form))
     end
   end
 end
@@ -205,7 +205,7 @@ quasiexpand = function (form, depth)
   elseif (form[1] == "quasiquote") then
     return(quasiexpand(form[2], 1))
   else
-    return(map(function (x)
+    return(mapi(function (x)
       return(quasiexpand(x, depth))
     end, form))
   end
@@ -396,7 +396,7 @@ end
 
 map = function (f, t)
   local t1 = {}
-  local acc = function (k, v)
+  local step = function (k, v)
     local x = f(k, v)
     local p = is_pair(x)
     if p then
@@ -413,12 +413,12 @@ map = function (f, t)
   local _33 = t
   while (_34 < length(_33)) do
     local x = _33[(_34 + 1)]
-    acc(x)
+    step(x)
     _34 = (_34 + 1)
   end
   for k, v in pairs(t) do
     if (not is_number(k)) then
-      acc(k, v)
+      step(k, v)
     end
   end
   return(t1)
@@ -452,10 +452,8 @@ is_keys = function (t)
 end
 
 properties = function (t)
-  return(map(function (k, v)
-    if is_is(v) then
-      return(pair(k, v))
-    end
+  return(mapk(function (k, v)
+    return(pair(k, v))
   end, t))
 end
 
@@ -1438,7 +1436,7 @@ setenv("let-macro", function (definitions, ...)
   add(environment, {})
   local is_embed = is_embed_macros
   is_embed_macros = false
-  map(function (m)
+  mapi(function (m)
     return((compiler("define-macro"))(m))
   end, definitions)
   is_embed_macros = is_embed
@@ -1583,7 +1581,7 @@ end)
 
 setenv("pr", function (...)
   local xs = unstash({...})
-  return({"print", join({"cat"}, map(function (x)
+  return({"print", join({"cat"}, mapi(function (x)
     return({"to-string", x})
   end, xs))})
 end)

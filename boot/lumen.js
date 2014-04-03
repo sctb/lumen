@@ -180,7 +180,7 @@ macroexpand = function (form) {
       drop(environment);
       return(_17);
     } else {
-      return(map(macroexpand, form));
+      return(mapi(macroexpand, form));
     }
   }
 };
@@ -205,7 +205,7 @@ quasiexpand = function (form, depth) {
   } else if ((form[0] === "quasiquote")) {
     return(quasiexpand(form[1], 1));
   } else {
-    return(map(function (x) {
+    return(mapi(function (x) {
       return(quasiexpand(x, depth));
     }, form));
   }
@@ -376,7 +376,7 @@ is_splice = function (x) {
 
 map = function (f, t) {
   var t1 = [];
-  var acc = function (k, v) {
+  var step = function (k, v) {
     var x = f(k, v);
     var p = is_pair(x);
     if (p) {
@@ -393,13 +393,13 @@ map = function (f, t) {
   var _33 = t;
   while ((_34 < length(_33))) {
     var x = _33[_34];
-    acc(x);
+    step(x);
     _34 = (_34 + 1);
   }
   for (k in t) {
     v = t[k];
     if (isNaN(parseInt(k))) {
-      acc(k, v);
+      step(k, v);
     }
   }
   return(t1);
@@ -434,10 +434,8 @@ is_keys = function (t) {
 };
 
 properties = function (t) {
-  return(map(function (k, v) {
-    if (is_is(v)) {
-      return(pair(k, v));
-    }
+  return(mapk(function (k, v) {
+    return(pair(k, v));
   }, t));
 };
 
@@ -1398,7 +1396,7 @@ setenv("let-macro", function (definitions) {
   add(environment, {});
   var is_embed = is_embed_macros;
   is_embed_macros = false;
-  map(function (m) {
+  mapi(function (m) {
     return((compiler("define-macro"))(m));
   }, definitions);
   is_embed_macros = is_embed;
@@ -1543,7 +1541,7 @@ setenv("cat!", function (a) {
 
 setenv("pr", function () {
   var xs = unstash(sub(arguments, 0));
-  return(["print", join(["cat"], map(function (x) {
+  return(["print", join(["cat"], mapi(function (x) {
     return(["to-string", x]);
   }, xs))]);
 });

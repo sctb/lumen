@@ -69,7 +69,7 @@
   (add environment (table))
   (let (embed? embed-macros?)
     (set embed-macros? false)
-    (map (fn (m) ((compiler 'define-macro) m)) definitions)
+    (mapi (fn (m) ((compiler 'define-macro) m)) definitions)
     (set embed-macros? embed?))
   (let (body1 (macroexpand body))
     (drop environment)
@@ -213,7 +213,7 @@
 	    (with-scope (args)
 	      `(,name ,args ,@(macroexpand body))))
 	;; list
-	(map macroexpand form)))))
+	(mapi macroexpand form)))))
 
 (define quasiexpand (form depth)
   (if (quasiquoting? depth)
@@ -240,7 +240,7 @@
       (= (at form 0) 'quasiquote)
       (quasiexpand (at form 1) 1)
     ;; list
-    (map (fn (x) (quasiexpand x depth)) form)))
+    (mapi (fn (x) (quasiexpand x depth)) form)))
 
 (define quasiquote-list (form depth)
   (let (xs (list '(list)))
@@ -412,18 +412,18 @@
 
 (define map (f t)
   (let (t1 ()
-        acc (fn (k v)
-              (let (x (f k v)
-                    p (pair? x))
-                (if p
-                    (let ((k1 v1) p)
-                      (set (get t1 k1) v1))
-                    (splice? x) (join! t1 x)
-                    (is? x) (add t1 x)))))
+        step (fn (k v)
+               (let (x (f k v)
+                     p (pair? x))
+                 (if p
+                     (let ((k1 v1) p)
+                       (set (get t1 k1) v1))
+                     (splice? x) (join! t1 x)
+                     (is? x) (add t1 x)))))
     (across (t x)
-      (acc x))
+      (step x))
     (each (t k v)
-      (acc k v))
+      (step k v))
     t1))
 
 (define mapi (f t)
@@ -444,9 +444,7 @@
     k?))
 
 (define properties (t)
-  (map (fn (k v)
-         (if (is? v) (pair k v)))
-       t))
+  (mapk (fn (k v) (pair k v)) t))
 
 (define-macro make body
   (let (l `(list ,@body))
@@ -553,7 +551,7 @@
       (cat str  ")"))))
 
 (define-macro pr xs
-  `(print (cat ,@(map (fn (x) `(to-string ,x)) xs))))
+  `(print (cat ,@(mapi (fn (x) `(to-string ,x)) xs))))
 
 ;; misc
 
