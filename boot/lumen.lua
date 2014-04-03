@@ -157,13 +157,13 @@ macroexpand = function (form)
   elseif is_atom(form) then
     return(form)
   else
-    local name = form[1]
+    local name = hd(form)
     if (name == "quote") then
       return(form)
     elseif (name == "define-macro") then
       return(form)
     elseif is_macro(name) then
-      return(macroexpand(apply(getenv(name), sub(form, 1))))
+      return(macroexpand(apply(getenv(name), tl(form))))
     elseif ((name == "function") or (name == "for")) then
       local _ = form[1]
       local args = form[2]
@@ -189,20 +189,20 @@ quasiexpand = function (form, depth)
   if is_quasiquoting(depth) then
     if is_atom(form) then
       return({"quote", form})
-    elseif (is_can_unquote(depth) and (form[1] == "unquote")) then
+    elseif (is_can_unquote(depth) and (hd(form) == "unquote")) then
       return(quasiexpand(form[2]))
-    elseif ((form[1] == "unquote") or (form[1] == "unquote-splicing")) then
+    elseif ((hd(form) == "unquote") or (hd(form) == "unquote-splicing")) then
       return(quasiquote_list(form, (depth - 1)))
-    elseif (form[1] == "quasiquote") then
+    elseif (hd(form) == "quasiquote") then
       return(quasiquote_list(form, (depth + 1)))
     else
       return(quasiquote_list(form, depth))
     end
   elseif is_atom(form) then
     return(form)
-  elseif (form[1] == "quote") then
+  elseif (hd(form) == "quote") then
     return({"quote", form[2]})
-  elseif (form[1] == "quasiquote") then
+  elseif (hd(form) == "quasiquote") then
     return(quasiexpand(form[2], 1))
   else
     return(mapi(function (x)
@@ -217,7 +217,7 @@ quasiquote_list = function (form, depth)
   local _21 = form
   while (_22 < length(_21)) do
     local x = _21[(_22 + 1)]
-    if (is_list(x) and is_can_unquote(depth) and (x[1] == "unquote-splicing")) then
+    if (is_list(x) and is_can_unquote(depth) and (hd(x) == "unquote-splicing")) then
       add(xs, quasiexpand(x[2]))
       add(xs, {"list"})
     else
@@ -226,12 +226,12 @@ quasiquote_list = function (form, depth)
     _22 = (_22 + 1)
   end
   if (length(xs) == 1) then
-    return(xs[1])
+    return(hd(xs))
   else
     return(reduce(function (a, b)
       return({"join", a, b})
     end, keep(function (x)
-      return((is_empty(x) or (not ((length(x) == 1) and (x[1] == "list")))))
+      return((is_empty(x) or (not ((length(x) == 1) and (hd(x) == "list")))))
     end, xs)))
   end
 end
@@ -268,6 +268,14 @@ sub = function (x, from, upto)
     end, x)
     return(l)
   end
+end
+
+hd = function (a)
+  return(a[1])
+end
+
+tl = function (a)
+  return(sub(a, 1))
 end
 
 add = function (a, x)
@@ -316,9 +324,9 @@ reduce = function (f, x)
   if is_empty(x) then
     return(x)
   elseif (length(x) == 1) then
-    return(x[1])
+    return(hd(x))
   else
-    return(f(x[1], reduce(f, sub(x, 1))))
+    return(f(hd(x), reduce(f, tl(x))))
   end
 end
 
@@ -549,11 +557,11 @@ is_atom = function (x)
 end
 
 is_table = function (x)
-  return((is_composite(x) and is_nil(x[1])))
+  return((is_composite(x) and is_nil(hd(x))))
 end
 
 is_list = function (x)
-  return((is_composite(x) and is_is(x[1])))
+  return((is_composite(x) and is_is(hd(x))))
 end
 
 parse_number = function (str)
@@ -784,7 +792,7 @@ getop = function (op)
 end
 
 is_operator = function (form)
-  return((is_list(form) and is_is(getop(form[1]))))
+  return((is_list(form) and is_is(getop(hd(form)))))
 end
 
 indent_level = 0
@@ -872,9 +880,9 @@ compile_call = function (form)
   if is_empty(form) then
     return((compiler("list"))(form))
   else
-    local f = form[1]
+    local f = hd(form)
     local f1 = compile(f)
-    local args = compile_args(sub(form, 1), true)
+    local args = compile_args(tl(form), true)
     if is_list(f) then
       return(("(" .. f1 .. ")" .. args))
     elseif is_string(f) then
@@ -981,19 +989,19 @@ terminator = function (is_stmt)
 end
 
 compile_special = function (form, is_stmt, is_tail)
-  local name = form[1]
+  local name = hd(form)
   if ((not is_stmt) and is_statement(name)) then
     return(compile({{"function", {}, form}}, false, is_tail))
   else
     local tr = terminator((is_stmt and (not is_self_terminating(name))))
-    return(((compiler(name))(sub(form, 1), is_tail) .. tr))
+    return(((compiler(name))(tl(form), is_tail) .. tr))
   end
 end
 
 special = {}
 
 is_special = function (form)
-  return((is_list(form) and is_is(special[form[1]])))
+  return((is_list(form) and is_is(special[hd(form)])))
 end
 
 compiler = function (name)
@@ -1034,10 +1042,10 @@ special["if"] = {compiler = function (form, is_tail)
 end, statement = true, terminated = true}
 
 special["while"] = {compiler = function (form)
-  local condition = compile(form[1])
+  local condition = compile(hd(form))
   local body = (function ()
     indent_level = (indent_level + 1)
-    local _45 = compile_body(sub(form, 1))
+    local _45 = compile_body(tl(form))
     indent_level = (indent_level - 1)
     return(_45)
   end)()
@@ -1238,7 +1246,7 @@ end}
 
 is_can_return = function (form)
   if is_special(form) then
-    return((not is_statement(form[1])))
+    return((not is_statement(hd(form))))
   else
     return(true)
   end
@@ -1349,7 +1357,7 @@ end
 
 main = function ()
   args = arg
-  if ((args[1] == "-h") or (args[1] == "--help")) then
+  if ((hd(args) == "-h") or (hd(args) == "--help")) then
     usage()
   end
   local inputs = {}
@@ -1523,7 +1531,7 @@ end)
 setenv("target", function (...)
   local clauses = unstash({...})
   return(find(function (x)
-    if (x[1] == target) then
+    if (hd(x) == target) then
       return(x[2])
     end
   end, clauses))

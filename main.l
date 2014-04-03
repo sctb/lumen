@@ -27,8 +27,8 @@
 
 (define main ()
   (set args (target (js (sub process.argv 2)) (lua arg)))
-  (if (or (= (at args 0) "-h")
-	  (= (at args 0) "--help"))
+  (if (or (= (hd args) "-h")
+	  (= (hd args) "--help"))
       (usage))
   (let (inputs ()
         output nil

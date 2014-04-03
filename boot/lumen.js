@@ -157,13 +157,13 @@ macroexpand = function (form) {
   } else if (is_atom(form)) {
     return(form);
   } else {
-    var name = form[0];
+    var name = hd(form);
     if ((name === "quote")) {
       return(form);
     } else if ((name === "define-macro")) {
       return(form);
     } else if (is_macro(name)) {
-      return(macroexpand(apply(getenv(name), sub(form, 1))));
+      return(macroexpand(apply(getenv(name), tl(form))));
     } else if (((name === "function") || (name === "for"))) {
       var _ = form[0];
       var args = form[1];
@@ -189,20 +189,20 @@ quasiexpand = function (form, depth) {
   if (is_quasiquoting(depth)) {
     if (is_atom(form)) {
       return(["quote", form]);
-    } else if ((is_can_unquote(depth) && (form[0] === "unquote"))) {
+    } else if ((is_can_unquote(depth) && (hd(form) === "unquote"))) {
       return(quasiexpand(form[1]));
-    } else if (((form[0] === "unquote") || (form[0] === "unquote-splicing"))) {
+    } else if (((hd(form) === "unquote") || (hd(form) === "unquote-splicing"))) {
       return(quasiquote_list(form, (depth - 1)));
-    } else if ((form[0] === "quasiquote")) {
+    } else if ((hd(form) === "quasiquote")) {
       return(quasiquote_list(form, (depth + 1)));
     } else {
       return(quasiquote_list(form, depth));
     }
   } else if (is_atom(form)) {
     return(form);
-  } else if ((form[0] === "quote")) {
+  } else if ((hd(form) === "quote")) {
     return(["quote", form[1]]);
-  } else if ((form[0] === "quasiquote")) {
+  } else if ((hd(form) === "quasiquote")) {
     return(quasiexpand(form[1], 1));
   } else {
     return(mapi(function (x) {
@@ -217,7 +217,7 @@ quasiquote_list = function (form, depth) {
   var _21 = form;
   while ((_22 < length(_21))) {
     var x = _21[_22];
-    if ((is_list(x) && is_can_unquote(depth) && (x[0] === "unquote-splicing"))) {
+    if ((is_list(x) && is_can_unquote(depth) && (hd(x) === "unquote-splicing"))) {
       add(xs, quasiexpand(x[1]));
       add(xs, ["list"]);
     } else {
@@ -226,12 +226,12 @@ quasiquote_list = function (form, depth) {
     _22 = (_22 + 1);
   }
   if ((length(xs) === 1)) {
-    return(xs[0]);
+    return(hd(xs));
   } else {
     return(reduce(function (a, b) {
       return(["join", a, b]);
     }, keep(function (x) {
-      return((is_empty(x) || !(((length(x) === 1) && (x[0] === "list")))));
+      return((is_empty(x) || !(((length(x) === 1) && (hd(x) === "list")))));
     }, xs)));
   }
 };
@@ -257,6 +257,14 @@ sub = function (x, from, upto) {
     }, x);
     return(l);
   }
+};
+
+hd = function (a) {
+  return(a[0]);
+};
+
+tl = function (a) {
+  return(sub(a, 1));
 };
 
 add = function (a, x) {
@@ -296,9 +304,9 @@ reduce = function (f, x) {
   if (is_empty(x)) {
     return(x);
   } else if ((length(x) === 1)) {
-    return(x[0]);
+    return(hd(x));
   } else {
-    return(f(x[0], reduce(f, sub(x, 1))));
+    return(f(hd(x), reduce(f, tl(x))));
   }
 };
 
@@ -523,11 +531,11 @@ is_atom = function (x) {
 };
 
 is_table = function (x) {
-  return((is_composite(x) && is_nil(x[0])));
+  return((is_composite(x) && is_nil(hd(x))));
 };
 
 is_list = function (x) {
-  return((is_composite(x) && is_is(x[0])));
+  return((is_composite(x) && is_is(hd(x))));
 };
 
 parse_number = function (str) {
@@ -749,7 +757,7 @@ getop = function (op) {
 };
 
 is_operator = function (form) {
-  return((is_list(form) && is_is(getop(form[0]))));
+  return((is_list(form) && is_is(getop(hd(form)))));
 };
 
 indent_level = 0;
@@ -837,9 +845,9 @@ compile_call = function (form) {
   if (is_empty(form)) {
     return((compiler("list"))(form));
   } else {
-    var f = form[0];
+    var f = hd(form);
     var f1 = compile(f);
-    var args = compile_args(sub(form, 1), true);
+    var args = compile_args(tl(form), true);
     if (is_list(f)) {
       return(("(" + f1 + ")" + args));
     } else if (is_string(f)) {
@@ -946,19 +954,19 @@ terminator = function (is_stmt) {
 };
 
 compile_special = function (form, is_stmt, is_tail) {
-  var name = form[0];
+  var name = hd(form);
   if ((!(is_stmt) && is_statement(name))) {
     return(compile([["function", [], form]], false, is_tail));
   } else {
     var tr = terminator((is_stmt && !(is_self_terminating(name))));
-    return(((compiler(name))(sub(form, 1), is_tail) + tr));
+    return(((compiler(name))(tl(form), is_tail) + tr));
   }
 };
 
 special = {};
 
 is_special = function (form) {
-  return((is_list(form) && is_is(special[form[0]])));
+  return((is_list(form) && is_is(special[hd(form)])));
 };
 
 compiler = function (name) {
@@ -999,10 +1007,10 @@ special["if"] = {compiler : function (form, is_tail) {
 }, statement : true, terminated : true};
 
 special["while"] = {compiler : function (form) {
-  var condition = compile(form[0]);
+  var condition = compile(hd(form));
   var body = (function () {
     indent_level = (indent_level + 1);
-    var _45 = compile_body(sub(form, 1));
+    var _45 = compile_body(tl(form));
     indent_level = (indent_level - 1);
     return(_45);
   })();
@@ -1203,7 +1211,7 @@ special["quote"] = {compiler : function (_59) {
 
 is_can_return = function (form) {
   if (is_special(form)) {
-    return(!(is_statement(form[0])));
+    return(!(is_statement(hd(form))));
   } else {
     return(true);
   }
@@ -1309,7 +1317,7 @@ usage = function () {
 
 main = function () {
   args = sub(process.argv, 2);
-  if (((args[0] === "-h") || (args[0] === "--help"))) {
+  if (((hd(args) === "-h") || (hd(args) === "--help"))) {
     usage();
   }
   var inputs = [];
@@ -1483,7 +1491,7 @@ setenv("language", function () {
 setenv("target", function () {
   var clauses = unstash(sub(arguments, 0));
   return(find(function (x) {
-    if ((x[0] === target)) {
+    if ((hd(x) === target)) {
       return(x[1]);
     }
   }, clauses));

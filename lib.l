@@ -195,13 +195,13 @@
       (symbol-macro? form) (macroexpand (getenv form))
       ;; atom
       (atom? form) form
-    (let (name (at form 0))
+    (let (name (hd form))
       (if ;; pass-through
 	  (= name 'quote) form
 	  (= name 'define-macro) form
 	  ;; expand macro
 	  (macro? name)
-          (macroexpand (apply (getenv name) (sub form 1)))
+          (macroexpand (apply (getenv name) (tl form)))
 	  ;; scoped forms
 	  (or (= name 'function)
 	      (= name 'for))
@@ -216,24 +216,24 @@
       (if (atom? form) (list 'quote form)
 	  ;; unquote
 	  (and (can-unquote? depth)
-	       (= (at form 0) 'unquote))
+	       (= (hd form) 'unquote))
 	  (quasiexpand (at form 1))
 	  ;; decrease quasiquoting depth
-	  (or (= (at form 0) 'unquote)
-	      (= (at form 0) 'unquote-splicing))
+	  (or (= (hd form) 'unquote)
+	      (= (hd form) 'unquote-splicing))
 	  (quasiquote-list form (- depth 1))
 	  ;; increase quasiquoting depth
-	  (= (at form 0) 'quasiquote)
+	  (= (hd form) 'quasiquote)
 	  (quasiquote-list form (+ depth 1))
 	;; list
 	(quasiquote-list form depth))
       ;; atom
       (atom? form) form
       ;; quote
-      (= (at form 0) 'quote)
+      (= (hd form) 'quote)
       (list 'quote (at form 1))
       ;; quasiquote
-      (= (at form 0) 'quasiquote)
+      (= (hd form) 'quasiquote)
       (quasiexpand (at form 1) 1)
     ;; list
     (mapi (fn (x) (quasiexpand x depth)) form)))
@@ -244,19 +244,19 @@
     (across (form x)
       (if (and (list? x)
 	       (can-unquote? depth)
-	       (= (at x 0) 'unquote-splicing))
+	       (= (hd x) 'unquote-splicing))
 	  (do (add xs (quasiexpand (at x 1)))
 	      (add xs '(list)))
 	(add (last xs) (quasiexpand x depth))))
     (if (= (length xs) 1)		; no splicing needed
-	(at xs 0)
+	(hd xs)
       ;; join all
       (reduce (fn (a b) (list 'join a b))
 	      ;; remove empty lists
 	      (keep (fn (x)
                       (or (empty? x)
                           (not (and (= (length x) 1)
-                                    (= (at x 0) 'list)))))
+                                    (= (hd x) 'list)))))
                     xs)))))
 
 ;; languages
@@ -266,7 +266,7 @@
 
 (define-macro target clauses
   (find (fn (x)
-	  (if (= (at x 0) target) (at x 1)))
+	  (if (= (hd x) target) (at x 1)))
 	clauses))
 
 ;; sequences
@@ -299,6 +299,9 @@
       l)))
 
 ;; lists
+
+(define hd (a) (at a 0))
+(define tl (a) (sub a 1))
 
 (define add (a x)
   (target (js (a.push x)) (lua (table.insert a x))))
@@ -335,8 +338,8 @@
 
 (define reduce (f x)
   (if (empty? x) x
-      (= (length x) 1) (at x 0)
-    (f (at x 0) (reduce f (sub x 1)))))
+      (= (length x) 1) (hd x)
+    (f (hd x) (reduce f (tl x)))))
 
 (define keep (f a)
   (let (a1 ())
@@ -519,8 +522,8 @@
 (define function? (x) (= (type x) 'function))
 (define composite? (x) (= (type x) (target (js 'object) (lua 'table))))
 (define atom? (x) (not (composite? x)))
-(define table? (x) (and (composite? x) (nil? (at x 0))))
-(define list? (x) (and (composite? x) (is? (at x 0))))
+(define table? (x) (and (composite? x) (nil? (hd x))))
+(define list? (x) (and (composite? x) (is? (hd x))))
 
 ;; numbers
 

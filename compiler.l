@@ -11,7 +11,7 @@
       (get (get operators target) op)))
 
 (define operator? (form)
-  (and (list? form) (is? (getop (at form 0)))))
+  (and (list? form) (is? (getop (hd form)))))
 
 (define indent-level 0)
 
@@ -65,9 +65,9 @@
 (define compile-call (form)
   (if (empty? form)
       ((compiler 'list) form) ; ()
-    (let (f (at form 0)
+    (let (f (hd form)
           f1 (compile f)
-          args (compile-args (sub form 1) true))
+          args (compile-args (tl form) true))
       (if (list? f) (cat "(" f1 ")" args)
           (string? f) (cat f1 args)
         (error "Invalid function call")))))
@@ -126,16 +126,16 @@
     (target (js ";\n") (lua "\n"))))
 
 (define compile-special (form stmt? tail?)
-  (let (name (at form 0))
+  (let (name (hd form))
     (if (and (not stmt?) (statement? name))
         (compile `((function () ,form)) false tail?)
       (let (tr (terminator (and stmt? (not (self-terminating? name)))))
-        (cat ((compiler name) (sub form 1) tail?) tr)))))
+        (cat ((compiler name) (tl form) tail?) tr)))))
 
 (define special (table))
 
 (define special? (form)
-  (and (list? form) (is? (get special (at form 0)))))
+  (and (list? form) (is? (get special (hd form)))))
 
 (define-macro define-compiler (name keys args body...)
   `(set (get special ',name)
@@ -164,8 +164,8 @@
     str))
 
 (define-compiler while (statement terminated) (form)
-  (let (condition (compile (at form 0))
-        body (with-indent (compile-body (sub form 1)))
+  (let (condition (compile (hd form))
+        body (with-indent (compile-body (tl form)))
         ind (indentation))
     (if (= target 'js)
 	(cat ind "while (" condition ") {\n" body ind "}\n")
@@ -259,7 +259,7 @@
 
 (define can-return? (form)
   (if (special? form)
-      (not (statement? (at form 0)))
+      (not (statement? (hd form)))
     true))
 
 (define compile (form stmt? tail?)
