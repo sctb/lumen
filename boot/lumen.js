@@ -47,7 +47,7 @@ vararg_name = function (x) {
 stash = function (args) {
   if (is_keys(args)) {
     var p = properties(args);
-    p["_"] = true;
+    p["_stash"] = true;
     return(join(args, [p]));
   } else {
     return(args);
@@ -59,13 +59,13 @@ unstash = function (args) {
     return([]);
   } else {
     var l = last(args);
-    if ((is_composite(l) && l["_"])) {
+    if ((is_composite(l) && l["_stash"])) {
       var args1 = sub(args, 0, (length(args) - 1));
-      map(function (k, v) {
-        if ((k != "_")) {
+      mapk(function (k, v) {
+        if ((k != "_stash")) {
           args1[k] = v;
         }
-      }, properties(l));
+      }, l);
       return(args1);
     } else {
       return(args);
@@ -252,9 +252,9 @@ sub = function (x, from, upto) {
     return(x.substring(from, upto));
   } else {
     var l = Array.prototype.slice.call(x, from, upto);
-    map(function (k, v) {
+    mapk(function (k, v) {
       l[k] = v;
-    }, properties(x));
+    }, x);
     return(l);
   }
 };
@@ -405,6 +405,22 @@ map = function (f, t) {
   return(t1);
 };
 
+mapi = function (f, t) {
+  return(map(function (k, v) {
+    if (is_nil(v)) {
+      return(f(k));
+    }
+  }, t));
+};
+
+mapk = function (f, t) {
+  return(map(function (k, v) {
+    if (is_is(v)) {
+      return(f(k, v));
+    }
+  }, t));
+};
+
 is_keys = function (t) {
   var is_k = false;
   for (k in t) {
@@ -529,10 +545,10 @@ to_string = function (x) {
   } else {
     var str = "(";
     var x1 = sub(x);
-    map(function (k, v) {
+    mapk(function (k, v) {
       add(x1, (k + ":"));
       return(add(x1, v));
-    }, properties(x));
+    }, x);
     var i = 0;
     var _35 = x1;
     while ((i < length(_35))) {
@@ -1510,9 +1526,9 @@ setenv("make", function () {
     return(l);
   } else {
     var id = make_id();
-    return(join(["let", [id, l]], join(map(function (k, v) {
+    return(join(["let", [id, l]], join(mapk(function (k, v) {
       return(["set", ["get", id, ["quote", k]], v]);
-    }, properties(body)), [id])));
+    }, body), [id])));
   }
 });
 

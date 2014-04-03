@@ -47,7 +47,7 @@ end
 stash = function (args)
   if is_keys(args) then
     local p = properties(args)
-    p["_"] = true
+    p["_stash"] = true
     return(join(args, {p}))
   else
     return(args)
@@ -59,13 +59,13 @@ unstash = function (args)
     return({})
   else
     local l = last(args)
-    if (is_composite(l) and l["_"]) then
+    if (is_composite(l) and l["_stash"]) then
       local args1 = sub(args, 0, (length(args) - 1))
-      map(function (k, v)
-        if (k ~= "_") then
+      mapk(function (k, v)
+        if (k ~= "_stash") then
           args1[k] = v
         end
-      end, properties(l))
+      end, l)
       return(args1)
     else
       return(args)
@@ -263,9 +263,9 @@ sub = function (x, from, upto)
       end
       return(x2)
     end)()
-    map(function (k, v)
+    mapk(function (k, v)
       l[k] = v
-    end, properties(x))
+    end, x)
     return(l)
   end
 end
@@ -424,6 +424,22 @@ map = function (f, t)
   return(t1)
 end
 
+mapi = function (f, t)
+  return(map(function (k, v)
+    if is_nil(v) then
+      return(f(k))
+    end
+  end, t))
+end
+
+mapk = function (f, t)
+  return(map(function (k, v)
+    if is_is(v) then
+      return(f(k, v))
+    end
+  end, t))
+end
+
 is_keys = function (t)
   local is_k = false
   for k, v in pairs(t) do
@@ -552,10 +568,10 @@ to_string = function (x)
   else
     local str = "("
     local x1 = sub(x)
-    map(function (k, v)
+    mapk(function (k, v)
       add(x1, (k .. ":"))
       return(add(x1, v))
-    end, properties(x))
+    end, x)
     local i = 0
     local _35 = x1
     while (i < length(_35)) do
@@ -1550,9 +1566,9 @@ setenv("make", function (...)
     return(l)
   else
     local id = make_id()
-    return(join({"let", {id, l}}, join(map(function (k, v)
+    return(join({"let", {id, l}}, join(mapk(function (k, v)
       return({"set", {"get", id, {"quote", k}}, v})
-    end, properties(body)), {id})))
+    end, body), {id})))
   end
 end)
 
