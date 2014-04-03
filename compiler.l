@@ -68,9 +68,9 @@
     (let (f (at form 0)
           f1 (compile f)
           args (compile-args (sub form 1) true))
-        (if (list? f) (cat "(" f1 ")" args)
-            (string? f) (cat f1 args)
-          (error "Invalid function call")))))
+      (if (list? f) (cat "(" f1 ")" args)
+          (string? f) (cat f1 args)
+        (error "Invalid function call")))))
 
 (define compile-operator ((op args...))
   (let (str "("
