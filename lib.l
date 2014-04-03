@@ -330,10 +330,11 @@
           (while (< i (+ len (length a2)))
             (set (at a3 i) (at a2 (- i len)))
             (set i (+ i 1))))))
-      ;; (let (f (fn (k v)
-      ;;           (set (get a3 k) v)))
-      ;;   (map f (properties a1))
-      ;;   (map f (properties a2)))
+      (let (f (fn (k v)
+                (set (get a3 k) v)))
+        (mapk f a1)
+        ;; properties on a2 supersede a1
+        (mapk f a2))
       a3)))
 
 (define reduce (f x)
@@ -540,11 +541,11 @@
       (boolean? x) (if x "true" "false")
       (function? x) "#<function>"
       (atom? x) (cat x "")
-    (let (str "(" x1 (sub x))
-      (mapk (fn (k v)
-              (add x1 (cat k ":"))
-              (add x1 v))
-            x)
+    (let (str "("
+          ks (mapk (fn (k v)
+                     (splice (list (cat k ":") v)))
+                   x)
+          x1 (join (sub x) ks))
       (across (x1 y i)
         (cat! str (to-string y))
         (if (< i (- (length x1) 1))

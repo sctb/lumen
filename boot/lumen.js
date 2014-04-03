@@ -283,6 +283,11 @@ join = function (a1, a2) {
   } else {
     var a3 = [];
     a3 = a1.concat(a2);
+    var f = function (k, v) {
+      a3[k] = v;
+    };
+    mapk(f, a1);
+    mapk(f, a2);
     return(a3);
   }
 };
@@ -547,11 +552,10 @@ to_string = function (x) {
     return((x + ""));
   } else {
     var str = "(";
-    var x1 = sub(x);
-    mapk(function (k, v) {
-      add(x1, (k + ":"));
-      return(add(x1, v));
+    var ks = mapk(function (k, v) {
+      return(splice([(k + ":"), v]));
     }, x);
+    var x1 = join(sub(x), ks);
     var i = 0;
     var _35 = x1;
     while ((i < length(_35))) {

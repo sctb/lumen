@@ -303,6 +303,11 @@ join = function (a1, a2)
       a3[(i + 1)] = a2[((i - len) + 1)]
       i = (i + 1)
     end
+    local f = function (k, v)
+      a3[k] = v
+    end
+    mapk(f, a1)
+    mapk(f, a2)
     return(a3)
   end
 end
@@ -570,11 +575,10 @@ to_string = function (x)
     return((x .. ""))
   else
     local str = "("
-    local x1 = sub(x)
-    mapk(function (k, v)
-      add(x1, (k .. ":"))
-      return(add(x1, v))
+    local ks = mapk(function (k, v)
+      return(splice({(k .. ":"), v}))
     end, x)
+    local x1 = join(sub(x), ks)
     local i = 0
     local _35 = x1
     while (i < length(_35)) do
