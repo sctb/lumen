@@ -152,7 +152,7 @@
               (let (v (vararg-name arg)
                     expr (rest))
                 (join! bindings (list v expr))
-                break)                  ; no more args allowed
+                (break))                  ; no more args allowed
             (list? arg)
             (let (v (make-id))
               (add args1 v)
@@ -440,7 +440,7 @@
   (let (k? false)
     (each (t k v)
       (set k? true)
-      break)
+      (break))
     k?))
 
 (define properties (t)
@@ -479,7 +479,7 @@
 	  (while true
 	    (let (i (search str sep))
 	      (if (nil? i)
-		  break
+		  (break)
 		(do (add strs (sub str 0 i))
 		    (set str (sub str (+ i 1)))))))
 	  (add strs str)

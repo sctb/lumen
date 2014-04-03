@@ -171,6 +171,9 @@
 	(cat ind "while (" condition ") {\n" body ind "}\n")
       (cat ind "while " condition " do\n" body ind "end\n"))))
 
+(define-compiler break (statement) (form)
+  (cat (indentation) "break"))
+
 (define-compiler function () ((args body...))
   (compile-function args body))
 
@@ -276,7 +279,7 @@
 	s (make-stream (read-file file)))
     (while true
       (set form (read s))
-      (if (= form eof) break)
+      (if (= form eof) (break))
       (let (result (compile-toplevel form))
 	(cat! output result)))
     output))

@@ -16,13 +16,13 @@
 (define skip-non-code (s)
   (while true
     (let (c (peek-char s))
-      (if (nil? c) break
+      (if (nil? c) (break)
           (get whitespace c) (read-char s)
           (= c ";")
           (do (while (and c (not (= c "\n")))
                 (set c (read-char s)))
               (skip-non-code s))
-        break))))
+        (break)))))
 
 (define read-table (table))
 (define eof (table))
@@ -43,7 +43,7 @@
 			(not (get delimiters c))))
 	    (do (cat! str c)
 		(read-char s))
-	  break)))
+	  (break))))
     (let (n (parse-number str))
       (if (is? n) n
 	  (= str "true") true
@@ -63,7 +63,7 @@
 			val (read s))
 		    (set (get l key) val))
 		  (add l x)))
-	    c (do (read-char s) break) ; )
+	    c (do (read-char s) (break)) ; )
 	  (error (cat "Expected ) at " s.pos)))))
     l))
 
@@ -78,7 +78,7 @@
 	(if (and c (not (= c "\"")))
 	    (do (if (= c "\\") (cat! str (read-char s)))
 		(cat! str (read-char s)))
-	    c (do (read-char s) break) ; "
+	    c (do (read-char s) (break)) ; "
 	  (error (cat "Expected \" at " s.pos)))))
     (cat str "\"")))
 

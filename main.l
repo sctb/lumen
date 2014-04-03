@@ -14,7 +14,7 @@
 	     (process.stdin.on 'data execute)))
      (lua (while true
 	    (let (str (io.stdin:read))
-	      (if str (execute str) break)))))))
+	      (if str (execute str) (break))))))))
 
 (define usage ()
   (pr "usage: x [options] [inputs]")

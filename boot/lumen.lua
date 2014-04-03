@@ -1042,6 +1042,10 @@ special["while"] = {compiler = function (form)
   end
 end, statement = true, terminated = true}
 
+special["break"] = {compiler = function (form)
+  return((indentation() .. "break"))
+end, statement = true}
+
 special["function"] = {compiler = function (_46)
   local args = _46[1]
   local body = sub(_46, 1)

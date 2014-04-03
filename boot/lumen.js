@@ -1007,6 +1007,10 @@ special["while"] = {compiler : function (form) {
   }
 }, statement : true, terminated : true};
 
+special["break"] = {compiler : function (form) {
+  return((indentation() + "break"));
+}, statement : true};
+
 special["function"] = {compiler : function (_46) {
   var args = _46[0];
   var body = sub(_46, 1);
