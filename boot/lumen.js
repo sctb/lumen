@@ -1575,7 +1575,7 @@ setenv("with-indent", function (form) {
   return(["do", ["set", "indent-level", ["+", "indent-level", 1]], ["let", [result, form], ["set", "indent-level", ["-", "indent-level", 1]], result]]);
 });
 
-setenv("define-compiler", function (name, keys, args) {
+setenv("define-special", function (name, keys, args) {
   var body = unstash(sub(arguments, 3));
   return(["set", ["get", "special", ["quote", name]], join(["table", "compiler", join(["fn", args], body)], merge(function (k) {
     return([k, true]);

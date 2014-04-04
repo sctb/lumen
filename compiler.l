@@ -137,7 +137,7 @@
 (define special? (form)
   (and (list? form) (is? (get special (hd form)))))
 
-(define-macro define-compiler (name keys args body...)
+(define-macro define-special (name keys args body...)
   `(set (get special ',name)
         (table compiler (fn ,args ,@body)
                ,@(merge (fn (k) (list k true)) keys))))
@@ -146,10 +146,10 @@
 (define statement? (name) (get (get special name) 'statement))
 (define self-terminating? (name) (get (get special name) 'terminated))
 
-(define-compiler do (statement terminated) (forms tail?)
+(define-special do (statement terminated) (forms tail?)
   (compile-body forms tail?))
 
-(define-compiler if (statement terminated) (form tail?)
+(define-special if (statement terminated) (form tail?)
   (let (str "")
     (across (form condition i)
       (let (last? (>= i (- (length form) 2))
@@ -163,7 +163,7 @@
       (set i (+ i 1)))
     str))
 
-(define-compiler while (statement terminated) (form)
+(define-special while (statement terminated) (form)
   (let (condition (compile (hd form))
         body (with-indent (compile-body (tl form)))
         ind (indentation))
@@ -171,31 +171,31 @@
 	(cat ind "while (" condition ") {\n" body ind "}\n")
       (cat ind "while " condition " do\n" body ind "end\n"))))
 
-(define-compiler break (statement) (form)
+(define-special break (statement) (form)
   (cat (indentation) "break"))
 
-(define-compiler function () ((args body...))
+(define-special function () ((args body...))
   (compile-function args body))
 
 (define macros "")
 
-(define-compiler define-macro (statement terminated) ((name args body...))
+(define-special define-macro (statement terminated) ((name args body...))
   (let (macro `(setenv ',name (fn ,args ,@body)))
     (eval (compile-for-target (language) macro))
     (if embed-macros?
 	(cat! macros (compile-toplevel macro))))
   "")
 
-(define-compiler return (statement) (form)
+(define-special return (statement) (form)
   (cat (indentation) (compile-call `(return ,@form))))
 
-(define-compiler error (statement) ((expr))
+(define-special error (statement) ((expr))
   (let (e (if (= target 'js)
               (cat "throw " (compile expr))
             (compile-call `(error ,expr))))
     (cat (indentation) e)))
 
-(define-compiler local (statement) ((name value))
+(define-special local (statement) ((name value))
   (let (id (identifier name)
 	keyword (if (= target 'js) "var " "local ")
         ind (indentation))
@@ -203,7 +203,7 @@
 	(cat ind keyword id)
       (cat ind keyword id " = " (compile value)))))
 
-(define-compiler for (statement terminated) (((t k v) body...))
+(define-special for (statement terminated) (((t k v) body...))
   (let (t1 (compile t)
         ind (indentation))
     (if (= target 'lua)
@@ -212,12 +212,12 @@
       (let (body1 (with-indent (compile-body `((set ,v (get ,t ,k)) ,@body))))
 	(cat ind "for (" k " in " t1 ") {\n" body1 ind "}\n")))))
 
-(define-compiler set (statement) ((lh rh))
+(define-special set (statement) ((lh rh))
   (if (nil? rh)
       (error "Missing right-hand side in assignment"))
   (cat (indentation) (compile lh) " = " (compile rh)))
 
-(define-compiler get () ((object key))
+(define-special get () ((object key))
   (let (o (compile object)
 	k (compile key))
     (if (and (= target 'lua)
@@ -225,12 +225,12 @@
 	(set o (cat "(" o ")")))
     (cat o "[" k "]")))
 
-(define-compiler not () ((expr))
+(define-special not () ((expr))
   (let (e (compile expr)
 	open (if (= target 'js) "!(" "(not "))
     (cat open e ")")))
 
-(define-compiler list () (forms depth)
+(define-special list () (forms depth)
   (let (open (if (= target 'lua) "{" "[")
 	close (if (= target 'lua) "}" "]")
 	str "")
@@ -239,7 +239,7 @@
       (if (< i (- (length forms) 1)) (cat! str ", ")))
     (cat open str close)))
 
-(define-compiler table () (forms)
+(define-special table () (forms)
   (let (sep (if (= target 'lua) " = " " : ")
 	str "{"
 	i 0)
@@ -255,7 +255,7 @@
 	(set i (+ i 2))))
     (cat str "}")))
 
-(define-compiler quote () ((form)) (quote-form form))
+(define-special quote () ((form)) (quote-form form))
 
 (define can-return? (form)
   (if (special? form)

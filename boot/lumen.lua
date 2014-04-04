@@ -1615,7 +1615,7 @@ setenv("with-indent", function (form)
   return({"do", {"set", "indent-level", {"+", "indent-level", 1}}, {"let", {result, form}, {"set", "indent-level", {"-", "indent-level", 1}}, result}})
 end)
 
-setenv("define-compiler", function (name, keys, args, ...)
+setenv("define-special", function (name, keys, args, ...)
   local body = unstash({...})
   return({"set", {"get", "special", {"quote", name}}, join({"table", "compiler", join({"fn", args}, body)}, merge(function (k)
     return({k, true})
