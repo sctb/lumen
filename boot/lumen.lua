@@ -377,18 +377,6 @@ iterate = function (f, count)
   end
 end
 
-merge = function (f, a)
-  local a1 = {}
-  local _28 = 0
-  local _27 = a
-  while (_28 < length(_27)) do
-    local x = _27[(_28 + 1)]
-    a1 = join(a1, f(x))
-    _28 = (_28 + 1)
-  end
-  return(a1)
-end
-
 pair = function (k, v)
   return({_key = k, _value = v})
 end
@@ -429,12 +417,12 @@ map = function (f, t)
       return(add(t1, x))
     end
   end
-  local _34 = 0
-  local _33 = t
-  while (_34 < length(_33)) do
-    local x = _33[(_34 + 1)]
+  local _32 = 0
+  local _31 = t
+  while (_32 < length(_31)) do
+    local x = _31[(_32 + 1)]
     step(x)
-    _34 = (_34 + 1)
+    _32 = (_32 + 1)
   end
   for k, v in pairs(t) do
     if (not is_number(k)) then
@@ -590,9 +578,9 @@ to_string = function (x)
     end, x)
     local x1 = join(sub(x), ks)
     local i = 0
-    local _35 = x1
-    while (i < length(_35)) do
-      local y = _35[(i + 1)]
+    local _33 = x1
+    while (i < length(_33)) do
+      local y = _33[(i + 1)]
       str = (str .. to_string(y))
       if (i < (length(x1) - 1)) then
         str = (str .. " ")
@@ -810,9 +798,9 @@ end
 compile_args = function (forms, is_compile)
   local str = "("
   local i = 0
-  local _38 = forms
-  while (i < length(_38)) do
-    local x = _38[(i + 1)]
+  local _36 = forms
+  while (i < length(_36)) do
+    local x = _36[(i + 1)]
     str = (str .. (function ()
       if is_compile then
         return(compile(x))
@@ -831,9 +819,9 @@ end
 compile_body = function (forms, is_tail)
   local str = ""
   local i = 0
-  local _39 = forms
-  while (i < length(_39)) do
-    local x = _39[(i + 1)]
+  local _37 = forms
+  while (i < length(_37)) do
+    local x = _37[(i + 1)]
     local is_t = (is_tail and (i == (length(forms) - 1)))
     str = (str .. compile(x, true, is_t))
     i = (i + 1)
@@ -895,15 +883,15 @@ compile_call = function (form)
   end
 end
 
-compile_operator = function (_40)
-  local op = _40[1]
-  local args = sub(_40, 1)
+compile_operator = function (_38)
+  local op = _38[1]
+  local args = sub(_38, 1)
   local str = "("
   local op1 = getop(op)
   local i = 0
-  local _41 = args
-  while (i < length(_41)) do
-    local arg = _41[(i + 1)]
+  local _39 = args
+  while (i < length(_39)) do
+    local arg = _39[(i + 1)]
     if ((op1 == "-") and (length(args) == 1)) then
       str = (str .. op1 .. compile(arg))
     else
@@ -921,9 +909,9 @@ compile_branch = function (condition, body, is_first, is_last, is_tail)
   local cond1 = compile(condition)
   local body1 = (function ()
     indent_level = (indent_level + 1)
-    local _42 = compile(body, true, is_tail)
+    local _40 = compile(body, true, is_tail)
     indent_level = (indent_level - 1)
-    return(_42)
+    return(_40)
   end)()
   local ind = indentation()
   local tr = (function ()
@@ -955,9 +943,9 @@ compile_function = function (args, body, name)
   local args1 = compile_args(args)
   local body1 = (function ()
     indent_level = (indent_level + 1)
-    local _43 = compile_body(body, true)
+    local _41 = compile_body(body, true)
     indent_level = (indent_level - 1)
-    return(_43)
+    return(_41)
   end)()
   local ind = indentation()
   if (target == "js") then
@@ -1025,9 +1013,9 @@ end, statement = true, terminated = true}
 special["if"] = {compiler = function (form, is_tail)
   local str = ""
   local i = 0
-  local _44 = form
-  while (i < length(_44)) do
-    local condition = _44[(i + 1)]
+  local _42 = form
+  while (i < length(_42)) do
+    local condition = _42[(i + 1)]
     local is_last = (i >= (length(form) - 2))
     local is_else = (i == (length(form) - 1))
     local is_first = (i == 0)
@@ -1047,9 +1035,9 @@ special["while"] = {compiler = function (form)
   local condition = compile(hd(form))
   local body = (function ()
     indent_level = (indent_level + 1)
-    local _45 = compile_body(tl(form))
+    local _43 = compile_body(tl(form))
     indent_level = (indent_level - 1)
-    return(_45)
+    return(_43)
   end)()
   local ind = indentation()
   if (target == "js") then
@@ -1063,18 +1051,18 @@ special["break"] = {compiler = function (form)
   return((indentation() .. "break"))
 end, statement = true}
 
-special["function"] = {compiler = function (_46)
-  local args = _46[1]
-  local body = sub(_46, 1)
+special["function"] = {compiler = function (_44)
+  local args = _44[1]
+  local body = sub(_44, 1)
   return(compile_function(args, body))
 end}
 
 macros = ""
 
-special["define-macro"] = {compiler = function (_47)
-  local name = _47[1]
-  local args = _47[2]
-  local body = sub(_47, 2)
+special["define-macro"] = {compiler = function (_45)
+  local name = _45[1]
+  local args = _45[2]
+  local body = sub(_45, 2)
   local macro = {"setenv", {"quote", name}, join({"fn", args}, body)}
   eval(compile_for_target("lua", macro))
   if is_embed_macros then
@@ -1087,8 +1075,8 @@ special["return"] = {compiler = function (form)
   return((indentation() .. compile_call(join({"return"}, form))))
 end, statement = true}
 
-special["error"] = {compiler = function (_48)
-  local expr = _48[1]
+special["error"] = {compiler = function (_46)
+  local expr = _46[1]
   local e = (function ()
     if (target == "js") then
       return(("throw " .. compile(expr)))
@@ -1099,9 +1087,9 @@ special["error"] = {compiler = function (_48)
   return((indentation() .. e))
 end, statement = true}
 
-special["local"] = {compiler = function (_49)
-  local name = _49[1]
-  local value = _49[2]
+special["local"] = {compiler = function (_47)
+  local name = _47[1]
+  local value = _47[2]
   local id = identifier(name)
   local keyword = (function ()
     if (target == "js") then
@@ -1118,45 +1106,45 @@ special["local"] = {compiler = function (_49)
   end
 end, statement = true}
 
-special["for"] = {compiler = function (_50)
-  local _51 = _50[1]
-  local t = _51[1]
-  local k = _51[2]
-  local v = _51[3]
-  local body = sub(_50, 1)
+special["for"] = {compiler = function (_48)
+  local _49 = _48[1]
+  local t = _49[1]
+  local k = _49[2]
+  local v = _49[3]
+  local body = sub(_48, 1)
   local t1 = compile(t)
   local ind = indentation()
   if (target == "lua") then
     local body1 = (function ()
       indent_level = (indent_level + 1)
-      local _52 = compile_body(body)
+      local _50 = compile_body(body)
       indent_level = (indent_level - 1)
-      return(_52)
+      return(_50)
     end)()
     return((ind .. "for " .. k .. ", " .. v .. " in pairs(" .. t1 .. ") do\n" .. body1 .. ind .. "end\n"))
   else
-    local _53 = (function ()
+    local _51 = (function ()
       indent_level = (indent_level + 1)
-      local _54 = compile_body(join({{"set", v, {"get", t, k}}}, body))
+      local _52 = compile_body(join({{"set", v, {"get", t, k}}}, body))
       indent_level = (indent_level - 1)
-      return(_54)
+      return(_52)
     end)()
-    return((ind .. "for (" .. k .. " in " .. t1 .. ") {\n" .. _53 .. ind .. "}\n"))
+    return((ind .. "for (" .. k .. " in " .. t1 .. ") {\n" .. _51 .. ind .. "}\n"))
   end
 end, statement = true, terminated = true}
 
-special["set"] = {compiler = function (_55)
-  local lh = _55[1]
-  local rh = _55[2]
+special["set"] = {compiler = function (_53)
+  local lh = _53[1]
+  local rh = _53[2]
   if is_nil(rh) then
     error("Missing right-hand side in assignment")
   end
   return((indentation() .. compile(lh) .. " = " .. compile(rh)))
 end, statement = true}
 
-special["get"] = {compiler = function (_56)
-  local object = _56[1]
-  local key = _56[2]
+special["get"] = {compiler = function (_54)
+  local object = _54[1]
+  local key = _54[2]
   local o = compile(object)
   local k = compile(key)
   if ((target == "lua") and (char(o, 0) == "{")) then
@@ -1165,8 +1153,8 @@ special["get"] = {compiler = function (_56)
   return((o .. "[" .. k .. "]"))
 end}
 
-special["not"] = {compiler = function (_57)
-  local expr = _57[1]
+special["not"] = {compiler = function (_55)
+  local expr = _55[1]
   local e = compile(expr)
   local open = (function ()
     if (target == "js") then
@@ -1195,9 +1183,9 @@ special["list"] = {compiler = function (forms, depth)
   end)()
   local str = ""
   local i = 0
-  local _58 = forms
-  while (i < length(_58)) do
-    local x = _58[(i + 1)]
+  local _56 = forms
+  while (i < length(_56)) do
+    local x = _56[(i + 1)]
     str = (str .. (function ()
       if is_quoting(depth) then
         return(quote_form(x))
@@ -1241,8 +1229,8 @@ special["table"] = {compiler = function (forms)
   return((str .. "}"))
 end}
 
-special["quote"] = {compiler = function (_59)
-  local form = _59[1]
+special["quote"] = {compiler = function (_57)
+  local form = _57[1]
   return(quote_form(form))
 end}
 
@@ -1296,12 +1284,12 @@ end
 
 compile_files = function (files)
   local output = ""
-  local _61 = 0
-  local _60 = files
-  while (_61 < length(_60)) do
-    local file = _60[(_61 + 1)]
+  local _59 = 0
+  local _58 = files
+  while (_59 < length(_58)) do
+    local file = _58[(_59 + 1)]
     output = (output .. compile_file(file))
-    _61 = (_61 + 1)
+    _59 = (_59 + 1)
   end
   return(output)
 end
@@ -1367,9 +1355,9 @@ main = function ()
   local target1 = nil
   local expr = nil
   local i = 0
-  local _62 = args
-  while (i < length(_62)) do
-    local arg = _62[(i + 1)]
+  local _60 = args
+  while (i < length(_60)) do
+    local arg = _60[(i + 1)]
     if ((arg == "-o") or (arg == "-t") or (arg == "-e")) then
       if (i == (length(args) - 1)) then
         print((to_string("missing argument for") .. to_string(arg)))
@@ -1399,12 +1387,12 @@ main = function ()
     local main = compile({"main"}, true)
     return(write_file(output, (compiled .. macros .. main)))
   else
-    local _64 = 0
-    local _63 = inputs
-    while (_64 < length(_63)) do
-      local file = _63[(_64 + 1)]
+    local _62 = 0
+    local _61 = inputs
+    while (_62 < length(_61)) do
+      local file = _61[(_62 + 1)]
       eval(compile_file(file))
-      _64 = (_64 + 1)
+      _62 = (_62 + 1)
     end
     if expr then
       return(rep(expr))
@@ -1510,8 +1498,8 @@ end)
 
 setenv("set-of", function (...)
   local elements = unstash({...})
-  return(join({"table"}, merge(function (x)
-    return({x, true})
+  return(join({"table"}, mapi(function (x)
+    return(splice({x, true}))
   end, elements)))
 end)
 
@@ -1558,9 +1546,9 @@ setenv("list*", function (...)
   else
     local t = {}
     local i = 0
-    local _30 = xs
-    while (i < length(_30)) do
-      local x = _30[(i + 1)]
+    local _28 = xs
+    while (i < length(_28)) do
+      local x = _28[(i + 1)]
       if (i == (length(xs) - 1)) then
         t = {"join", join({"list"}, t), x}
       else
@@ -1572,10 +1560,10 @@ setenv("list*", function (...)
   end
 end)
 
-setenv("each", function (_32, ...)
-  local t = _32[1]
-  local k = _32[2]
-  local v = _32[3]
+setenv("each", function (_30, ...)
+  local t = _30[1]
+  local k = _30[2]
+  local v = _30[3]
   local body = unstash({...})
   return({"for", {t, k, v}, {"if", {"target", {"lua", {"not", {"number?", k}}}, {"js", {"isNaN", {"parseInt", k}}}}, join({"do"}, body)}})
 end)
@@ -1605,9 +1593,9 @@ setenv("pr", function (...)
   end, xs))})
 end)
 
-setenv("define-reader", function (_37, ...)
-  local char = _37[1]
-  local stream = _37[2]
+setenv("define-reader", function (_35, ...)
+  local char = _35[1]
+  local stream = _35[2]
   local body = unstash({...})
   return({"set", {"get", "read-table", char}, join({"fn", {stream}}, body)})
 end)
@@ -1619,8 +1607,8 @@ end)
 
 setenv("define-special", function (name, keys, args, ...)
   local body = unstash({...})
-  return({"set", {"get", "special", {"quote", name}}, join({"table", "compiler", join({"fn", args}, body)}, merge(function (k)
-    return({k, true})
+  return({"set", {"get", "special", {"quote", name}}, join({"table", "compiler", join({"fn", args}, body)}, mapi(function (k)
+    return(splice({k, true}))
   end, keys))})
 end)
 

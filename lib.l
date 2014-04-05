@@ -103,7 +103,7 @@
 	   (set ,i (+ ,i 1)))))))
 
 (define-macro set-of elements
-  `(table ,@(merge (fn (x) (list x true)) elements)))
+  `(table ,@(mapi (fn (x) (splice (list x true))) elements)))
 
 ;; macro helpers
 
@@ -371,11 +371,6 @@
 
 (define-macro join! (a bs...)
   `(set ,a (join* ,a ,@bs)))
-
-(define merge (f a)
-  (let (a1 ())
-    (across (a x) (join! a1 (f x)))
-    a1))
 
 (define-macro list* xs
   (if (empty? xs)
