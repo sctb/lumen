@@ -8,11 +8,12 @@
   (set (get (last environment) k) v))
 
 (define getenv (k)
-  (let (i (- (length environment) 1))
-    (while (>= i 0)
-      (let (v (get (at environment i) k))
-	(if v (return v)))
-      (set i (- i 1)))))
+  (if (string? k)
+      (let (i (- (length environment) 1))
+        (while (>= i 0)
+          (let (v (get (at environment i) k))
+            (if v (return v)))
+          (set i (- i 1))))))
 
 (define variable (table))
 
@@ -209,7 +210,7 @@
 	    (with-scope (args)
 	      `(,name ,args ,@(macroexpand body))))
 	;; list
-	(mapi macroexpand form)))))
+        (mapi macroexpand form)))))
 
 (define quasiexpand (form depth)
   (if (quasiquoting? depth)

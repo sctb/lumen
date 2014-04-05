@@ -5,13 +5,15 @@ setenv = function (k, v)
 end
 
 getenv = function (k)
-  local i = (length(environment) - 1)
-  while (i >= 0) do
-    local v = environment[(i + 1)][k]
-    if v then
-      return(v)
+  if is_string(k) then
+    local i = (length(environment) - 1)
+    while (i >= 0) do
+      local v = environment[(i + 1)][k]
+      if v then
+        return(v)
+      end
+      i = (i - 1)
     end
-    i = (i - 1)
   end
 end
 

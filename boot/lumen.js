@@ -5,13 +5,15 @@ setenv = function (k, v) {
 };
 
 getenv = function (k) {
-  var i = (length(environment) - 1);
-  while ((i >= 0)) {
-    var v = environment[i][k];
-    if (v) {
-      return(v);
+  if (is_string(k)) {
+    var i = (length(environment) - 1);
+    while ((i >= 0)) {
+      var v = environment[i][k];
+      if (v) {
+        return(v);
+      }
+      i = (i - 1);
     }
-    i = (i - 1);
   }
 };
 
