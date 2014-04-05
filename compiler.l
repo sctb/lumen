@@ -123,7 +123,8 @@
 
 (define terminator (stmt?)
   (if (not stmt?) ""
-    (target (js ";\n") (lua "\n"))))
+      (= target 'js) ";\n"
+    "\n"))
 
 (define compile-special (form stmt? tail?)
   (let (name (hd form))
