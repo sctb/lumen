@@ -49,8 +49,8 @@
   (let (i 0
 	renames ()
 	locals ())
-    (map2
-     (fn (lh rh)
+    (mapi
+     (fn ((lh rh))
        (across ((bind lh rh) (id val))
          (if (bound? id)
              (let (rename (make-id))
@@ -59,7 +59,7 @@
                (set id rename))
            (setenv id variable))
          (add locals `(local ,id ,val))))
-     bindings)
+     (pairwise bindings))
     `(let-symbol ,renames ,@(join locals body))))
 
 (define-macro let-macro (definitions body...)
@@ -74,7 +74,9 @@
 
 (define-macro let-symbol (expansions body...)
   (add environment (table))
-  (map2 (fn (name expr) (setenv name expr)) expansions)
+  (map (fn ((name expr))
+         (setenv name expr))
+       (pairwise expansions))
   (let (body1 (macroexpand body))
     (drop environment)
     `(do ,@body1)))
@@ -352,11 +354,11 @@
     (let (x1 (f x))
       (if x1 (return x1)))))
 
-(define map2 (f a)
+(define pairwise (a)
   (let (i 0
         a1 ())
     (while (< i (length a))
-      (add a1 (f (at a i) (at a (+ i 1))))
+      (add a1 (list (at a i) (at a (+ i 1))))
       (set i (+ i 2)))
     a1))
 
