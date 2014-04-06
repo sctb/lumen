@@ -49,24 +49,25 @@
   (let (i 0
 	renames ()
 	locals ())
-    (mapi
-     (fn ((lh rh))
-       (across ((bind lh rh) (id val))
-         (if (bound? id)
-             (let (rename (make-id))
-               (add renames id)
-               (add renames rename)
-               (set id rename))
-           (setenv id variable))
-         (add locals `(local ,id ,val))))
-     (pairwise bindings))
+    (map (fn ((lh rh))
+           (across ((bind lh rh) (id val))
+             (if (bound? id)
+                 (let (rename (make-id))
+                   (add renames id)
+                   (add renames rename)
+                   (set id rename))
+               (setenv id variable))
+             (add locals `(local ,id ,val))))
+         (pairwise bindings))
     `(let-symbol ,renames ,@(join locals body))))
 
 (define-macro let-macro (definitions body...)
   (add environment (table))
   (let (embed? embed-macros?)
     (set embed-macros? false)
-    (mapi (fn (m) ((compiler 'define-macro) m)) definitions)
+    (map (fn (m)
+           ((compiler 'define-macro) m))
+         definitions)
     (set embed-macros? embed?))
   (let (body1 (macroexpand body))
     (drop environment)
@@ -105,7 +106,7 @@
 	   (set ,i (+ ,i 1)))))))
 
 (define-macro set-of elements
-  `(table ,@(mapi (fn (x) (splice (list x true))) elements)))
+  `(table ,@(map (fn (x) (splice (list x true))) elements)))
 
 ;; macro helpers
 
@@ -118,8 +119,9 @@
 
 (define stash (args)
   (if (keys? args)
-      (let (p (properties args))
-        (set (get p '_stash) true)
+      (let (p (table _stash true))
+        (each (args k v)
+          (set (get p k) v))
         (join args (list p)))
     args))
 
@@ -129,10 +131,9 @@
     (let (l (last args))
       (if (and (composite? l) (get l '_stash))
           (let (args1 (sub args 0 (- (length args) 1)))
-            (mapk (fn (k v)
-                    (if (~= k '_stash)
-                        (set (get args1 k) v)))
-                  l)
+            (each (l k v)
+              (if (~= k '_stash)
+                  (set (get args1 k) v)))
             args1)
         args))))
 
@@ -212,7 +213,7 @@
 	    (with-scope (args)
 	      `(,name ,args ,@(macroexpand body))))
 	;; list
-        (mapi macroexpand form)))))
+        (map macroexpand form)))))
 
 (define quasiexpand (form depth)
   (if (quasiquoting? depth)
@@ -239,7 +240,7 @@
       (= (hd form) 'quasiquote)
       (quasiexpand (at form 1) 1)
     ;; list
-    (mapi (fn (x) (quasiexpand x depth)) form)))
+    (map (fn (x) (quasiexpand x depth)) form)))
 
 (define quasiquote-list (form depth)
   (let (xs (list '(list)))
@@ -296,9 +297,8 @@
                       (set i (+ i 1))
                       (set j (+ j 1)))
                     x2)))))
-      (mapk (fn (k v)
-              (set (get l k) v))
-            x)
+      (each (x k v)
+        (set (get l k) v))
       l)))
 
 ;; lists
@@ -332,11 +332,11 @@
           (while (< i (+ len (length a2)))
             (set (at a3 i) (at a2 (- i len)))
             (set i (+ i 1))))))
-      (let (f (fn (k v)
-                (set (get a3 k) v)))
-        (mapk f a1)
-        ;; properties on a2 supersede a1
-        (mapk f a2))
+      (each (a1 k v)
+        (set (get a3 k) v))
+      ;; properties on a2 supersede a1
+      (each (a2 k v)
+        (set (get a3 k) v))
       a3)))
 
 (define reduce (f x)
@@ -393,47 +393,21 @@
           (js (isNaN (parseInt ,k))))
          (do ,@body))))
 
-(define pair (k v)
-  (table _key k _value v))
-
-(define pair? (x)
-  (if (composite? x)
-      (let (k (get x '_key)
-            v (get x '_value))
-        (and (is? k) (is? v) (list k v)))))
-
 (define splice (x)
   (table _splice x))
 
 (define splice? (x)
-  (if (composite? x) (get x '_splice)))
+  (if (table? x) (get x '_splice)))
 
-(define map (f t)
-  (let (t1 ()
-        step (fn (k v)
-               (let (x (f k v)
-                     p (pair? x)
-                     s (splice? x))
-                 (if p (let ((k1 v1) p)
-                         (set (get t1 k1) v1))
-                     (composite? s) (join! t1 s)
-                     (is? s) (add t1 s)
-                     (is? x) (add t1 x)))))
-    (across (t x)
-      (step x))
-    (each (t k v)
-      (step k v))
-    t1))
-
-(define mapi (f t)
-  (map (fn (k v)
-         (if (nil? v) (f k)))
-       t))
-
-(define mapk (f t)
-  (map (fn (k v)
-         (if (is? v) (f k v)))
-       t))
+(define map (f l)
+  (let (l1 ())
+    (across (l x)
+      (let (x1 (f x)
+            s (splice? x1))
+        (if (list? s) (join! l1 s)
+            (is? s) (add l1 s)
+            (is? x1) (add l1 x1))))
+    l1))
 
 (define keys? (t)
   (let (k? false)
@@ -442,18 +416,16 @@
       (break))
     k?))
 
-(define properties (t)
-  (mapk (fn (k v) (pair k v)) t))
-
 (define-macro make body
   (let (l `(list ,@body))
     (if (not (keys? body))
         l
-      (let (id (make-id))
+      (let (id (make-id)
+            init ())
+        (each (body k v)
+          (add init `(set (get ,id ',k) ,v)))
         `(let (,id ,l)
-           ,@(mapk (fn (k v)
-                     `(set (get ,id ',k) ,v))
-                   body)
+           ,@init
            ,id)))))
 
 ;; strings
@@ -539,10 +511,10 @@
       (function? x) "#<function>"
       (atom? x) (cat x "")
     (let (str "("
-          ks (mapk (fn (k v)
-                     (splice (list (cat k ":") v)))
-                   x)
-          x1 (join (sub x) ks))
+          x1 (sub x))
+      (each (x k v)
+        (add x1 (cat k ":"))
+        (add x1 v))
       (across (x1 y i)
         (cat! str (to-string y))
         (if (< i (- (length x1) 1))
@@ -550,7 +522,7 @@
       (cat str  ")"))))
 
 (define-macro pr xs
-  `(print (cat ,@(mapi (fn (x) `(to-string ,x)) xs))))
+  `(print (cat ,@(map (fn (x) `(to-string ,x)) xs))))
 
 ;; misc
 

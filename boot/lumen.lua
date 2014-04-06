@@ -48,8 +48,12 @@ end
 
 stash = function (args)
   if is_keys(args) then
-    local p = properties(args)
-    p["_stash"] = true
+    local p = {_stash = true}
+    for k, v in pairs(args) do
+      if (not is_number(k)) then
+        p[k] = v
+      end
+    end
     return(join(args, {p}))
   else
     return(args)
@@ -63,11 +67,13 @@ unstash = function (args)
     local l = last(args)
     if (is_composite(l) and l["_stash"]) then
       local args1 = sub(args, 0, (length(args) - 1))
-      mapk(function (k, v)
-        if (k ~= "_stash") then
-          args1[k] = v
+      for k, v in pairs(l) do
+        if (not is_number(k)) then
+          if (k ~= "_stash") then
+            args1[k] = v
+          end
         end
-      end, l)
+      end
       return(args1)
     else
       return(args)
@@ -182,7 +188,7 @@ macroexpand = function (form)
       drop(environment)
       return(_21)
     else
-      return(mapi(macroexpand, form))
+      return(map(macroexpand, form))
     end
   end
 end
@@ -207,7 +213,7 @@ quasiexpand = function (form, depth)
   elseif (hd(form) == "quasiquote") then
     return(quasiexpand(form[2], 1))
   else
-    return(mapi(function (x)
+    return(map(function (x)
       return(quasiexpand(x, depth))
     end, form))
   end
@@ -265,9 +271,11 @@ sub = function (x, from, upto)
       end
       return(x2)
     end)()
-    mapk(function (k, v)
-      l[k] = v
-    end, x)
+    for k, v in pairs(x) do
+      if (not is_number(k)) then
+        l[k] = v
+      end
+    end
     return(l)
   end
 end
@@ -313,11 +321,16 @@ join = function (a1, a2)
       a3[(i + 1)] = a2[((i - len) + 1)]
       i = (i + 1)
     end
-    local f = function (k, v)
-      a3[k] = v
+    for k, v in pairs(a1) do
+      if (not is_number(k)) then
+        a3[k] = v
+      end
     end
-    mapk(f, a1)
-    mapk(f, a2)
+    for k, v in pairs(a2) do
+      if (not is_number(k)) then
+        a3[k] = v
+      end
+    end
     return(a3)
   end
 end
@@ -377,75 +390,34 @@ iterate = function (f, count)
   end
 end
 
-pair = function (k, v)
-  return({_key = k, _value = v})
-end
-
-is_pair = function (x)
-  if is_composite(x) then
-    local k = x["_key"]
-    local v = x["_value"]
-    return((is_is(k) and is_is(v) and {k, v}))
-  end
-end
-
 splice = function (x)
   return({_splice = x})
 end
 
 is_splice = function (x)
-  if is_composite(x) then
+  if is_table(x) then
     return(x["_splice"])
   end
 end
 
-map = function (f, t)
-  local t1 = {}
-  local step = function (k, v)
-    local x = f(k, v)
-    local p = is_pair(x)
-    local s = is_splice(x)
-    if p then
-      local k1 = p[1]
-      local v1 = p[2]
-      t1[k1] = v1
-    elseif is_composite(s) then
-      t1 = join(t1, s)
-    elseif is_is(s) then
-      return(add(t1, s))
-    elseif is_is(x) then
-      return(add(t1, x))
-    end
-  end
+map = function (f, l)
+  local l1 = {}
   local _36 = 0
-  local _35 = t
+  local _35 = l
   while (_36 < length(_35)) do
     local x = _35[(_36 + 1)]
-    step(x)
+    local x1 = f(x)
+    local s = is_splice(x1)
+    if is_list(s) then
+      l1 = join(l1, s)
+    elseif is_is(s) then
+      add(l1, s)
+    elseif is_is(x1) then
+      add(l1, x1)
+    end
     _36 = (_36 + 1)
   end
-  for k, v in pairs(t) do
-    if (not is_number(k)) then
-      step(k, v)
-    end
-  end
-  return(t1)
-end
-
-mapi = function (f, t)
-  return(map(function (k, v)
-    if is_nil(v) then
-      return(f(k))
-    end
-  end, t))
-end
-
-mapk = function (f, t)
-  return(map(function (k, v)
-    if is_is(v) then
-      return(f(k, v))
-    end
-  end, t))
+  return(l1)
 end
 
 is_keys = function (t)
@@ -457,12 +429,6 @@ is_keys = function (t)
     end
   end
   return(is_k)
-end
-
-properties = function (t)
-  return(mapk(function (k, v)
-    return(pair(k, v))
-  end, t))
 end
 
 char = function (str, n)
@@ -573,10 +539,13 @@ to_string = function (x)
     return((x .. ""))
   else
     local str = "("
-    local ks = mapk(function (k, v)
-      return(splice({(k .. ":"), v}))
-    end, x)
-    local x1 = join(sub(x), ks)
+    local x1 = sub(x)
+    for k, v in pairs(x) do
+      if (not is_number(k)) then
+        add(x1, (k .. ":"))
+        add(x1, v)
+      end
+    end
     local i = 0
     local _37 = x1
     while (i < length(_37)) do
@@ -973,6 +942,8 @@ end
 terminator = function (is_stmt)
   if (not is_stmt) then
     return("")
+  elseif (target == "js") then
+    return(";\n")
   else
     return("\n")
   end
@@ -1416,7 +1387,7 @@ setenv("let", function (bindings, ...)
   local i = 0
   local renames = {}
   local locals = {}
-  mapi(function (_5)
+  map(function (_5)
     local lh = _5[1]
     local rh = _5[2]
     local _7 = 0
@@ -1445,7 +1416,7 @@ setenv("let-macro", function (definitions, ...)
   add(environment, {})
   local is_embed = is_embed_macros
   is_embed_macros = false
-  mapi(function (m)
+  map(function (m)
     return((compiler("define-macro"))(m))
   end, definitions)
   is_embed_macros = is_embed
@@ -1502,7 +1473,7 @@ end)
 
 setenv("set-of", function (...)
   local elements = unstash({...})
-  return(join({"table"}, mapi(function (x)
+  return(join({"table"}, map(function (x)
     return(splice({x, true}))
   end, elements)))
 end)
@@ -1579,9 +1550,13 @@ setenv("make", function (...)
     return(l)
   else
     local id = make_id()
-    return(join({"let", {id, l}}, join(mapk(function (k, v)
-      return({"set", {"get", id, {"quote", k}}, v})
-    end, body), {id})))
+    local init = {}
+    for k, v in pairs(body) do
+      if (not is_number(k)) then
+        add(init, {"set", {"get", id, {"quote", k}}, v})
+      end
+    end
+    return(join({"let", {id, l}}, join(init, {id})))
   end
 end)
 
@@ -1592,7 +1567,7 @@ end)
 
 setenv("pr", function (...)
   local xs = unstash({...})
-  return({"print", join({"cat"}, mapi(function (x)
+  return({"print", join({"cat"}, map(function (x)
     return({"to-string", x})
   end, xs))})
 end)
@@ -1611,7 +1586,7 @@ end)
 
 setenv("define-special", function (name, keys, args, ...)
   local body = unstash({...})
-  return({"set", {"get", "special", {"quote", name}}, join({"table", "compiler", join({"fn", args}, body)}, mapi(function (k)
+  return({"set", {"get", "special", {"quote", name}}, join({"table", "compiler", join({"fn", args}, body)}, map(function (k)
     return(splice({k, true}))
   end, keys))})
 end)

@@ -141,7 +141,7 @@
 (define-macro define-special (name keys args body...)
   `(set (get special ',name)
         (table compiler (fn ,args ,@body)
-               ,@(mapi (fn (k) (splice (list k true))) keys))))
+               ,@(map (fn (k) (splice (list k true))) keys))))
 
 (define compiler (name) (get (get special name) 'compiler))
 (define statement? (name) (get (get special name) 'statement))

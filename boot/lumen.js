@@ -48,8 +48,13 @@ vararg_name = function (x) {
 
 stash = function (args) {
   if (is_keys(args)) {
-    var p = properties(args);
-    p["_stash"] = true;
+    var p = {_stash : true};
+    for (k in args) {
+      v = args[k];
+      if (isNaN(parseInt(k))) {
+        p[k] = v;
+      }
+    }
     return(join(args, [p]));
   } else {
     return(args);
@@ -63,11 +68,14 @@ unstash = function (args) {
     var l = last(args);
     if ((is_composite(l) && l["_stash"])) {
       var args1 = sub(args, 0, (length(args) - 1));
-      mapk(function (k, v) {
-        if ((k != "_stash")) {
-          args1[k] = v;
+      for (k in l) {
+        v = l[k];
+        if (isNaN(parseInt(k))) {
+          if ((k != "_stash")) {
+            args1[k] = v;
+          }
         }
-      }, l);
+      }
       return(args1);
     } else {
       return(args);
@@ -182,7 +190,7 @@ macroexpand = function (form) {
       drop(environment);
       return(_21);
     } else {
-      return(mapi(macroexpand, form));
+      return(map(macroexpand, form));
     }
   }
 };
@@ -207,7 +215,7 @@ quasiexpand = function (form, depth) {
   } else if ((hd(form) === "quasiquote")) {
     return(quasiexpand(form[1], 1));
   } else {
-    return(mapi(function (x) {
+    return(map(function (x) {
       return(quasiexpand(x, depth));
     }, form));
   }
@@ -254,9 +262,12 @@ sub = function (x, from, upto) {
     return(x.substring(from, upto));
   } else {
     var l = Array.prototype.slice.call(x, from, upto);
-    mapk(function (k, v) {
-      l[k] = v;
-    }, x);
+    for (k in x) {
+      v = x[k];
+      if (isNaN(parseInt(k))) {
+        l[k] = v;
+      }
+    }
     return(l);
   }
 };
@@ -293,11 +304,18 @@ join = function (a1, a2) {
   } else {
     var a3 = [];
     a3 = a1.concat(a2);
-    var f = function (k, v) {
-      a3[k] = v;
-    };
-    mapk(f, a1);
-    mapk(f, a2);
+    for (k in a1) {
+      v = a1[k];
+      if (isNaN(parseInt(k))) {
+        a3[k] = v;
+      }
+    }
+    for (k in a2) {
+      v = a2[k];
+      if (isNaN(parseInt(k))) {
+        a3[k] = v;
+      }
+    }
     return(a3);
   }
 };
@@ -357,76 +375,34 @@ iterate = function (f, count) {
   }
 };
 
-pair = function (k, v) {
-  return({_key : k, _value : v});
-};
-
-is_pair = function (x) {
-  if (is_composite(x)) {
-    var k = x["_key"];
-    var v = x["_value"];
-    return((is_is(k) && is_is(v) && [k, v]));
-  }
-};
-
 splice = function (x) {
   return({_splice : x});
 };
 
 is_splice = function (x) {
-  if (is_composite(x)) {
+  if (is_table(x)) {
     return(x["_splice"]);
   }
 };
 
-map = function (f, t) {
-  var t1 = [];
-  var step = function (k, v) {
-    var x = f(k, v);
-    var p = is_pair(x);
-    var s = is_splice(x);
-    if (p) {
-      var k1 = p[0];
-      var v1 = p[1];
-      t1[k1] = v1;
-    } else if (is_composite(s)) {
-      t1 = join(t1, s);
-    } else if (is_is(s)) {
-      return(add(t1, s));
-    } else if (is_is(x)) {
-      return(add(t1, x));
-    }
-  };
+map = function (f, l) {
+  var l1 = [];
   var _36 = 0;
-  var _35 = t;
+  var _35 = l;
   while ((_36 < length(_35))) {
     var x = _35[_36];
-    step(x);
+    var x1 = f(x);
+    var s = is_splice(x1);
+    if (is_list(s)) {
+      l1 = join(l1, s);
+    } else if (is_is(s)) {
+      add(l1, s);
+    } else if (is_is(x1)) {
+      add(l1, x1);
+    }
     _36 = (_36 + 1);
   }
-  for (k in t) {
-    v = t[k];
-    if (isNaN(parseInt(k))) {
-      step(k, v);
-    }
-  }
-  return(t1);
-};
-
-mapi = function (f, t) {
-  return(map(function (k, v) {
-    if (is_nil(v)) {
-      return(f(k));
-    }
-  }, t));
-};
-
-mapk = function (f, t) {
-  return(map(function (k, v) {
-    if (is_is(v)) {
-      return(f(k, v));
-    }
-  }, t));
+  return(l1);
 };
 
 is_keys = function (t) {
@@ -439,12 +415,6 @@ is_keys = function (t) {
     }
   }
   return(is_k);
-};
-
-properties = function (t) {
-  return(mapk(function (k, v) {
-    return(pair(k, v));
-  }, t));
 };
 
 char = function (str, n) {
@@ -550,10 +520,14 @@ to_string = function (x) {
     return((x + ""));
   } else {
     var str = "(";
-    var ks = mapk(function (k, v) {
-      return(splice([(k + ":"), v]));
-    }, x);
-    var x1 = join(sub(x), ks);
+    var x1 = sub(x);
+    for (k in x) {
+      v = x[k];
+      if (isNaN(parseInt(k))) {
+        add(x1, (k + ":"));
+        add(x1, v);
+      }
+    }
     var i = 0;
     var _37 = x1;
     while ((i < length(_37))) {
@@ -938,8 +912,10 @@ quote_form = function (form) {
 terminator = function (is_stmt) {
   if (!(is_stmt)) {
     return("");
-  } else {
+  } else if ((target === "js")) {
     return(";\n");
+  } else {
+    return("\n");
   }
 };
 
@@ -1376,7 +1352,7 @@ setenv("let", function (bindings) {
   var i = 0;
   var renames = [];
   var locals = [];
-  mapi(function (_5) {
+  map(function (_5) {
     var lh = _5[0];
     var rh = _5[1];
     var _7 = 0;
@@ -1405,7 +1381,7 @@ setenv("let-macro", function (definitions) {
   add(environment, {});
   var is_embed = is_embed_macros;
   is_embed_macros = false;
-  mapi(function (m) {
+  map(function (m) {
     return((compiler("define-macro"))(m));
   }, definitions);
   is_embed_macros = is_embed;
@@ -1462,7 +1438,7 @@ setenv("across", function (_14) {
 
 setenv("set-of", function () {
   var elements = unstash(sub(arguments, 0));
-  return(join(["table"], mapi(function (x) {
+  return(join(["table"], map(function (x) {
     return(splice([x, true]));
   }, elements)));
 });
@@ -1539,9 +1515,14 @@ setenv("make", function () {
     return(l);
   } else {
     var id = make_id();
-    return(join(["let", [id, l]], join(mapk(function (k, v) {
-      return(["set", ["get", id, ["quote", k]], v]);
-    }, body), [id])));
+    var init = [];
+    for (k in body) {
+      v = body[k];
+      if (isNaN(parseInt(k))) {
+        add(init, ["set", ["get", id, ["quote", k]], v]);
+      }
+    }
+    return(join(["let", [id, l]], join(init, [id])));
   }
 });
 
@@ -1552,7 +1533,7 @@ setenv("cat!", function (a) {
 
 setenv("pr", function () {
   var xs = unstash(sub(arguments, 0));
-  return(["print", join(["cat"], mapi(function (x) {
+  return(["print", join(["cat"], map(function (x) {
     return(["to-string", x]);
   }, xs))]);
 });
@@ -1571,7 +1552,7 @@ setenv("with-indent", function (form) {
 
 setenv("define-special", function (name, keys, args) {
   var body = unstash(sub(arguments, 3));
-  return(["set", ["get", "special", ["quote", name]], join(["table", "compiler", join(["fn", args], body)], mapi(function (k) {
+  return(["set", ["get", "special", ["quote", name]], join(["table", "compiler", join(["fn", args], body)], map(function (k) {
     return(splice([k, true]));
   }, keys))]);
 });
