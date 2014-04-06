@@ -272,51 +272,51 @@ sub = function (x, from, upto) {
   }
 };
 
-hd = function (a) {
-  return(a[0]);
+hd = function (l) {
+  return(l[0]);
 };
 
-tl = function (a) {
-  return(sub(a, 1));
+tl = function (l) {
+  return(sub(l, 1));
 };
 
-add = function (a, x) {
-  return(a.push(x));
+add = function (l, x) {
+  return(l.push(x));
 };
 
-drop = function (a) {
-  return(a.pop());
+drop = function (l) {
+  return(l.pop());
 };
 
-shift = function (a) {
-  return(a.shift());
+shift = function (l) {
+  return(l.shift());
 };
 
-last = function (a) {
-  return(a[(length(a) - 1)]);
+last = function (l) {
+  return(l[(length(l) - 1)]);
 };
 
-join = function (a1, a2) {
-  if (is_nil(a1)) {
-    return(a2);
-  } else if (is_nil(a2)) {
-    return(a1);
+join = function (l1, l2) {
+  if (is_nil(l1)) {
+    return(l2);
+  } else if (is_nil(l2)) {
+    return(l1);
   } else {
-    var a3 = [];
-    a3 = a1.concat(a2);
-    for (k in a1) {
-      v = a1[k];
+    var l = [];
+    l = l1.concat(l2);
+    for (k in l1) {
+      v = l1[k];
       if (isNaN(parseInt(k))) {
-        a3[k] = v;
+        l[k] = v;
       }
     }
-    for (k in a2) {
-      v = a2[k];
+    for (k in l2) {
+      v = l2[k];
       if (isNaN(parseInt(k))) {
-        a3[k] = v;
+        l[k] = v;
       }
     }
-    return(a3);
+    return(l);
   }
 };
 
@@ -330,23 +330,23 @@ reduce = function (f, x) {
   }
 };
 
-keep = function (f, a) {
-  var a1 = [];
+keep = function (f, l) {
+  var l1 = [];
   var _28 = 0;
-  var _27 = a;
+  var _27 = l;
   while ((_28 < length(_27))) {
     var x = _27[_28];
     if (f(x)) {
-      add(a1, x);
+      add(l1, x);
     }
     _28 = (_28 + 1);
   }
-  return(a1);
+  return(l1);
 };
 
-find = function (f, a) {
+find = function (f, l) {
   var _30 = 0;
-  var _29 = a;
+  var _29 = l;
   while ((_30 < length(_29))) {
     var x = _29[_30];
     var x1 = f(x);
@@ -357,14 +357,14 @@ find = function (f, a) {
   }
 };
 
-pairwise = function (a) {
+pairwise = function (l) {
   var i = 0;
-  var a1 = [];
-  while ((i < length(a))) {
-    add(a1, [a[i], a[(i + 1)]]);
+  var l1 = [];
+  while ((i < length(l))) {
+    add(l1, [l[i], l[(i + 1)]]);
     i = (i + 2);
   }
-  return(a1);
+  return(l1);
 };
 
 iterate = function (f, count) {
@@ -1338,13 +1338,13 @@ main = function () {
   }
 };
 
-setenv("at", function (a, i) {
+setenv("at", function (l, i) {
   if (((target === "lua") && is_number(i))) {
     i = (i + 1);
   } else if ((target === "lua")) {
     i = ["+", i, 1];
   }
-  return(["get", a, i]);
+  return(["get", l, i]);
 });
 
 setenv("let", function (bindings) {
@@ -1425,15 +1425,15 @@ setenv("fn", function (args) {
 });
 
 setenv("across", function (_14) {
-  var list = _14[0];
+  var l = _14[0];
   var v = _14[1];
   var i = _14[2];
   var start = _14[3];
   var body = unstash(sub(arguments, 1));
-  var l = make_id();
+  var l1 = make_id();
   i = (i || make_id());
   start = (start || 0);
-  return(["let", [i, start, l, list], ["while", ["<", i, ["length", l]], join(["let", [v, ["at", l, i]]], join(body, [["set", i, ["+", i, 1]]]))]]);
+  return(["let", [i, start, l1, l], ["while", ["<", i, ["length", l1]], join(["let", [v, ["at", l1, i]]], join(body, [["set", i, ["+", i, 1]]]))]]);
 });
 
 setenv("set-of", function () {
@@ -1484,19 +1484,19 @@ setenv("list*", function () {
   if (is_empty(xs)) {
     return([]);
   } else {
-    var t = [];
+    var l = [];
     var i = 0;
     var _32 = xs;
     while ((i < length(_32))) {
       var x = _32[i];
       if ((i === (length(xs) - 1))) {
-        t = ["join", join(["list"], t), x];
+        l = ["join", join(["list"], l), x];
       } else {
-        add(t, x);
+        add(l, x);
       }
       i = (i + 1);
     }
-    return(t);
+    return(l);
   }
 });
 

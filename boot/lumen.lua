@@ -280,58 +280,58 @@ sub = function (x, from, upto)
   end
 end
 
-hd = function (a)
-  return(a[1])
+hd = function (l)
+  return(l[1])
 end
 
-tl = function (a)
-  return(sub(a, 1))
+tl = function (l)
+  return(sub(l, 1))
 end
 
-add = function (a, x)
-  return(table.insert(a, x))
+add = function (l, x)
+  return(table.insert(l, x))
 end
 
-drop = function (a)
-  return(table.remove(a))
+drop = function (l)
+  return(table.remove(l))
 end
 
-shift = function (a)
-  return(table.remove(a, 1))
+shift = function (l)
+  return(table.remove(l, 1))
 end
 
-last = function (a)
-  return(a[((length(a) - 1) + 1)])
+last = function (l)
+  return(l[((length(l) - 1) + 1)])
 end
 
-join = function (a1, a2)
-  if is_nil(a1) then
-    return(a2)
-  elseif is_nil(a2) then
-    return(a1)
+join = function (l1, l2)
+  if is_nil(l1) then
+    return(l2)
+  elseif is_nil(l2) then
+    return(l1)
   else
-    local a3 = {}
+    local l = {}
     local i = 0
-    local len = length(a1)
+    local len = length(l1)
     while (i < len) do
-      a3[(i + 1)] = a1[(i + 1)]
+      l[(i + 1)] = l1[(i + 1)]
       i = (i + 1)
     end
-    while (i < (len + length(a2))) do
-      a3[(i + 1)] = a2[((i - len) + 1)]
+    while (i < (len + length(l2))) do
+      l[(i + 1)] = l2[((i - len) + 1)]
       i = (i + 1)
     end
-    for k, v in pairs(a1) do
+    for k, v in pairs(l1) do
       if (not is_number(k)) then
-        a3[k] = v
+        l[k] = v
       end
     end
-    for k, v in pairs(a2) do
+    for k, v in pairs(l2) do
       if (not is_number(k)) then
-        a3[k] = v
+        l[k] = v
       end
     end
-    return(a3)
+    return(l)
   end
 end
 
@@ -345,23 +345,23 @@ reduce = function (f, x)
   end
 end
 
-keep = function (f, a)
-  local a1 = {}
+keep = function (f, l)
+  local l1 = {}
   local _28 = 0
-  local _27 = a
+  local _27 = l
   while (_28 < length(_27)) do
     local x = _27[(_28 + 1)]
     if f(x) then
-      add(a1, x)
+      add(l1, x)
     end
     _28 = (_28 + 1)
   end
-  return(a1)
+  return(l1)
 end
 
-find = function (f, a)
+find = function (f, l)
   local _30 = 0
-  local _29 = a
+  local _29 = l
   while (_30 < length(_29)) do
     local x = _29[(_30 + 1)]
     local x1 = f(x)
@@ -372,14 +372,14 @@ find = function (f, a)
   end
 end
 
-pairwise = function (a)
+pairwise = function (l)
   local i = 0
-  local a1 = {}
-  while (i < length(a)) do
-    add(a1, {a[(i + 1)], a[((i + 1) + 1)]})
+  local l1 = {}
+  while (i < length(l)) do
+    add(l1, {l[(i + 1)], l[((i + 1) + 1)]})
     i = (i + 2)
   end
-  return(a1)
+  return(l1)
 end
 
 iterate = function (f, count)
@@ -1373,13 +1373,13 @@ main = function ()
   end
 end
 
-setenv("at", function (a, i)
+setenv("at", function (l, i)
   if ((target == "lua") and is_number(i)) then
     i = (i + 1)
   elseif (target == "lua") then
     i = {"+", i, 1}
   end
-  return({"get", a, i})
+  return({"get", l, i})
 end)
 
 setenv("let", function (bindings, ...)
@@ -1460,15 +1460,15 @@ setenv("fn", function (args, ...)
 end)
 
 setenv("across", function (_14, ...)
-  local list = _14[1]
+  local l = _14[1]
   local v = _14[2]
   local i = _14[3]
   local start = _14[4]
   local body = unstash({...})
-  local l = make_id()
+  local l1 = make_id()
   i = (i or make_id())
   start = (start or 0)
-  return({"let", {i, start, l, list}, {"while", {"<", i, {"length", l}}, join({"let", {v, {"at", l, i}}}, join(body, {{"set", i, {"+", i, 1}}}))}})
+  return({"let", {i, start, l1, l}, {"while", {"<", i, {"length", l1}}, join({"let", {v, {"at", l1, i}}}, join(body, {{"set", i, {"+", i, 1}}}))}})
 end)
 
 setenv("set-of", function (...)
@@ -1519,19 +1519,19 @@ setenv("list*", function (...)
   if is_empty(xs) then
     return({})
   else
-    local t = {}
+    local l = {}
     local i = 0
     local _32 = xs
     while (i < length(_32)) do
       local x = _32[(i + 1)]
       if (i == (length(xs) - 1)) then
-        t = {"join", join({"list"}, t), x}
+        l = {"join", join({"list"}, l), x}
       else
-        add(t, x)
+        add(l, x)
       end
       i = (i + 1)
     end
-    return(t)
+    return(l)
   end
 end)
 

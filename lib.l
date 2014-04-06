@@ -38,12 +38,12 @@
 
 ;; macros
 
-(define-macro at (a i)
+(define-macro at (l i)
   (if (and (= target 'lua) (number? i))
       (set i (+ i 1))
       (= target 'lua)
       (set i `(+ ,i 1)))
-  `(get ,a ,i))
+  `(get ,l ,i))
 
 (define-macro let (bindings body...)
   (let (i 0
@@ -95,13 +95,13 @@
   (let ((args1 body1) (bind-arguments args body))
     `(function ,args1 ,@body1)))
 
-(define-macro across ((list v i start) body...)
-  (let (l (make-id))
+(define-macro across ((l v i start) body...)
+  (let (l1 (make-id))
     (set i (or i (make-id)))
     (set start (or start 0))
-    `(let (,i ,start ,l ,list)
-       (while (< ,i (length ,l))
-	 (let (,v (at ,l ,i))
+    `(let (,i ,start ,l1 ,l)
+       (while (< ,i (length ,l1))
+	 (let (,v (at ,l1 ,i))
 	   ,@body
 	   (set ,i (+ ,i 1)))))))
 
@@ -303,64 +303,64 @@
 
 ;; lists
 
-(define hd (a) (at a 0))
-(define tl (a) (sub a 1))
+(define hd (l) (at l 0))
+(define tl (l) (sub l 1))
 
-(define add (a x)
-  (target (js (a.push x)) (lua (table.insert a x))))
+(define add (l x)
+  (target (js (l.push x)) (lua (table.insert l x))))
 
-(define drop (a)
-  (target (js (a.pop)) (lua (table.remove a))))
+(define drop (l)
+  (target (js (l.pop)) (lua (table.remove l))))
 
-(define shift (a)
-  (target (js (a.shift)) (lua (table.remove a 1))))
+(define shift (l)
+  (target (js (l.shift)) (lua (table.remove l 1))))
 
-(define last (a)
-  (at a (- (length a) 1)))
+(define last (l)
+  (at l (- (length l) 1)))
 
-(define join (a1 a2)
-  (if (nil? a1) a2
-      (nil? a2) a1
-    (let (a3 ())
+(define join (l1 l2)
+  (if (nil? l1) l2
+      (nil? l2) l1
+    (let (l ())
       (target
-       (js (set a3 (a1.concat a2)))
+       (js (set l (l1.concat l2)))
        (lua
-        (let (i 0 len (length a1))
+        (let (i 0 len (length l1))
           (while (< i len)
-            (set (at a3 i) (at a1 i))
+            (set (at l i) (at l1 i))
             (set i (+ i 1)))
-          (while (< i (+ len (length a2)))
-            (set (at a3 i) (at a2 (- i len)))
+          (while (< i (+ len (length l2)))
+            (set (at l i) (at l2 (- i len)))
             (set i (+ i 1))))))
-      (each (a1 k v)
-        (set (get a3 k) v))
-      ;; properties on a2 supersede a1
-      (each (a2 k v)
-        (set (get a3 k) v))
-      a3)))
+      (each (l1 k v)
+        (set (get l k) v))
+      ;; properties on l2 supersede l1
+      (each (l2 k v)
+        (set (get l k) v))
+      l)))
 
 (define reduce (f x)
   (if (empty? x) x
       (= (length x) 1) (hd x)
     (f (hd x) (reduce f (tl x)))))
 
-(define keep (f a)
-  (let (a1 ())
-    (across (a x) (if (f x) (add a1 x)))
-    a1))
+(define keep (f l)
+  (let (l1 ())
+    (across (l x) (if (f x) (add l1 x)))
+    l1))
 
-(define find (f a)
-  (across (a x)
+(define find (f l)
+  (across (l x)
     (let (x1 (f x))
       (if x1 (return x1)))))
 
-(define pairwise (a)
+(define pairwise (l)
   (let (i 0
-        a1 ())
-    (while (< i (length a))
-      (add a1 (list (at a i) (at a (+ i 1))))
+        l1 ())
+    (while (< i (length l))
+      (add l1 (list (at l i) (at l (+ i 1))))
       (set i (+ i 2)))
-    a1))
+    l1))
 
 (define iterate (f count)
   (let (i 0)
@@ -377,12 +377,12 @@
 (define-macro list* xs
   (if (empty? xs)
       ()
-    (let (t ())
+    (let (l ())
       (across (xs x i)
 	(if (= i (- (length xs) 1))
-	    (set t (list 'join (join '(list) t) x))
-	  (add t x)))
-      t)))
+	    (set l (list 'join (join '(list) l) x))
+	  (add l x)))
+      l)))
 
 ;; tables
 
