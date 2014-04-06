@@ -1508,24 +1508,6 @@ setenv("each", function (_34) {
   return(["for", [t, k, v], ["if", ["target", ["lua", ["not", ["number?", k]]], ["js", ["isNaN", ["parseInt", k]]]], join(["do"], body)]]);
 });
 
-setenv("make", function () {
-  var body = unstash(sub(arguments, 0));
-  var l = join(["list"], body);
-  if (!(is_keys(body))) {
-    return(l);
-  } else {
-    var id = make_id();
-    var init = [];
-    for (k in body) {
-      v = body[k];
-      if (isNaN(parseInt(k))) {
-        add(init, ["set", ["get", id, ["quote", k]], v]);
-      }
-    }
-    return(join(["let", [id, l]], join(init, [id])));
-  }
-});
-
 setenv("cat!", function (a) {
   var bs = unstash(sub(arguments, 1));
   return(["set", a, join(["cat", a], bs)]);

@@ -1543,23 +1543,6 @@ setenv("each", function (_34, ...)
   return({"for", {t, k, v}, {"if", {"target", {"lua", {"not", {"number?", k}}}, {"js", {"isNaN", {"parseInt", k}}}}, join({"do"}, body)}})
 end)
 
-setenv("make", function (...)
-  local body = unstash({...})
-  local l = join({"list"}, body)
-  if (not is_keys(body)) then
-    return(l)
-  else
-    local id = make_id()
-    local init = {}
-    for k, v in pairs(body) do
-      if (not is_number(k)) then
-        add(init, {"set", {"get", id, {"quote", k}}, v})
-      end
-    end
-    return(join({"let", {id, l}}, join(init, {id})))
-  end
-end)
-
 setenv("cat!", function (a, ...)
   local bs = unstash({...})
   return({"set", a, join({"cat", a}, bs)})

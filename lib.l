@@ -416,18 +416,6 @@
       (break))
     k?))
 
-(define-macro make body
-  (let (l `(list ,@body))
-    (if (not (keys? body))
-        l
-      (let (id (make-id)
-            init ())
-        (each (body k v)
-          (add init `(set (get ,id ',k) ,v)))
-        `(let (,id ,l)
-           ,@init
-           ,id)))))
-
 ;; strings
 
 (define char (str n)

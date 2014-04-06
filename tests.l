@@ -336,14 +336,6 @@
       (test= 42 d))
     (test= 40 d)))
 
-(define-test make ()
-  (test= () (make))
-  (test= '(1 2 3) (make 1 2 3))
-  (test= 17 (get (make foo: 17) 'foo))
-  (test= 17 (get (make 1 foo: 17) 'foo))
-  (test= (table foo 2) (make foo: 2))
-  (test= (table foo 2) ((fn () (make foo: 2)))))
-
 ;; expressions
 
 (define-test if-expr ()
