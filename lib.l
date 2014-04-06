@@ -45,7 +45,7 @@
       (set i `(+ ,i 1)))
   `(get ,l ,i))
 
-(define-macro let (bindings body...)
+(define-macro let (bindings rest: body)
   (let (i 0
 	renames ()
 	locals ())
@@ -61,7 +61,7 @@
          (pairwise bindings))
     `(let-symbol ,renames ,@(join locals body))))
 
-(define-macro let-macro (definitions body...)
+(define-macro let-macro (definitions rest: body)
   (add environment (table))
   (let (embed? embed-macros?)
     (set embed-macros? false)
@@ -73,7 +73,7 @@
     (drop environment)
     `(do ,@body1)))
 
-(define-macro let-symbol (expansions body...)
+(define-macro let-symbol (expansions rest: body)
   (add environment (table))
   (map (fn ((name expr))
          (setenv name expr))
@@ -86,16 +86,16 @@
   (setenv name expansion)
   nil)
 
-(define-macro define (name x body...)
+(define-macro define (name x rest: body)
   (if (not (empty? body))
       (set x `(fn ,x ,@body)))
   `(set ,name ,x))
 
-(define-macro fn (args body...)
+(define-macro fn (args rest: body)
   (let ((args1 body1) (bind-arguments args body))
     `(function ,args1 ,@body1)))
 
-(define-macro across ((l v i start) body...)
+(define-macro across ((l v i start) rest: body)
   (let (l1 (make-id))
     (set i (or i (make-id)))
     (set start (or start 0))
@@ -109,13 +109,6 @@
   `(table ,@(map (fn (x) (splice (list x true))) elements)))
 
 ;; macro helpers
-
-(define vararg? (x)
-  (and (> (length x) 3)
-       (= (sub x (- (length x) 3) (length x)) "...")))
-
-(define vararg-name (x)
-  (sub x 0 (- (length x) 3)))
 
 (define stash (args)
   (if (keys? args)
@@ -142,38 +135,36 @@
         rest (fn ()
                (if (= target 'js)
                    `(unstash (sub arguments ,(length args1)))
-                 (do (add args1 '...)
-                     '(unstash (list ...))))))
+                 (do (add args1 '...) '(unstash (list ...))))))
     (if (atom? args)
         (list args1 `((let ,(list args (rest)) ,@body)))
-      (let (bindings ())
+      (let (bs ())
         (across (args arg)
-          (if (vararg? arg)
-              (let (v (vararg-name arg)
-                    expr (rest))
-                (join! bindings (list v expr))
-                (break))                  ; no more args allowed
-            (list? arg)
-            (let (v (make-id))
-              (add args1 v)
-              (join! bindings (list arg v)))
+          (if (list? arg)
+              (let (v (make-id))
+                (add args1 v)
+                (join! bs (list arg v)))
             (add args1 arg)))
-        (if (empty? bindings)
+        (let (r (get args 'rest))
+          (if r (join! bs (list r (rest)))))
+        (if (empty? bs)
             (list args1 body)
-          (list args1 `((let ,bindings ,@body))))))))
+          (list args1 `((let ,bs ,@body))))))))
 
 (define bind (lh rh)
   (if (and (list? lh) (list? rh))
       (let (id (make-id))
 	`((,id ,rh) ,@(bind lh id)))
       (atom? lh) `((,lh ,rh))
-    (let (bindings ())
-      (across (lh x i)
-	(let (b (if (vararg? x)
-		    `((,(vararg-name x) (sub ,rh ,i)))
-		  (bind x `(at ,rh ,i))))
-	  (join! bindings b)))
-      bindings)))
+    (let (r (get lh 'rest)
+          i 0
+          bs (map (fn (x)
+                    (let (b (bind x `(at ,rh ,i)))
+                      (set i (+ i 1))
+                      (splice b)))
+                  lh))
+      (if r (join! bs (bind r `(sub ,rh ,i))))
+      bs)))
 
 ;; expansion
 
@@ -209,7 +200,7 @@
 	  ;; scoped forms
 	  (or (= name 'function)
 	      (= name 'for))
-	  (let ((_ args body...) form)
+	  (let ((_ args rest: body) form)
 	    (with-scope (args)
 	      `(,name ,args ,@(macroexpand body))))
 	;; list
@@ -371,7 +362,7 @@
 (define-macro join* xs
   (reduce (fn (a b) (list 'join a b)) xs))
 
-(define-macro join! (a bs...)
+(define-macro join! (a rest: bs)
   `(set ,a (join* ,a ,@bs)))
 
 (define-macro list* xs
@@ -386,7 +377,7 @@
 
 ;; tables
 
-(define-macro each ((t k v) body...)
+(define-macro each ((t k v) rest: body)
   `(for (,t ,k ,v)
      (if (target
           (lua (not (number? ,k)))
@@ -442,7 +433,7 @@
 	  (add strs str)
 	  strs))))
 
-(define-macro cat! (a bs...)
+(define-macro cat! (a rest: bs)
   `(set ,a (cat ,a ,@bs)))
 
 ;; io

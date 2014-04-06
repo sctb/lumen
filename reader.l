@@ -32,7 +32,7 @@
        (> (length atom) 1)
        (= (char atom (- (length atom) 1)) ":")))
 
-(define-macro define-reader ((char stream) body...)
+(define-macro define-reader ((char stream) rest: body)
   `(set (get read-table ,char) (fn (,stream) ,@body)))
 
 (define-reader ("" s) ; atom

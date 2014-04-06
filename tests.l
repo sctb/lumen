@@ -21,7 +21,7 @@
   `(test (equal? ,a ,b)
 	 (cat " failed: expected " (to-string ,a) ", was " (to-string ,b))))
 
-(define-macro define-test (name _ body...)
+(define-macro define-test (name _ rest: body)
   `(add tests (list ',name (fn () ,@body))))
 
 (define run-tests ()
@@ -268,9 +268,9 @@
     (test= 2 x)
     (test= 3 y)
     (test= 4 z))
-  (let ((a b c...) '(1 2 3 4))
+  (let ((a b rest: c) '(1 2 3 4))
     (test= '(3 4) c))
-  (let ((w (x y...) z...) '(1 (2 3 4) 5 6 7))
+  (let ((w (x rest: y) rest: z) '(1 (2 3 4) 5 6 7))
     (test= '(3 4) y)
     (test= '(5 6 7) z)))
 
@@ -481,9 +481,9 @@
 (define-test parameters ()
   (let (f (fn (a (b c)) (list a b c)))
     (test= '(1 2 3) (f 1 '(2 3)))
-    (set f (fn (a (b c...) d...) (list a b c d)))
+    (set f (fn (a (b rest: c) rest: d) (list a b c d)))
     (test= '(1 2 (3 4) (5 6 7)) (f 1 '(2 3 4) 5 6 7))
-    (test= '(3 4) ((fn (a b c...) c) 1 2 3 4))
+    (test= '(3 4) ((fn (a b rest: c) c) 1 2 3 4))
     (test= '((3 4) (5 6 7))
-           ((fn (w (x y...) z...) (list y z))
+           ((fn (w (x rest: y) rest: z) (list y z))
             1 '(2 3 4) 5 6 7))))

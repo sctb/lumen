@@ -72,7 +72,7 @@
           (string? f) (cat f1 args)
         (error "Invalid function call")))))
 
-(define compile-operator ((op args...))
+(define compile-operator ((op rest: args))
   (let (str "("
         op1 (getop op))
     (across (args arg i)
@@ -138,7 +138,7 @@
 (define special? (form)
   (and (list? form) (is? (get special (hd form)))))
 
-(define-macro define-special (name keys args body...)
+(define-macro define-special (name keys args rest: body)
   `(set (get special ',name)
         (table compiler (fn ,args ,@body)
                ,@(map (fn (k) (splice (list k true))) keys))))
@@ -175,12 +175,12 @@
 (define-special break (statement) (form)
   (cat (indentation) "break"))
 
-(define-special function () ((args body...))
+(define-special function () ((args rest: body))
   (compile-function args body))
 
 (define macros "")
 
-(define-special define-macro (statement terminated) ((name args body...))
+(define-special define-macro (statement terminated) ((name args rest: body))
   (let (macro `(setenv ',name (fn ,args ,@body)))
     (eval (compile-for-target (language) macro))
     (if embed-macros?
@@ -204,7 +204,7 @@
 	(cat ind keyword id)
       (cat ind keyword id " = " (compile value)))))
 
-(define-special for (statement terminated) (((t k v) body...))
+(define-special for (statement terminated) (((t k v) rest: body))
   (let (t1 (compile t)
         ind (indentation))
     (if (= target 'lua)
