@@ -32,6 +32,11 @@
        (> (length atom) 1)
        (= (char atom (- (length atom) 1)) ":")))
 
+(define flag? (atom)
+  (and (string? atom)
+       (> (length atom) 1)
+       (= (char atom 0) ":")))
+
 (define-macro define-reader ((char stream) rest: body)
   `(set (get read-table ,char) (fn (,stream) ,@body)))
 
@@ -62,7 +67,8 @@
 		  (let (key (sub x 0 (- (length x) 1))
 			val (read s))
 		    (set (get l key) val))
-		  (add l x)))
+                  (flag? x) (set (get l (sub x 1)) true)
+		(add l x)))
 	    c (do (read-char s) (break)) ; )
 	  (error (cat "Expected ) at " s.pos)))))
     l))

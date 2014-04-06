@@ -594,6 +594,10 @@ is_key = function (atom) {
   return((is_string(atom) && (length(atom) > 1) && (char(atom, (length(atom) - 1)) === ":")));
 };
 
+is_flag = function (atom) {
+  return((is_string(atom) && (length(atom) > 1) && (char(atom, 0) === ":")));
+};
+
 read_table[""] = function (s) {
   var str = "";
   while (true) {
@@ -629,6 +633,8 @@ read_table["("] = function (s) {
         var key = sub(x, 0, (length(x) - 1));
         var val = read(s);
         l[key] = val;
+      } else if (is_flag(x)) {
+        l[sub(x, 1)] = true;
       } else {
         add(l, x);
       }

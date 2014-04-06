@@ -54,8 +54,12 @@
   (test= false (key? ":a"))
   (test= false (key? ":"))
   (test= false (key? ""))
+  (test= true (flag? ":foo"))
+  (test= false (flag? "foo:"))
+  (test= false (flag? ":"))
   (test= 2 (length (read-from-string "(1 2 a: 7)")))
-  (test= 7 (get (read-from-string "(1 2 a: 7)") 'a)))
+  (test= 7 (get (read-from-string "(1 2 a: 7)") 'a))
+  (test= true (get (read-from-string "(:a)") 'a)))
 
 (define-test boolean ()
   (test= true (or true false))

@@ -624,6 +624,10 @@ is_key = function (atom)
   return((is_string(atom) and (length(atom) > 1) and (char(atom, (length(atom) - 1)) == ":")))
 end
 
+is_flag = function (atom)
+  return((is_string(atom) and (length(atom) > 1) and (char(atom, 0) == ":")))
+end
+
 read_table[""] = function (s)
   local str = ""
   while true do
@@ -659,6 +663,8 @@ read_table["("] = function (s)
         local key = sub(x, 0, (length(x) - 1))
         local val = read(s)
         l[key] = val
+      elseif is_flag(x) then
+        l[sub(x, 1)] = true
       else
         add(l, x)
       end
