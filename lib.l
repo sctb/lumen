@@ -109,7 +109,16 @@
   `(object ,@(map (fn (x) (splice (list x true))) elements)))
 
 (define-macro list body
-  `(array ,@body))
+  (let (l `(array ,@body))
+    (if (not (keys? body))
+        l
+      (let (id (make-id)
+            init ())
+        (each (body k v)
+          (add init `(set (get ,id ',k) ,v)))
+        `(let (,id ,l)
+           ,@init
+           ,id)))))
 
 (define-macro table body
   (let (l ())

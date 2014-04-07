@@ -106,7 +106,11 @@
   (test= '(a) (quote (a)))
   (test= '(()) (list (list)))
   (test= 0 (length (list)))
-  (test= 2 (length (list 1 2))))
+  (test= 2 (length (list 1 2)))
+  (test= '(1 2 3) (list 1 2 3))
+  (test= 17 (get (list foo: 17) 'foo))
+  (test= 17 (get (list 1 foo: 17) 'foo))
+  (test= true (get (list :foo) 'foo)))
 
 (define-test quasiquote ()
   (test= (quote a) (quasiquote a))
@@ -202,7 +206,8 @@
     (test= 10 i)))
 
 (define-test table ()
-  (test= 10 (get (table a: 10) 'a)))
+  (test= 10 (get (table a: 10) 'a))
+  (test= true (get (table :a) 'a)))
 
 (define-test get-set ()
   (let (t (table))

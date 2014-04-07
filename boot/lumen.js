@@ -555,7 +555,7 @@ delimiters = {"(": true, ")": true, ";": true, "\n": true};
 whitespace = {" ": true, "\t": true, "\n": true};
 
 make_stream = function (str) {
-  return({string: str, len: length(str), pos: 0});
+  return({string: str, pos: 0, len: length(str)});
 };
 
 peek_char = function (s) {
@@ -722,7 +722,7 @@ read_from_string = function (str) {
   return(read(make_stream(str)));
 };
 
-operators = {js: {"~=": "!=", "=": "===", or: "||", cat: "+", and: "&&"}, lua: {"~=": true, "=": "==", or: true, cat: "..", and: true}, common: {">=": true, "%": true, "/": true, "<": true, "+": true, ">": true, "-": true, "*": true, "<=": true}};
+operators = {lua: {"=": "==", "~=": true, or: true, and: true, cat: ".."}, js: {"=": "===", "~=": "!=", or: "||", and: "&&", cat: "+"}, common: {"-": true, "<": true, "/": true, ">": true, "%": true, ">=": true, "<=": true, "+": true, "*": true}};
 
 getop = function (op) {
   var op1 = (operators["common"][op] || operators[target][op]);
@@ -1479,7 +1479,20 @@ setenv("set-of", function () {
 
 setenv("list", function () {
   var body = unstash(sub(arguments, 0));
-  return(join(["array"], body));
+  var l = join(["array"], body);
+  if (!(is_keys(body))) {
+    return(l);
+  } else {
+    var id = make_id();
+    var init = [];
+    for (k in body) {
+      v = body[k];
+      if (isNaN(parseInt(k))) {
+        add(init, ["set", ["get", id, ["quote", k]], v]);
+      }
+    }
+    return(join(["let", [id, l]], join(init, [id])));
+  }
 });
 
 setenv("table", function () {

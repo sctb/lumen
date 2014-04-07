@@ -1518,7 +1518,19 @@ end)
 
 setenv("list", function (...)
   local body = unstash({...})
-  return(join({"array"}, body))
+  local l = join({"array"}, body)
+  if (not is_keys(body)) then
+    return(l)
+  else
+    local id = make_id()
+    local init = {}
+    for k, v in pairs(body) do
+      if (not is_number(k)) then
+        add(init, {"set", {"get", id, {"quote", k}}, v})
+      end
+    end
+    return(join({"let", {id, l}}, join(init, {id})))
+  end
 end)
 
 setenv("table", function (...)
