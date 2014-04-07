@@ -108,6 +108,9 @@
 (define-macro set-of elements
   `(object ,@(map (fn (x) (splice (list x true))) elements)))
 
+(define-macro list body
+  `(array ,@body))
+
 (define-macro table body
   (let (l ())
     (each (body k v)
@@ -241,14 +244,14 @@
     (map (fn (x) (quasiexpand x depth)) form)))
 
 (define quasiquote-list (form depth)
-  (let (xs (list '(list)))
+  (let (xs (list '(array)))
     ;; collect sibling lists
     (across (form x)
       (if (and (list? x)
 	       (can-unquote? depth)
 	       (= (hd x) 'unquote-splicing))
 	  (do (add xs (quasiexpand (at x 1)))
-	      (add xs '(list)))
+	      (add xs '(array)))
 	(add (last xs) (quasiexpand x depth))))
     (if (= (length xs) 1)		; no splicing needed
 	(hd xs)
@@ -258,7 +261,7 @@
 	      (keep (fn (x)
                       (or (empty? x)
                           (not (and (= (length x) 1)
-                                    (= (hd x) 'list)))))
+                                    (= (hd x) 'array)))))
                     xs)))))
 
 ;; languages

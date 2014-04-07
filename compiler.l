@@ -76,7 +76,7 @@
 
 (define compile-call (form)
   (if (empty? form)
-      ((compiler 'list) form) ; ()
+      ((compiler 'array) form) ; ()
     (let (f (hd form)
           f1 (compile f)
           args (compile-args (tl form) true))
@@ -131,7 +131,7 @@
             (cat "\"\\\"" str "\\\"\""))
         (string? form) (cat "\"" form "\"")
         (to-string form))
-    ((compiler 'list) form 0)))
+    ((compiler 'array) form 0)))
 
 (define terminator (stmt?)
   (if (not stmt?) ""
@@ -243,7 +243,7 @@
 	open (if (= target 'js) "!(" "(not "))
     (cat open e ")")))
 
-(define-special list () (forms depth)
+(define-special array () (forms depth)
   (let (open (if (= target 'lua) "{" "[")
 	close (if (= target 'lua) "}" "]")
 	str "")

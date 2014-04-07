@@ -208,14 +208,14 @@ quasiexpand = function (form, depth) {
 };
 
 quasiquote_list = function (form, depth) {
-  var xs = [["list"]];
+  var xs = [["array"]];
   var _24 = 0;
   var _23 = form;
   while ((_24 < length(_23))) {
     var x = _23[_24];
     if ((is_list(x) && is_can_unquote(depth) && (hd(x) === "unquote-splicing"))) {
       add(xs, quasiexpand(x[1]));
-      add(xs, ["list"]);
+      add(xs, ["array"]);
     } else {
       add(last(xs), quasiexpand(x, depth));
     }
@@ -227,7 +227,7 @@ quasiquote_list = function (form, depth) {
     return(reduce(function (a, b) {
       return(["join", a, b]);
     }, keep(function (x) {
-      return((is_empty(x) || !(((length(x) === 1) && (hd(x) === "list")))));
+      return((is_empty(x) || !(((length(x) === 1) && (hd(x) === "array")))));
     }, xs)));
   }
 };
@@ -555,7 +555,7 @@ delimiters = {"(": true, ")": true, ";": true, "\n": true};
 whitespace = {" ": true, "\t": true, "\n": true};
 
 make_stream = function (str) {
-  return({len: length(str), string: str, pos: 0});
+  return({string: str, len: length(str), pos: 0});
 };
 
 peek_char = function (s) {
@@ -722,7 +722,7 @@ read_from_string = function (str) {
   return(read(make_stream(str)));
 };
 
-operators = {js: {cat: "+", "=": "===", and: "&&", or: "||", "~=": "!="}, lua: {cat: "..", "=": "==", and: true, "~=": true, or: true}, common: {"%": true, "<=": true, ">=": true, "+": true, "*": true, "-": true, "<": true, "/": true, ">": true}};
+operators = {js: {"~=": "!=", "=": "===", or: "||", cat: "+", and: "&&"}, lua: {"~=": true, "=": "==", or: true, cat: "..", and: true}, common: {">=": true, "%": true, "/": true, "<": true, "+": true, ">": true, "-": true, "*": true, "<=": true}};
 
 getop = function (op) {
   var op1 = (operators["common"][op] || operators[target][op]);
@@ -832,7 +832,7 @@ compile_atom = function (form) {
 
 compile_call = function (form) {
   if (is_empty(form)) {
-    return((compiler("list"))(form));
+    return((compiler("array"))(form));
   } else {
     var f = hd(form);
     var f1 = compile(f);
@@ -930,7 +930,7 @@ quote_form = function (form) {
       return(to_string(form));
     }
   } else {
-    return((compiler("list"))(form, 0));
+    return((compiler("array"))(form, 0));
   }
 };
 
@@ -1132,7 +1132,7 @@ special["not"] = {compiler: function (_57) {
   return((open + e + ")"));
 }};
 
-special["list"] = {compiler: function (forms, depth) {
+special["array"] = {compiler: function (forms, depth) {
   var open = (function () {
     if ((target === "lua")) {
       return("{");
@@ -1475,6 +1475,11 @@ setenv("set-of", function () {
   return(join(["object"], map(function (x) {
     return(splice([x, true]));
   }, elements)));
+});
+
+setenv("list", function () {
+  var body = unstash(sub(arguments, 0));
+  return(join(["array"], body));
 });
 
 setenv("table", function () {

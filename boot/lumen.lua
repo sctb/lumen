@@ -206,14 +206,14 @@ quasiexpand = function (form, depth)
 end
 
 quasiquote_list = function (form, depth)
-  local xs = {{"list"}}
+  local xs = {{"array"}}
   local _24 = 0
   local _23 = form
   while (_24 < length(_23)) do
     local x = _23[(_24 + 1)]
     if (is_list(x) and is_can_unquote(depth) and (hd(x) == "unquote-splicing")) then
       add(xs, quasiexpand(x[2]))
-      add(xs, {"list"})
+      add(xs, {"array"})
     else
       add(last(xs), quasiexpand(x, depth))
     end
@@ -225,7 +225,7 @@ quasiquote_list = function (form, depth)
     return(reduce(function (a, b)
       return({"join", a, b})
     end, keep(function (x)
-      return((is_empty(x) or (not ((length(x) == 1) and (hd(x) == "list")))))
+      return((is_empty(x) or (not ((length(x) == 1) and (hd(x) == "array")))))
     end, xs)))
   end
 end
@@ -866,7 +866,7 @@ end
 
 compile_call = function (form)
   if is_empty(form) then
-    return((compiler("list"))(form))
+    return((compiler("array"))(form))
   else
     local f = hd(form)
     local f1 = compile(f)
@@ -964,7 +964,7 @@ quote_form = function (form)
       return(to_string(form))
     end
   else
-    return((compiler("list"))(form, 0))
+    return((compiler("array"))(form, 0))
   end
 end
 
@@ -1166,7 +1166,7 @@ special["not"] = {["compiler"] = function (_57)
   return((open .. e .. ")"))
 end}
 
-special["list"] = {["compiler"] = function (forms, depth)
+special["array"] = {["compiler"] = function (forms, depth)
   local open = (function ()
     if (target == "lua") then
       return("{")
@@ -1514,6 +1514,11 @@ setenv("set-of", function (...)
   return(join({"object"}, map(function (x)
     return(splice({x, true}))
   end, elements)))
+end)
+
+setenv("list", function (...)
+  local body = unstash({...})
+  return(join({"array"}, body))
 end)
 
 setenv("table", function (...)
