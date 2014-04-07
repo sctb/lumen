@@ -4,7 +4,7 @@
 (define whitespace (set-of " " "\t" "\n"))
 
 (define make-stream (str)
-  (table pos 0 string str len (length str)))
+  (table pos: 0 string: str len: (length str)))
 
 (define peek-char (s)
   (if (< s.pos s.len) (char s.string s.pos)))
@@ -31,6 +31,11 @@
   (and (string? atom)
        (> (length atom) 1)
        (= (char atom (- (length atom) 1)) ":")))
+
+(define key (str)
+  (if (string-literal? str)
+      (sub str 1 (- (length str) 1))
+    str))
 
 (define flag? (atom)
   (and (string? atom)
@@ -64,10 +69,10 @@
 	(if (and c (not (= c ")")))
 	    (let (x (read s))
 	      (if (key? x)
-		  (let (key (sub x 0 (- (length x) 1))
-			val (read s))
-		    (set (get l key) val))
-                  (flag? x) (set (get l (sub x 1)) true)
+		  (let (k (sub x 0 (- (length x) 1))
+			v (read s))
+		    (set (get l (key k)) v))
+                  (flag? x) (set (get l (key (sub x 1))) true)
 		(add l x)))
 	    c (do (read-char s) (break)) ; )
 	  (error (cat "Expected ) at " s.pos)))))
@@ -78,15 +83,18 @@
 
 (define-reader ("\"" s)
   (read-char s)
-  (let (str "\"")
+  (let (str "\"" colon "")
     (while true
       (let (c (peek-char s))
 	(if (and c (not (= c "\"")))
 	    (do (if (= c "\\") (cat! str (read-char s)))
 		(cat! str (read-char s)))
-	    c (do (read-char s) (break)) ; "
+	    c (do (read-char s)         ; "
+                  (if (= (peek-char s) ":")
+                      (set colon (read-char s)))
+                  (break))
 	  (error (cat "Expected \" at " s.pos)))))
-    (cat str "\"")))
+    (cat str "\"" colon)))
 
 (define-reader ("'" s)
   (read-char s)

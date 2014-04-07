@@ -40,7 +40,7 @@ is_embed_macros = false
 
 stash = function (args)
   if is_keys(args) then
-    local p = {_stash = true}
+    local p = {["_stash"] = true}
     for k, v in pairs(args) do
       if (not is_number(k)) then
         p[k] = v
@@ -377,7 +377,7 @@ iterate = function (f, count)
 end
 
 splice = function (x)
-  return({_splice = x})
+  return({["_splice"] = x})
 end
 
 is_splice = function (x)
@@ -419,6 +419,14 @@ end
 
 char = function (str, n)
   return(sub(str, n, (n + 1)))
+end
+
+code = function (str, n)
+  return(string.byte(str, (function ()
+    if n then
+      return((n + 1))
+    end
+  end)()))
 end
 
 search = function (str, pattern, start)
@@ -581,7 +589,7 @@ delimiters = {["("] = true, [")"] = true, [";"] = true, ["\n"] = true}
 whitespace = {[" "] = true, ["\t"] = true, ["\n"] = true}
 
 make_stream = function (str)
-  return({pos = 0, string = str, len = length(str)})
+  return({["pos"] = 0, ["string"] = str, ["len"] = length(str)})
 end
 
 peek_char = function (s)
@@ -624,6 +632,14 @@ is_key = function (atom)
   return((is_string(atom) and (length(atom) > 1) and (char(atom, (length(atom) - 1)) == ":")))
 end
 
+key = function (str)
+  if is_string_literal(str) then
+    return(sub(str, 1, (length(str) - 1)))
+  else
+    return(str)
+  end
+end
+
 is_flag = function (atom)
   return((is_string(atom) and (length(atom) > 1) and (char(atom, 0) == ":")))
 end
@@ -660,11 +676,11 @@ read_table["("] = function (s)
     if (c and (not (c == ")"))) then
       local x = read(s)
       if is_key(x) then
-        local key = sub(x, 0, (length(x) - 1))
-        local val = read(s)
-        l[key] = val
+        local k = sub(x, 0, (length(x) - 1))
+        local v = read(s)
+        l[key(k)] = v
       elseif is_flag(x) then
-        l[sub(x, 1)] = true
+        l[key(sub(x, 1))] = true
       else
         add(l, x)
       end
@@ -685,6 +701,7 @@ end
 read_table["\""] = function (s)
   read_char(s)
   local str = "\""
+  local colon = ""
   while true do
     local c = peek_char(s)
     if (c and (not (c == "\""))) then
@@ -694,12 +711,15 @@ read_table["\""] = function (s)
       str = (str .. read_char(s))
     elseif c then
       read_char(s)
+      if (peek_char(s) == ":") then
+        colon = read_char(s)
+      end
       break
     else
       error(("Expected \" at " .. s.pos))
     end
   end
-  return((str .. "\""))
+  return((str .. "\"" .. colon))
 end
 
 read_table["'"] = function (s)
@@ -736,10 +756,15 @@ read_from_string = function (str)
   return(read(make_stream(str)))
 end
 
-operators = {common = {["+"] = "+", ["-"] = "-", ["%"] = "%", ["*"] = "*", ["/"] = "/", ["<"] = "<", [">"] = ">", ["<="] = "<=", [">="] = ">="}, js = {["="] = "===", ["~="] = "!=", ["and"] = "&&", ["or"] = "||", ["cat"] = "+"}, lua = {["="] = "==", ["~="] = "~=", ["and"] = "and", ["or"] = "or", ["cat"] = ".."}}
+operators = {["common"] = {["+"] = true, ["-"] = true, ["%"] = true, ["*"] = true, ["/"] = true, ["<"] = true, [">"] = true, ["<="] = true, [">="] = true}, ["js"] = {["="] = "===", ["~="] = "!=", ["and"] = "&&", ["or"] = "||", ["cat"] = "+"}, ["lua"] = {["="] = "==", ["cat"] = "..", ["~="] = true, ["and"] = true, ["or"] = true}}
 
 getop = function (op)
-  return((operators["common"][op] or operators[target][op]))
+  local op1 = (operators["common"][op] or operators[target][op])
+  if (op1 == true) then
+    return(op)
+  else
+    return(op1)
+  end
 end
 
 is_operator = function (form)
@@ -788,6 +813,18 @@ compile_body = function (forms, is_tail)
     i = (i + 1)
   end
   return(str)
+end
+
+is_valid_id = function (id)
+  local i = 0
+  while (i < length(id)) do
+    local n = code(id, i)
+    if (not (((i > 0) and (n > 47) and (n < 58)) or ((n > 64) and (n < 91)) or ((n > 96) and (n < 173)) or (n == 95))) then
+      return(false)
+    end
+    i = (i + 1)
+  end
+  return(true)
 end
 
 identifier = function (id)
@@ -969,11 +1006,11 @@ is_self_terminating = function (name)
   return(special[name]["terminated"])
 end
 
-special["do"] = {compiler = function (forms, is_tail)
+special["do"] = {["compiler"] = function (forms, is_tail)
   return(compile_body(forms, is_tail))
-end, statement = true, terminated = true}
+end, ["statement"] = true, ["terminated"] = true}
 
-special["if"] = {compiler = function (form, is_tail)
+special["if"] = {["compiler"] = function (form, is_tail)
   local str = ""
   local i = 0
   local _44 = form
@@ -992,9 +1029,9 @@ special["if"] = {compiler = function (form, is_tail)
     i = (i + 1)
   end
   return(str)
-end, statement = true, terminated = true}
+end, ["statement"] = true, ["terminated"] = true}
 
-special["while"] = {compiler = function (form)
+special["while"] = {["compiler"] = function (form)
   local condition = compile(hd(form))
   local body = (function ()
     indent_level = (indent_level + 1)
@@ -1008,13 +1045,13 @@ special["while"] = {compiler = function (form)
   else
     return((ind .. "while " .. condition .. " do\n" .. body .. ind .. "end\n"))
   end
-end, statement = true, terminated = true}
+end, ["statement"] = true, ["terminated"] = true}
 
-special["break"] = {compiler = function (form)
+special["break"] = {["compiler"] = function (form)
   return((indentation() .. "break"))
-end, statement = true}
+end, ["statement"] = true}
 
-special["function"] = {compiler = function (_46)
+special["function"] = {["compiler"] = function (_46)
   local args = _46[1]
   local body = sub(_46, 1)
   return(compile_function(args, body))
@@ -1022,7 +1059,7 @@ end}
 
 macros = ""
 
-special["define-macro"] = {compiler = function (_47)
+special["define-macro"] = {["compiler"] = function (_47)
   local name = _47[1]
   local args = _47[2]
   local body = sub(_47, 2)
@@ -1032,13 +1069,13 @@ special["define-macro"] = {compiler = function (_47)
     macros = (macros .. compile_toplevel(macro))
   end
   return("")
-end, statement = true, terminated = true}
+end, ["statement"] = true, ["terminated"] = true}
 
-special["return"] = {compiler = function (form)
+special["return"] = {["compiler"] = function (form)
   return((indentation() .. compile_call(join({"return"}, form))))
-end, statement = true}
+end, ["statement"] = true}
 
-special["error"] = {compiler = function (_48)
+special["error"] = {["compiler"] = function (_48)
   local expr = _48[1]
   local e = (function ()
     if (target == "js") then
@@ -1048,9 +1085,9 @@ special["error"] = {compiler = function (_48)
     end
   end)()
   return((indentation() .. e))
-end, statement = true}
+end, ["statement"] = true}
 
-special["local"] = {compiler = function (_49)
+special["local"] = {["compiler"] = function (_49)
   local name = _49[1]
   local value = _49[2]
   local id = identifier(name)
@@ -1067,9 +1104,9 @@ special["local"] = {compiler = function (_49)
   else
     return((ind .. keyword .. id .. " = " .. compile(value)))
   end
-end, statement = true}
+end, ["statement"] = true}
 
-special["for"] = {compiler = function (_50)
+special["for"] = {["compiler"] = function (_50)
   local _51 = _50[1]
   local t = _51[1]
   local k = _51[2]
@@ -1094,18 +1131,18 @@ special["for"] = {compiler = function (_50)
     end)()
     return((ind .. "for (" .. k .. " in " .. t1 .. ") {\n" .. _53 .. ind .. "}\n"))
   end
-end, statement = true, terminated = true}
+end, ["statement"] = true, ["terminated"] = true}
 
-special["set"] = {compiler = function (_55)
+special["set"] = {["compiler"] = function (_55)
   local lh = _55[1]
   local rh = _55[2]
   if is_nil(rh) then
     error("Missing right-hand side in assignment")
   end
   return((indentation() .. compile(lh) .. " = " .. compile(rh)))
-end, statement = true}
+end, ["statement"] = true}
 
-special["get"] = {compiler = function (_56)
+special["get"] = {["compiler"] = function (_56)
   local object = _56[1]
   local key = _56[2]
   local o = compile(object)
@@ -1116,7 +1153,7 @@ special["get"] = {compiler = function (_56)
   return((o .. "[" .. k .. "]"))
 end}
 
-special["not"] = {compiler = function (_57)
+special["not"] = {["compiler"] = function (_57)
   local expr = _57[1]
   local e = compile(expr)
   local open = (function ()
@@ -1129,7 +1166,7 @@ special["not"] = {compiler = function (_57)
   return((open .. e .. ")"))
 end}
 
-special["list"] = {compiler = function (forms, depth)
+special["list"] = {["compiler"] = function (forms, depth)
   local open = (function ()
     if (target == "lua") then
       return("{")
@@ -1164,24 +1201,33 @@ special["list"] = {compiler = function (forms, depth)
   return((open .. str .. close))
 end}
 
-special["table"] = {compiler = function (forms)
+special["object"] = {["compiler"] = function (forms)
+  local str = "{"
+  local i = 0
   local sep = (function ()
     if (target == "lua") then
       return(" = ")
     else
-      return(" : ")
+      return(": ")
     end
   end)()
-  local str = "{"
-  local i = 0
   while (i < (length(forms) - 1)) do
     local k = forms[(i + 1)]
     local v = compile(forms[((i + 1) + 1)])
     if (not is_string(k)) then
-      error(("Illegal table key: " .. to_string(k)))
+      error(("Illegal object key: " .. to_string(k)))
     end
-    if ((target == "lua") and is_string_literal(k)) then
-      k = ("[" .. k .. "]")
+    if (target == "lua") then
+      local k1 = (function ()
+        if is_string_literal(k) then
+          return(k)
+        else
+          return(quote_form(k))
+        end
+      end)()
+      k = ("[" .. k1 .. "]")
+    elseif ((not is_valid_id(k)) and (not is_string_literal(k))) then
+      k = quote_form(k)
     end
     str = (str .. k .. sep .. v)
     if (i < (length(forms) - 2)) then
@@ -1192,7 +1238,7 @@ special["table"] = {compiler = function (forms)
   return((str .. "}"))
 end}
 
-special["quote"] = {compiler = function (_59)
+special["quote"] = {["compiler"] = function (_59)
   local form = _59[1]
   return(quote_form(form))
 end}
@@ -1465,9 +1511,21 @@ end)
 
 setenv("set-of", function (...)
   local elements = unstash({...})
-  return(join({"table"}, map(function (x)
+  return(join({"object"}, map(function (x)
     return(splice({x, true}))
   end, elements)))
+end)
+
+setenv("table", function (...)
+  local body = unstash({...})
+  local l = {}
+  for k, v in pairs(body) do
+    if (not is_number(k)) then
+      add(l, k)
+      add(l, v)
+    end
+  end
+  return(join({"object"}, l))
 end)
 
 setenv("with-scope", function (_18, expr)
@@ -1561,7 +1619,7 @@ end)
 
 setenv("define-special", function (name, keys, args, ...)
   local body = unstash({...})
-  return({"set", {"get", "special", {"quote", name}}, join({"table", "compiler", join({"fn", args}, body)}, map(function (k)
+  return({"set", {"get", "special", {"quote", name}}, join({"object", "compiler", join({"fn", args}, body)}, map(function (k)
     return(splice({k, true}))
   end, keys))})
 end)

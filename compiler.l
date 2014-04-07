@@ -1,14 +1,14 @@
 ;; -*- mode: lisp -*-
 
 (define operators
-  (table common (table "+" "+" "-" "-" "%" "%" "*" "*" "/" "/"
-		       "<" "<" ">" ">" "<=" "<=" ">=" ">=")
-	 js (table "=" "===" "~=" "!=" "and" "&&" "or" "||" "cat" "+")
-	 lua (table "=" "==" "~=" "~=" "and" "and" "or" "or" "cat" "..")))
+  (table common: (table :+ :- :% :* :/ :< :> :<= :>=)
+	 js: (table =: "===" ~=: "!=" and: "&&" or: "||" cat: "+")
+	 lua: (table =: "==" cat: ".." :~= :and :or)))
 
 (define getop (op)
-  (or (get (get operators 'common) op)
-      (get (get operators target) op)))
+  (let (op1 (or (get (get operators 'common) op)
+                (get (get operators target) op)))
+    (if (= op1 true) op op1)))
 
 (define operator? (form)
   (and (list? form) (is? (getop (hd form)))))
@@ -40,6 +40,18 @@
       (let (t? (and tail? (= i (- (length forms) 1))))
 	(cat! str (compile x true t?))))
     str))
+
+(define valid-id? (id)
+  (let (i 0)
+    (while (< i (length id))
+      (let (n (code id i))
+        (if (not (or (and (> i 0) (> n 47) (< n 58)) ; 0-9
+                     (and (> n 64) (< n 91))         ; A-Z
+                     (and (> n 96) (< n 173))        ; a-z
+                     (= n 95)))                      ; _
+            (return false)))
+      (set i (+ i 1))))
+  true)
 
 (define identifier (id)
   (let (id2 "" i 0)
@@ -140,7 +152,7 @@
 
 (define-macro define-special (name keys args rest: body)
   `(set (get special ',name)
-        (table compiler (fn ,args ,@body)
+        (object compiler (fn ,args ,@body)
                ,@(map (fn (k) (splice (list k true))) keys))))
 
 (define compiler (name) (get (get special name) 'compiler))
@@ -240,17 +252,23 @@
       (if (< i (- (length forms) 1)) (cat! str ", ")))
     (cat open str close)))
 
-(define-special table () (forms)
-  (let (sep (if (= target 'lua) " = " " : ")
-	str "{"
-	i 0)
+(define-special object () (forms)
+  (let (str "{"
+	i 0
+        sep (if (= target 'lua) " = " ": "))
     (while (< i (- (length forms) 1))
       (let (k (at forms i)
 	    v (compile (at forms (+ i 1))))
 	(if (not (string? k))
-	    (error (cat "Illegal table key: " (to-string k))))
-	(if (and (= target 'lua) (string-literal? k))
-	    (set k (cat "[" k "]")))
+	    (error (cat "Illegal object key: " (to-string k))))
+        (if (= target 'lua)
+            (let (k1 (if (string-literal? k)
+                         k
+                       (quote-form k)))
+              (set k (cat "[" k1 "]")))
+            (and (not (valid-id? k))
+                 (not (string-literal? k)))
+            (set k (quote-form k)))
 	(cat! str k sep v)
 	(if (< i (- (length forms) 2)) (cat! str ", "))
 	(set i (+ i 2))))

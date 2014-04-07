@@ -106,13 +106,20 @@
 	   (set ,i (+ ,i 1)))))))
 
 (define-macro set-of elements
-  `(table ,@(map (fn (x) (splice (list x true))) elements)))
+  `(object ,@(map (fn (x) (splice (list x true))) elements)))
+
+(define-macro table body
+  (let (l ())
+    (each (body k v)
+      (add l k)
+      (add l v))
+    `(object ,@l)))
 
 ;; macro helpers
 
 (define stash (args)
   (if (keys? args)
-      (let (p (table _stash true))
+      (let (p (object _stash true))
         (each (args k v)
           (set (get p k) v))
         (join args (list p)))
@@ -385,7 +392,7 @@
          (do ,@body))))
 
 (define splice (x)
-  (table _splice x))
+  (table _splice: x))
 
 (define splice? (x)
   (if (table? x) (get x '_splice)))
@@ -411,6 +418,11 @@
 
 (define char (str n)
   (target (js (str.charAt n)) (lua (sub str n (+ n 1)))))
+
+(define code (str n)
+  (target
+   (js (str.charCodeAt n))
+   (lua (string.byte str (if n (+ n 1))))))
 
 (define search (str pattern start)
   (target

@@ -143,7 +143,7 @@
 (define-test calls ()
   (let (f (fn () 42)
 	l (list f)
-	t (table f f))
+	t (table f: f))
     (test= 42 (f))
     (test= 42 ((at l 0)))
     (test= 42 (t.f))
@@ -201,8 +201,7 @@
     (test= 10 i)))
 
 (define-test table ()
-  (test= (table a 10 b 20) (table a 10 b 20))
-  (test= 10 (get (table a 10) 'a)))
+  (test= 10 (get (table a: 10) 'a)))
 
 (define-test get-set ()
   (let (t (table))
@@ -214,8 +213,10 @@
     (test= 'bar (get t (cat "f" "oo")))))
 
 (define-test for ()
-  (let (a "" b 0)
-    (for ((table a 10 b 20 c 30) k v)
+  (let (a ""
+        b 0
+        t (table a: 10 b: 20 c: 30))
+    (for (t k v)
       (cat! a k)
       (set b (+ b v)))
     (test= 3 (length a))
@@ -359,7 +360,7 @@
     (test= 10 (do (while (< i 10) (set i (+ i 1))) i))))
 
 (define-test for-expr ()
-  (let (i 0 t (table a 10 b 20))
+  (let (i 0 t (table a: 10 b: 20))
     (test= 2 (do (for (t _ _) (set i (+ i 1))) i))))
 
 ;; library
@@ -433,7 +434,7 @@
   (test= () (list*))
   (test= '(2 3) (list* '(2 3)))
   (test= '(1 2 3) (list* 1 '(2 3)))
-  (let (a 17 b '(5))    
+  (let (a 17 b '(5))
     (test= '(5) (list* b))
     (test= '(17 5) (list* a b))
     (test= '((5) 5) (list* b b))))
