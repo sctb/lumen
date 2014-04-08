@@ -45,6 +45,26 @@
       (set i `(+ ,i 1)))
   `(get ,l ,i))
 
+(define-macro list body
+  (let (l `(array ,@body))
+    (if (not (keys? body))
+        l
+      (let (id (make-id)
+            init ())
+        (each (body k v)
+          (add init `(set (get ,id ',k) ,v)))
+        `(let (,id ,l)
+           ,@init
+           ,id)))))
+
+
+(define-macro table body
+  (let (l ())
+    (each (body k v)
+      (add l k)
+      (add l v))
+    `(object ,@l)))
+
 (define-macro let (bindings rest: body)
   (let (i 0
 	renames ()
@@ -107,25 +127,6 @@
 
 (define-macro set-of elements
   `(object ,@(map (fn (x) (splice (list x true))) elements)))
-
-(define-macro list body
-  (let (l `(array ,@body))
-    (if (not (keys? body))
-        l
-      (let (id (make-id)
-            init ())
-        (each (body k v)
-          (add init `(set (get ,id ',k) ,v)))
-        `(let (,id ,l)
-           ,@init
-           ,id)))))
-
-(define-macro table body
-  (let (l ())
-    (each (body k v)
-      (add l k)
-      (add l v))
-    `(object ,@l)))
 
 ;; macro helpers
 
