@@ -38,6 +38,21 @@ is_bound = function (x) {
 
 is_embed_macros = false;
 
+quoted = function (form) {
+  if (is_atom(form)) {
+    if (is_string_literal(form)) {
+      var str = sub(form, 1, (length(form) - 1));
+      return(("\"\\\"" + str + "\\\"\""));
+    } else if (is_string(form)) {
+      return(("\"" + form + "\""));
+    } else {
+      return(form);
+    }
+  } else {
+    return(join(["list"], map(quoted, form)));
+  }
+};
+
 stash = function (args) {
   if (is_keys(args)) {
     var p = {_stash: true};
@@ -154,9 +169,7 @@ macroexpand = function (form) {
     return(form);
   } else {
     var name = hd(form);
-    if ((name === "quote")) {
-      return(form);
-    } else if ((name === "define-macro")) {
+    if ((name === "define-macro")) {
       return(form);
     } else if (is_macro(name)) {
       return(macroexpand(apply(getenv(name), tl(form))));
@@ -722,7 +735,7 @@ read_from_string = function (str) {
   return(read(make_stream(str)));
 };
 
-operators = {lua: {"=": "==", "~=": true, or: true, and: true, cat: ".."}, js: {"=": "===", "~=": "!=", or: "||", and: "&&", cat: "+"}, common: {"-": true, "<": true, "/": true, ">": true, "%": true, ">=": true, "<=": true, "+": true, "*": true}};
+operators = {common: {"<": true, "+": true, "*": true, "%": true, ">=": true, "-": true, "/": true, ">": true, "<=": true}, lua: {or: true, "~=": true, cat: "..", and: true, "=": "=="}, js: {or: "||", "~=": "!=", and: "&&", cat: "+", "=": "==="}};
 
 getop = function (op) {
   var op1 = (operators["common"][op] || operators[target][op]);
@@ -916,21 +929,6 @@ compile_function = function (args, body, name) {
     return(("function " + name + args1 + " {\n" + body1 + ind + "}"));
   } else {
     return(("function " + name + args1 + "\n" + body1 + ind + "end"));
-  }
-};
-
-quote_form = function (form) {
-  if (is_atom(form)) {
-    if (is_string_literal(form)) {
-      var str = sub(form, 1, (length(form) - 1));
-      return(("\"\\\"" + str + "\\\"\""));
-    } else if (is_string(form)) {
-      return(("\"" + form + "\""));
-    } else {
-      return(to_string(form));
-    }
-  } else {
-    return((compiler("array"))(form, 0));
   }
 };
 
@@ -1132,7 +1130,7 @@ special["not"] = {compiler: function (_57) {
   return((open + e + ")"));
 }};
 
-special["array"] = {compiler: function (forms, depth) {
+special["array"] = {compiler: function (forms) {
   var open = (function () {
     if ((target === "lua")) {
       return("{");
@@ -1152,13 +1150,7 @@ special["array"] = {compiler: function (forms, depth) {
   var _58 = forms;
   while ((i < length(_58))) {
     var x = _58[i];
-    str = (str + (function () {
-      if (is_quoting(depth)) {
-        return(quote_form(x));
-      } else {
-        return(compile(x));
-      }
-    })());
+    str = (str + compile(x));
     if ((i < (length(forms) - 1))) {
       str = (str + ", ");
     }
@@ -1188,12 +1180,12 @@ special["object"] = {compiler: function (forms) {
         if (is_string_literal(k)) {
           return(k);
         } else {
-          return(quote_form(k));
+          return(quoted(k));
         }
       })();
       k = ("[" + k1 + "]");
     } else if ((!(is_valid_id(k)) && !(is_string_literal(k)))) {
-      k = quote_form(k);
+      k = quoted(k);
     }
     str = (str + k + sep + v);
     if ((i < (length(forms) - 2))) {
@@ -1202,11 +1194,6 @@ special["object"] = {compiler: function (forms) {
     i = (i + 2);
   }
   return((str + "}"));
-}};
-
-special["quote"] = {compiler: function (_59) {
-  var form = _59[0];
-  return(quote_form(form));
 }};
 
 is_can_return = function (form) {
@@ -1259,12 +1246,12 @@ compile_file = function (file) {
 
 compile_files = function (files) {
   var output = "";
-  var _61 = 0;
-  var _60 = files;
-  while ((_61 < length(_60))) {
-    var file = _60[_61];
+  var _60 = 0;
+  var _59 = files;
+  while ((_60 < length(_59))) {
+    var file = _59[_60];
     output = (output + compile_file(file));
-    _61 = (_61 + 1);
+    _60 = (_60 + 1);
   }
   return(output);
 };
@@ -1325,9 +1312,9 @@ main = function () {
   var target1 = undefined;
   var expr = undefined;
   var i = 0;
-  var _62 = args;
-  while ((i < length(_62))) {
-    var arg = _62[i];
+  var _61 = args;
+  while ((i < length(_61))) {
+    var arg = _61[i];
     if (((arg === "-o") || (arg === "-t") || (arg === "-e"))) {
       if ((i === (length(args) - 1))) {
         print((to_string("missing argument for") + to_string(arg)));
@@ -1357,12 +1344,12 @@ main = function () {
     var main = compile(["main"], true);
     return(write_file(output, (compiled + macros + main)));
   } else {
-    var _64 = 0;
-    var _63 = inputs;
-    while ((_64 < length(_63))) {
-      var file = _63[_64];
+    var _63 = 0;
+    var _62 = inputs;
+    while ((_63 < length(_62))) {
+      var file = _62[_63];
       eval(compile_file(file));
-      _64 = (_64 + 1);
+      _63 = (_63 + 1);
     }
     if (expr) {
       return(rep(expr));
@@ -1379,6 +1366,41 @@ setenv("at", function (l, i) {
     i = ["+", i, 1];
   }
   return(["get", l, i]);
+});
+
+setenv("quote", function (form) {
+  return(quoted(form));
+});
+
+setenv("list", function () {
+  var body = unstash(sub(arguments, 0));
+  var l = join(["array"], body);
+  if (!(is_keys(body))) {
+    return(l);
+  } else {
+    var id = make_id();
+    var init = [];
+    for (k in body) {
+      v = body[k];
+      if (isNaN(parseInt(k))) {
+        add(init, ["set", ["get", id, ["quote", k]], v]);
+      }
+    }
+    return(join(["let", [id, l]], join(init, [id])));
+  }
+});
+
+setenv("table", function () {
+  var body = unstash(sub(arguments, 0));
+  var l = [];
+  for (k in body) {
+    v = body[k];
+    if (isNaN(parseInt(k))) {
+      add(l, k);
+      add(l, v);
+    }
+  }
+  return(join(["object"], l));
 });
 
 setenv("let", function (bindings) {
@@ -1475,37 +1497,6 @@ setenv("set-of", function () {
   return(join(["object"], map(function (x) {
     return(splice([x, true]));
   }, elements)));
-});
-
-setenv("list", function () {
-  var body = unstash(sub(arguments, 0));
-  var l = join(["array"], body);
-  if (!(is_keys(body))) {
-    return(l);
-  } else {
-    var id = make_id();
-    var init = [];
-    for (k in body) {
-      v = body[k];
-      if (isNaN(parseInt(k))) {
-        add(init, ["set", ["get", id, ["quote", k]], v]);
-      }
-    }
-    return(join(["let", [id, l]], join(init, [id])));
-  }
-});
-
-setenv("table", function () {
-  var body = unstash(sub(arguments, 0));
-  var l = [];
-  for (k in body) {
-    v = body[k];
-    if (isNaN(parseInt(k))) {
-      add(l, k);
-      add(l, v);
-    }
-  }
-  return(join(["object"], l));
 });
 
 setenv("with-scope", function (_18, expr) {

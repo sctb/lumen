@@ -124,15 +124,6 @@
         (cat "function " name args1 " {\n" body1 ind "}")
       (cat "function " name args1 "\n" body1 ind "end"))))
 
-(define quote-form (form)
-  (if (atom? form)
-      (if (string-literal? form)
-          (let (str (sub form 1 (- (length form) 1)))
-            (cat "\"\\\"" str "\\\"\""))
-        (string? form) (cat "\"" form "\"")
-        (to-string form))
-    ((compiler 'array) form 0)))
-
 (define terminator (stmt?)
   (if (not stmt?) ""
       (= target 'js) ";\n"
@@ -243,12 +234,12 @@
 	open (if (= target 'js) "!(" "(not "))
     (cat open e ")")))
 
-(define-special array () (forms depth)
+(define-special array () (forms)
   (let (open (if (= target 'lua) "{" "[")
 	close (if (= target 'lua) "}" "]")
 	str "")
     (across (forms x i)
-      (cat! str (if (quoting? depth) (quote-form x) (compile x)))
+      (cat! str (compile x))
       (if (< i (- (length forms) 1)) (cat! str ", ")))
     (cat open str close)))
 
@@ -262,19 +253,15 @@
 	(if (not (string? k))
 	    (error (cat "Illegal object key: " (to-string k))))
         (if (= target 'lua)
-            (let (k1 (if (string-literal? k)
-                         k
-                       (quote-form k)))
+            (let (k1 (if (string-literal? k) k (quoted k)))
               (set k (cat "[" k1 "]")))
             (and (not (valid-id? k))
                  (not (string-literal? k)))
-            (set k (quote-form k)))
+            (set k (quoted k)))
 	(cat! str k sep v)
 	(if (< i (- (length forms) 2)) (cat! str ", "))
 	(set i (+ i 2))))
     (cat str "}")))
-
-(define-special quote () ((form)) (quote-form form))
 
 (define can-return? (form)
   (if (special? form)

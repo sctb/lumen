@@ -45,6 +45,18 @@
       (set i `(+ ,i 1)))
   `(get ,l ,i))
 
+(define quoted (form)
+  (if (atom? form)
+      (if (string-literal? form)
+          (let (str (sub form 1 (- (length form) 1)))
+            (cat "\"\\\"" str "\\\"\""))
+          (string? form) (cat "\"" form "\"")
+        form)
+    `(list ,@(map quoted form))))
+
+(define-macro quote (form)
+  (quoted form))
+
 (define-macro list body
   (let (l `(array ,@body))
     (if (not (keys? body))
@@ -212,7 +224,6 @@
       (atom? form) form
     (let (name (hd form))
       (if ;; pass-through
-	  (= name 'quote) form
 	  (= name 'define-macro) form
 	  ;; expand macro
 	  (macro? name)

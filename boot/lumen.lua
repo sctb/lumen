@@ -38,6 +38,21 @@ end
 
 is_embed_macros = false
 
+quoted = function (form)
+  if is_atom(form) then
+    if is_string_literal(form) then
+      local str = sub(form, 1, (length(form) - 1))
+      return(("\"\\\"" .. str .. "\\\"\""))
+    elseif is_string(form) then
+      return(("\"" .. form .. "\""))
+    else
+      return(form)
+    end
+  else
+    return(join({"list"}, map(quoted, form)))
+  end
+end
+
 stash = function (args)
   if is_keys(args) then
     local p = {["_stash"] = true}
@@ -152,9 +167,7 @@ macroexpand = function (form)
     return(form)
   else
     local name = hd(form)
-    if (name == "quote") then
-      return(form)
-    elseif (name == "define-macro") then
+    if (name == "define-macro") then
       return(form)
     elseif is_macro(name) then
       return(macroexpand(apply(getenv(name), tl(form))))
@@ -953,21 +966,6 @@ compile_function = function (args, body, name)
   end
 end
 
-quote_form = function (form)
-  if is_atom(form) then
-    if is_string_literal(form) then
-      local str = sub(form, 1, (length(form) - 1))
-      return(("\"\\\"" .. str .. "\\\"\""))
-    elseif is_string(form) then
-      return(("\"" .. form .. "\""))
-    else
-      return(to_string(form))
-    end
-  else
-    return((compiler("array"))(form, 0))
-  end
-end
-
 terminator = function (is_stmt)
   if (not is_stmt) then
     return("")
@@ -1166,7 +1164,7 @@ special["not"] = {["compiler"] = function (_57)
   return((open .. e .. ")"))
 end}
 
-special["array"] = {["compiler"] = function (forms, depth)
+special["array"] = {["compiler"] = function (forms)
   local open = (function ()
     if (target == "lua") then
       return("{")
@@ -1186,13 +1184,7 @@ special["array"] = {["compiler"] = function (forms, depth)
   local _58 = forms
   while (i < length(_58)) do
     local x = _58[(i + 1)]
-    str = (str .. (function ()
-      if is_quoting(depth) then
-        return(quote_form(x))
-      else
-        return(compile(x))
-      end
-    end)())
+    str = (str .. compile(x))
     if (i < (length(forms) - 1)) then
       str = (str .. ", ")
     end
@@ -1222,12 +1214,12 @@ special["object"] = {["compiler"] = function (forms)
         if is_string_literal(k) then
           return(k)
         else
-          return(quote_form(k))
+          return(quoted(k))
         end
       end)()
       k = ("[" .. k1 .. "]")
     elseif ((not is_valid_id(k)) and (not is_string_literal(k))) then
-      k = quote_form(k)
+      k = quoted(k)
     end
     str = (str .. k .. sep .. v)
     if (i < (length(forms) - 2)) then
@@ -1236,11 +1228,6 @@ special["object"] = {["compiler"] = function (forms)
     i = (i + 2)
   end
   return((str .. "}"))
-end}
-
-special["quote"] = {["compiler"] = function (_59)
-  local form = _59[1]
-  return(quote_form(form))
 end}
 
 is_can_return = function (form)
@@ -1293,12 +1280,12 @@ end
 
 compile_files = function (files)
   local output = ""
-  local _61 = 0
-  local _60 = files
-  while (_61 < length(_60)) do
-    local file = _60[(_61 + 1)]
+  local _60 = 0
+  local _59 = files
+  while (_60 < length(_59)) do
+    local file = _59[(_60 + 1)]
     output = (output .. compile_file(file))
-    _61 = (_61 + 1)
+    _60 = (_60 + 1)
   end
   return(output)
 end
@@ -1364,9 +1351,9 @@ main = function ()
   local target1 = nil
   local expr = nil
   local i = 0
-  local _62 = args
-  while (i < length(_62)) do
-    local arg = _62[(i + 1)]
+  local _61 = args
+  while (i < length(_61)) do
+    local arg = _61[(i + 1)]
     if ((arg == "-o") or (arg == "-t") or (arg == "-e")) then
       if (i == (length(args) - 1)) then
         print((to_string("missing argument for") .. to_string(arg)))
@@ -1396,12 +1383,12 @@ main = function ()
     local main = compile({"main"}, true)
     return(write_file(output, (compiled .. macros .. main)))
   else
-    local _64 = 0
-    local _63 = inputs
-    while (_64 < length(_63)) do
-      local file = _63[(_64 + 1)]
+    local _63 = 0
+    local _62 = inputs
+    while (_63 < length(_62)) do
+      local file = _62[(_63 + 1)]
       eval(compile_file(file))
-      _64 = (_64 + 1)
+      _63 = (_63 + 1)
     end
     if expr then
       return(rep(expr))
@@ -1418,6 +1405,39 @@ setenv("at", function (l, i)
     i = {"+", i, 1}
   end
   return({"get", l, i})
+end)
+
+setenv("quote", function (form)
+  return(quoted(form))
+end)
+
+setenv("list", function (...)
+  local body = unstash({...})
+  local l = join({"array"}, body)
+  if (not is_keys(body)) then
+    return(l)
+  else
+    local id = make_id()
+    local init = {}
+    for k, v in pairs(body) do
+      if (not is_number(k)) then
+        add(init, {"set", {"get", id, {"quote", k}}, v})
+      end
+    end
+    return(join({"let", {id, l}}, join(init, {id})))
+  end
+end)
+
+setenv("table", function (...)
+  local body = unstash({...})
+  local l = {}
+  for k, v in pairs(body) do
+    if (not is_number(k)) then
+      add(l, k)
+      add(l, v)
+    end
+  end
+  return(join({"object"}, l))
 end)
 
 setenv("let", function (bindings, ...)
@@ -1514,35 +1534,6 @@ setenv("set-of", function (...)
   return(join({"object"}, map(function (x)
     return(splice({x, true}))
   end, elements)))
-end)
-
-setenv("list", function (...)
-  local body = unstash({...})
-  local l = join({"array"}, body)
-  if (not is_keys(body)) then
-    return(l)
-  else
-    local id = make_id()
-    local init = {}
-    for k, v in pairs(body) do
-      if (not is_number(k)) then
-        add(init, {"set", {"get", id, {"quote", k}}, v})
-      end
-    end
-    return(join({"let", {id, l}}, join(init, {id})))
-  end
-end)
-
-setenv("table", function (...)
-  local body = unstash({...})
-  local l = {}
-  for k, v in pairs(body) do
-    if (not is_number(k)) then
-      add(l, k)
-      add(l, v)
-    end
-  end
-  return(join({"object"}, l))
 end)
 
 setenv("with-scope", function (_18, expr)
