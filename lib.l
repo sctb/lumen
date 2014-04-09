@@ -431,6 +431,12 @@
             (is? x1) (add l1 x1))))
     l1))
 
+(define map* (f t)
+  (let (l (map f t))
+    (each (t k v)
+      (set (get l k) (f v)))
+    l))
+
 (define keys? (t)
   (let (k? false)
     (each (t k v)

@@ -110,7 +110,8 @@
   (test= '(1 2 3) (list 1 2 3))
   (test= 17 (get (list foo: 17) 'foo))
   (test= 17 (get (list 1 foo: 17) 'foo))
-  (test= true (get (list :foo) 'foo)))
+  (test= true (get (list :foo) 'foo))
+  (test= true (get '(:foo) 'foo)))
 
 (define-test quasiquote ()
   (test= (quote a) (quasiquote a))

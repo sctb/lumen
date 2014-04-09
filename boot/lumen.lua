@@ -5,7 +5,7 @@ setenv = function (k, v)
 end
 
 getenv = function (k)
-  if is_string(k) then
+  if string63(k) then
     local i = (length(environment) - 1)
     while (i >= 0) do
       local v = environment[(i + 1)][k]
@@ -19,31 +19,31 @@ end
 
 variable = {}
 
-is_symbol_macro = function (k)
+symbol_macro63 = function (k)
   local v = getenv(k)
-  return((is_is(v) and (not (v == variable)) and (not is_macro(k))))
+  return((is63(v) and (not (v == variable)) and (not macro63(k))))
 end
 
-is_macro = function (k)
-  return(is_function(getenv(k)))
+macro63 = function (k)
+  return(function63(getenv(k)))
 end
 
-is_variable = function (k)
+variable63 = function (k)
   return((last(environment)[k] == variable))
 end
 
-is_bound = function (x)
-  return((is_symbol_macro(x) or is_macro(x) or is_variable(x)))
+bound63 = function (x)
+  return((symbol_macro63(x) or macro63(x) or variable63(x)))
 end
 
-is_embed_macros = false
+embed_macros63 = false
 
 quoted = function (form)
-  if is_atom(form) then
-    if is_string_literal(form) then
+  if atom63(form) then
+    if string_literal63(form) then
       local str = sub(form, 1, (length(form) - 1))
       return(("\"\\\"" .. str .. "\\\"\""))
-    elseif is_string(form) then
+    elseif string63(form) then
       return(("\"" .. form .. "\""))
     else
       return(form)
@@ -54,10 +54,10 @@ quoted = function (form)
 end
 
 stash = function (args)
-  if is_keys(args) then
+  if keys63(args) then
     local p = {["_stash"] = true}
     for k, v in pairs(args) do
-      if (not is_number(k)) then
+      if (not number63(k)) then
         p[k] = v
       end
     end
@@ -68,14 +68,14 @@ stash = function (args)
 end
 
 unstash = function (args)
-  if is_empty(args) then
+  if empty63(args) then
     return({})
   else
     local l = last(args)
-    if (is_composite(l) and l["_stash"]) then
+    if (composite63(l) and l["_stash"]) then
       local args1 = sub(args, 0, (length(args) - 1))
       for k, v in pairs(l) do
-        if (not is_number(k)) then
+        if (not number63(k)) then
           if (k ~= "_stash") then
             args1[k] = v
           end
@@ -98,7 +98,7 @@ bind_arguments = function (args, body)
       return({"unstash", {"list", "..."}})
     end
   end
-  if is_atom(args) then
+  if atom63(args) then
     return({args1, {join({"let", {args, rest()}}, body)}})
   else
     local bs = {}
@@ -106,7 +106,7 @@ bind_arguments = function (args, body)
     local _15 = args
     while (_16 < length(_15)) do
       local arg = _15[(_16 + 1)]
-      if is_list(arg) then
+      if list63(arg) then
         local v = make_id()
         add(args1, v)
         bs = join(bs, {arg, v})
@@ -119,7 +119,7 @@ bind_arguments = function (args, body)
     if r then
       bs = join(bs, {r, rest()})
     end
-    if is_empty(bs) then
+    if empty63(bs) then
       return({args1, body})
     else
       return({args1, {join({"let", bs}, body)}})
@@ -128,10 +128,10 @@ bind_arguments = function (args, body)
 end
 
 bind = function (lh, rh)
-  if (is_list(lh) and is_list(rh)) then
+  if (list63(lh) and list63(rh)) then
     local id = make_id()
     return(join({{id, rh}}, bind(lh, id)))
-  elseif is_atom(lh) then
+  elseif atom63(lh) then
     return({{lh, rh}})
   else
     local r = lh["rest"]
@@ -148,28 +148,28 @@ bind = function (lh, rh)
   end
 end
 
-is_quoting = function (depth)
-  return(is_number(depth))
+quoting63 = function (depth)
+  return(number63(depth))
 end
 
-is_quasiquoting = function (depth)
-  return((is_quoting(depth) and (depth > 0)))
+quasiquoting63 = function (depth)
+  return((quoting63(depth) and (depth > 0)))
 end
 
-is_can_unquote = function (depth)
-  return((is_quoting(depth) and (depth == 1)))
+can_unquote63 = function (depth)
+  return((quoting63(depth) and (depth == 1)))
 end
 
 macroexpand = function (form)
-  if is_symbol_macro(form) then
+  if symbol_macro63(form) then
     return(macroexpand(getenv(form)))
-  elseif is_atom(form) then
+  elseif atom63(form) then
     return(form)
   else
     local name = hd(form)
     if (name == "define-macro") then
       return(form)
-    elseif is_macro(name) then
+    elseif macro63(name) then
       return(macroexpand(apply(getenv(name), tl(form))))
     elseif ((name == "function") or (name == "for")) then
       local _ = form[1]
@@ -193,10 +193,10 @@ macroexpand = function (form)
 end
 
 quasiexpand = function (form, depth)
-  if is_quasiquoting(depth) then
-    if is_atom(form) then
+  if quasiquoting63(depth) then
+    if atom63(form) then
       return({"quote", form})
-    elseif (is_can_unquote(depth) and (hd(form) == "unquote")) then
+    elseif (can_unquote63(depth) and (hd(form) == "unquote")) then
       return(quasiexpand(form[2]))
     elseif ((hd(form) == "unquote") or (hd(form) == "unquote-splicing")) then
       return(quasiquote_list(form, (depth - 1)))
@@ -205,7 +205,7 @@ quasiexpand = function (form, depth)
     else
       return(quasiquote_list(form, depth))
     end
-  elseif is_atom(form) then
+  elseif atom63(form) then
     return(form)
   elseif (hd(form) == "quote") then
     return({"quote", form[2]})
@@ -224,7 +224,7 @@ quasiquote_list = function (form, depth)
   local _23 = form
   while (_24 < length(_23)) do
     local x = _23[(_24 + 1)]
-    if (is_list(x) and is_can_unquote(depth) and (hd(x) == "unquote-splicing")) then
+    if (list63(x) and can_unquote63(depth) and (hd(x) == "unquote-splicing")) then
       add(xs, quasiexpand(x[2]))
       add(xs, {"array"})
     else
@@ -238,7 +238,7 @@ quasiquote_list = function (form, depth)
     return(reduce(function (a, b)
       return({"join", a, b})
     end, keep(function (x)
-      return((is_empty(x) or (not ((length(x) == 1) and (hd(x) == "array")))))
+      return((empty63(x) or (not ((length(x) == 1) and (hd(x) == "array")))))
     end, xs)))
   end
 end
@@ -249,13 +249,13 @@ length = function (x)
   return(#x)
 end
 
-is_empty = function (x)
+empty63 = function (x)
   return((length(x) == 0))
 end
 
 sub = function (x, from, upto)
   from = (from or 0)
-  if is_string(x) then
+  if string63(x) then
     return(string.sub(x, (from + 1), upto))
   else
     local l = (function ()
@@ -271,7 +271,7 @@ sub = function (x, from, upto)
       return(x2)
     end)()
     for k, v in pairs(x) do
-      if (not is_number(k)) then
+      if (not number63(k)) then
         l[k] = v
       end
     end
@@ -304,9 +304,9 @@ last = function (l)
 end
 
 join = function (l1, l2)
-  if is_nil(l1) then
+  if nil63(l1) then
     return(l2)
-  elseif is_nil(l2) then
+  elseif nil63(l2) then
     return(l1)
   else
     local l = {}
@@ -321,12 +321,12 @@ join = function (l1, l2)
       i = (i + 1)
     end
     for k, v in pairs(l1) do
-      if (not is_number(k)) then
+      if (not number63(k)) then
         l[k] = v
       end
     end
     for k, v in pairs(l2) do
-      if (not is_number(k)) then
+      if (not number63(k)) then
         l[k] = v
       end
     end
@@ -335,7 +335,7 @@ join = function (l1, l2)
 end
 
 reduce = function (f, x)
-  if is_empty(x) then
+  if empty63(x) then
     return(x)
   elseif (length(x) == 1) then
     return(hd(x))
@@ -393,8 +393,8 @@ splice = function (x)
   return({["_splice"] = x})
 end
 
-is_splice = function (x)
-  if is_table(x) then
+splice63 = function (x)
+  if table63(x) then
     return(x["_splice"])
   end
 end
@@ -406,12 +406,12 @@ map = function (f, l)
   while (_34 < length(_33)) do
     local x = _33[(_34 + 1)]
     local x1 = f(x)
-    local s = is_splice(x1)
-    if is_list(s) then
+    local s = splice63(x1)
+    if list63(s) then
       l1 = join(l1, s)
-    elseif is_is(s) then
+    elseif is63(s) then
       add(l1, s)
-    elseif is_is(x1) then
+    elseif is63(x1) then
       add(l1, x1)
     end
     _34 = (_34 + 1)
@@ -419,15 +419,25 @@ map = function (f, l)
   return(l1)
 end
 
-is_keys = function (t)
-  local is_k = false
+map42 = function (f, t)
+  local l = map(f, t)
   for k, v in pairs(t) do
-    if (not is_number(k)) then
-      is_k = true
+    if (not number63(k)) then
+      l[k] = f(v)
+    end
+  end
+  return(l)
+end
+
+keys63 = function (t)
+  local k63 = false
+  for k, v in pairs(t) do
+    if (not number63(k)) then
+      k63 = true
       break
     end
   end
-  return(is_k)
+  return(k63)
 end
 
 char = function (str, n)
@@ -454,7 +464,7 @@ split = function (str, sep)
   local strs = {}
   while true do
     local i = search(str, sep)
-    if is_nil(i) then
+    if nil63(i) then
       break
     else
       add(strs, sub(str, 0, i))
@@ -483,48 +493,48 @@ exit = function (code)
   return(os.exit(code))
 end
 
-is_nil = function (x)
+nil63 = function (x)
   return((x == nil))
 end
 
-is_is = function (x)
-  return((not is_nil(x)))
+is63 = function (x)
+  return((not nil63(x)))
 end
 
-is_string = function (x)
+string63 = function (x)
   return((type(x) == "string"))
 end
 
-is_string_literal = function (x)
-  return((is_string(x) and (char(x, 0) == "\"")))
+string_literal63 = function (x)
+  return((string63(x) and (char(x, 0) == "\"")))
 end
 
-is_number = function (x)
+number63 = function (x)
   return((type(x) == "number"))
 end
 
-is_boolean = function (x)
+boolean63 = function (x)
   return((type(x) == "boolean"))
 end
 
-is_function = function (x)
+function63 = function (x)
   return((type(x) == "function"))
 end
 
-is_composite = function (x)
+composite63 = function (x)
   return((type(x) == "table"))
 end
 
-is_atom = function (x)
-  return((not is_composite(x)))
+atom63 = function (x)
+  return((not composite63(x)))
 end
 
-is_table = function (x)
-  return((is_composite(x) and is_nil(hd(x))))
+table63 = function (x)
+  return((composite63(x) and nil63(hd(x))))
 end
 
-is_list = function (x)
-  return((is_composite(x) and is_is(hd(x))))
+list63 = function (x)
+  return((composite63(x) and is63(hd(x))))
 end
 
 parse_number = function (str)
@@ -532,23 +542,23 @@ parse_number = function (str)
 end
 
 to_string = function (x)
-  if is_nil(x) then
+  if nil63(x) then
     return("nil")
-  elseif is_boolean(x) then
+  elseif boolean63(x) then
     if x then
       return("true")
     else
       return("false")
     end
-  elseif is_function(x) then
+  elseif function63(x) then
     return("#<function>")
-  elseif is_atom(x) then
+  elseif atom63(x) then
     return((x .. ""))
   else
     local str = "("
     local x1 = sub(x)
     for k, v in pairs(x) do
-      if (not is_number(k)) then
+      if (not number63(k)) then
         add(x1, (k .. ":"))
         add(x1, v)
       end
@@ -622,7 +632,7 @@ end
 skip_non_code = function (s)
   while true do
     local c = peek_char(s)
-    if is_nil(c) then
+    if nil63(c) then
       break
     elseif whitespace[c] then
       read_char(s)
@@ -641,20 +651,20 @@ read_table = {}
 
 eof = {}
 
-is_key = function (atom)
-  return((is_string(atom) and (length(atom) > 1) and (char(atom, (length(atom) - 1)) == ":")))
+key63 = function (atom)
+  return((string63(atom) and (length(atom) > 1) and (char(atom, (length(atom) - 1)) == ":")))
 end
 
 key = function (str)
-  if is_string_literal(str) then
+  if string_literal63(str) then
     return(sub(str, 1, (length(str) - 1)))
   else
     return(str)
   end
 end
 
-is_flag = function (atom)
-  return((is_string(atom) and (length(atom) > 1) and (char(atom, 0) == ":")))
+flag63 = function (atom)
+  return((string63(atom) and (length(atom) > 1) and (char(atom, 0) == ":")))
 end
 
 read_table[""] = function (s)
@@ -669,7 +679,7 @@ read_table[""] = function (s)
     end
   end
   local n = parse_number(str)
-  if is_is(n) then
+  if is63(n) then
     return(n)
   elseif (str == "true") then
     return(true)
@@ -688,11 +698,11 @@ read_table["("] = function (s)
     local c = peek_char(s)
     if (c and (not (c == ")"))) then
       local x = read(s)
-      if is_key(x) then
+      if key63(x) then
         local k = sub(x, 0, (length(x) - 1))
         local v = read(s)
         l[key(k)] = v
-      elseif is_flag(x) then
+      elseif flag63(x) then
         l[key(sub(x, 1))] = true
       else
         add(l, x)
@@ -758,7 +768,7 @@ end
 read = function (s)
   skip_non_code(s)
   local c = peek_char(s)
-  if is_is(c) then
+  if is63(c) then
     return(((read_table[c] or read_table[""]))(s))
   else
     return(eof)
@@ -780,8 +790,8 @@ getop = function (op)
   end
 end
 
-is_operator = function (form)
-  return((is_list(form) and is_is(getop(hd(form)))))
+operator63 = function (form)
+  return((list63(form) and is63(getop(hd(form)))))
 end
 
 indent_level = 0
@@ -794,14 +804,14 @@ indentation = function ()
   return(str)
 end
 
-compile_args = function (forms, is_compile)
+compile_args = function (forms, compile63)
   local str = "("
   local i = 0
   local _38 = forms
   while (i < length(_38)) do
     local x = _38[(i + 1)]
     str = (str .. (function ()
-      if is_compile then
+      if compile63 then
         return(compile(x))
       else
         return(identifier(x))
@@ -815,24 +825,33 @@ compile_args = function (forms, is_compile)
   return((str .. ")"))
 end
 
-compile_body = function (forms, is_tail)
+compile_body = function (forms, tail63)
   local str = ""
   local i = 0
   local _39 = forms
   while (i < length(_39)) do
     local x = _39[(i + 1)]
-    local is_t = (is_tail and (i == (length(forms) - 1)))
-    str = (str .. compile(x, true, is_t))
+    local t63 = (tail63 and (i == (length(forms) - 1)))
+    str = (str .. compile(x, true, t63))
     i = (i + 1)
   end
   return(str)
 end
 
-is_valid_id = function (id)
+numeric63 = function (n)
+  return(((n > 47) and (n < 58)))
+end
+
+valid_char63 = function (n)
+  return((numeric63(n) or ((n > 64) and (n < 91)) or ((n > 96) and (n < 173)) or (n == 95)))
+end
+
+valid_id63 = function (id)
   local i = 0
   while (i < length(id)) do
     local n = code(id, i)
-    if (not (((i > 0) and (n > 47) and (n < 58)) or ((n > 64) and (n < 91)) or ((n > 96) and (n < 173)) or (n == 95))) then
+    local valid63 = valid_char63(n)
+    if ((not valid63) or ((i == 0) and numeric63(n))) then
       return(false)
     end
     i = (i + 1)
@@ -841,26 +860,32 @@ is_valid_id = function (id)
 end
 
 identifier = function (id)
-  local id2 = ""
+  local id1 = ""
   local i = 0
   while (i < length(id)) do
     local c = char(id, i)
-    if (c == "-") then
-      c = "_"
-    end
-    id2 = (id2 .. c)
+    local n = code(c)
+    local c1 = (function ()
+      if (c == "-") then
+        return("_")
+      elseif (c == ".") then
+        return(".")
+      elseif (c == "#") then
+        return("#")
+      elseif (c == ":") then
+        return(":")
+      elseif (c == ",") then
+        return(",")
+      elseif valid_char63(n) then
+        return(c)
+      else
+        return(n)
+      end
+    end)()
+    id1 = (id1 .. c1)
     i = (i + 1)
   end
-  local last = (length(id) - 1)
-  local suffix = char(id, last)
-  local name = sub(id2, 0, last)
-  if (suffix == "?") then
-    return(("is_" .. name))
-  elseif (suffix == "!") then
-    return(("n_" .. name))
-  else
-    return(id2)
-  end
+  return(id1)
 end
 
 compile_atom = function (form)
@@ -870,7 +895,7 @@ compile_atom = function (form)
     else
       return("nil")
     end
-  elseif (is_string(form) and (not is_string_literal(form))) then
+  elseif (string63(form) and (not string_literal63(form))) then
     return(identifier(form))
   else
     return(to_string(form))
@@ -878,15 +903,15 @@ compile_atom = function (form)
 end
 
 compile_call = function (form)
-  if is_empty(form) then
+  if empty63(form) then
     return((compiler("array"))(form))
   else
     local f = hd(form)
     local f1 = compile(f)
     local args = compile_args(tl(form), true)
-    if is_list(f) then
+    if list63(f) then
       return(("(" .. f1 .. ")" .. args))
-    elseif is_string(f) then
+    elseif string63(f) then
       return((f1 .. args))
     else
       error("Invalid function call")
@@ -916,31 +941,31 @@ compile_operator = function (_40)
   return((str .. ")"))
 end
 
-compile_branch = function (condition, body, is_first, is_last, is_tail)
+compile_branch = function (condition, body, first63, last63, tail63)
   local cond1 = compile(condition)
   local body1 = (function ()
     indent_level = (indent_level + 1)
-    local _42 = compile(body, true, is_tail)
+    local _42 = compile(body, true, tail63)
     indent_level = (indent_level - 1)
     return(_42)
   end)()
   local ind = indentation()
   local tr = (function ()
-    if (is_last and (target == "lua")) then
+    if (last63 and (target == "lua")) then
       return((ind .. "end\n"))
-    elseif is_last then
+    elseif last63 then
       return("\n")
     else
       return("")
     end
   end)()
-  if (is_first and (target == "js")) then
+  if (first63 and (target == "js")) then
     return((ind .. "if (" .. cond1 .. ") {\n" .. body1 .. ind .. "}" .. tr))
-  elseif is_first then
+  elseif first63 then
     return((ind .. "if " .. cond1 .. " then\n" .. body1 .. tr))
-  elseif (is_nil(condition) and (target == "js")) then
+  elseif (nil63(condition) and (target == "js")) then
     return((" else {\n" .. body1 .. ind .. "}\n"))
-  elseif is_nil(condition) then
+  elseif nil63(condition) then
     return((ind .. "else\n" .. body1 .. tr))
   elseif (target == "js") then
     return((" else if (" .. cond1 .. ") {\n" .. body1 .. ind .. "}" .. tr))
@@ -966,8 +991,8 @@ compile_function = function (args, body, name)
   end
 end
 
-terminator = function (is_stmt)
-  if (not is_stmt) then
+terminator = function (stmt63)
+  if (not stmt63) then
     return("")
   elseif (target == "js") then
     return(";\n")
@@ -976,53 +1001,53 @@ terminator = function (is_stmt)
   end
 end
 
-compile_special = function (form, is_stmt, is_tail)
+compile_special = function (form, stmt63, tail63)
   local name = hd(form)
-  if ((not is_stmt) and is_statement(name)) then
-    return(compile({{"function", {}, form}}, false, is_tail))
+  if ((not stmt63) and statement63(name)) then
+    return(compile({{"function", {}, form}}, false, tail63))
   else
-    local tr = terminator((is_stmt and (not is_self_terminating(name))))
-    return(((compiler(name))(tl(form), is_tail) .. tr))
+    local tr = terminator((stmt63 and (not self_terminating63(name))))
+    return(((compiler(name))(tl(form), tail63) .. tr))
   end
 end
 
 special = {}
 
-is_special = function (form)
-  return((is_list(form) and is_is(special[hd(form)])))
+special63 = function (form)
+  return((list63(form) and is63(special[hd(form)])))
 end
 
 compiler = function (name)
   return(special[name]["compiler"])
 end
 
-is_statement = function (name)
+statement63 = function (name)
   return(special[name]["statement"])
 end
 
-is_self_terminating = function (name)
+self_terminating63 = function (name)
   return(special[name]["terminated"])
 end
 
-special["do"] = {["compiler"] = function (forms, is_tail)
-  return(compile_body(forms, is_tail))
+special["do"] = {["compiler"] = function (forms, tail63)
+  return(compile_body(forms, tail63))
 end, ["statement"] = true, ["terminated"] = true}
 
-special["if"] = {["compiler"] = function (form, is_tail)
+special["if"] = {["compiler"] = function (form, tail63)
   local str = ""
   local i = 0
   local _44 = form
   while (i < length(_44)) do
     local condition = _44[(i + 1)]
-    local is_last = (i >= (length(form) - 2))
-    local is_else = (i == (length(form) - 1))
-    local is_first = (i == 0)
+    local last63 = (i >= (length(form) - 2))
+    local else63 = (i == (length(form) - 1))
+    local first63 = (i == 0)
     local body = form[((i + 1) + 1)]
-    if is_else then
+    if else63 then
       body = condition
       condition = nil
     end
-    str = (str .. compile_branch(condition, body, is_first, is_last, is_tail))
+    str = (str .. compile_branch(condition, body, first63, last63, tail63))
     i = (i + 1)
     i = (i + 1)
   end
@@ -1063,7 +1088,7 @@ special["define-macro"] = {["compiler"] = function (_47)
   local body = sub(_47, 2)
   local macro = {"setenv", {"quote", name}, join({"fn", args}, body)}
   eval(compile_for_target("lua", macro))
-  if is_embed_macros then
+  if embed_macros63 then
     macros = (macros .. compile_toplevel(macro))
   end
   return("")
@@ -1097,7 +1122,7 @@ special["local"] = {["compiler"] = function (_49)
     end
   end)()
   local ind = indentation()
-  if is_nil(value) then
+  if nil63(value) then
     return((ind .. keyword .. id))
   else
     return((ind .. keyword .. id .. " = " .. compile(value)))
@@ -1134,7 +1159,7 @@ end, ["statement"] = true, ["terminated"] = true}
 special["set"] = {["compiler"] = function (_55)
   local lh = _55[1]
   local rh = _55[2]
-  if is_nil(rh) then
+  if nil63(rh) then
     error("Missing right-hand side in assignment")
   end
   return((indentation() .. compile(lh) .. " = " .. compile(rh)))
@@ -1206,19 +1231,19 @@ special["object"] = {["compiler"] = function (forms)
   while (i < (length(forms) - 1)) do
     local k = forms[(i + 1)]
     local v = compile(forms[((i + 1) + 1)])
-    if (not is_string(k)) then
+    if (not string63(k)) then
       error(("Illegal object key: " .. to_string(k)))
     end
     if (target == "lua") then
       local k1 = (function ()
-        if is_string_literal(k) then
+        if string_literal63(k) then
           return(k)
         else
           return(quoted(k))
         end
       end)()
       k = ("[" .. k1 .. "]")
-    elseif ((not is_valid_id(k)) and (not is_string_literal(k))) then
+    elseif ((not valid_id63(k)) and (not string_literal63(k))) then
       k = quoted(k)
     end
     str = (str .. k .. sep .. v)
@@ -1230,34 +1255,34 @@ special["object"] = {["compiler"] = function (forms)
   return((str .. "}"))
 end}
 
-is_can_return = function (form)
-  if is_special(form) then
-    return((not is_statement(hd(form))))
+can_return63 = function (form)
+  if special63(form) then
+    return((not statement63(hd(form))))
   else
     return(true)
   end
 end
 
-compile = function (form, is_stmt, is_tail)
-  local tr = terminator(is_stmt)
+compile = function (form, stmt63, tail63)
+  local tr = terminator(stmt63)
   local ind = (function ()
-    if is_stmt then
+    if stmt63 then
       return(indentation())
     else
       return("")
     end
   end)()
-  if (is_tail and is_can_return(form)) then
+  if (tail63 and can_return63(form)) then
     form = {"return", form}
   end
-  if is_nil(form) then
+  if nil63(form) then
     return("")
-  elseif is_atom(form) then
+  elseif atom63(form) then
     return((ind .. compile_atom(form) .. tr))
-  elseif is_operator(form) then
+  elseif operator63(form) then
     return((ind .. compile_operator(form) .. tr))
-  elseif is_special(form) then
-    return(compile_special(form, is_stmt, is_tail))
+  elseif special63(form) then
+    return(compile_special(form, stmt63, tail63))
   else
     return((ind .. compile_call(form) .. tr))
   end
@@ -1310,7 +1335,7 @@ end
 rep = function (str)
   local form = read_from_string(str)
   local result = eval(compile_toplevel(form))
-  if is_is(result) then
+  if is63(result) then
     return(print((to_string(result))))
   end
 end
@@ -1369,7 +1394,7 @@ main = function ()
         end
       end
     elseif (arg == "-m") then
-      is_embed_macros = true
+      embed_macros63 = true
     elseif ("-" ~= sub(arg, 0, 1)) then
       add(inputs, arg)
     end
@@ -1399,7 +1424,7 @@ main = function ()
 end
 
 setenv("at", function (l, i)
-  if ((target == "lua") and is_number(i)) then
+  if ((target == "lua") and number63(i)) then
     i = (i + 1)
   elseif (target == "lua") then
     i = {"+", i, 1}
@@ -1414,13 +1439,13 @@ end)
 setenv("list", function (...)
   local body = unstash({...})
   local l = join({"array"}, body)
-  if (not is_keys(body)) then
+  if (not keys63(body)) then
     return(l)
   else
     local id = make_id()
     local init = {}
     for k, v in pairs(body) do
-      if (not is_number(k)) then
+      if (not number63(k)) then
         add(init, {"set", {"get", id, {"quote", k}}, v})
       end
     end
@@ -1432,7 +1457,7 @@ setenv("table", function (...)
   local body = unstash({...})
   local l = {}
   for k, v in pairs(body) do
-    if (not is_number(k)) then
+    if (not number63(k)) then
       add(l, k)
       add(l, v)
     end
@@ -1454,7 +1479,7 @@ setenv("let", function (bindings, ...)
       local _8 = _6[(_7 + 1)]
       local id = _8[1]
       local val = _8[2]
-      if is_bound(id) then
+      if bound63(id) then
         local rename = make_id()
         add(renames, id)
         add(renames, rename)
@@ -1472,12 +1497,12 @@ end)
 setenv("let-macro", function (definitions, ...)
   local body = unstash({...})
   add(environment, {})
-  local is_embed = is_embed_macros
-  is_embed_macros = false
+  local embed63 = embed_macros63
+  embed_macros63 = false
   map(function (m)
     return((compiler("define-macro"))(m))
   end, definitions)
-  is_embed_macros = is_embed
+  embed_macros63 = embed63
   local body1 = macroexpand(body)
   drop(environment)
   return(join({"do"}, body1))
@@ -1503,7 +1528,7 @@ end)
 
 setenv("define", function (name, x, ...)
   local body = unstash({...})
-  if (not is_empty(body)) then
+  if (not empty63(body)) then
     x = join({"fn", x}, body)
   end
   return({"set", name, x})
@@ -1574,7 +1599,7 @@ end)
 
 setenv("list*", function (...)
   local xs = unstash({...})
-  if is_empty(xs) then
+  if empty63(xs) then
     return({})
   else
     local l = {}

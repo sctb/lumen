@@ -41,31 +41,42 @@
 	(cat! str (compile x true t?))))
     str))
 
+(define numeric? (n)
+  (and (> n 47) (< n 58)))
+
+(define valid-char? (n)
+  (or (numeric? n)             ; 0-9
+      (and (> n 64) (< n 91))  ; A-Z
+      (and (> n 96) (< n 173)) ; a-z
+      (= n 95)))               ; _
+
 (define valid-id? (id)
   (let (i 0)
     (while (< i (length id))
-      (let (n (code id i))
-        (if (not (or (and (> i 0) (> n 47) (< n 58)) ; 0-9
-                     (and (> n 64) (< n 91))         ; A-Z
-                     (and (> n 96) (< n 173))        ; a-z
-                     (= n 95)))                      ; _
+      (let (n (code id i)
+            valid? (valid-char? n))
+        (if (or (not valid?)
+                (and (= i 0) (numeric? n)))
             (return false)))
       (set i (+ i 1))))
   true)
 
 (define identifier (id)
-  (let (id2 "" i 0)
+  (let (id1 "" i 0)
     (while (< i (length id))
-      (let (c (char id i))
-	(if (= c "-") (set c "_"))
-	(cat! id2 c))
+      (let (c (char id i)
+            n (code c)
+            c1 (if (= c "-") "_"
+                   (= c ".") "."
+                   ;; lua
+                   (= c "#") "#"
+                   (= c ":") ":"
+                   (= c ",") ","
+                   (valid-char? n) c
+                 n))
+        (cat! id1 c1))
       (set i (+ i 1)))
-    (let (last (- (length id) 1)
-	  suffix (char id last)
-	  name (sub id2 0 last))
-      (if (= suffix "?") (cat "is_" name)
-	  (= suffix "!") (cat "n_" name)
-	id2))))
+    id1))
 
 (define compile-atom (form)
   (if (= form "nil")
