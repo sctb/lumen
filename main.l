@@ -38,7 +38,7 @@
       (if (or (= arg "-o") (= arg "-t") (= arg "-e"))
 	  (if (= i (- (length args) 1))
 	      (pr "missing argument for" arg)
-	    (do (set i (+ i 1))
+	    (do (inc i)
 		(let (arg2 (at args i))
 		  (if (= arg "-o") (set output arg2)
 		      (= arg "-t") (set target1 arg2)

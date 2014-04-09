@@ -579,7 +579,7 @@ delimiters = {"(": true, ")": true, ";": true, "\n": true};
 whitespace = {" ": true, "\t": true, "\n": true};
 
 make_stream = function (str) {
-  return({string: str, pos: 0, len: length(str)});
+  return({pos: 0, string: str, len: length(str)});
 };
 
 peek_char = function (s) {
@@ -746,7 +746,7 @@ read_from_string = function (str) {
   return(read(make_stream(str)));
 };
 
-operators = {js: {"=": "===", cat: "+", "~=": "!=", or: "||", and: "&&"}, lua: {"=": "==", cat: "..", "~=": true, or: true, and: true}, common: {"%": true, "<=": true, "+": true, "*": true, "-": true, "<": true, "/": true, ">": true, ">=": true}};
+operators = {common: {"+": true, "-": true, "%": true, "*": true, "/": true, "<": true, ">": true, "<=": true, ">=": true}, js: {"=": "===", "~=": "!=", and: "&&", or: "||", cat: "+"}, lua: {"=": "==", cat: "..", "~=": true, and: true, or: true}};
 
 getop = function (op) {
   var op1 = (operators["common"][op] || operators[target][op]);
@@ -1515,7 +1515,7 @@ setenv("across", function (_14) {
   var l1 = make_id();
   i = (i || make_id());
   start = (start || 0);
-  return(["let", [i, start, l1, l], ["while", ["<", i, ["length", l1]], join(["let", [v, ["at", l1, i]]], join(body, [["set", i, ["+", i, 1]]]))]]);
+  return(["let", [i, start, l1, l], ["while", ["<", i, ["length", l1]], join(["let", [v, ["at", l1, i]]], join(body, [["inc", i]]))]]);
 });
 
 setenv("set-of", function () {
@@ -1593,6 +1593,14 @@ setenv("each", function (_32) {
 setenv("cat!", function (a) {
   var bs = unstash(sub(arguments, 1));
   return(["set", a, join(["cat", a], bs)]);
+});
+
+setenv("inc", function (n, by) {
+  return(["set", n, ["+", n, (by || 1)]]);
+});
+
+setenv("dec", function (n, by) {
+  return(["set", n, ["-", n, (by || 1)]]);
 });
 
 setenv("pr", function () {

@@ -779,7 +779,7 @@ read_from_string = function (str)
   return(read(make_stream(str)))
 end
 
-operators = {["common"] = {["+"] = true, ["-"] = true, ["%"] = true, ["*"] = true, ["/"] = true, ["<"] = true, [">"] = true, ["<="] = true, [">="] = true}, ["js"] = {["="] = "===", ["~="] = "!=", ["and"] = "&&", ["or"] = "||", ["cat"] = "+"}, ["lua"] = {["="] = "==", ["cat"] = "..", ["~="] = true, ["and"] = true, ["or"] = true}}
+operators = {["lua"] = {["and"] = true, ["="] = "==", ["~="] = true, ["or"] = true, ["cat"] = ".."}, ["common"] = {["%"] = true, ["*"] = true, ["+"] = true, [">"] = true, ["/"] = true, ["<="] = true, ["-"] = true, [">="] = true, ["<"] = true}, ["js"] = {["and"] = "&&", ["="] = "===", ["~="] = "!=", ["or"] = "||", ["cat"] = "+"}}
 
 getop = function (op)
   local op1 = (operators["common"][op] or operators[target][op])
@@ -1551,7 +1551,7 @@ setenv("across", function (_14, ...)
   local l1 = make_id()
   i = (i or make_id())
   start = (start or 0)
-  return({"let", {i, start, l1, l}, {"while", {"<", i, {"length", l1}}, join({"let", {v, {"at", l1, i}}}, join(body, {{"set", i, {"+", i, 1}}}))}})
+  return({"let", {i, start, l1, l}, {"while", {"<", i, {"length", l1}}, join({"let", {v, {"at", l1, i}}}, join(body, {{"inc", i}}))}})
 end)
 
 setenv("set-of", function (...)
@@ -1629,6 +1629,14 @@ end)
 setenv("cat!", function (a, ...)
   local bs = unstash({...})
   return({"set", a, join({"cat", a}, bs)})
+end)
+
+setenv("inc", function (n, by)
+  return({"set", n, {"+", n, (by or 1)}})
+end)
+
+setenv("dec", function (n, by)
+  return({"set", n, {"-", n, (by or 1)}})
 end)
 
 setenv("pr", function (...)

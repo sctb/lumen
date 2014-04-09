@@ -13,7 +13,7 @@
         (while (>= i 0)
           (let (v (get (at environment i) k))
             (if v (return v)))
-          (set i (- i 1))))))
+          (dec i)))))
 
 (define variable (table))
 
@@ -40,7 +40,7 @@
 
 (define-macro at (l i)
   (if (and (= target 'lua) (number? i))
-      (set i (+ i 1))
+      (inc i)
       (= target 'lua)
       (set i `(+ ,i 1)))
   `(get ,l ,i))
@@ -135,7 +135,7 @@
        (while (< ,i (length ,l1))
 	 (let (,v (at ,l1 ,i))
 	   ,@body
-	   (set ,i (+ ,i 1)))))))
+	   (inc ,i))))))
 
 (define-macro set-of elements
   `(object ,@(map (fn (x) (splice (list x true))) elements)))
@@ -192,7 +192,7 @@
           i 0
           bs (map (fn (x)
                     (let (b (bind x `(at ,rh ,i)))
-                      (set i (+ i 1))
+                      (inc i)
                       (splice b)))
                   lh))
       (if r (join! bs (bind r `(sub ,rh ,i))))
@@ -316,8 +316,8 @@
                   (let (i from j 0 x2 ())
                     (while (< i upto)
                       (set (at x2 j) (at x i))
-                      (set i (+ i 1))
-                      (set j (+ j 1)))
+                      (inc i) 
+                      (inc j))
                     x2)))))
       (each (x k v)
         (set (get l k) v))
@@ -350,10 +350,10 @@
         (let (i 0 len (length l1))
           (while (< i len)
             (set (at l i) (at l1 i))
-            (set i (+ i 1)))
+            (inc i))
           (while (< i (+ len (length l2)))
             (set (at l i) (at l2 (- i len)))
-            (set i (+ i 1))))))
+            (inc i)))))
       (each (l1 k v)
         (set (get l k) v))
       ;; properties on l2 supersede l1
@@ -381,14 +381,14 @@
         l1 ())
     (while (< i (length l))
       (add l1 (list (at l i) (at l (+ i 1))))
-      (set i (+ i 2)))
+      (inc i 2))
     l1))
 
 (define iterate (f count)
   (let (i 0)
     (while (< i count)
       (f i)
-      (set i (+ i 1)))))
+      (inc i))))
 
 (define-macro join* xs
   (reduce (fn (a b) (list 'join a b)) xs))
@@ -523,6 +523,12 @@
    (js (let (n (parseFloat str))
 	 (if (not (isNaN n)) n)))
    (lua (tonumber str))))
+
+(define-macro inc (n by)
+  `(set ,n (+ ,n ,(or by 1))))
+
+(define-macro dec (n by)
+  `(set ,n (- ,n ,(or by 1))))
 
 ;; printing
 

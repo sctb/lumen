@@ -58,7 +58,7 @@
         (if (or (not valid?)
                 (and (= i 0) (numeric? n)))
             (return false)))
-      (set i (+ i 1))))
+      (inc i)))
   true)
 
 (define identifier (id)
@@ -75,7 +75,7 @@
                    (valid-char? n) c
                  n))
         (cat! id1 c1))
-      (set i (+ i 1)))
+      (inc i))
     id1))
 
 (define compile-atom (form)
@@ -102,7 +102,7 @@
       (if (and (= op1 '-) (= (length args) 1))
           (cat! str op1 (compile arg))
         (do (cat! str (compile arg))
-            (if (< i (- (length args) 1)) 
+            (if (< i (- (length args) 1))
                 (cat! str " " op1 " ")))))
     (cat str ")")))
 
@@ -175,7 +175,7 @@
 	    (do (set body condition)
 		(set condition nil)))
 	(cat! str (compile-branch condition body first? last? tail?)))
-      (set i (+ i 1)))
+      (inc i))
     str))
 
 (define-special while (statement terminated) (form)
@@ -271,7 +271,7 @@
             (set k (quoted k)))
 	(cat! str k sep v)
 	(if (< i (- (length forms) 2)) (cat! str ", "))
-	(set i (+ i 2))))
+	(inc i 2)))
     (cat str "}")))
 
 (define can-return? (form)
