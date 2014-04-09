@@ -49,7 +49,7 @@ quoted = function (form)
       return(form)
     end
   else
-    return(join({"list"}, map(quoted, form)))
+    return(join({"list"}, map42(quoted, form)))
   end
 end
 
@@ -612,7 +612,7 @@ delimiters = {["("] = true, [")"] = true, [";"] = true, ["\n"] = true}
 whitespace = {[" "] = true, ["\t"] = true, ["\n"] = true}
 
 make_stream = function (str)
-  return({["pos"] = 0, ["string"] = str, ["len"] = length(str)})
+  return({["len"] = length(str), ["string"] = str, ["pos"] = 0})
 end
 
 peek_char = function (s)
@@ -779,7 +779,7 @@ read_from_string = function (str)
   return(read(make_stream(str)))
 end
 
-operators = {["lua"] = {["and"] = true, ["="] = "==", ["~="] = true, ["or"] = true, ["cat"] = ".."}, ["common"] = {["%"] = true, ["*"] = true, ["+"] = true, [">"] = true, ["/"] = true, ["<="] = true, ["-"] = true, [">="] = true, ["<"] = true}, ["js"] = {["and"] = "&&", ["="] = "===", ["~="] = "!=", ["or"] = "||", ["cat"] = "+"}}
+operators = {["common"] = {[">="] = true, ["%"] = true, ["/"] = true, ["+"] = true, ["<"] = true, ["-"] = true, [">"] = true, ["*"] = true, ["<="] = true}, ["js"] = {["~="] = "!=", ["="] = "===", ["or"] = "||", ["and"] = "&&", ["cat"] = "+"}, ["lua"] = {["~="] = true, ["="] = "==", ["or"] = true, ["and"] = true, ["cat"] = ".."}}
 
 getop = function (op)
   local op1 = (operators["common"][op] or operators[target][op])

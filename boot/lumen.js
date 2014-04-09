@@ -49,7 +49,7 @@ quoted = function (form) {
       return(form);
     }
   } else {
-    return(join(["list"], map(quoted, form)));
+    return(join(["list"], map42(quoted, form)));
   }
 };
 

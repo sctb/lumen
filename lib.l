@@ -52,7 +52,7 @@
             (cat "\"\\\"" str "\\\"\""))
           (string? form) (cat "\"" form "\"")
         form)
-    `(list ,@(map quoted form))))
+    `(list ,@(map* quoted form))))
 
 (define-macro quote (form)
   (quoted form))
