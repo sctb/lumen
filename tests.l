@@ -111,7 +111,8 @@
   (test= 17 (get (list foo: 17) 'foo))
   (test= 17 (get (list 1 foo: 17) 'foo))
   (test= true (get (list :foo) 'foo))
-  (test= true (get '(:foo) 'foo)))
+  (test= true (get '(:foo) 'foo))
+  (test= true (get (hd '((:foo))) 'foo)))
 
 (define-test quasiquote ()
   (test= (quote a) (quasiquote a))
@@ -143,7 +144,13 @@
     (test= '((1 2 3) 1 2 3) `((,@c) ,@c)))
   (let (a 42)
     (test= '(quasiquote ((unquote-splicing (list a)))) ``(,@(list a)))
-    (test= '(quasiquote ((unquote-splicing (list 42)))) ``(,@(list ,a)))))
+    (test= '(quasiquote ((unquote-splicing (list 42)))) ``(,@(list ,a))))
+  (test= true (get `(:foo) 'foo))
+  (let (a 17
+        b '(1 2))
+    (test= 17 (get `(foo: ,a) 'foo))
+    (test= 2 (length `(foo: ,a ,@b)))
+    (test= 17 (get `(foo: ,@a) 'foo))))
 
 (define-test calls ()
   (let (f (fn () 42)

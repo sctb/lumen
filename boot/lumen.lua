@@ -187,7 +187,7 @@ macroexpand = function (form)
       drop(environment)
       return(_19)
     else
-      return(map(macroexpand, form))
+      return(map42(macroexpand, form))
     end
   end
 end
@@ -212,21 +212,36 @@ quasiexpand = function (form, depth)
   elseif (hd(form) == "quasiquote") then
     return(quasiexpand(form[2], 1))
   else
-    return(map(function (x)
+    return(map42(function (x)
       return(quasiexpand(x, depth))
     end, form))
   end
 end
 
 quasiquote_list = function (form, depth)
-  local xs = {{"array"}}
+  local xs = {{"list"}}
+  local splice63 = function (x)
+    return((list63(x) and can_unquote63(depth) and (hd(x) == "unquote-splicing")))
+  end
+  for k, v in pairs(form) do
+    if (not number63(k)) then
+      local v1 = (function ()
+        if splice63(v) then
+          return(quasiexpand(v[2]))
+        else
+          return(quasiexpand(v, depth))
+        end
+      end)()
+      last(xs)[k] = v1
+    end
+  end
   local _24 = 0
   local _23 = form
   while (_24 < length(_23)) do
     local x = _23[(_24 + 1)]
-    if (list63(x) and can_unquote63(depth) and (hd(x) == "unquote-splicing")) then
+    if splice63(x) then
       add(xs, quasiexpand(x[2]))
-      add(xs, {"array"})
+      add(xs, {"list"})
     else
       add(last(xs), quasiexpand(x, depth))
     end
@@ -238,7 +253,7 @@ quasiquote_list = function (form, depth)
     return(reduce(function (a, b)
       return({"join", a, b})
     end, keep(function (x)
-      return((not ((length(x) == 1) and (hd(x) == "array"))))
+      return((not ((length(x) == 1) and (hd(x) == "list"))))
     end, xs)))
   end
 end
@@ -612,7 +627,7 @@ delimiters = {["("] = true, [")"] = true, [";"] = true, ["\n"] = true}
 whitespace = {[" "] = true, ["\t"] = true, ["\n"] = true}
 
 make_stream = function (str)
-  return({["pos"] = 0, ["string"] = str, ["len"] = length(str)})
+  return({["string"] = str, ["len"] = length(str), ["pos"] = 0})
 end
 
 peek_char = function (s)
@@ -779,7 +794,7 @@ read_from_string = function (str)
   return(read(make_stream(str)))
 end
 
-operators = {["common"] = {["+"] = true, ["-"] = true, ["%"] = true, ["*"] = true, ["/"] = true, ["<"] = true, [">"] = true, ["<="] = true, [">="] = true}, ["js"] = {["="] = "===", ["~="] = "!=", ["and"] = "&&", ["or"] = "||", ["cat"] = "+"}, ["lua"] = {["="] = "==", ["cat"] = "..", ["~="] = true, ["and"] = true, ["or"] = true}}
+operators = {["lua"] = {["~="] = true, ["="] = "==", ["and"] = true, ["cat"] = "..", ["or"] = true}, ["js"] = {["~="] = "!=", ["="] = "===", ["and"] = "&&", ["cat"] = "+", ["or"] = "||"}, ["common"] = {["*"] = true, ["+"] = true, ["<"] = true, ["%"] = true, [">="] = true, ["<="] = true, ["-"] = true, [">"] = true, ["/"] = true}}
 
 getop = function (op)
   local op1 = (operators["common"][op] or operators[target][op])

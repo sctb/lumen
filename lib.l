@@ -235,7 +235,7 @@
 	    (with-scope (args)
 	      `(,name ,args ,@(macroexpand body))))
 	;; list
-        (map macroexpand form)))))
+        (map* macroexpand form)))))
 
 (define quasiexpand (form depth)
   (if (quasiquoting? depth)
@@ -262,17 +262,26 @@
       (= (hd form) 'quasiquote)
       (quasiexpand (at form 1) 1)
     ;; list
-    (map (fn (x) (quasiexpand x depth)) form)))
+    (map* (fn (x) (quasiexpand x depth)) form)))
 
 (define quasiquote-list (form depth)
-  (let (xs (list '(array)))
+  (let (xs (list '(list))
+        splice? (fn (x)
+                  (and (list? x)
+                       (can-unquote? depth)
+                       (= (hd x) 'unquote-splicing))))
+    ;; collect keys
+    (each (form k v)
+      (let (v1 (if (splice? v)
+                   ;; values don't get to escape their keys
+                   (quasiexpand (at v 1))
+                 (quasiexpand v depth)))
+        (set (get (last xs) k) v1)))
     ;; collect sibling lists
     (across (form x)
-      (if (and (list? x)
-	       (can-unquote? depth)
-	       (= (hd x) 'unquote-splicing))
+      (if (splice? x)
 	  (do (add xs (quasiexpand (at x 1)))
-	      (add xs '(array)))
+	      (add xs '(list)))
 	(add (last xs) (quasiexpand x depth))))
     (if (= (length xs) 1)		; no splicing needed
 	(hd xs)
@@ -281,7 +290,7 @@
 	      ;; remove empty lists
 	      (keep (fn (x)
                       (not (and (= (length x) 1)
-                                (= (hd x) 'array))))
+                                (= (hd x) 'list))))
                     xs)))))
 
 ;; languages

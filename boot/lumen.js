@@ -189,7 +189,7 @@ macroexpand = function (form) {
       drop(environment);
       return(_19);
     } else {
-      return(map(macroexpand, form));
+      return(map42(macroexpand, form));
     }
   }
 };
@@ -214,21 +214,37 @@ quasiexpand = function (form, depth) {
   } else if ((hd(form) === "quasiquote")) {
     return(quasiexpand(form[1], 1));
   } else {
-    return(map(function (x) {
+    return(map42(function (x) {
       return(quasiexpand(x, depth));
     }, form));
   }
 };
 
 quasiquote_list = function (form, depth) {
-  var xs = [["array"]];
+  var xs = [["list"]];
+  var splice63 = function (x) {
+    return((list63(x) && can_unquote63(depth) && (hd(x) === "unquote-splicing")));
+  };
+  for (k in form) {
+    v = form[k];
+    if (isNaN(parseInt(k))) {
+      var v1 = (function () {
+        if (splice63(v)) {
+          return(quasiexpand(v[1]));
+        } else {
+          return(quasiexpand(v, depth));
+        }
+      })();
+      last(xs)[k] = v1;
+    }
+  }
   var _24 = 0;
   var _23 = form;
   while ((_24 < length(_23))) {
     var x = _23[_24];
-    if ((list63(x) && can_unquote63(depth) && (hd(x) === "unquote-splicing"))) {
+    if (splice63(x)) {
       add(xs, quasiexpand(x[1]));
-      add(xs, ["array"]);
+      add(xs, ["list"]);
     } else {
       add(last(xs), quasiexpand(x, depth));
     }
@@ -240,7 +256,7 @@ quasiquote_list = function (form, depth) {
     return(reduce(function (a, b) {
       return(["join", a, b]);
     }, keep(function (x) {
-      return(!(((length(x) === 1) && (hd(x) === "array"))));
+      return(!(((length(x) === 1) && (hd(x) === "list"))));
     }, xs)));
   }
 };
@@ -579,7 +595,7 @@ delimiters = {"(": true, ")": true, ";": true, "\n": true};
 whitespace = {" ": true, "\t": true, "\n": true};
 
 make_stream = function (str) {
-  return({len: length(str), pos: 0, string: str});
+  return({pos: 0, string: str, len: length(str)});
 };
 
 peek_char = function (s) {
@@ -746,7 +762,7 @@ read_from_string = function (str) {
   return(read(make_stream(str)));
 };
 
-operators = {lua: {"=": "==", or: true, "~=": true, and: true, cat: ".."}, js: {"=": "===", or: "||", "~=": "!=", and: "&&", cat: "+"}, common: {"<": true, "+": true, "*": true, "<=": true, "%": true, "/": true, ">=": true, ">": true, "-": true}};
+operators = {common: {"+": true, "-": true, "%": true, "*": true, "/": true, "<": true, ">": true, "<=": true, ">=": true}, js: {"=": "===", "~=": "!=", and: "&&", or: "||", cat: "+"}, lua: {"=": "==", cat: "..", "~=": true, and: true, or: true}};
 
 getop = function (op) {
   var op1 = (operators["common"][op] || operators[target][op]);
