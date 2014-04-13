@@ -150,7 +150,9 @@
         b '(1 2))
     (test= 17 (get `(foo: ,a) 'foo))
     (test= 2 (length `(foo: ,a ,@b)))
-    (test= 17 (get `(foo: ,@a) 'foo))))
+    (test= 17 (get `(foo: ,@a) 'foo))
+    (test= true (get (hd `((:foo))) 'foo))
+    (test= true (get (hd `(,(list :foo))) 'foo))))
 
 (define-test calls ()
   (let (f (fn () 42)
