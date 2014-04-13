@@ -238,7 +238,7 @@ quasiquote_list = function (form, depth)
     return(reduce(function (a, b)
       return({"join", a, b})
     end, keep(function (x)
-      return((empty63(x) or (not ((length(x) == 1) and (hd(x) == "array")))))
+      return((not ((length(x) == 1) and (hd(x) == "array"))))
     end, xs)))
   end
 end
@@ -612,7 +612,7 @@ delimiters = {["("] = true, [")"] = true, [";"] = true, ["\n"] = true}
 whitespace = {[" "] = true, ["\t"] = true, ["\n"] = true}
 
 make_stream = function (str)
-  return({["len"] = length(str), ["string"] = str, ["pos"] = 0})
+  return({["pos"] = 0, ["string"] = str, ["len"] = length(str)})
 end
 
 peek_char = function (s)
@@ -779,7 +779,7 @@ read_from_string = function (str)
   return(read(make_stream(str)))
 end
 
-operators = {["common"] = {[">="] = true, ["%"] = true, ["/"] = true, ["+"] = true, ["<"] = true, ["-"] = true, [">"] = true, ["*"] = true, ["<="] = true}, ["js"] = {["~="] = "!=", ["="] = "===", ["or"] = "||", ["and"] = "&&", ["cat"] = "+"}, ["lua"] = {["~="] = true, ["="] = "==", ["or"] = true, ["and"] = true, ["cat"] = ".."}}
+operators = {["common"] = {["+"] = true, ["-"] = true, ["%"] = true, ["*"] = true, ["/"] = true, ["<"] = true, [">"] = true, ["<="] = true, [">="] = true}, ["js"] = {["="] = "===", ["~="] = "!=", ["and"] = "&&", ["or"] = "||", ["cat"] = "+"}, ["lua"] = {["="] = "==", ["cat"] = "..", ["~="] = true, ["and"] = true, ["or"] = true}}
 
 getop = function (op)
   local op1 = (operators["common"][op] or operators[target][op])

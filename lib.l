@@ -280,9 +280,8 @@
       (reduce (fn (a b) (list 'join a b))
 	      ;; remove empty lists
 	      (keep (fn (x)
-                      (or (empty? x)
-                          (not (and (= (length x) 1)
-                                    (= (hd x) 'array)))))
+                      (not (and (= (length x) 1)
+                                (= (hd x) 'array))))
                     xs)))))
 
 ;; languages

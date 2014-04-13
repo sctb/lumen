@@ -240,7 +240,7 @@ quasiquote_list = function (form, depth) {
     return(reduce(function (a, b) {
       return(["join", a, b]);
     }, keep(function (x) {
-      return((empty63(x) || !(((length(x) === 1) && (hd(x) === "array")))));
+      return(!(((length(x) === 1) && (hd(x) === "array"))));
     }, xs)));
   }
 };
@@ -579,7 +579,7 @@ delimiters = {"(": true, ")": true, ";": true, "\n": true};
 whitespace = {" ": true, "\t": true, "\n": true};
 
 make_stream = function (str) {
-  return({pos: 0, string: str, len: length(str)});
+  return({len: length(str), pos: 0, string: str});
 };
 
 peek_char = function (s) {
@@ -746,7 +746,7 @@ read_from_string = function (str) {
   return(read(make_stream(str)));
 };
 
-operators = {common: {"+": true, "-": true, "%": true, "*": true, "/": true, "<": true, ">": true, "<=": true, ">=": true}, js: {"=": "===", "~=": "!=", and: "&&", or: "||", cat: "+"}, lua: {"=": "==", cat: "..", "~=": true, and: true, or: true}};
+operators = {lua: {"=": "==", or: true, "~=": true, and: true, cat: ".."}, js: {"=": "===", or: "||", "~=": "!=", and: "&&", cat: "+"}, common: {"<": true, "+": true, "*": true, "<=": true, "%": true, "/": true, ">=": true, ">": true, "-": true}};
 
 getop = function (op) {
   var op1 = (operators["common"][op] || operators[target][op]);
