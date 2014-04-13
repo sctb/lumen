@@ -204,6 +204,11 @@
 (define quasiquoting? (depth) (and (quoting? depth) (> depth 0)))
 (define can-unquote? (depth) (and (quoting? depth) (= depth 1)))
 
+(define quasisplice? (x depth)
+  (and (list? x)
+       (can-unquote? depth)
+       (= (hd x) 'unquote-splicing)))
+
 (define-macro with-scope ((bound) expr)
   (let (result (make-id)
 	arg (make-id))
@@ -265,21 +270,17 @@
     (map* (fn (x) (quasiexpand x depth)) form)))
 
 (define quasiquote-list (form depth)
-  (let (xs (list '(list))
-        splice? (fn (x)
-                  (and (list? x)
-                       (can-unquote? depth)
-                       (= (hd x) 'unquote-splicing))))
+  (let (xs (list '(list)))
     ;; collect keys
     (each (form k v)
-      (let (v1 (if (splice? v)
+      (let (v1 (if (quasisplice? v depth)
                    ;; values don't get to escape their keys
                    (quasiexpand (at v 1))
                  (quasiexpand v depth)))
         (set (get (last xs) k) v1)))
     ;; collect sibling lists
     (across (form x)
-      (if (splice? x)
+      (if (quasisplice? x depth)
 	  (let (x1 (quasiexpand (at x 1)))
             (add xs x1)
             (add xs '(list)))
