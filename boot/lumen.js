@@ -243,7 +243,8 @@ quasiquote_list = function (form, depth) {
   while ((_24 < length(_23))) {
     var x = _23[_24];
     if (splice63(x)) {
-      add(xs, quasiexpand(x[1]));
+      var x1 = quasiexpand(x[1]);
+      add(xs, x1);
       add(xs, ["list"]);
     } else {
       add(last(xs), quasiexpand(x, depth));
@@ -256,7 +257,7 @@ quasiquote_list = function (form, depth) {
     return(reduce(function (a, b) {
       return(["join", a, b]);
     }, keep(function (x) {
-      return(!(((length(x) === 1) && (hd(x) === "list"))));
+      return(((length(x) > 1) || !((hd(x) === "list")) || keys63(x)));
     }, xs)));
   }
 };

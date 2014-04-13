@@ -240,7 +240,8 @@ quasiquote_list = function (form, depth)
   while (_24 < length(_23)) do
     local x = _23[(_24 + 1)]
     if splice63(x) then
-      add(xs, quasiexpand(x[2]))
+      local x1 = quasiexpand(x[2])
+      add(xs, x1)
       add(xs, {"list"})
     else
       add(last(xs), quasiexpand(x, depth))
@@ -253,7 +254,7 @@ quasiquote_list = function (form, depth)
     return(reduce(function (a, b)
       return({"join", a, b})
     end, keep(function (x)
-      return((not ((length(x) == 1) and (hd(x) == "list"))))
+      return(((length(x) > 1) or (not (hd(x) == "list")) or keys63(x)))
     end, xs)))
   end
 end
@@ -627,7 +628,7 @@ delimiters = {["("] = true, [")"] = true, [";"] = true, ["\n"] = true}
 whitespace = {[" "] = true, ["\t"] = true, ["\n"] = true}
 
 make_stream = function (str)
-  return({["string"] = str, ["len"] = length(str), ["pos"] = 0})
+  return({["len"] = length(str), ["string"] = str, ["pos"] = 0})
 end
 
 peek_char = function (s)
@@ -794,7 +795,7 @@ read_from_string = function (str)
   return(read(make_stream(str)))
 end
 
-operators = {["lua"] = {["~="] = true, ["="] = "==", ["and"] = true, ["cat"] = "..", ["or"] = true}, ["js"] = {["~="] = "!=", ["="] = "===", ["and"] = "&&", ["cat"] = "+", ["or"] = "||"}, ["common"] = {["*"] = true, ["+"] = true, ["<"] = true, ["%"] = true, [">="] = true, ["<="] = true, ["-"] = true, [">"] = true, ["/"] = true}}
+operators = {["js"] = {["cat"] = "+", ["and"] = "&&", ["="] = "===", ["~="] = "!=", ["or"] = "||"}, ["lua"] = {["cat"] = "..", ["and"] = true, ["="] = "==", ["~="] = true, ["or"] = true}, ["common"] = {["<="] = true, ["*"] = true, ["%"] = true, ["/"] = true, ["+"] = true, ["-"] = true, [">"] = true, [">="] = true, ["<"] = true}}
 
 getop = function (op)
   local op1 = (operators["common"][op] or operators[target][op])

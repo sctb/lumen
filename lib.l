@@ -280,17 +280,20 @@
     ;; collect sibling lists
     (across (form x)
       (if (splice? x)
-	  (do (add xs (quasiexpand (at x 1)))
-	      (add xs '(list)))
+	  (let (x1 (quasiexpand (at x 1)))
+            (add xs x1)
+            (add xs '(list)))
 	(add (last xs) (quasiexpand x depth))))
     (if (= (length xs) 1)		; no splicing needed
 	(hd xs)
       ;; join all
-      (reduce (fn (a b) (list 'join a b))
+      (reduce (fn (a b)
+                (list 'join a b))
 	      ;; remove empty lists
 	      (keep (fn (x)
-                      (not (and (= (length x) 1)
-                                (= (hd x) 'list))))
+                      (or (> (length x) 1)
+                          (not (= (hd x) 'list))
+                          (keys? x)))
                     xs)))))
 
 ;; languages
