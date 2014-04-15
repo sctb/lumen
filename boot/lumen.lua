@@ -160,6 +160,10 @@ can_unquote63 = function (depth)
   return((quoting63(depth) and (depth == 1)))
 end
 
+quasisplice63 = function (x, depth)
+  return((list63(x) and can_unquote63(depth) and (hd(x) == "unquote-splicing")))
+end
+
 macroexpand = function (form)
   if symbol_macro63(form) then
     return(macroexpand(getenv(form)))
@@ -220,13 +224,10 @@ end
 
 quasiquote_list = function (form, depth)
   local xs = {{"list"}}
-  local splice63 = function (x)
-    return((list63(x) and can_unquote63(depth) and (hd(x) == "unquote-splicing")))
-  end
   for k, v in pairs(form) do
     if (not number63(k)) then
       local v1 = (function ()
-        if splice63(v) then
+        if quasisplice63(v, depth) then
           return(quasiexpand(v[2]))
         else
           return(quasiexpand(v, depth))
@@ -239,7 +240,7 @@ quasiquote_list = function (form, depth)
   local _23 = form
   while (_24 < length(_23)) do
     local x = _23[(_24 + 1)]
-    if splice63(x) then
+    if quasisplice63(x, depth) then
       local x1 = quasiexpand(x[2])
       add(xs, x1)
       add(xs, {"list"})
@@ -795,7 +796,7 @@ read_from_string = function (str)
   return(read(make_stream(str)))
 end
 
-operators = {["js"] = {["cat"] = "+", ["and"] = "&&", ["="] = "===", ["~="] = "!=", ["or"] = "||"}, ["lua"] = {["cat"] = "..", ["and"] = true, ["="] = "==", ["~="] = true, ["or"] = true}, ["common"] = {["<="] = true, ["*"] = true, ["%"] = true, ["/"] = true, ["+"] = true, ["-"] = true, [">"] = true, [">="] = true, ["<"] = true}}
+operators = {["common"] = {["%"] = true, ["<="] = true, ["+"] = true, ["*"] = true, ["-"] = true, ["<"] = true, ["/"] = true, [">"] = true, [">="] = true}, ["js"] = {["~="] = "!=", ["="] = "===", ["and"] = "&&", ["cat"] = "+", ["or"] = "||"}, ["lua"] = {["~="] = true, ["="] = "==", ["and"] = true, ["cat"] = "..", ["or"] = true}}
 
 getop = function (op)
   local op1 = (operators["common"][op] or operators[target][op])

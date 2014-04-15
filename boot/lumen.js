@@ -162,6 +162,10 @@ can_unquote63 = function (depth) {
   return((quoting63(depth) && (depth === 1)));
 };
 
+quasisplice63 = function (x, depth) {
+  return((list63(x) && can_unquote63(depth) && (hd(x) === "unquote-splicing")));
+};
+
 macroexpand = function (form) {
   if (symbol_macro63(form)) {
     return(macroexpand(getenv(form)));
@@ -222,14 +226,11 @@ quasiexpand = function (form, depth) {
 
 quasiquote_list = function (form, depth) {
   var xs = [["list"]];
-  var splice63 = function (x) {
-    return((list63(x) && can_unquote63(depth) && (hd(x) === "unquote-splicing")));
-  };
   for (k in form) {
     v = form[k];
     if (isNaN(parseInt(k))) {
       var v1 = (function () {
-        if (splice63(v)) {
+        if (quasisplice63(v, depth)) {
           return(quasiexpand(v[1]));
         } else {
           return(quasiexpand(v, depth));
@@ -242,7 +243,7 @@ quasiquote_list = function (form, depth) {
   var _23 = form;
   while ((_24 < length(_23))) {
     var x = _23[_24];
-    if (splice63(x)) {
+    if (quasisplice63(x, depth)) {
       var x1 = quasiexpand(x[1]);
       add(xs, x1);
       add(xs, ["list"]);
