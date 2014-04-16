@@ -236,6 +236,7 @@
 	  ;; scoped forms
 	  (or (= name 'function)
 	      (= name 'for))
+          ;; TODO: need to expand FOR's first argument
 	  (let ((_ args rest: body) form)
 	    (with-scope (args)
 	      `(,name ,args ,@(macroexpand body))))
