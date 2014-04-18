@@ -57,7 +57,7 @@ stash = function (args) {
   if (keys63(args)) {
     var p = {_stash: true};
     for (k in args) {
-      v = args[k];
+      var v = args[k];
       if (isNaN(parseInt(k))) {
         p[k] = v;
       }
@@ -76,7 +76,7 @@ unstash = function (args) {
     if ((composite63(l) && l["_stash"])) {
       var args1 = sub(args, 0, (length(args) - 1));
       for (k in l) {
-        v = l[k];
+        var v = l[k];
         if (isNaN(parseInt(k))) {
           if ((k != "_stash")) {
             args1[k] = v;
@@ -177,7 +177,7 @@ macroexpand = function (form) {
       return(form);
     } else if (macro63(name)) {
       return(macroexpand(apply(getenv(name), tl(form))));
-    } else if (((name === "function") || (name === "for"))) {
+    } else if ((name === "function")) {
       var _ = form[0];
       var args = form[1];
       var body = sub(form, 2);
@@ -227,7 +227,7 @@ quasiexpand = function (form, depth) {
 quasiquote_list = function (form, depth) {
   var xs = [["list"]];
   for (k in form) {
-    v = form[k];
+    var v = form[k];
     if (isNaN(parseInt(k))) {
       var v1 = (function () {
         if (quasisplice63(v, depth)) {
@@ -280,7 +280,7 @@ sub = function (x, from, upto) {
   } else {
     var l = Array.prototype.slice.call(x, from, upto);
     for (k in x) {
-      v = x[k];
+      var v = x[k];
       if (isNaN(parseInt(k))) {
         l[k] = v;
       }
@@ -322,13 +322,13 @@ join = function (l1, l2) {
     var l = [];
     l = l1.concat(l2);
     for (k in l1) {
-      v = l1[k];
+      var v = l1[k];
       if (isNaN(parseInt(k))) {
         l[k] = v;
       }
     }
     for (k in l2) {
-      v = l2[k];
+      var v = l2[k];
       if (isNaN(parseInt(k))) {
         l[k] = v;
       }
@@ -425,7 +425,7 @@ map = function (f, l) {
 map42 = function (f, t) {
   var l = map(f, t);
   for (k in t) {
-    v = t[k];
+    var v = t[k];
     if (isNaN(parseInt(k))) {
       l[k] = f(v);
     }
@@ -436,7 +436,7 @@ map42 = function (f, t) {
 keys63 = function (t) {
   var k63 = false;
   for (k in t) {
-    v = t[k];
+    var v = t[k];
     if (isNaN(parseInt(k))) {
       k63 = true;
       break;
@@ -554,7 +554,7 @@ to_string = function (x) {
     var str = "(";
     var x1 = sub(x);
     for (k in x) {
-      v = x[k];
+      var v = x[k];
       if (isNaN(parseInt(k))) {
         add(x1, (k + ":"));
         add(x1, v);
@@ -597,7 +597,7 @@ delimiters = {"(": true, ")": true, ";": true, "\n": true};
 whitespace = {" ": true, "\t": true, "\n": true};
 
 make_stream = function (str) {
-  return({pos: 0, string: str, len: length(str)});
+  return({len: length(str), string: str, pos: 0});
 };
 
 peek_char = function (s) {
@@ -764,7 +764,7 @@ read_from_string = function (str) {
   return(read(make_stream(str)));
 };
 
-operators = {common: {"+": true, "-": true, "%": true, "*": true, "/": true, "<": true, ">": true, "<=": true, ">=": true}, js: {"=": "===", "~=": "!=", and: "&&", or: "||", cat: "+"}, lua: {"=": "==", cat: "..", "~=": true, and: true, or: true}};
+operators = {common: {"*": true, ">=": true, "%": true, "/": true, "<=": true, "<": true, "+": true, ">": true, "-": true}, js: {cat: "+", or: "||", "~=": "!=", "=": "===", and: "&&"}, lua: {cat: "..", or: true, "~=": true, "=": "==", and: true}};
 
 getop = function (op) {
   var op1 = (operators["common"][op] || operators[target][op]);
@@ -1131,13 +1131,14 @@ special["for"] = {compiler: function (_50) {
     })();
     return((ind + "for " + k + ", " + v + " in pairs(" + t1 + ") do\n" + body1 + ind + "end\n"));
   } else {
-    var _53 = (function () {
+    var _53 = join([["local", v, ["get", t, k]]], body);
+    var body2 = (function () {
       indent_level = (indent_level + 1);
-      var _54 = compile_body(join([["set", v, ["get", t, k]]], body));
+      var _54 = compile_body(_53);
       indent_level = (indent_level - 1);
       return(_54);
     })();
-    return((ind + "for (" + k + " in " + t1 + ") {\n" + _53 + ind + "}\n"));
+    return((ind + "for (" + k + " in " + t1 + ") {\n" + body2 + ind + "}\n"));
   }
 }, statement: true, terminated: true};
 
@@ -1425,7 +1426,7 @@ setenv("list", function () {
     var id = make_id();
     var init = [];
     for (k in body) {
-      v = body[k];
+      var v = body[k];
       if (isNaN(parseInt(k))) {
         add(init, ["set", ["get", id, ["quote", k]], v]);
       }
@@ -1438,7 +1439,7 @@ setenv("table", function () {
   var body = unstash(sub(arguments, 0));
   var l = [];
   for (k in body) {
-    v = body[k];
+    var v = body[k];
     if (isNaN(parseInt(k))) {
       add(l, k);
       add(l, v);

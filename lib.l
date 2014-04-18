@@ -233,10 +233,8 @@
 	  ;; expand macro
 	  (macro? name)
           (macroexpand (apply (getenv name) (tl form)))
-	  ;; scoped forms
-	  (or (= name 'function)
-	      (= name 'for))
-          ;; TODO: need to expand FOR's first argument
+	  ;; new scope
+	  (= name 'function)
 	  (let ((_ args rest: body) form)
 	    (with-scope (args)
 	      `(,name ,args ,@(macroexpand body))))

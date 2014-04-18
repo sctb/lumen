@@ -224,8 +224,9 @@
     (if (= target 'lua)
 	(let (body1 (with-indent (compile-body body)))
 	  (cat ind "for " k ", " v " in pairs(" t1 ") do\n" body1 ind "end\n"))
-      (let (body1 (with-indent (compile-body `((set ,v (get ,t ,k)) ,@body))))
-	(cat ind "for (" k " in " t1 ") {\n" body1 ind "}\n")))))
+      (let (body1 `((local ,v (get ,t ,k)) ,@body)
+            body2 (with-indent (compile-body body1)))
+	(cat ind "for (" k " in " t1 ") {\n" body2 ind "}\n")))))
 
 (define-special set (statement) ((lh rh))
   (if (nil? rh)

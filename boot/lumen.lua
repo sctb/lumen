@@ -175,7 +175,7 @@ macroexpand = function (form)
       return(form)
     elseif macro63(name) then
       return(macroexpand(apply(getenv(name), tl(form))))
-    elseif ((name == "function") or (name == "for")) then
+    elseif (name == "function") then
       local _ = form[1]
       local args = form[2]
       local body = sub(form, 2)
@@ -629,7 +629,7 @@ delimiters = {["("] = true, [")"] = true, [";"] = true, ["\n"] = true}
 whitespace = {[" "] = true, ["\t"] = true, ["\n"] = true}
 
 make_stream = function (str)
-  return({["len"] = length(str), ["string"] = str, ["pos"] = 0})
+  return({["pos"] = 0, ["string"] = str, ["len"] = length(str)})
 end
 
 peek_char = function (s)
@@ -796,7 +796,7 @@ read_from_string = function (str)
   return(read(make_stream(str)))
 end
 
-operators = {["common"] = {["%"] = true, ["<="] = true, ["+"] = true, ["*"] = true, ["-"] = true, ["<"] = true, ["/"] = true, [">"] = true, [">="] = true}, ["js"] = {["~="] = "!=", ["="] = "===", ["and"] = "&&", ["cat"] = "+", ["or"] = "||"}, ["lua"] = {["~="] = true, ["="] = "==", ["and"] = true, ["cat"] = "..", ["or"] = true}}
+operators = {["common"] = {["+"] = true, ["-"] = true, ["%"] = true, ["*"] = true, ["/"] = true, ["<"] = true, [">"] = true, ["<="] = true, [">="] = true}, ["js"] = {["="] = "===", ["~="] = "!=", ["and"] = "&&", ["or"] = "||", ["cat"] = "+"}, ["lua"] = {["="] = "==", ["cat"] = "..", ["~="] = true, ["and"] = true, ["or"] = true}}
 
 getop = function (op)
   local op1 = (operators["common"][op] or operators[target][op])
@@ -1163,13 +1163,14 @@ special["for"] = {["compiler"] = function (_50)
     end)()
     return((ind .. "for " .. k .. ", " .. v .. " in pairs(" .. t1 .. ") do\n" .. body1 .. ind .. "end\n"))
   else
-    local _53 = (function ()
+    local _53 = join({{"local", v, {"get", t, k}}}, body)
+    local body2 = (function ()
       indent_level = (indent_level + 1)
-      local _54 = compile_body(join({{"set", v, {"get", t, k}}}, body))
+      local _54 = compile_body(_53)
       indent_level = (indent_level - 1)
       return(_54)
     end)()
-    return((ind .. "for (" .. k .. " in " .. t1 .. ") {\n" .. _53 .. ind .. "}\n"))
+    return((ind .. "for (" .. k .. " in " .. t1 .. ") {\n" .. body2 .. ind .. "}\n"))
   end
 end, ["statement"] = true, ["terminated"] = true}
 
