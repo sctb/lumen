@@ -282,9 +282,9 @@ empty63 = function (x) {
 sub = function (x, from, upto) {
   from = (from || 0);
   if (string63(x)) {
-    return(x.substring(from, upto));
+    return((x.substring)(from, upto));
   } else {
-    var l = Array.prototype.slice.call(x, from, upto);
+    var l = (Array.prototype.slice.call)(x, from, upto);
     var k = undefined;
     var _33 = x;
     for (k in _33) {
@@ -306,19 +306,23 @@ tl = function (l) {
 };
 
 add = function (l, x) {
-  return(l.push(x));
+  return((l.push)(x));
 };
 
 drop = function (l) {
-  return(l.pop());
+  return((l.pop)());
 };
 
 shift = function (l) {
-  return(l.shift());
+  return((l.shift)());
 };
 
 last = function (l) {
   return(l[(length(l) - 1)]);
+};
+
+reverse = function (l) {
+  return((l.reverse)());
 };
 
 join = function (l1, l2) {
@@ -328,7 +332,7 @@ join = function (l1, l2) {
     return(l1);
   } else {
     var l = [];
-    l = l1.concat(l2);
+    l = (l1.concat)(l2);
     var k = undefined;
     var _34 = l1;
     for (k in _34) {
@@ -462,44 +466,44 @@ keys63 = function (t) {
 };
 
 char = function (str, n) {
-  return(str.charAt(n));
+  return((str.charAt)(n));
 };
 
 code = function (str, n) {
-  return(str.charCodeAt(n));
+  return((str.charCodeAt)(n));
 };
 
 search = function (str, pattern, start) {
-  var i = str.indexOf(pattern, start);
+  var i = (str.indexOf)(pattern, start);
   if ((i >= 0)) {
     return(i);
   }
 };
 
 split = function (str, sep) {
-  return(str.split(sep));
+  return((str.split)(sep));
 };
 
 fs = require("fs");
 
 read_file = function (path) {
-  return(fs.readFileSync(path, "utf8"));
+  return((fs.readFileSync)(path, "utf8"));
 };
 
 write_file = function (path, data) {
-  return(fs.writeFileSync(path, data, "utf8"));
+  return((fs.writeFileSync)(path, data, "utf8"));
 };
 
 print = function (x) {
-  return(console.log(x));
+  return((console.log)(x));
 };
 
 write = function (x) {
-  return(process.stdout.write(x));
+  return((process.stdout.write)(x));
 };
 
 exit = function (code) {
-  return(process.exit(code));
+  return((process.exit)(code));
 };
 
 nil63 = function (x) {
@@ -598,7 +602,7 @@ type = function (x) {
 
 apply = function (f, args) {
   var args1 = stash(args);
-  return(f.apply(f, args1));
+  return((f.apply)(f, args1));
 };
 
 id_counter = 0;
@@ -670,11 +674,23 @@ flag63 = function (atom) {
   return((string63(atom) && (length(atom) > 1) && (char(atom, 0) === ":")));
 };
 
+to_get = function (l) {
+  if ((length(l) === 1)) {
+    return(hd(l));
+  } else {
+    return(["get", to_get(tl(l)), ["quote", hd(l)]]);
+  }
+};
+
 read_table[""] = function (s) {
   var str = "";
+  var dot63 = false;
   while (true) {
     var c = peek_char(s);
     if ((c && (!(whitespace[c]) && !(delimiters[c])))) {
+      if ((c === ".")) {
+        dot63 = true;
+      }
       str = (str + c);
       read_char(s);
     } else {
@@ -691,7 +707,11 @@ read_table[""] = function (s) {
   } else if ((str === "_")) {
     return(make_id());
   } else {
-    return(str);
+    if ((dot63 && !((str === "...")))) {
+      return(to_get(reverse(split(str, "."))));
+    } else {
+      return(str);
+    }
   }
 };
 
@@ -784,7 +804,7 @@ read_from_string = function (str) {
   return(read(make_stream(str)));
 };
 
-operators = {js: {or: "||", "=": "===", cat: "+", and: "&&", "~=": "!="}, lua: {or: true, "=": "==", cat: "..", and: true, "~=": true}, common: {"<": true, "-": true, "*": true, "+": true, ">": true, "/": true, "%": true, ">=": true, "<=": true}};
+operators = {common: {"+": true, "-": true, "%": true, "*": true, "/": true, "<": true, ">": true, "<=": true, ">=": true}, js: {"=": "===", "~=": "!=", and: "&&", or: "||", cat: "+"}, lua: {"=": "==", cat: "..", "~=": true, and: true, or: true}};
 
 getop = function (op) {
   var op1 = (operators.common[op] || operators[target][op]);
@@ -1101,9 +1121,9 @@ special["for"] = {compiler: function (_63) {
   }
 }, stmt: true, tr: true};
 
-special["break"] = {stmt: true, compiler: function (_66) {
+special["break"] = {compiler: function (_66) {
   return((indentation() + "break"));
-}};
+}, stmt: true};
 
 special["function"] = {compiler: function (_67) {
   var args = _67[0];
@@ -1125,11 +1145,11 @@ special["define-macro"] = {compiler: function (_68) {
   return("");
 }, stmt: true, tr: true};
 
-special["return"] = {stmt: true, compiler: function (form) {
+special["return"] = {compiler: function (form) {
   return((indentation() + compile_call(join(["return"], form))));
-}};
+}, stmt: true};
 
-special["error"] = {stmt: true, compiler: function (_69) {
+special["error"] = {compiler: function (_69) {
   var expr = _69[0];
   var e = (function () {
     if ((target === "js")) {
@@ -1139,9 +1159,9 @@ special["error"] = {stmt: true, compiler: function (_69) {
     }
   })();
   return((indentation() + e));
-}};
+}, stmt: true};
 
-special["local"] = {stmt: true, compiler: function (_70) {
+special["local"] = {compiler: function (_70) {
   var name = _70[0];
   var value = _70[1];
   var id = identifier(name);
@@ -1158,16 +1178,16 @@ special["local"] = {stmt: true, compiler: function (_70) {
   } else {
     return((ind + keyword + id + " = " + compile(value)));
   }
-}};
+}, stmt: true};
 
-special["set"] = {stmt: true, compiler: function (_71) {
+special["set"] = {compiler: function (_71) {
   var lh = _71[0];
   var rh = _71[1];
   if (nil63(rh)) {
     throw "Missing right-hand side in assignment";
   }
   return((indentation() + compile(lh) + " = " + compile(rh)));
-}};
+}, stmt: true};
 
 special["get"] = {compiler: function (_72) {
   var t = _72[0];
@@ -1354,9 +1374,9 @@ repl = function () {
     return(write("> "));
   };
   write("> ");
-  process.stdin.resume();
-  process.stdin.setEncoding("utf8");
-  return(process.stdin.on("data", execute));
+  (process.stdin.resume)();
+  (process.stdin.setEncoding)("utf8");
+  return((process.stdin.on)("data", execute));
 };
 
 usage = function () {

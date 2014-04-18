@@ -282,7 +282,7 @@ end
 sub = function (x, from, upto)
   from = (from or 0)
   if string63(x) then
-    return(string.sub(x, (from + 1), upto))
+    return((string.sub)(x, (from + 1), upto))
   else
     local l = (function ()
       upto = (upto or length(x))
@@ -317,19 +317,29 @@ tl = function (l)
 end
 
 add = function (l, x)
-  return(table.insert(l, x))
+  return((table.insert)(l, x))
 end
 
 drop = function (l)
-  return(table.remove(l))
+  return((table.remove)(l))
 end
 
 shift = function (l)
-  return(table.remove(l, 1))
+  return((table.remove)(l, 1))
 end
 
 last = function (l)
   return(l[((length(l) - 1) + 1)])
+end
+
+reverse = function (l)
+  local l1 = {}
+  local i = (length(l) - 1)
+  while (i >= 0) do
+    add(l1, l[(i + 1)])
+    i = (i - 1)
+  end
+  return(l1)
 end
 
 join = function (l1, l2)
@@ -486,7 +496,7 @@ char = function (str, n)
 end
 
 code = function (str, n)
-  return(string.byte(str, (function ()
+  return((string.byte)(str, (function ()
     if n then
       return((n + 1))
     end
@@ -497,7 +507,7 @@ search = function (str, pattern, start)
   if start then
     start = (start + 1)
   end
-  local i = string.find(str, pattern, start, true)
+  local i = (string.find)(str, pattern, start, true)
   return((i and (i - 1)))
 end
 
@@ -521,21 +531,21 @@ split = function (str, sep)
 end
 
 read_file = function (path)
-  local f = io.open(path)
+  local f = (io.open)(path)
   return(f:read("*a"))
 end
 
 write_file = function (path, data)
-  local f = io.open(path, "w")
+  local f = (io.open)(path, "w")
   return(f:write(data))
 end
 
 write = function (x)
-  return(io.write(x))
+  return((io.write)(x))
 end
 
 exit = function (code)
-  return(os.exit(code))
+  return((os.exit)(code))
 end
 
 nil63 = function (x)
@@ -715,11 +725,23 @@ flag63 = function (atom)
   return((string63(atom) and (length(atom) > 1) and (char(atom, 0) == ":")))
 end
 
+to_get = function (l)
+  if (length(l) == 1) then
+    return(hd(l))
+  else
+    return({"get", to_get(tl(l)), {"quote", hd(l)}})
+  end
+end
+
 read_table[""] = function (s)
   local str = ""
+  local dot63 = false
   while true do
     local c = peek_char(s)
     if (c and ((not whitespace[c]) and (not delimiters[c]))) then
+      if (c == ".") then
+        dot63 = true
+      end
       str = (str .. c)
       read_char(s)
     else
@@ -736,7 +758,11 @@ read_table[""] = function (s)
   elseif (str == "_") then
     return(make_id())
   else
-    return(str)
+    if (dot63 and (not (str == "..."))) then
+      return(to_get(reverse(split(str, "."))))
+    else
+      return(str)
+    end
   end
 end
 
@@ -829,7 +855,7 @@ read_from_string = function (str)
   return(read(make_stream(str)))
 end
 
-operators = {["common"] = {["+"] = true, ["-"] = true, ["%"] = true, ["*"] = true, ["/"] = true, ["<"] = true, [">"] = true, ["<="] = true, [">="] = true}, ["js"] = {["="] = "===", ["~="] = "!=", ["and"] = "&&", ["or"] = "||", ["cat"] = "+"}, ["lua"] = {["="] = "==", ["cat"] = "..", ["~="] = true, ["and"] = true, ["or"] = true}}
+operators = {["common"] = {["%"] = true, ["<="] = true, ["-"] = true, ["<"] = true, ["/"] = true, ["*"] = true, [">"] = true, [">="] = true, ["+"] = true}, ["lua"] = {["and"] = true, ["="] = "==", ["~="] = true, ["cat"] = "..", ["or"] = true}, ["js"] = {["and"] = "&&", ["="] = "===", ["~="] = "!=", ["cat"] = "+", ["or"] = "||"}}
 
 getop = function (op)
   local op1 = (operators.common[op] or operators[target][op])
@@ -1087,7 +1113,7 @@ end
 
 special["do"] = {["compiler"] = function (forms, tail63)
   return(compile_body(forms, tail63))
-end, ["stmt"] = true, ["tr"] = true}
+end, ["tr"] = true, ["stmt"] = true}
 
 special["if"] = {["compiler"] = function (form, tail63)
   local str = ""
@@ -1108,7 +1134,7 @@ special["if"] = {["compiler"] = function (form, tail63)
     i = (i + 1)
   end
   return(str)
-end, ["stmt"] = true, ["tr"] = true}
+end, ["tr"] = true, ["stmt"] = true}
 
 special["while"] = {["compiler"] = function (form)
   local condition = compile(hd(form))
@@ -1124,7 +1150,7 @@ special["while"] = {["compiler"] = function (form)
   else
     return((ind .. "while " .. condition .. " do\n" .. body .. ind .. "end\n"))
   end
-end, ["stmt"] = true, ["tr"] = true}
+end, ["tr"] = true, ["stmt"] = true}
 
 special["for"] = {["compiler"] = function (_63)
   local _64 = _63[1]
@@ -1144,11 +1170,11 @@ special["for"] = {["compiler"] = function (_63)
   else
     return((ind .. "for (" .. k .. " in " .. t1 .. ") {\n" .. body1 .. ind .. "}\n"))
   end
-end, ["stmt"] = true, ["tr"] = true}
+end, ["tr"] = true, ["stmt"] = true}
 
-special["break"] = {["compiler"] = function (_66)
+special["break"] = {["stmt"] = true, ["compiler"] = function (_66)
   return((indentation() .. "break"))
-end, ["stmt"] = true}
+end}
 
 special["function"] = {["compiler"] = function (_67)
   local args = _67[1]
@@ -1168,13 +1194,13 @@ special["define-macro"] = {["compiler"] = function (_68)
     macros = (macros .. compile_toplevel(macro))
   end
   return("")
-end, ["stmt"] = true, ["tr"] = true}
+end, ["tr"] = true, ["stmt"] = true}
 
-special["return"] = {["compiler"] = function (form)
+special["return"] = {["stmt"] = true, ["compiler"] = function (form)
   return((indentation() .. compile_call(join({"return"}, form))))
-end, ["stmt"] = true}
+end}
 
-special["error"] = {["compiler"] = function (_69)
+special["error"] = {["stmt"] = true, ["compiler"] = function (_69)
   local expr = _69[1]
   local e = (function ()
     if (target == "js") then
@@ -1184,9 +1210,9 @@ special["error"] = {["compiler"] = function (_69)
     end
   end)()
   return((indentation() .. e))
-end, ["stmt"] = true}
+end}
 
-special["local"] = {["compiler"] = function (_70)
+special["local"] = {["stmt"] = true, ["compiler"] = function (_70)
   local name = _70[1]
   local value = _70[2]
   local id = identifier(name)
@@ -1203,16 +1229,16 @@ special["local"] = {["compiler"] = function (_70)
   else
     return((ind .. keyword .. id .. " = " .. compile(value)))
   end
-end, ["stmt"] = true}
+end}
 
-special["set"] = {["compiler"] = function (_71)
+special["set"] = {["stmt"] = true, ["compiler"] = function (_71)
   local lh = _71[1]
   local rh = _71[2]
   if nil63(rh) then
     error("Missing right-hand side in assignment")
   end
   return((indentation() .. compile(lh) .. " = " .. compile(rh)))
-end, ["stmt"] = true}
+end}
 
 special["get"] = {["compiler"] = function (_72)
   local t = _72[1]
@@ -1400,7 +1426,7 @@ repl = function ()
   end
   write("> ")
   while true do
-    local str = io.stdin:read()
+    local str = (io["stdin:read"])()
     if str then
       execute(str)
     else

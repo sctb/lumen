@@ -45,13 +45,19 @@
 (define-macro define-reader ((char stream) rest: body)
   `(set (get read-table ,char) (fn (,stream) ,@body)))
 
+(define to-get (l)
+  (if (= (length l) 1)
+      (hd l)
+    `(get ,(to-get (tl l)) (quote ,(hd l)))))
+
 (define-reader ("" s) ; atom
-  (let (str "")
+  (let (str "" dot? false)
     (while true
       (let (c (peek-char s))
 	(if (and c (and (not (get whitespace c))
 			(not (get delimiters c))))
-	    (do (cat! str c)
+	    (do (if (= c ".") (set dot? true))
+                (cat! str c)
 		(read-char s))
 	  (break))))
     (let (n (parse-number str))
@@ -59,7 +65,11 @@
 	  (= str "true") true
 	  (= str "false") false
           (= str "_") (make-id)
-	str))))
+	(if (and dot?
+                 ;; TODO: add identifier quotation
+                 (not (= str "...")))
+            (to-get (reverse (split str ".")))
+          str)))))
 
 (define-reader ("(" s)
   (read-char s)
