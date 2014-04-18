@@ -75,7 +75,7 @@ unstash = function (args) {
     return([]);
   } else {
     var l = last(args);
-    if ((composite63(l) && l["_stash"])) {
+    if ((composite63(l) && l._stash)) {
       var args1 = sub(args, 0, (length(args) - 1));
       var k = undefined;
       var _20 = l;
@@ -121,7 +121,7 @@ bind_arguments = function (args, body) {
       }
       _22 = (_22 + 1);
     }
-    var r = args["rest"];
+    var r = args.rest;
     if (r) {
       bs = join(bs, [r, rest()]);
     }
@@ -140,7 +140,7 @@ bind = function (lh, rh) {
   } else if (atom63(lh)) {
     return([[lh, rh]]);
   } else {
-    var r = lh["rest"];
+    var r = lh.rest;
     var i = 0;
     var bs = map(function (x) {
       var b = bind(x, ["at", rh, i]);
@@ -410,7 +410,7 @@ splice = function (x) {
 
 splice63 = function (x) {
   if (table63(x)) {
-    return(x["_splice"]);
+    return(x._splice);
   }
 };
 
@@ -784,10 +784,10 @@ read_from_string = function (str) {
   return(read(make_stream(str)));
 };
 
-operators = {common: {"+": true, "-": true, "%": true, "*": true, "/": true, "<": true, ">": true, "<=": true, ">=": true}, js: {"=": "===", "~=": "!=", and: "&&", or: "||", cat: "+"}, lua: {"=": "==", cat: "..", "~=": true, and: true, or: true}};
+operators = {js: {or: "||", "=": "===", cat: "+", and: "&&", "~=": "!="}, lua: {or: true, "=": "==", cat: "..", and: true, "~=": true}, common: {"<": true, "-": true, "*": true, "+": true, ">": true, "/": true, "%": true, ">=": true, "<=": true}};
 
 getop = function (op) {
-  var op1 = (operators["common"][op] || operators[target][op]);
+  var op1 = (operators.common[op] || operators[target][op]);
   if ((op1 === true)) {
     return(op);
   } else {
@@ -852,16 +852,22 @@ valid_char63 = function (n) {
 };
 
 valid_id63 = function (id) {
-  var i = 0;
-  while ((i < length(id))) {
-    var n = code(id, i);
-    var valid63 = valid_char63(n);
-    if ((!(valid63) || ((i === 0) && numeric63(n)))) {
-      return(false);
+  if (empty63(id)) {
+    return(false);
+  } else if (special[id]) {
+    return(false);
+  } else {
+    var i = 0;
+    while ((i < length(id))) {
+      var n = code(id, i);
+      var valid63 = valid_char63(n);
+      if ((!(valid63) || ((i === 0) && numeric63(n)))) {
+        return(false);
+      }
+      i = (i + 1);
     }
-    i = (i + 1);
+    return(true);
   }
-  return(true);
 };
 
 identifier = function (id) {
@@ -1023,15 +1029,15 @@ special63 = function (form) {
 };
 
 compiler = function (name) {
-  return(special[name]["compiler"]);
+  return(special[name].compiler);
 };
 
 statement63 = function (name) {
-  return(special[name]["stmt"]);
+  return(special[name].stmt);
 };
 
 self_tr63 = function (name) {
-  return(special[name]["tr"]);
+  return(special[name].tr);
 };
 
 special["do"] = {compiler: function (forms, tail63) {
@@ -1095,9 +1101,9 @@ special["for"] = {compiler: function (_63) {
   }
 }, stmt: true, tr: true};
 
-special["break"] = {compiler: function (_66) {
+special["break"] = {stmt: true, compiler: function (_66) {
   return((indentation() + "break"));
-}, stmt: true};
+}};
 
 special["function"] = {compiler: function (_67) {
   var args = _67[0];
@@ -1119,11 +1125,11 @@ special["define-macro"] = {compiler: function (_68) {
   return("");
 }, stmt: true, tr: true};
 
-special["return"] = {compiler: function (form) {
+special["return"] = {stmt: true, compiler: function (form) {
   return((indentation() + compile_call(join(["return"], form))));
-}, stmt: true};
+}};
 
-special["error"] = {compiler: function (_69) {
+special["error"] = {stmt: true, compiler: function (_69) {
   var expr = _69[0];
   var e = (function () {
     if ((target === "js")) {
@@ -1133,9 +1139,9 @@ special["error"] = {compiler: function (_69) {
     }
   })();
   return((indentation() + e));
-}, stmt: true};
+}};
 
-special["local"] = {compiler: function (_70) {
+special["local"] = {stmt: true, compiler: function (_70) {
   var name = _70[0];
   var value = _70[1];
   var id = identifier(name);
@@ -1152,26 +1158,30 @@ special["local"] = {compiler: function (_70) {
   } else {
     return((ind + keyword + id + " = " + compile(value)));
   }
-}, stmt: true};
+}};
 
-special["set"] = {compiler: function (_71) {
+special["set"] = {stmt: true, compiler: function (_71) {
   var lh = _71[0];
   var rh = _71[1];
   if (nil63(rh)) {
     throw "Missing right-hand side in assignment";
   }
   return((indentation() + compile(lh) + " = " + compile(rh)));
-}, stmt: true};
+}};
 
 special["get"] = {compiler: function (_72) {
-  var object = _72[0];
-  var key = _72[1];
-  var o = compile(object);
-  var k = compile(key);
-  if (((target === "lua") && (char(o, 0) === "{"))) {
-    o = ("(" + o + ")");
+  var t = _72[0];
+  var k = _72[1];
+  var t1 = compile(t);
+  var k1 = compile(k);
+  if (((target === "lua") && (char(t1, 0) === "{"))) {
+    t1 = ("(" + t1 + ")");
   }
-  return((o + "[" + k + "]"));
+  if ((string_literal63(k) && valid_id63(key(k)))) {
+    return((t1 + "." + key(k)));
+  } else {
+    return((t1 + "[" + k1 + "]"));
+  }
 }};
 
 special["not"] = {compiler: function (_73) {
@@ -1662,7 +1672,7 @@ setenv("define-special", function (name, args) {
   var body = unstash(sub(arguments, 2));
   return(["set", ["get", "special", ["quote", name]], join((function () {
     var _60 = ["table"];
-    _60["compiler"] = join(["fn", args], body);
+    _60.compiler = join(["fn", args], body);
     return(_60);
   })(), body)]);
 });

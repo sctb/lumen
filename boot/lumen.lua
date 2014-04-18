@@ -75,7 +75,7 @@ unstash = function (args)
     return({})
   else
     local l = last(args)
-    if (composite63(l) and l["_stash"]) then
+    if (composite63(l) and l._stash) then
       local args1 = sub(args, 0, (length(args) - 1))
       local k = nil
       local _20 = l
@@ -121,7 +121,7 @@ bind_arguments = function (args, body)
       end
       _22 = (_22 + 1)
     end
-    local r = args["rest"]
+    local r = args.rest
     if r then
       bs = join(bs, {r, rest()})
     end
@@ -140,7 +140,7 @@ bind = function (lh, rh)
   elseif atom63(lh) then
     return({{lh, rh}})
   else
-    local r = lh["rest"]
+    local r = lh.rest
     local i = 0
     local bs = map(function (x)
       local b = bind(x, {"at", rh, i})
@@ -430,7 +430,7 @@ end
 
 splice63 = function (x)
   if table63(x) then
-    return(x["_splice"])
+    return(x._splice)
   end
 end
 
@@ -660,7 +660,7 @@ delimiters = {["("] = true, [")"] = true, [";"] = true, ["\n"] = true}
 whitespace = {[" "] = true, ["\t"] = true, ["\n"] = true}
 
 make_stream = function (str)
-  return({["string"] = str, ["len"] = length(str), ["pos"] = 0})
+  return({["pos"] = 0, ["string"] = str, ["len"] = length(str)})
 end
 
 peek_char = function (s)
@@ -829,10 +829,10 @@ read_from_string = function (str)
   return(read(make_stream(str)))
 end
 
-operators = {["lua"] = {["="] = "==", ["or"] = true, ["cat"] = "..", ["and"] = true, ["~="] = true}, ["common"] = {["-"] = true, ["<"] = true, ["+"] = true, ["*"] = true, ["/"] = true, [">"] = true, ["%"] = true, [">="] = true, ["<="] = true}, ["js"] = {["="] = "===", ["or"] = "||", ["cat"] = "+", ["and"] = "&&", ["~="] = "!="}}
+operators = {["common"] = {["+"] = true, ["-"] = true, ["%"] = true, ["*"] = true, ["/"] = true, ["<"] = true, [">"] = true, ["<="] = true, [">="] = true}, ["js"] = {["="] = "===", ["~="] = "!=", ["and"] = "&&", ["or"] = "||", ["cat"] = "+"}, ["lua"] = {["="] = "==", ["cat"] = "..", ["~="] = true, ["and"] = true, ["or"] = true}}
 
 getop = function (op)
-  local op1 = (operators["common"][op] or operators[target][op])
+  local op1 = (operators.common[op] or operators[target][op])
   if (op1 == true) then
     return(op)
   else
@@ -897,16 +897,22 @@ valid_char63 = function (n)
 end
 
 valid_id63 = function (id)
-  local i = 0
-  while (i < length(id)) do
-    local n = code(id, i)
-    local valid63 = valid_char63(n)
-    if ((not valid63) or ((i == 0) and numeric63(n))) then
-      return(false)
+  if empty63(id) then
+    return(false)
+  elseif special[id] then
+    return(false)
+  else
+    local i = 0
+    while (i < length(id)) do
+      local n = code(id, i)
+      local valid63 = valid_char63(n)
+      if ((not valid63) or ((i == 0) and numeric63(n))) then
+        return(false)
+      end
+      i = (i + 1)
     end
-    i = (i + 1)
+    return(true)
   end
-  return(true)
 end
 
 identifier = function (id)
@@ -1068,15 +1074,15 @@ special63 = function (form)
 end
 
 compiler = function (name)
-  return(special[name]["compiler"])
+  return(special[name].compiler)
 end
 
 statement63 = function (name)
-  return(special[name]["stmt"])
+  return(special[name].stmt)
 end
 
 self_tr63 = function (name)
-  return(special[name]["tr"])
+  return(special[name].tr)
 end
 
 special["do"] = {["compiler"] = function (forms, tail63)
@@ -1140,9 +1146,9 @@ special["for"] = {["compiler"] = function (_63)
   end
 end, ["stmt"] = true, ["tr"] = true}
 
-special["break"] = {["stmt"] = true, ["compiler"] = function (_66)
+special["break"] = {["compiler"] = function (_66)
   return((indentation() .. "break"))
-end}
+end, ["stmt"] = true}
 
 special["function"] = {["compiler"] = function (_67)
   local args = _67[1]
@@ -1162,13 +1168,13 @@ special["define-macro"] = {["compiler"] = function (_68)
     macros = (macros .. compile_toplevel(macro))
   end
   return("")
-end, ["tr"] = true, ["stmt"] = true}
+end, ["stmt"] = true, ["tr"] = true}
 
-special["return"] = {["stmt"] = true, ["compiler"] = function (form)
+special["return"] = {["compiler"] = function (form)
   return((indentation() .. compile_call(join({"return"}, form))))
-end}
+end, ["stmt"] = true}
 
-special["error"] = {["stmt"] = true, ["compiler"] = function (_69)
+special["error"] = {["compiler"] = function (_69)
   local expr = _69[1]
   local e = (function ()
     if (target == "js") then
@@ -1178,9 +1184,9 @@ special["error"] = {["stmt"] = true, ["compiler"] = function (_69)
     end
   end)()
   return((indentation() .. e))
-end}
+end, ["stmt"] = true}
 
-special["local"] = {["stmt"] = true, ["compiler"] = function (_70)
+special["local"] = {["compiler"] = function (_70)
   local name = _70[1]
   local value = _70[2]
   local id = identifier(name)
@@ -1197,26 +1203,30 @@ special["local"] = {["stmt"] = true, ["compiler"] = function (_70)
   else
     return((ind .. keyword .. id .. " = " .. compile(value)))
   end
-end}
+end, ["stmt"] = true}
 
-special["set"] = {["stmt"] = true, ["compiler"] = function (_71)
+special["set"] = {["compiler"] = function (_71)
   local lh = _71[1]
   local rh = _71[2]
   if nil63(rh) then
     error("Missing right-hand side in assignment")
   end
   return((indentation() .. compile(lh) .. " = " .. compile(rh)))
-end}
+end, ["stmt"] = true}
 
 special["get"] = {["compiler"] = function (_72)
-  local object = _72[1]
-  local key = _72[2]
-  local o = compile(object)
-  local k = compile(key)
-  if ((target == "lua") and (char(o, 0) == "{")) then
-    o = ("(" .. o .. ")")
+  local t = _72[1]
+  local k = _72[2]
+  local t1 = compile(t)
+  local k1 = compile(k)
+  if ((target == "lua") and (char(t1, 0) == "{")) then
+    t1 = ("(" .. t1 .. ")")
   end
-  return((o .. "[" .. k .. "]"))
+  if (string_literal63(k) and valid_id63(key(k))) then
+    return((t1 .. "." .. key(k)))
+  else
+    return((t1 .. "[" .. k1 .. "]"))
+  end
 end}
 
 special["not"] = {["compiler"] = function (_73)
@@ -1712,7 +1722,7 @@ setenv("define-special", function (name, args, ...)
   local body = unstash({...})
   return({"set", {"get", "special", {"quote", name}}, join((function ()
     local _60 = {"table"}
-    _60["compiler"] = join({"fn", args}, body)
+    _60.compiler = join({"fn", args}, body)
     return(_60)
   end)(), body)})
 end)
