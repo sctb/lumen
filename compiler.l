@@ -144,7 +144,7 @@
   (let (name (hd form))
     (if (and (not stmt?) (statement? name))
         (compile `((function () ,form)) false tail?)
-      (let (tr (terminator (and stmt? (not (self-terminating? name)))))
+      (let (tr (terminator (and stmt? (not (self-tr? name)))))
         (cat ((compiler name) (tl form) tail?) tr)))))
 
 (define special (table))
@@ -157,13 +157,13 @@
         (table compiler: (fn ,args ,@body) ,@body)))
 
 (define compiler (name) (get (get special name) 'compiler))
-(define statement? (name) (get (get special name) 'statement))
-(define self-terminating? (name) (get (get special name) 'terminated))
+(define statement? (name) (get (get special name) 'stmt))
+(define self-tr? (name) (get (get special name) 'tr))
 
-(define-special do (forms tail?) :statement :terminated
+(define-special do (forms tail?) :stmt :tr
   (compile-body forms tail?))
 
-(define-special if (form tail?) :statement :terminated
+(define-special if (form tail?) :stmt :tr
   (let (str "")
     (across (form condition i)
       (let (last? (>= i (- (length form) 2))
@@ -177,7 +177,7 @@
       (inc i))
     str))
 
-(define-special while (form) :statement :terminated
+(define-special while (form) :stmt :tr
   (let (condition (compile (hd form))
         body (with-indent (compile-body (tl form)))
         ind (indentation))
@@ -185,39 +185,7 @@
 	(cat ind "while (" condition ") {\n" body ind "}\n")
       (cat ind "while " condition " do\n" body ind "end\n"))))
 
-(define-special break (form) :statement
-  (cat (indentation) "break"))
-
-(define-special function ((args rest: body))
-  (compile-function args body))
-
-(define macros "")
-
-(define-special define-macro ((name args rest: body)) :statement :terminated
-  (let (macro `(setenv ',name (fn ,args ,@body)))
-    (eval (compile-for-target (language) macro))
-    (if embed-macros?
-	(cat! macros (compile-toplevel macro))))
-  "")
-
-(define-special return (form) :statement
-  (cat (indentation) (compile-call `(return ,@form))))
-
-(define-special error ((expr)) :statement
-  (let (e (if (= target 'js)
-              (cat "throw " (compile expr))
-            (compile-call `(error ,expr))))
-    (cat (indentation) e)))
-
-(define-special local ((name value)) :statement
-  (let (id (identifier name)
-	keyword (if (= target 'js) "var " "local ")
-        ind (indentation))
-    (if (nil? value)
-	(cat ind keyword id)
-      (cat ind keyword id " = " (compile value)))))
-
-(define-special for (((t k) rest: body)) :statement :terminated
+(define-special for (((t k) rest: body)) :stmt :tr
   (let (t1 (compile t)
         ind (indentation)
         body1 (with-indent (compile-body body)))
@@ -225,7 +193,39 @@
 	(cat ind "for " k " in next, " t1 " do\n" body1 ind "end\n")
       (cat ind "for (" k " in " t1 ") {\n" body1 ind "}\n"))))
 
-(define-special set ((lh rh)) :statement
+(define-special break (_) :stmt
+  (cat (indentation) "break"))
+
+(define-special function ((args rest: body))
+  (compile-function args body))
+
+(define macros "")
+
+(define-special define-macro ((name args rest: body)) :stmt :tr
+  (let (macro `(setenv ',name (fn ,args ,@body)))
+    (eval (compile-for-target (language) macro))
+    (if embed-macros?
+	(cat! macros (compile-toplevel macro))))
+  "")
+
+(define-special return (form) :stmt
+  (cat (indentation) (compile-call `(return ,@form))))
+
+(define-special error ((expr)) :stmt
+  (let (e (if (= target 'js)
+              (cat "throw " (compile expr))
+            (compile-call `(error ,expr))))
+    (cat (indentation) e)))
+
+(define-special local ((name value)) :stmt
+  (let (id (identifier name)
+	keyword (if (= target 'js) "var " "local ")
+        ind (indentation))
+    (if (nil? value)
+	(cat ind keyword id)
+      (cat ind keyword id " = " (compile value)))))
+
+(define-special set ((lh rh)) :stmt
   (if (nil? rh)
       (error "Missing right-hand side in assignment"))
   (cat (indentation) (compile lh) " = " (compile rh)))
