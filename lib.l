@@ -420,11 +420,14 @@
 ;; tables
 
 (define-macro each ((t k v) rest: body)
-  `(for (,t ,k ,v)
-     (if (target
-          (lua (not (number? ,k)))
-          (js (isNaN (parseInt ,k))))
-         (do ,@body))))
+  (let (t1 (make-id))
+    `(let (,k nil ,t1 ,t)
+       (for (,t1 ,k)
+         (if (target
+              (lua (not (number? ,k)))
+              (js (isNaN (parseInt ,k))))
+             (let (,v (get ,t1 ,k))
+               ,@body))))))
 
 (define splice (x)
   (table _splice: x))
