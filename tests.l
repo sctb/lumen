@@ -387,7 +387,7 @@
 
 (define-test each-expr ()
   (let (i 0 t (table a: 10 b: 20))
-    (test= 2 (do (each (t k v) (set i (+ i 1))) i))))
+    (test= 2 (do (each (t _ _) (set i (+ i 1))) i))))
 
 ;; library
 

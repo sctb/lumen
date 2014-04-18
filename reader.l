@@ -58,6 +58,7 @@
       (if (is? n) n
 	  (= str "true") true
 	  (= str "false") false
+          (= str "_") (make-id)
 	str))))
 
 (define-reader ("(" s)
