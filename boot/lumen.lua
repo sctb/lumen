@@ -1082,9 +1082,9 @@ end, ["statement"] = true, ["terminated"] = true}
 special["if"] = {["compiler"] = function (form, tail63)
   local str = ""
   local i = 0
-  local _59 = form
-  while (i < length(_59)) do
-    local condition = _59[(i + 1)]
+  local _61 = form
+  while (i < length(_61)) do
+    local condition = _61[(i + 1)]
     local last63 = (i >= (length(form) - 2))
     local else63 = (i == (length(form) - 1))
     local first63 = (i == 0)
@@ -1104,9 +1104,9 @@ special["while"] = {["compiler"] = function (form)
   local condition = compile(hd(form))
   local body = (function ()
     indent_level = (indent_level + 1)
-    local _60 = compile_body(tl(form))
+    local _62 = compile_body(tl(form))
     indent_level = (indent_level - 1)
-    return(_60)
+    return(_62)
   end)()
   local ind = indentation()
   if (target == "js") then
@@ -1120,18 +1120,18 @@ special["break"] = {["compiler"] = function (form)
   return((indentation() .. "break"))
 end, ["statement"] = true}
 
-special["function"] = {["compiler"] = function (_61)
-  local args = _61[1]
-  local body = sub(_61, 1)
+special["function"] = {["compiler"] = function (_63)
+  local args = _63[1]
+  local body = sub(_63, 1)
   return(compile_function(args, body))
 end}
 
 macros = ""
 
-special["define-macro"] = {["compiler"] = function (_62)
-  local name = _62[1]
-  local args = _62[2]
-  local body = sub(_62, 2)
+special["define-macro"] = {["compiler"] = function (_64)
+  local name = _64[1]
+  local args = _64[2]
+  local body = sub(_64, 2)
   local macro = {"setenv", {"quote", name}, join({"fn", args}, body)}
   eval(compile_for_target("lua", macro))
   if embed_macros63 then
@@ -1144,8 +1144,8 @@ special["return"] = {["compiler"] = function (form)
   return((indentation() .. compile_call(join({"return"}, form))))
 end, ["statement"] = true}
 
-special["error"] = {["compiler"] = function (_63)
-  local expr = _63[1]
+special["error"] = {["compiler"] = function (_65)
+  local expr = _65[1]
   local e = (function ()
     if (target == "js") then
       return(("throw " .. compile(expr)))
@@ -1156,9 +1156,9 @@ special["error"] = {["compiler"] = function (_63)
   return((indentation() .. e))
 end, ["statement"] = true}
 
-special["local"] = {["compiler"] = function (_64)
-  local name = _64[1]
-  local value = _64[2]
+special["local"] = {["compiler"] = function (_66)
+  local name = _66[1]
+  local value = _66[2]
   local id = identifier(name)
   local keyword = (function ()
     if (target == "js") then
@@ -1175,18 +1175,18 @@ special["local"] = {["compiler"] = function (_64)
   end
 end, ["statement"] = true}
 
-special["for"] = {["compiler"] = function (_65)
-  local _66 = _65[1]
-  local t = _66[1]
-  local k = _66[2]
-  local body = sub(_65, 1)
+special["for"] = {["compiler"] = function (_67)
+  local _68 = _67[1]
+  local t = _68[1]
+  local k = _68[2]
+  local body = sub(_67, 1)
   local t1 = compile(t)
   local ind = indentation()
   local body1 = (function ()
     indent_level = (indent_level + 1)
-    local _67 = compile_body(body)
+    local _69 = compile_body(body)
     indent_level = (indent_level - 1)
-    return(_67)
+    return(_69)
   end)()
   if (target == "lua") then
     return((ind .. "for " .. k .. " in next, " .. t1 .. " do\n" .. body1 .. ind .. "end\n"))
@@ -1195,18 +1195,18 @@ special["for"] = {["compiler"] = function (_65)
   end
 end, ["statement"] = true, ["terminated"] = true}
 
-special["set"] = {["compiler"] = function (_68)
-  local lh = _68[1]
-  local rh = _68[2]
+special["set"] = {["compiler"] = function (_70)
+  local lh = _70[1]
+  local rh = _70[2]
   if nil63(rh) then
     error("Missing right-hand side in assignment")
   end
   return((indentation() .. compile(lh) .. " = " .. compile(rh)))
 end, ["statement"] = true}
 
-special["get"] = {["compiler"] = function (_69)
-  local object = _69[1]
-  local key = _69[2]
+special["get"] = {["compiler"] = function (_71)
+  local object = _71[1]
+  local key = _71[2]
   local o = compile(object)
   local k = compile(key)
   if ((target == "lua") and (char(o, 0) == "{")) then
@@ -1215,8 +1215,8 @@ special["get"] = {["compiler"] = function (_69)
   return((o .. "[" .. k .. "]"))
 end}
 
-special["not"] = {["compiler"] = function (_70)
-  local expr = _70[1]
+special["not"] = {["compiler"] = function (_72)
+  local expr = _72[1]
   local e = compile(expr)
   local open = (function ()
     if (target == "js") then
@@ -1245,9 +1245,9 @@ special["array"] = {["compiler"] = function (forms)
   end)()
   local str = ""
   local i = 0
-  local _71 = forms
-  while (i < length(_71)) do
-    local x = _71[(i + 1)]
+  local _73 = forms
+  while (i < length(_73)) do
+    local x = _73[(i + 1)]
     str = (str .. compile(x))
     if (i < (length(forms) - 1)) then
       str = (str .. ", ")
@@ -1344,12 +1344,12 @@ end
 
 compile_files = function (files)
   local output = ""
-  local _73 = 0
-  local _72 = files
-  while (_73 < length(_72)) do
-    local file = _72[(_73 + 1)]
+  local _75 = 0
+  local _74 = files
+  while (_75 < length(_74)) do
+    local file = _74[(_75 + 1)]
     output = (output .. compile_file(file))
-    _73 = (_73 + 1)
+    _75 = (_75 + 1)
   end
   return(output)
 end
@@ -1415,9 +1415,9 @@ main = function ()
   local target1 = nil
   local expr = nil
   local i = 0
-  local _74 = args
-  while (i < length(_74)) do
-    local arg = _74[(i + 1)]
+  local _76 = args
+  while (i < length(_76)) do
+    local arg = _76[(i + 1)]
     if ((arg == "-o") or (arg == "-t") or (arg == "-e")) then
       if (i == (length(args) - 1)) then
         print((to_string("missing argument for") .. to_string(arg)))
@@ -1447,12 +1447,12 @@ main = function ()
     local main = compile({"main"}, true)
     return(write_file(output, (compiled .. macros .. main)))
   else
-    local _76 = 0
-    local _75 = inputs
-    while (_76 < length(_75)) do
-      local file = _75[(_76 + 1)]
+    local _78 = 0
+    local _77 = inputs
+    while (_78 < length(_77)) do
+      local file = _77[(_78 + 1)]
       eval(compile_file(file))
-      _76 = (_76 + 1)
+      _78 = (_78 + 1)
     end
     if expr then
       return(rep(expr))
@@ -1704,11 +1704,13 @@ setenv("with-indent", function (form)
   return({"do", {"set", "indent-level", {"+", "indent-level", 1}}, {"let", {result, form}, {"set", "indent-level", {"-", "indent-level", 1}}, result}})
 end)
 
-setenv("define-special", function (name, keys, args, ...)
+setenv("define-special", function (name, args, ...)
   local body = unstash({...})
-  return({"set", {"get", "special", {"quote", name}}, join({"object", "compiler", join({"fn", args}, body)}, map(function (k)
-    return(splice({k, true}))
-  end, keys))})
+  return({"set", {"get", "special", {"quote", name}}, join((function ()
+    local _60 = {"table"}
+    _60["compiler"] = join({"fn", args}, body)
+    return(_60)
+  end)(), body)})
 end)
 
 main()
