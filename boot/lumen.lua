@@ -502,18 +502,22 @@ search = function (str, pattern, start)
 end
 
 split = function (str, sep)
-  local strs = {}
-  while true do
-    local i = search(str, sep)
-    if nil63(i) then
-      break
-    else
-      add(strs, sub(str, 0, i))
-      str = sub(str, (i + 1))
+  if ((str == "") or (sep == "")) then
+    return({})
+  else
+    local strs = {}
+    while true do
+      local i = search(str, sep)
+      if nil63(i) then
+        break
+      else
+        add(strs, sub(str, 0, i))
+        str = sub(str, (i + 1))
+      end
     end
+    add(strs, str)
+    return(strs)
   end
-  add(strs, str)
-  return(strs)
 end
 
 read_file = function (path)
@@ -656,7 +660,7 @@ delimiters = {["("] = true, [")"] = true, [";"] = true, ["\n"] = true}
 whitespace = {[" "] = true, ["\t"] = true, ["\n"] = true}
 
 make_stream = function (str)
-  return({["pos"] = 0, ["string"] = str, ["len"] = length(str)})
+  return({["string"] = str, ["len"] = length(str), ["pos"] = 0})
 end
 
 peek_char = function (s)
@@ -825,7 +829,7 @@ read_from_string = function (str)
   return(read(make_stream(str)))
 end
 
-operators = {["common"] = {["+"] = true, ["-"] = true, ["%"] = true, ["*"] = true, ["/"] = true, ["<"] = true, [">"] = true, ["<="] = true, [">="] = true}, ["js"] = {["="] = "===", ["~="] = "!=", ["and"] = "&&", ["or"] = "||", ["cat"] = "+"}, ["lua"] = {["="] = "==", ["cat"] = "..", ["~="] = true, ["and"] = true, ["or"] = true}}
+operators = {["lua"] = {["="] = "==", ["or"] = true, ["cat"] = "..", ["and"] = true, ["~="] = true}, ["common"] = {["-"] = true, ["<"] = true, ["+"] = true, ["*"] = true, ["/"] = true, [">"] = true, ["%"] = true, [">="] = true, ["<="] = true}, ["js"] = {["="] = "===", ["or"] = "||", ["cat"] = "+", ["and"] = "&&", ["~="] = "!="}}
 
 getop = function (op)
   local op1 = (operators["common"][op] or operators[target][op])
@@ -1136,9 +1140,9 @@ special["for"] = {["compiler"] = function (_63)
   end
 end, ["stmt"] = true, ["tr"] = true}
 
-special["break"] = {["compiler"] = function (_66)
+special["break"] = {["stmt"] = true, ["compiler"] = function (_66)
   return((indentation() .. "break"))
-end, ["stmt"] = true}
+end}
 
 special["function"] = {["compiler"] = function (_67)
   local args = _67[1]
@@ -1158,13 +1162,13 @@ special["define-macro"] = {["compiler"] = function (_68)
     macros = (macros .. compile_toplevel(macro))
   end
   return("")
-end, ["stmt"] = true, ["tr"] = true}
+end, ["tr"] = true, ["stmt"] = true}
 
-special["return"] = {["compiler"] = function (form)
+special["return"] = {["stmt"] = true, ["compiler"] = function (form)
   return((indentation() .. compile_call(join({"return"}, form))))
-end, ["stmt"] = true}
+end}
 
-special["error"] = {["compiler"] = function (_69)
+special["error"] = {["stmt"] = true, ["compiler"] = function (_69)
   local expr = _69[1]
   local e = (function ()
     if (target == "js") then
@@ -1174,9 +1178,9 @@ special["error"] = {["compiler"] = function (_69)
     end
   end)()
   return((indentation() .. e))
-end, ["stmt"] = true}
+end}
 
-special["local"] = {["compiler"] = function (_70)
+special["local"] = {["stmt"] = true, ["compiler"] = function (_70)
   local name = _70[1]
   local value = _70[2]
   local id = identifier(name)
@@ -1193,16 +1197,16 @@ special["local"] = {["compiler"] = function (_70)
   else
     return((ind .. keyword .. id .. " = " .. compile(value)))
   end
-end, ["stmt"] = true}
+end}
 
-special["set"] = {["compiler"] = function (_71)
+special["set"] = {["stmt"] = true, ["compiler"] = function (_71)
   local lh = _71[1]
   local rh = _71[2]
   if nil63(rh) then
     error("Missing right-hand side in assignment")
   end
   return((indentation() .. compile(lh) .. " = " .. compile(rh)))
-end, ["stmt"] = true}
+end}
 
 special["get"] = {["compiler"] = function (_72)
   local object = _72[1]

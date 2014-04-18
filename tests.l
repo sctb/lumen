@@ -438,6 +438,8 @@
   (test= nil (search "abc" "z")))
 
 (define-test split ()
+  (test= () (split "" ""))
+  (test= () (split "" ","))
   (test= (list "a") (split "a" ","))
   (test= (list "a" "") (split "a," ","))
   (test= (list "a" "b") (split "a,b" ",")))

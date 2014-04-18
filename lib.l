@@ -479,15 +479,17 @@
 (define split (str sep)
   (target
    (js (str.split sep))
-   (lua (let (strs ())
-	  (while true
-	    (let (i (search str sep))
-	      (if (nil? i)
-		  (break)
-		(do (add strs (sub str 0 i))
-		    (set str (sub str (+ i 1)))))))
-	  (add strs str)
-	  strs))))
+   (lua (if (or (= str "") (= sep ""))
+            ()
+          (let (strs ())
+           (while true
+             (let (i (search str sep))
+               (if (nil? i)
+                   (break)
+                 (do (add strs (sub str 0 i))
+                     (set str (sub str (+ i 1)))))))
+           (add strs str)
+           strs)))))
 
 (define-macro cat! (a rest: bs)
   `(set ,a (cat ,a ,@bs)))
