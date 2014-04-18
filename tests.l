@@ -158,11 +158,8 @@
   (let-macro ((a keys `(table ,@keys)))
     (test= true (get (a :foo) 'foo))
     (test= 17 (get (a bar: 17) 'bar)))
-  (let (b 0)
-    (let-macro ((a keys `(set b (table baz: 17 ,@keys))))
-      (a :foo)
-      (test= 17 (get b 'baz))
-      (test= true (get b 'foo)))))
+  (let-macro ((a () `(table baz: (fn () 17))))
+    (test= 17 ((get (a) 'baz)))))
 
 (define-test calls ()
   (let (f (fn () 42)
