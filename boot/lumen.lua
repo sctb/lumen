@@ -567,6 +567,10 @@ string_literal63 = function (x)
   return((string63(x) and (char(x, 0) == "\"")))
 end
 
+id_literal63 = function (x)
+  return((string63(x) and (char(x, 0) == "|")))
+end
+
 number63 = function (x)
   return((type(x) == "number"))
 end
@@ -673,7 +677,7 @@ delimiters = {["("] = true, [")"] = true, [";"] = true, ["\n"] = true}
 whitespace = {[" "] = true, ["\t"] = true, ["\n"] = true}
 
 make_stream = function (str)
-  return({["pos"] = 0, ["string"] = str, ["len"] = length(str)})
+  return({["len"] = length(str), ["string"] = str, ["pos"] = 0})
 end
 
 peek_char = function (s)
@@ -812,6 +816,23 @@ read_table["\""] = function (s)
   return((str .. "\""))
 end
 
+read_table["|"] = function (s)
+  read_char(s)
+  local str = "|"
+  while true do
+    local c = peek_char(s)
+    if (c and (not (c == "|"))) then
+      str = (str .. read_char(s))
+    elseif c then
+      read_char(s)
+      break
+    else
+      error(("Expected \" at " .. s.pos))
+    end
+  end
+  return((str .. "|"))
+end
+
 read_table["'"] = function (s)
   read_char(s)
   return({"quote", read(s)})
@@ -846,7 +867,7 @@ read_from_string = function (str)
   return(read(make_stream(str)))
 end
 
-operators = {["common"] = {["+"] = true, ["-"] = true, ["%"] = true, ["*"] = true, ["/"] = true, ["<"] = true, [">"] = true, ["<="] = true, [">="] = true}, ["js"] = {["="] = "===", ["~="] = "!=", ["and"] = "&&", ["or"] = "||", ["cat"] = "+"}, ["lua"] = {["="] = "==", ["cat"] = "..", ["~="] = true, ["and"] = true, ["or"] = true}}
+operators = {["lua"] = {["and"] = true, ["="] = "==", ["~="] = true, ["cat"] = "..", ["or"] = true}, ["js"] = {["or"] = "||", ["and"] = "&&", ["~="] = "!=", ["="] = "===", ["cat"] = "+"}, ["common"] = {["-"] = true, ["<"] = true, ["/"] = true, [">"] = true, ["%"] = true, ["*"] = true, [">="] = true, ["+"] = true, ["<="] = true}}
 
 getop = function (op)
   local op1 = (operators.common[op] or operators[target][op])
@@ -960,6 +981,8 @@ compile_atom = function (form)
     else
       return("nil")
     end
+  elseif id_literal63(form) then
+    return(inner(form))
   elseif (string63(form) and (not string_literal63(form))) then
     return(compile_id(form))
   else
@@ -1094,11 +1117,11 @@ self_tr63 = function (name)
   return(special[name].tr)
 end
 
-special["do"] = {["compiler"] = function (forms, tail63)
+special["do"] = {["tr"] = true, ["compiler"] = function (forms, tail63)
   return(compile_body(forms, tail63))
-end, ["stmt"] = true, ["tr"] = true}
+end, ["stmt"] = true}
 
-special["if"] = {["compiler"] = function (form, tail63)
+special["if"] = {["tr"] = true, ["compiler"] = function (form, tail63)
   local str = ""
   local i = 0
   local _61 = form
@@ -1117,9 +1140,9 @@ special["if"] = {["compiler"] = function (form, tail63)
     i = (i + 1)
   end
   return(str)
-end, ["stmt"] = true, ["tr"] = true}
+end, ["stmt"] = true}
 
-special["while"] = {["compiler"] = function (form)
+special["while"] = {["tr"] = true, ["compiler"] = function (form)
   local condition = compile(hd(form))
   local body = (function ()
     indent_level = (indent_level + 1)
@@ -1133,9 +1156,9 @@ special["while"] = {["compiler"] = function (form)
   else
     return((ind .. "while " .. condition .. " do\n" .. body .. ind .. "end\n"))
   end
-end, ["stmt"] = true, ["tr"] = true}
+end, ["stmt"] = true}
 
-special["for"] = {["compiler"] = function (_63)
+special["for"] = {["tr"] = true, ["compiler"] = function (_63)
   local _64 = _63[1]
   local t = _64[1]
   local k = _64[2]
@@ -1153,7 +1176,7 @@ special["for"] = {["compiler"] = function (_63)
   else
     return((ind .. "for (" .. k .. " in " .. t1 .. ") {\n" .. body1 .. ind .. "}\n"))
   end
-end, ["stmt"] = true, ["tr"] = true}
+end, ["stmt"] = true}
 
 special["break"] = {["compiler"] = function (_66)
   return((indentation() .. "break"))
@@ -1167,7 +1190,7 @@ end}
 
 macros = ""
 
-special["define-macro"] = {["compiler"] = function (_68)
+special["define-macro"] = {["tr"] = true, ["compiler"] = function (_68)
   local name = _68[1]
   local args = _68[2]
   local body = sub(_68, 2)
@@ -1177,7 +1200,7 @@ special["define-macro"] = {["compiler"] = function (_68)
     macros = (macros .. compile_toplevel(macro))
   end
   return("")
-end, ["stmt"] = true, ["tr"] = true}
+end, ["stmt"] = true}
 
 special["return"] = {["compiler"] = function (form)
   return((indentation() .. compile_call(join({"return"}, form))))

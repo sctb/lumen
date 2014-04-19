@@ -99,6 +99,17 @@
 	  (error (cat "Expected \" at " s.pos)))))
     (cat str "\"")))
 
+(define-reader ("|" s)
+  (read-char s)
+  (let (str "|")
+    (while true
+      (let (c (peek-char s))
+	(if (and c (not (= c "|")))
+	    (cat! str (read-char s))
+	    c (do (read-char s) (break)) ; >
+	  (error (cat "Expected \" at " s.pos)))))
+    (cat str "|")))
+
 (define-reader ("'" s)
   (read-char s)
   (list 'quote (read s)))

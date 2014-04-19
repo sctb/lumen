@@ -43,6 +43,7 @@
   (test= (not true) (read-from-string "false"))
   (test= 'hi (read-from-string "hi"))
   (test= '"hi" (read-from-string "\"hi\""))
+  (test= "|hi|" (read-from-string "|hi|"))
   (test= '(1 2) (read-from-string "(1 2)"))
   (test= '(1 (a)) (read-from-string "(1 (a))"))
   (test= '(quote a) (read-from-string "'a"))
@@ -95,6 +96,7 @@
   (test= (quote (quote a)) ''a)
   (test= "\"a\"" '"a")
   (test= '(quote "a") ''"a")
+  (test= "|(|" '|(|)
   (test= (quote unquote) 'unquote)
   (test= (quote (unquote)) '(unquote))
   (test= (quote (unquote a)) '(unquote a)))
@@ -190,6 +192,13 @@
   (test= '(array "quasiquote" (array "unquote" "a")) (macroexpand '``,a))
   (test= '(array "quasiquote" (array (array "unquote" "x")))
          (macroexpand '``(,x))))
+
+(define-test id ()
+  (let (a 10
+        b (table x: 20))
+    (test= 10 a)
+    (test= 10 |a|)
+    (test= 20 |b.x|)))
 
 ;; special forms
 

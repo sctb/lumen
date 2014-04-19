@@ -82,6 +82,7 @@
 (define compile-atom (form)
   (if (= form "nil")
       (if (= target 'js) "undefined" "nil")
+      (id-literal? form) (inner form)
       (and (string? form)
            (not (string-literal? form)))
       (compile-id form)

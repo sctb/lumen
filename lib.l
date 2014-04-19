@@ -537,6 +537,7 @@
 (define is? (x) (not (nil? x)))
 (define string? (x) (= (type x) 'string))
 (define string-literal? (x) (and (string? x) (= (char x 0) "\"")))
+(define id-literal? (x) (and (string? x) (= (char x 0) "|")))
 (define number? (x) (= (type x) 'number))
 (define boolean? (x) (= (type x) 'boolean))
 (define function? (x) (= (type x) 'function))
