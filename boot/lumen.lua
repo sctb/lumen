@@ -41,8 +41,7 @@ embed_macros63 = false
 quoted = function (form)
   if atom63(form) then
     if string_literal63(form) then
-      local str = sub(form, 1, (length(form) - 1))
-      return(("\"\\\"" .. str .. "\\\"\""))
+      return(("\"\\\"" .. inner(form) .. "\\\"\""))
     elseif string63(form) then
       return(("\"" .. form .. "\""))
     else
@@ -306,6 +305,10 @@ sub = function (x, from, upto)
     end
     return(l)
   end
+end
+
+inner = function (x)
+  return(sub(x, 1, (length(x) - 1)))
 end
 
 hd = function (l)
@@ -715,7 +718,7 @@ end
 
 key = function (str)
   if string_literal63(str) then
-    return(sub(str, 1, (length(str) - 1)))
+    return(inner(str))
   else
     return(str)
   end

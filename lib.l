@@ -48,8 +48,7 @@
 (define quoted (form)
   (if (atom? form)
       (if (string-literal? form)
-          (let (str (sub form 1 (- (length form) 1)))
-            (cat "\"\\\"" str "\\\"\""))
+          (cat "\"\\\"" (inner form) "\\\"\"")
           (string? form) (cat "\"" form "\"")
         form)
     `(list ,@(map* quoted form))))
@@ -333,6 +332,9 @@
       (each (x k v)
         (set (get l k) v))
       l)))
+
+(define inner (x)
+  (sub x 1 (- (length x) 1)))
 
 ;; lists
 

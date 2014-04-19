@@ -34,7 +34,7 @@
 
 (define key (str)
   (if (string-literal? str)
-      (sub str 1 (- (length str) 1))
+      (inner str)
     str))
 
 (define flag? (atom)
