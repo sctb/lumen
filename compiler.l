@@ -30,7 +30,7 @@
 (define compile-args (forms compile?)
   (let (str "(")
     (across (forms x i)
-      (cat! str (if compile? (compile x) (identifier x)))
+      (cat! str (if compile? (compile x) (compile-id x)))
       (if (< i (- (length forms) 1)) (cat! str ", ")))
     (cat str ")")))
 
@@ -63,7 +63,7 @@
         (inc i))
       true)))
 
-(define identifier (id)
+(define compile-id (id)
   (let (id1 "" i 0)
     (while (< i (length id))
       (let (c (char id i)
@@ -84,7 +84,7 @@
   (if (= form "nil")
       (if (= target 'js) "undefined" "nil")
       (and (string? form) (not (string-literal? form)))
-      (identifier form)
+      (compile-id form)
     (to-string form)))
 
 (define compile-call (form)
@@ -220,7 +220,7 @@
     (cat (indentation) e)))
 
 (define-special local ((name value)) :stmt
-  (let (id (identifier name)
+  (let (id (compile-id name)
 	keyword (if (= target 'js) "var " "local ")
         ind (indentation))
     (if (nil? value)

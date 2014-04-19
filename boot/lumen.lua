@@ -886,7 +886,7 @@ compile_args = function (forms, compile63)
       if compile63 then
         return(compile(x))
       else
-        return(identifier(x))
+        return(compile_id(x))
       end
     end)())
     if (i < (length(forms) - 1)) then
@@ -937,7 +937,7 @@ valid_id63 = function (id)
   end
 end
 
-identifier = function (id)
+compile_id = function (id)
   local id1 = ""
   local i = 0
   while (i < length(id)) do
@@ -974,7 +974,7 @@ compile_atom = function (form)
       return("nil")
     end
   elseif (string63(form) and (not string_literal63(form))) then
-    return(identifier(form))
+    return(compile_id(form))
   else
     return(to_string(form))
   end
@@ -1211,7 +1211,7 @@ end, ["stmt"] = true}
 special["local"] = {["compiler"] = function (_70)
   local name = _70[1]
   local value = _70[2]
-  local id = identifier(name)
+  local id = compile_id(name)
   local keyword = (function ()
     if (target == "js") then
       return("var ")

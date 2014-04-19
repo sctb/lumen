@@ -619,7 +619,7 @@ delimiters = {"(": true, ")": true, ";": true, "\n": true};
 whitespace = {" ": true, "\t": true, "\n": true};
 
 make_stream = function (str) {
-  return({string: str, pos: 0, len: length(str)});
+  return({len: length(str), pos: 0, string: str});
 };
 
 peek_char = function (s) {
@@ -800,7 +800,7 @@ read_from_string = function (str) {
   return(read(make_stream(str)));
 };
 
-operators = {js: {"~=": "!=", or: "||", and: "&&", cat: "+", "=": "==="}, lua: {"~=": true, or: true, and: true, cat: "..", "=": "=="}, common: {">=": true, "*": true, "%": true, "/": true, "<=": true, "+": true, "<": true, "-": true, ">": true}};
+operators = {common: {"<=": true, "%": true, "/": true, "*": true, "+": true, "<": true, "-": true, ">": true, ">=": true}, js: {and: "&&", or: "||", "=": "===", cat: "+", "~=": "!="}, lua: {and: true, cat: "..", "=": "==", or: true, "~=": true}};
 
 getop = function (op) {
   var op1 = (operators.common[op] || operators[target][op]);
@@ -835,7 +835,7 @@ compile_args = function (forms, compile63) {
       if (compile63) {
         return(compile(x));
       } else {
-        return(identifier(x));
+        return(compile_id(x));
       }
     })());
     if ((i < (length(forms) - 1))) {
@@ -886,7 +886,7 @@ valid_id63 = function (id) {
   }
 };
 
-identifier = function (id) {
+compile_id = function (id) {
   var id1 = "";
   var i = 0;
   while ((i < length(id))) {
@@ -923,7 +923,7 @@ compile_atom = function (form) {
       return("nil");
     }
   } else if ((string63(form) && !(string_literal63(form)))) {
-    return(identifier(form));
+    return(compile_id(form));
   } else {
     return(to_string(form));
   }
@@ -1056,11 +1056,11 @@ self_tr63 = function (name) {
   return(special[name].tr);
 };
 
-special["do"] = {stmt: true, tr: true, compiler: function (forms, tail63) {
+special["do"] = {tr: true, stmt: true, compiler: function (forms, tail63) {
   return(compile_body(forms, tail63));
 }};
 
-special["if"] = {stmt: true, tr: true, compiler: function (form, tail63) {
+special["if"] = {tr: true, stmt: true, compiler: function (form, tail63) {
   var str = "";
   var i = 0;
   var _61 = form;
@@ -1081,7 +1081,7 @@ special["if"] = {stmt: true, tr: true, compiler: function (form, tail63) {
   return(str);
 }};
 
-special["while"] = {stmt: true, tr: true, compiler: function (form) {
+special["while"] = {tr: true, stmt: true, compiler: function (form) {
   var condition = compile(hd(form));
   var body = (function () {
     indent_level = (indent_level + 1);
@@ -1097,7 +1097,7 @@ special["while"] = {stmt: true, tr: true, compiler: function (form) {
   }
 }};
 
-special["for"] = {stmt: true, tr: true, compiler: function (_63) {
+special["for"] = {tr: true, stmt: true, compiler: function (_63) {
   var _64 = _63[0];
   var t = _64[0];
   var k = _64[1];
@@ -1160,7 +1160,7 @@ special["error"] = {stmt: true, compiler: function (_69) {
 special["local"] = {stmt: true, compiler: function (_70) {
   var name = _70[0];
   var value = _70[1];
-  var id = identifier(name);
+  var id = compile_id(name);
   var keyword = (function () {
     if ((target === "js")) {
       return("var ");
