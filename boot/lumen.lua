@@ -716,14 +716,6 @@ key63 = function (atom)
   return((string63(atom) and (length(atom) > 1) and (char(atom, (length(atom) - 1)) == ":")))
 end
 
-key = function (str)
-  if string_literal63(str) then
-    return(inner(str))
-  else
-    return(str)
-  end
-end
-
 flag63 = function (atom)
   return((string63(atom) and (length(atom) > 1) and (char(atom, 0) == ":")))
 end
@@ -780,9 +772,9 @@ read_table["("] = function (s)
       if key63(x) then
         local k = sub(x, 0, (length(x) - 1))
         local v = read(s)
-        l[key(k)] = v
+        l[k] = v
       elseif flag63(x) then
-        l[key(sub(x, 1))] = true
+        l[sub(x, 1)] = true
       else
         add(l, x)
       end
@@ -912,7 +904,7 @@ numeric63 = function (n)
 end
 
 valid_char63 = function (n)
-  return((numeric63(n) or ((n > 64) and (n < 91)) or ((n > 96) and (n < 173)) or (n == 95)))
+  return((numeric63(n) or ((n > 64) and (n < 91)) or ((n > 96) and (n < 123)) or (n == 95)))
 end
 
 valid_id63 = function (id)
@@ -1239,8 +1231,8 @@ special["get"] = {["compiler"] = function (_72)
   if ((target == "lua") and (char(t1, 0) == "{")) then
     t1 = ("(" .. t1 .. ")")
   end
-  if (string_literal63(k) and valid_id63(key(k))) then
-    return((t1 .. "." .. key(k)))
+  if (string_literal63(k) and valid_id63(inner(k))) then
+    return((t1 .. "." .. inner(k)))
   else
     return((t1 .. "[" .. k1 .. "]"))
   end

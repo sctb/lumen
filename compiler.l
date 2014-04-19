@@ -239,8 +239,8 @@
 	     (= (char t1 0) "{"))
 	(set t1 (cat "(" t1 ")")))
     (if (and (string-literal? k)
-             (valid-id? (key k)))
-        (cat t1 "." (key k))
+             (valid-id? (inner k)))
+        (cat t1 "." (inner k))
       (cat t1 "[" k1 "]"))))
 
 (define-special not ((expr))

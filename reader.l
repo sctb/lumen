@@ -32,11 +32,6 @@
        (> (length atom) 1)
        (= (char atom (- (length atom) 1)) ":")))
 
-(define key (str)
-  (if (string-literal? str)
-      (inner str)
-    str))
-
 (define flag? (atom)
   (and (string? atom)
        (> (length atom) 1)
@@ -82,8 +77,8 @@
 	      (if (key? x)
 		  (let (k (sub x 0 (- (length x) 1))
 			v (read s))
-		    (set (get l (key k)) v))
-                  (flag? x) (set (get l (key (sub x 1))) true)
+		    (set (get l k) v))
+                  (flag? x) (set (get l (sub x 1)) true)
 		(add l x)))
 	    c (do (read-char s) (break)) ; )
 	  (error (cat "Expected ) at " s.pos)))))
