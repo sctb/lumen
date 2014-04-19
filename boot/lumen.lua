@@ -1576,7 +1576,7 @@ setenv("let", function (bindings, ...)
       _11 = (_11 + 1)
     end
   end, pairwise(bindings))
-  return(join({"let-symbol", renames}, join(locals, body)))
+  return(join({"do"}, join(locals, {join({"let-symbol", renames}, body)})))
 end)
 
 setenv("let-macro", function (definitions, ...)

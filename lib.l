@@ -90,7 +90,7 @@
                (setenv id variable))
              (add locals `(local ,id ,val))))
          (pairwise bindings))
-    `(let-symbol ,renames ,@(join locals body))))
+    `(do ,@locals (let-symbol ,renames ,@body))))
 
 (define-macro let-macro (definitions rest: body)
   (add environment (table))
