@@ -415,11 +415,6 @@
     (test= 'a (drop l))
     (test= nil (drop l))))
 
-(define-test shift ()
-  (let (l '(a b c))
-    (test= 'a (shift l))
-    (test= '(b c) l)))
-
 (define-test last ()
   (test= 3 (last '(1 2 3)))
   (test= nil (last ()))

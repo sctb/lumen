@@ -322,10 +322,6 @@ drop = function (l)
   return((table.remove)(l))
 end
 
-shift = function (l)
-  return((table.remove)(l, 1))
-end
-
 last = function (l)
   return(l[((length(l) - 1) + 1)])
 end

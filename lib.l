@@ -344,9 +344,6 @@
 (define drop (l)
   (target (js (l.pop)) (lua (table.remove l))))
 
-(define shift (l)
-  (target (js (l.shift)) (lua (table.remove l 1))))
-
 (define last (l)
   (at l (- (length l) 1)))
 
