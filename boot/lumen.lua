@@ -800,7 +800,6 @@ end
 read_table["\""] = function (s)
   read_char(s)
   local str = "\""
-  local colon = ""
   while true do
     local c = peek_char(s)
     if (c and (not (c == "\""))) then
@@ -810,15 +809,12 @@ read_table["\""] = function (s)
       str = (str .. read_char(s))
     elseif c then
       read_char(s)
-      if (peek_char(s) == ":") then
-        colon = read_char(s)
-      end
       break
     else
       error(("Expected \" at " .. s.pos))
     end
   end
-  return((str .. "\"" .. colon))
+  return((str .. "\""))
 end
 
 read_table["'"] = function (s)
@@ -855,7 +851,7 @@ read_from_string = function (str)
   return(read(make_stream(str)))
 end
 
-operators = {["common"] = {["%"] = true, ["<="] = true, ["-"] = true, ["<"] = true, ["/"] = true, ["*"] = true, [">"] = true, [">="] = true, ["+"] = true}, ["lua"] = {["and"] = true, ["="] = "==", ["~="] = true, ["cat"] = "..", ["or"] = true}, ["js"] = {["and"] = "&&", ["="] = "===", ["~="] = "!=", ["cat"] = "+", ["or"] = "||"}}
+operators = {["common"] = {["+"] = true, ["-"] = true, ["%"] = true, ["*"] = true, ["/"] = true, ["<"] = true, [">"] = true, ["<="] = true, [">="] = true}, ["js"] = {["="] = "===", ["~="] = "!=", ["and"] = "&&", ["or"] = "||", ["cat"] = "+"}, ["lua"] = {["="] = "==", ["cat"] = "..", ["~="] = true, ["and"] = true, ["or"] = true}}
 
 getop = function (op)
   local op1 = (operators.common[op] or operators[target][op])
@@ -1113,7 +1109,7 @@ end
 
 special["do"] = {["compiler"] = function (forms, tail63)
   return(compile_body(forms, tail63))
-end, ["tr"] = true, ["stmt"] = true}
+end, ["stmt"] = true, ["tr"] = true}
 
 special["if"] = {["compiler"] = function (form, tail63)
   local str = ""
@@ -1134,7 +1130,7 @@ special["if"] = {["compiler"] = function (form, tail63)
     i = (i + 1)
   end
   return(str)
-end, ["tr"] = true, ["stmt"] = true}
+end, ["stmt"] = true, ["tr"] = true}
 
 special["while"] = {["compiler"] = function (form)
   local condition = compile(hd(form))
@@ -1150,7 +1146,7 @@ special["while"] = {["compiler"] = function (form)
   else
     return((ind .. "while " .. condition .. " do\n" .. body .. ind .. "end\n"))
   end
-end, ["tr"] = true, ["stmt"] = true}
+end, ["stmt"] = true, ["tr"] = true}
 
 special["for"] = {["compiler"] = function (_63)
   local _64 = _63[1]
@@ -1170,11 +1166,11 @@ special["for"] = {["compiler"] = function (_63)
   else
     return((ind .. "for (" .. k .. " in " .. t1 .. ") {\n" .. body1 .. ind .. "}\n"))
   end
-end, ["tr"] = true, ["stmt"] = true}
+end, ["stmt"] = true, ["tr"] = true}
 
-special["break"] = {["stmt"] = true, ["compiler"] = function (_66)
+special["break"] = {["compiler"] = function (_66)
   return((indentation() .. "break"))
-end}
+end, ["stmt"] = true}
 
 special["function"] = {["compiler"] = function (_67)
   local args = _67[1]
@@ -1194,13 +1190,13 @@ special["define-macro"] = {["compiler"] = function (_68)
     macros = (macros .. compile_toplevel(macro))
   end
   return("")
-end, ["tr"] = true, ["stmt"] = true}
+end, ["stmt"] = true, ["tr"] = true}
 
-special["return"] = {["stmt"] = true, ["compiler"] = function (form)
+special["return"] = {["compiler"] = function (form)
   return((indentation() .. compile_call(join({"return"}, form))))
-end}
+end, ["stmt"] = true}
 
-special["error"] = {["stmt"] = true, ["compiler"] = function (_69)
+special["error"] = {["compiler"] = function (_69)
   local expr = _69[1]
   local e = (function ()
     if (target == "js") then
@@ -1210,9 +1206,9 @@ special["error"] = {["stmt"] = true, ["compiler"] = function (_69)
     end
   end)()
   return((indentation() .. e))
-end}
+end, ["stmt"] = true}
 
-special["local"] = {["stmt"] = true, ["compiler"] = function (_70)
+special["local"] = {["compiler"] = function (_70)
   local name = _70[1]
   local value = _70[2]
   local id = identifier(name)
@@ -1229,16 +1225,16 @@ special["local"] = {["stmt"] = true, ["compiler"] = function (_70)
   else
     return((ind .. keyword .. id .. " = " .. compile(value)))
   end
-end}
+end, ["stmt"] = true}
 
-special["set"] = {["stmt"] = true, ["compiler"] = function (_71)
+special["set"] = {["compiler"] = function (_71)
   local lh = _71[1]
   local rh = _71[2]
   if nil63(rh) then
     error("Missing right-hand side in assignment")
   end
   return((indentation() .. compile(lh) .. " = " .. compile(rh)))
-end}
+end, ["stmt"] = true}
 
 special["get"] = {["compiler"] = function (_72)
   local t = _72[1]

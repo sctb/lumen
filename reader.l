@@ -94,18 +94,15 @@
 
 (define-reader ("\"" s)
   (read-char s)
-  (let (str "\"" colon "")
+  (let (str "\"")
     (while true
       (let (c (peek-char s))
 	(if (and c (not (= c "\"")))
 	    (do (if (= c "\\") (cat! str (read-char s)))
 		(cat! str (read-char s)))
-	    c (do (read-char s)         ; "
-                  (if (= (peek-char s) ":")
-                      (set colon (read-char s)))
-                  (break))
+	    c (do (read-char s) (break)) ; "
 	  (error (cat "Expected \" at " s.pos)))))
-    (cat str "\"" colon)))
+    (cat str "\"")))
 
 (define-reader ("'" s)
   (read-char s)
