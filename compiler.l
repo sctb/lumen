@@ -27,10 +27,10 @@
            (set indent-level (- indent-level 1))
            ,result))))
 
-(define compile-args (forms compile?)
+(define compile-args (forms)
   (let (str "(")
     (across (forms x i)
-      (cat! str (if compile? (compile x) (compile-id x)))
+      (cat! str (compile x))
       (if (< i (- (length forms) 1)) (cat! str ", ")))
     (cat str ")")))
 
@@ -92,7 +92,7 @@
       ((compiler 'array) form) ; ()
     (let (f (hd form)
           f1 (compile f)
-          args (compile-args (tl form) true))
+          args (compile-args (tl form)))
       (if (list? f) (cat "(" f1 ")" args)
           (string? f) (cat f1 args)
         (error "Invalid function call")))))

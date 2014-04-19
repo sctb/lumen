@@ -876,19 +876,13 @@ indentation = function ()
   return(str)
 end
 
-compile_args = function (forms, compile63)
+compile_args = function (forms)
   local str = "("
   local i = 0
   local _53 = forms
   while (i < length(_53)) do
     local x = _53[(i + 1)]
-    str = (str .. (function ()
-      if compile63 then
-        return(compile(x))
-      else
-        return(compile_id(x))
-      end
-    end)())
+    str = (str .. compile(x))
     if (i < (length(forms) - 1)) then
       str = (str .. ", ")
     end
@@ -986,7 +980,7 @@ compile_call = function (form)
   else
     local f = hd(form)
     local f1 = compile(f)
-    local args = compile_args(tl(form), true)
+    local args = compile_args(tl(form))
     if list63(f) then
       return(("(" .. f1 .. ")" .. args))
     elseif string63(f) then
