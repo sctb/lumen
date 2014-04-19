@@ -40,11 +40,6 @@
 (define-macro define-reader ((char stream) rest: body)
   `(set (get read-table ,char) (fn (,stream) ,@body)))
 
-(define to-get (l)
-  (if (= (length l) 1)
-      (hd l)
-    `(get ,(to-get (tl l)) (quote ,(hd l)))))
-
 (define-reader ("" s) ; atom
   (let (str "" dot? false)
     (while true
@@ -60,7 +55,10 @@
 	  (= str "true") true
 	  (= str "false") false
           (= str "_") (make-id)
-          dot? (to-get (reverse (split str ".")))
+          dot?
+          (reduce (fn (a b)
+                    `(get ,b (quote ,a)))
+                  (reverse (split str ".")))
         str))))
 
 (define-reader ("(" s)

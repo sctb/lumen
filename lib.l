@@ -96,18 +96,18 @@
            ((compiler 'define-macro) m))
          definitions)
     (set embed-macros? embed?))
-  (let (body1 (macroexpand body))
+  (let (body (macroexpand body))
     (drop environment)
-    `(do ,@body1)))
+    `(do ,@body)))
 
 (define-macro let-symbol (expansions rest: body)
   (add environment (table))
   (map (fn ((name expr))
          (setenv name expr))
        (pairwise expansions))
-  (let (body1 (macroexpand body))
+  (let (body (macroexpand body))
     (drop environment)
-    `(do ,@body1)))
+    `(do ,@body)))
 
 (define-macro define-symbol (name expansion)
   (setenv name expansion)
@@ -149,7 +149,7 @@
   (if (empty? args)
       ()
     (let (l (last args))
-      (if (and (composite? l) (get l '_stash))
+      (if (and (composite? l) l._stash)
           (let (args1 (sub args 0 (- (length args) 1)))
             (each (l k v)
               (if (~= k '_stash)
@@ -173,7 +173,7 @@
                 (add args1 v)
                 (join! bs (list arg v)))
             (add args1 arg)))
-        (let (r (get args 'rest))
+        (let (r args.rest)
           (if r (join! bs (list r (rest)))))
         (if (empty? bs)
             (list args1 body)
@@ -185,7 +185,7 @@
 	`((,id ,rh) ,@(bind lh id)))
       (atom? lh) `((,lh ,rh))
     (let (i 0
-          r (get lh 'rest)
+          r lh.rest
           bs (map (fn (x)
                     (let (b (bind x `(at ,rh ,i)))
                       (inc i)
@@ -311,24 +311,24 @@
   (= (length x) 0))
 
 (define sub (x from upto)
-  (set from (or from 0))
-  (if (string? x)
-      (target
-       (js (x.substring from upto))
-       (lua (string.sub x (+ from 1) upto)))
-    (let (l (target
-             (js (Array.prototype.slice.call x from upto))
-             (lua
-              (do (set upto (or upto (length x)))
-                  (let (i from j 0 x2 ())
-                    (while (< i upto)
-                      (set (at x2 j) (at x i))
-                      (inc i) 
-                      (inc j))
-                    x2)))))
-      (each (x k v)
-        (set (get l k) v))
-      l)))
+  (let (from (or from 0))
+    (if (string? x)
+        (target
+         (js (x.substring from upto))
+         (lua (string.sub x (+ from 1) upto)))
+      (let (l (target
+               (js (Array.prototype.slice.call x from upto))
+               (lua
+                (do (set upto (or upto (length x)))
+                    (let (i from j 0 x2 ())
+                      (while (< i upto)
+                        (set (at x2 j) (at x i))
+                        (inc i)
+                        (inc j))
+                      x2)))))
+        (each (x k v)
+          (set (get l k) v))
+        l))))
 
 (define inner (x)
   (sub x 1 (- (length x) 1)))
@@ -371,7 +371,6 @@
             (inc i)))))
       (each (l1 k v)
         (set (get l k) v))
-      ;; properties on l2 supersede l1
       (each (l2 k v)
         (set (get l k) v))
       l)))
@@ -388,8 +387,8 @@
 
 (define find (f l)
   (across (l x)
-    (let (x1 (f x))
-      (if x1 (return x1)))))
+    (let (x (f x))
+      (if x (return x)))))
 
 (define pairwise (l)
   (let (i 0
@@ -437,7 +436,7 @@
   (table _splice: x))
 
 (define splice? (x)
-  (if (table? x) (get x '_splice)))
+  (if (table? x) x._splice))
 
 (define map (f l)
   (let (l1 ())
@@ -476,9 +475,9 @@
   (target
    (js (let (i (str.indexOf pattern start))
 	 (if (>= i 0) i)))
-   (lua (do (if start (set start (+ start 1)))
-	    (let (i (string.find str pattern start true))
-	      (and i (- i 1)))))))
+   (lua (let (start (if start (+ start 1))
+              i (string.find str pattern start true))
+          (and i (- i 1))))))
 
 (define split (str sep)
   (target
@@ -486,14 +485,14 @@
    (lua (if (or (= str "") (= sep ""))
             ()
           (let (strs ())
-           (while true
-             (let (i (search str sep))
-               (if (nil? i)
-                   (break)
-                 (do (add strs (sub str 0 i))
-                     (set str (sub str (+ i 1)))))))
-           (add strs str)
-           strs)))))
+            (while true
+              (let (i (search str sep))
+                (if (nil? i)
+                    (break)
+                  (do (add strs (sub str 0 i))
+                      (set str (sub str (+ i 1)))))))
+            (add strs str)
+            strs)))))
 
 (define-macro cat! (a rest: bs)
   `(set ,a (cat ,a ,@bs)))
@@ -570,21 +569,24 @@
       (cat str  ")"))))
 
 (define-macro pr xs
-  `(print (cat ,@(map (fn (x) `(to-string ,x)) xs))))
+  (let (xs (map (fn (x)
+                  (splice `((to-string ,x) " ")))
+                xs))
+    `(print (cat ,@xs))))
 
 ;; misc
 
 (target (js (define type (x) (typeof x))))
 
 (define apply (f args)
-  (let (args1 (stash args))
-    (target (js (f.apply f args1)) (lua (f (unpack args1))))))
+  (let (args (stash args))
+    (target (js (f.apply f args)) (lua (f (unpack args))))))
 
-(define id-counter 0)
+(define id-count 0)
 
 (define make-id (prefix)
-  (set id-counter (+ id-counter 1))
-  (cat "_" (or prefix "") id-counter))
+  (inc id-count)
+  (cat "_" (or prefix "") id-count))
 
 (define eval-result nil)
 
@@ -592,7 +594,7 @@
  (lua (define eval (x)
 	;; lua does not allow expressions to be evaluated at the
 	;; top-level
-        (let (y (cat "eval_result=" x)
+        (let (y (cat (compile 'eval-result) '= x)
 	      f (load y))
 	  (if f
 	      (do (f) eval-result)

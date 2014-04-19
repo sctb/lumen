@@ -1,16 +1,16 @@
 ;; -*- mode: lisp -*-
 
-(define operators
+(define infix
   (table common: (table :+ :- :% :* :/ :< :> :<= :>=)
 	 js: (table =: "===" ~=: "!=" and: "&&" or: "||" cat: "+")
 	 lua: (table =: "==" cat: ".." :~= :and :or)))
 
 (define getop (op)
-  (let (op1 (or (get (get operators 'common) op)
-                (get (get operators target) op)))
+  (let (op1 (or (get infix.common op)
+                (get (get infix target) op)))
     (if (= op1 true) op op1)))
 
-(define operator? (form)
+(define infix? (form)
   (and (list? form) (is? (getop (hd form)))))
 
 (define indent-level 0)
@@ -27,11 +27,11 @@
            (dec indent-level)
            ,result))))
 
-(define compile-args (forms)
+(define compile-args (args)
   (let (str "(")
-    (across (forms x i)
-      (cat! str (compile x))
-      (if (< i (- (length forms) 1)) (cat! str ", ")))
+    (across (args arg i)
+      (cat! str (compile arg))
+      (if (< i (- (length args) 1)) (cat! str ", ")))
     (cat str ")")))
 
 (define compile-body (forms tail?)
@@ -75,14 +75,15 @@
       (inc i))
     id1))
 
-(define compile-atom (form)
-  (if (= form "nil")
-      (if (= target 'js) "undefined" "nil")
-      (id-literal? form) (inner form)
-      (and (string? form)
-           (not (string-literal? form)))
-      (compile-id form)
-    (to-string form)))
+(define compile-atom (x)
+  (if (and (= x "nil") (= target 'lua)) x
+      (= x "nil") "undefined"
+      (id-literal? x) (inner x)
+      (string-literal? x) x
+      (string? x) (compile-id x)
+      (boolean? x) (if x "true" "false")
+      (number? x) (cat x "")
+    (error "Unrecongnized atom")))
 
 (define compile-call (form)
   (if (empty? form)
@@ -94,36 +95,36 @@
           (string? f) (cat f1 args)
         (error "Invalid function call")))))
 
-(define compile-operator ((op rest: args))
+(define compile-infix ((op rest: args))
   (let (str "("
-        op1 (getop op))
+        op (getop op))
     (across (args arg i)
-      (if (and (= op1 '-) (= (length args) 1))
-          (cat! str op1 (compile arg))
+      (if (and (= op '-) (= (length args) 1))
+          (cat! str op (compile arg))
         (do (cat! str (compile arg))
             (if (< i (- (length args) 1))
-                (cat! str " " op1 " ")))))
+                (cat! str " " op " ")))))
     (cat str ")")))
 
 (define compile-branch (condition body first? last? tail?)
   (let (cond1 (compile condition)
-        body1 (with-indent (compile body true tail?))
+        body (with-indent (compile body true tail?))
         ind (indentation)
         tr (if (and last? (= target 'lua))
                (cat ind "end\n")
                last? "\n"
              ""))
     (if (and first? (= target 'js))
-        (cat ind "if (" cond1 ") {\n" body1 ind "}" tr)
+        (cat ind "if (" cond1 ") {\n" body ind "}" tr)
         first?
-        (cat ind "if " cond1 " then\n" body1 tr)
+        (cat ind "if " cond1 " then\n" body tr)
         (and (nil? condition) (= target 'js))
-        (cat " else {\n" body1 ind "}\n")
+        (cat " else {\n" body ind "}\n")
         (nil? condition)
-        (cat ind "else\n" body1 tr)
+        (cat ind "else\n" body tr)
         (= target 'js)
-        (cat " else if (" cond1 ") {\n" body1 ind "}" tr)
-      (cat ind "elseif " cond1 " then\n" body1 tr))))
+        (cat " else if (" cond1 ") {\n" body ind "}" tr)
+      (cat ind "elseif " cond1 " then\n" body tr))))
 
 (define compile-function (args body name)
   (let (name (or name "")
@@ -185,12 +186,12 @@
       (cat ind "while " condition " do\n" body ind "end\n"))))
 
 (define-special for (((t k) rest: body)) :stmt :tr
-  (let (t1 (compile t)
+  (let (t (compile t)
         ind (indentation)
-        body1 (with-indent (compile-body body)))
+        body (with-indent (compile-body body)))
     (if (= target 'lua)
-	(cat ind "for " k " in next, " t1 " do\n" body1 ind "end\n")
-      (cat ind "for (" k " in " t1 ") {\n" body1 ind "}\n"))))
+	(cat ind "for " k " in next, " t " do\n" body ind "end\n")
+      (cat ind "for (" k " in " t ") {\n" body ind "}\n"))))
 
 (define-special break (_) :stmt
   (cat (indentation) "break"))
@@ -207,22 +208,21 @@
 	(cat! macros (compile-toplevel macro))))
   "")
 
-(define-special return (form) :stmt
-  (cat (indentation) (compile-call `(return ,@form))))
+(define-special return ((x)) :stmt
+  (cat (indentation) (compile-call `(return ,x))))
 
-(define-special error ((expr)) :stmt
+(define-special error ((x)) :stmt
   (let (e (if (= target 'js)
-              (cat "throw " (compile expr))
-            (compile-call `(error ,expr))))
+              (cat "throw " (compile x))
+            (compile-call `(error ,x))))
     (cat (indentation) e)))
 
 (define-special local ((name value)) :stmt
   (let (id (compile name)
+        value (compile value)
 	keyword (if (= target 'js) "var " "local ")
         ind (indentation))
-    (if (nil? value)
-	(cat ind keyword id)
-      (cat ind keyword id " = " (compile value)))))
+    (cat ind keyword id " = " value)))
 
 (define-special set ((lh rh)) :stmt
   (if (nil? rh)
@@ -230,20 +230,20 @@
   (cat (indentation) (compile lh) " = " (compile rh)))
 
 (define-special get ((t k))
-  (let (t1 (compile t)
+  (let (t (compile t)
 	k1 (compile k))
     (if (and (= target 'lua)
-	     (= (char t1 0) "{"))
-	(set t1 (cat "(" t1 ")")))
+	     (= (char t 0) "{"))
+	(set t (cat "(" t ")")))
     (if (and (string-literal? k)
              (valid-id? (inner k)))
-        (cat t1 "." (inner k))
-      (cat t1 "[" k1 "]"))))
+        (cat t "." (inner k))
+      (cat t "[" k1 "]"))))
 
-(define-special not ((expr))
-  (let (e (compile expr)
+(define-special not ((x))
+  (let (x (compile x)
 	open (if (= target 'js) "!(" "(not "))
-    (cat open e ")")))
+    (cat open x ")")))
 
 (define-special array (forms)
   (let (open (if (= target 'lua) "{" "[")
@@ -256,65 +256,60 @@
 
 (define-special object (forms)
   (let (str "{"
-	i 0
-        sep (if (= target 'lua) " = " ": "))
-    (while (< i (- (length forms) 1))
-      (let (k (at forms i)
-	    v (compile (at forms (+ i 1))))
-	(if (not (string? k))
-	    (error (cat "Illegal object key: " (to-string k))))
+        sep (if (= target 'lua) " = " ": ")
+        pairs (pairwise forms))
+    (across (pairs (k v) i)
+      (if (not (string? k))
+          (error (cat "Illegal object key: " (to-string k))))
+      (let (v (compile v)
+            k (if (string-literal? k) k
+                  (and (= target 'js) (valid-id? k)) k
+                (quoted k)))
         (if (= target 'lua)
-            (let (k1 (if (string-literal? k) k (quoted k)))
-              (set k (cat "[" k1 "]")))
-            (and (not (valid-id? k))
-                 (not (string-literal? k)))
-            (set k (quoted k)))
-	(cat! str k sep v)
-	(if (< i (- (length forms) 2)) (cat! str ", "))
-	(inc i 2)))
+            (set k (cat "[" k "]")))
+        (cat! str k sep v))
+      (if (< i (- (length pairs) 1)) (cat! str ", ")))
     (cat str "}")))
 
 (define can-return? (form)
-  (if (special? form)
-      (not (statement? (hd form)))
-    true))
+  (or (not (special? form))
+      (not (statement? (hd form)))))
 
 (define compile (form stmt? tail?)
-  (let (tr (terminator stmt?)
-        ind (if stmt? (indentation) ""))
-    (if (and tail? (can-return? form))
-	(set form `(return ,form)))
-    (if (nil? form) ""
-        (atom? form) (cat ind (compile-atom form) tr)
-        (operator? form) (cat ind (compile-operator form) tr)
-        (special? form) (compile-special form stmt? tail?)
-      (cat ind (compile-call form) tr))))
+  (if (and tail? (can-return? form))
+      (set form `(return ,form)))
+  (if (nil? form) ""
+      (special? form) (compile-special form stmt? tail?)
+    (let (tr (terminator stmt?)
+          ind (if stmt? (indentation) "")
+          form (if (atom? form) (compile-atom form)
+                   (infix? form) (compile-infix form)
+                 (compile-call form)))
+      (cat ind form tr))))
 
 (define compile-file (file)
-  (let (form nil
-	output ""
+  (let (str ""
 	s (make-stream (read-file file)))
     (while true
-      (set form (read s))
-      (if (= form eof) (break))
-      (let (result (compile-toplevel form))
-	(cat! output result)))
-    output))
+      (let (form (read s))
+        (if (= form eof) (break))
+        (cat! str (compile-toplevel form))))
+    str))
 
 (define compile-files (files)
-  (let (output "")
+  (let (str "")
     (across (files file)
-      (cat! output (compile-file file)))
-    output))
+      (cat! str (compile-file file)))
+    str))
 
 (define compile-toplevel (form)
-  (let (form1 (compile (macroexpand form) true false true))
-    (if (= form1 "") ""
-      (cat form1 "\n"))))
+  (let (form (compile (macroexpand form) true false true))
+    (if (= form "") ""
+      (cat form "\n"))))
 
 (define compile-for-target (target1 form)
   (let (previous target)
     (set target target1)
-    (let (result (compile-toplevel form))
+    (let (str (compile-toplevel form))
       (set target previous)
-      result)))
+      str)))

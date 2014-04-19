@@ -10,7 +10,7 @@
   `(if (not ,x)
        (do (set failed (+ failed 1))
 	   (return ,msg))
-     (set passed (+ passed 1))))
+     (inc passed)))
 
 (define equal? (a b)
   (if (atom? a)
@@ -25,14 +25,14 @@
   `(add tests (list ',name (fn () ,@body))))
 
 (define run-tests ()
-  (pr (language) ":")
+  (pr (cat (language) ":"))
   (across (tests test)
     (let (name (at test 0)
 	  f (at test 1)
 	  result (f))
       (if (string? result)
 	  (pr  "  " name result))))
-  (pr "  " passed " passed, " failed " failed"))
+  (pr "  " passed "passed," failed "failed"))
 
 ;; basic
 
@@ -430,10 +430,12 @@
   (test= '(2 3 4) (map (fn (x) (+ x 1)) '(1 2 3))))
 
 (define-test map-splice ()
-  (test= '(1 2) (map (fn (x) (splice (list x))) '(1 2)))
+  (test= '(1 a 2 a) (map (fn (x) (splice (list x 'a))) '(1 2)))
   (test= '(1 2) (map (fn (x) (splice x)) '(1 2))))
 
 (define-test sub ()
+  (test= () (sub ()))
+  (test= '(a) (sub '(a)))
   (test= '(b c) (sub '(a b c) 1))
   (test= '(b c) (sub '(a b c d) 1 3))
   (test= "uux" (sub "quux" 1))
@@ -455,13 +457,13 @@
 (define-test reduce ()
   (test= 6 (reduce (fn (a b) (+ a b)) '(1 2 3)))
   (test= '(1 (2 3))
-	      (reduce
-	       (fn (a b) (list a b))
-	       '(1 2 3)))
+         (reduce
+          (fn (a b) (list a b))
+          '(1 2 3)))
   (test= '(1 2 3 4 5)
-	      (reduce
-	       (fn (a b) (join a b))
-	       '((1) (2 3) (4 5)))))
+         (reduce
+          (fn (a b) (join a b))
+          '((1) (2 3) (4 5)))))
 
 (define-test list* ()
   (test= () (list*))
