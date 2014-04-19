@@ -22,9 +22,9 @@
 
 (define-macro with-indent (form)
   (let (result (make-id))
-    `(do (set indent-level (+ indent-level 1))
+    `(do (inc indent-level)
          (let (,result ,form)
-           (set indent-level (- indent-level 1))
+           (dec indent-level)
            ,result))))
 
 (define compile-args (forms)
@@ -126,13 +126,13 @@
       (cat ind "elseif " cond1 " then\n" body1 tr))))
 
 (define compile-function (args body name)
-  (set name (or name ""))
-  (let (args1 (compile-args args)
-        body1 (with-indent (compile-body body true))
+  (let (name (or name "")
+        args (compile-args args)
+        body (with-indent (compile-body body true))
         ind (indentation))
     (if (= target 'js)
-        (cat "function " name args1 " {\n" body1 ind "}")
-      (cat "function " name args1 "\n" body1 ind "end"))))
+        (cat "function " name args " {\n" body ind "}")
+      (cat "function " name args "\n" body ind "end"))))
 
 (define terminator (stmt?)
   (if (not stmt?) ""

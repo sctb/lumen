@@ -11,7 +11,7 @@
 
 (define read-char (s)
   (let (c (peek-char s))
-    (if c (do (set s.pos (+ s.pos 1)) c))))
+    (if c (do (inc s.pos) c))))
 
 (define skip-non-code (s)
   (while true
@@ -60,9 +60,8 @@
 	  (= str "true") true
 	  (= str "false") false
           (= str "_") (make-id)
-        (if dot?
-            (to-get (reverse (split str ".")))
-          str)))))
+          dot? (to-get (reverse (split str ".")))
+        str))))
 
 (define-reader ("(" s)
   (read-char s)
@@ -104,8 +103,8 @@
       (let (c (peek-char s))
 	(if (and c (not (= c "|")))
 	    (cat! str (read-char s))
-	    c (do (read-char s) (break)) ; >
-	  (error (cat "Expected \" at " s.pos)))))
+	    c (do (read-char s) (break)) ; |
+	  (error (cat "Expected | at " s.pos)))))
     (cat str "|")))
 
 (define-reader ("'" s)

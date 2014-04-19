@@ -9,19 +9,16 @@
 
 (define getenv (k)
   (if (string? k)
-      (let (i (- (length environment) 1))
-        (while (>= i 0)
-          (let (v (get (at environment i) k))
-            (if v (return v)))
-          (dec i)))))
+      (find (fn (e) (get e k))
+            (reverse environment))))
 
 (define variable (table))
 
 (define symbol-macro? (k)
   (let (v (getenv k))
     (and (is? v)
-	 (not (= v variable))
-	 (not (macro? k)))))
+         (not (= v variable))
+         (not (macro? k)))))
 
 (define macro? (k)
   (function? (getenv k)))
@@ -67,7 +64,6 @@
         `(let (,id ,l)
            ,@init
            ,id)))))
-
 
 (define-macro table body
   (let (l ())
@@ -123,8 +119,8 @@
   `(set ,name ,x))
 
 (define-macro fn (args rest: body)
-  (let ((args1 body1) (bind-arguments args body))
-    `(function ,args1 ,@body1)))
+  (let ((args body) (bind-arguments args body))
+    `(function ,args ,@body)))
 
 (define-macro across ((l v i start) rest: body)
   (let (l1 (make-id))
@@ -188,8 +184,8 @@
       (let (id (make-id))
 	`((,id ,rh) ,@(bind lh id)))
       (atom? lh) `((,lh ,rh))
-    (let (r (get lh 'rest)
-          i 0
+    (let (i 0
+          r (get lh 'rest)
           bs (map (fn (x)
                     (let (b (bind x `(at ,rh ,i)))
                       (inc i)
@@ -272,16 +268,16 @@
   (let (xs (list '(list)))
     ;; collect keys
     (each (form k v)
-      (let (v1 (if (quasisplice? v depth)
-                   ;; values don't get to escape their keys
-                   (quasiexpand (at v 1))
-                 (quasiexpand v depth)))
-        (set (get (last xs) k) v1)))
+      (let (v (if (quasisplice? v depth)
+                  ;; values don't get to escape their keys
+                  (quasiexpand (at v 1))
+                (quasiexpand v depth)))
+        (set (get (last xs) k) v)))
     ;; collect sibling lists
     (across (form x)
       (if (quasisplice? x depth)
-	  (let (x1 (quasiexpand (at x 1)))
-            (add xs x1)
+	  (let (x (quasiexpand (at x 1)))
+            (add xs x)
             (add xs '(list)))
 	(add (last xs) (quasiexpand x depth))))
     (if (= (length xs) 1)		; no splicing needed
