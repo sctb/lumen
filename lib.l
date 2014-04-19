@@ -515,13 +515,13 @@
   (target
     (js (fs.readFileSync path 'utf8))
     (lua (let (f (io.open path))
-	   (f:read '*a)))))
+	   (f.read f '*a)))))
 
 (define write-file (path data)
   (target
     (js (fs.writeFileSync path data 'utf8))
     (lua (let (f (io.open path 'w))
-	   (f:write data)))))
+	   (f.write f data)))))
 
 (target (js (define print (x) (console.log x))))
 

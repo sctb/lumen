@@ -13,7 +13,7 @@
 	     (process.stdin.setEncoding 'utf8)
 	     (process.stdin.on 'data execute)))
      (lua (while true
-	    (let (str (io.stdin:read))
+	    (let (str (io.stdin.read io.stdin))
 	      (if str (execute str) (break))))))))
 
 (define usage ()

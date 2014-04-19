@@ -535,12 +535,12 @@ end
 
 read_file = function (path)
   local f = (io.open)(path)
-  return(f:read("*a"))
+  return((f.read)(f, "*a"))
 end
 
 write_file = function (path, data)
   local f = (io.open)(path, "w")
-  return(f:write(data))
+  return((f.write)(f, data))
 end
 
 write = function (x)
@@ -947,8 +947,6 @@ compile_id = function (id)
         return(".")
       elseif (c == "#") then
         return("#")
-      elseif (c == ":") then
-        return(":")
       elseif (c == ",") then
         return(",")
       elseif valid_char63(n) then
@@ -1419,7 +1417,7 @@ repl = function ()
   end
   write("> ")
   while true do
-    local str = (io["stdin:read"])()
+    local str = (io.stdin.read)(io.stdin)
     if str then
       execute(str)
     else
