@@ -355,15 +355,12 @@
   (at l (- (length l) 1)))
 
 (define reverse (l)
-  (target
-   (js (l.reverse))
-   (lua
-    (let (l1 ()
-          i (- (length l) 1))
-      (while (>= i 0)
-        (add l1 (at l i))
-        (dec i))
-      l1))))
+  (let (l1 ()
+        i (- (length l) 1))
+    (while (>= i 0)
+      (add l1 (at l i))
+      (dec i))
+    l1))
 
 (define join (l1 l2)
   (if (nil? l1) l2
