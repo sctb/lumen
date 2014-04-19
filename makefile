@@ -11,13 +11,13 @@ $(LUABOOT) $(JSBOOT): $(SRCS)
 
 all: $(JSBOOT) $(LUABOOT)
 
-test: all
-	@./lumen tests.l -e "(run-tests)"
-	@LUMEN_HOST=node ./lumen tests.l -e "(run-tests)"
-
 cross: all
 	@LUMEN_HOST=node ./lumen $(SRCS) -m -o $(LUABOOT) -t lua
 	@./lumen $(SRCS) -m -o $(JSBOOT) -t js
+
+test: cross
+	@./lumen tests.l -e "(run-tests)"
+	@LUMEN_HOST=node ./lumen tests.l -e "(run-tests)"
 
 clean:
 	@git checkout boot/lumen.*
