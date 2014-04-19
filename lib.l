@@ -166,7 +166,8 @@
         rest (fn ()
                (if (= target 'js)
                    `(unstash (sub arguments ,(length args1)))
-                 (do (add args1 '...) '(unstash (list ...))))))
+                 (do (add args1 '|...|)
+                     '(unstash (list |...|))))))
     (if (atom? args)
         (list args1 `((let ,(list args (rest)) ,@body)))
       (let (bs ())
@@ -308,7 +309,7 @@
 ;; sequences
 
 (define length (x)
-  (target (js x.length) (lua #x)))
+  (target (js x.length) (lua |#x|)))
 
 (define empty? (x)
   (= (length x) 0))
@@ -605,5 +606,5 @@
 	      f (load y))
 	  (if f
 	      (do (f) eval-result)
-	    (let (f,e (load x))
+	    (let (|f,e| (load x))
 	      (if f (f) (error (cat e " in " x)))))))))

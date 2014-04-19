@@ -69,10 +69,6 @@
       (let (c (char id i)
             n (code c)
             c1 (if (= c "-") "_"
-                   (= c ".") "."
-                   ;; lua
-                   (= c "#") "#"
-                   (= c ",") ","
                    (valid-char? n) c
                  n))
         (cat! id1 c1))

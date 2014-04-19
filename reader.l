@@ -60,9 +60,7 @@
 	  (= str "true") true
 	  (= str "false") false
           (= str "_") (make-id)
-	(if (and dot?
-                 ;; TODO: add identifier quotation
-                 (not (= str "...")))
+        (if dot?
             (to-get (reverse (split str ".")))
           str)))))
 
