@@ -1206,7 +1206,7 @@ end, ["stmt"] = true}
 special["local"] = {["compiler"] = function (_70)
   local name = _70[1]
   local value = _70[2]
-  local id = compile_id(name)
+  local id = compile(name)
   local keyword = (function ()
     if (target == "js") then
       return("var ")

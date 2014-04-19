@@ -622,7 +622,7 @@ delimiters = {"(": true, ")": true, ";": true, "\n": true};
 whitespace = {" ": true, "\t": true, "\n": true};
 
 make_stream = function (str) {
-  return({string: str, len: length(str), pos: 0});
+  return({string: str, pos: 0, len: length(str)});
 };
 
 peek_char = function (s) {
@@ -803,7 +803,7 @@ read_from_string = function (str) {
   return(read(make_stream(str)));
 };
 
-operators = {js: {or: "||", and: "&&", "=": "===", "~=": "!=", cat: "+"}, lua: {or: true, and: true, "=": "==", "~=": true, cat: ".."}, common: {"%": true, "/": true, "<": true, "+": true, "<=": true, "-": true, ">=": true, "*": true, ">": true}};
+operators = {js: {or: "||", "~=": "!=", "=": "===", and: "&&", cat: "+"}, lua: {cat: "..", "~=": true, "=": "==", and: true, or: true}, common: {"%": true, "<=": true, "/": true, ">=": true, "-": true, ">": true, "+": true, "<": true, "*": true}};
 
 getop = function (op) {
   var op1 = (operators.common[op] || operators[target][op]);
@@ -1051,11 +1051,11 @@ self_tr63 = function (name) {
   return(special[name].tr);
 };
 
-special["do"] = {tr: true, stmt: true, compiler: function (forms, tail63) {
+special["do"] = {stmt: true, tr: true, compiler: function (forms, tail63) {
   return(compile_body(forms, tail63));
 }};
 
-special["if"] = {tr: true, stmt: true, compiler: function (form, tail63) {
+special["if"] = {stmt: true, tr: true, compiler: function (form, tail63) {
   var str = "";
   var i = 0;
   var _61 = form;
@@ -1076,7 +1076,7 @@ special["if"] = {tr: true, stmt: true, compiler: function (form, tail63) {
   return(str);
 }};
 
-special["while"] = {tr: true, stmt: true, compiler: function (form) {
+special["while"] = {stmt: true, tr: true, compiler: function (form) {
   var condition = compile(hd(form));
   var body = (function () {
     indent_level = (indent_level + 1);
@@ -1092,7 +1092,7 @@ special["while"] = {tr: true, stmt: true, compiler: function (form) {
   }
 }};
 
-special["for"] = {tr: true, stmt: true, compiler: function (_63) {
+special["for"] = {stmt: true, tr: true, compiler: function (_63) {
   var _64 = _63[0];
   var t = _64[0];
   var k = _64[1];
@@ -1124,7 +1124,7 @@ special["function"] = {compiler: function (_67) {
 
 macros = "";
 
-special["define-macro"] = {tr: true, stmt: true, compiler: function (_68) {
+special["define-macro"] = {stmt: true, tr: true, compiler: function (_68) {
   var name = _68[0];
   var args = _68[1];
   var body = sub(_68, 2);
@@ -1155,7 +1155,7 @@ special["error"] = {compiler: function (_69) {
 special["local"] = {compiler: function (_70) {
   var name = _70[0];
   var value = _70[1];
-  var id = compile_id(name);
+  var id = compile(name);
   var keyword = (function () {
     if ((target === "js")) {
       return("var ");

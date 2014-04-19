@@ -220,7 +220,7 @@
     (cat (indentation) e)))
 
 (define-special local ((name value)) :stmt
-  (let (id (compile-id name)
+  (let (id (compile name)
 	keyword (if (= target 'js) "var " "local ")
         ind (indentation))
     (if (nil? value)
