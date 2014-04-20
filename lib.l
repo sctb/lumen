@@ -184,14 +184,11 @@
       (let (id (make-id))
 	`((,id ,rh) ,@(bind lh id)))
       (atom? lh) `((,lh ,rh))
-    (let (i 0
-          r lh.rest
-          bs (map (fn (x)
-                    (let (b (bind x `(at ,rh ,i)))
-                      (inc i)
-                      (splice b)))
-                  lh))
-      (if r (join! bs (bind r `(sub ,rh ,i))))
+    (let (bs ())
+      (across (lh x i)
+        (join! bs (bind x `(at ,rh ,i))))
+      (if lh.rest
+          (join! bs (bind lh.rest `(sub ,rh ,(length lh)))))
       bs)))
 
 ;; expansion
