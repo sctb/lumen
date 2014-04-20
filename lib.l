@@ -587,11 +587,8 @@
 
 (target lua:
   (define eval (x)
-    ;; lua does not allow expressions to be evaluated at the
-    ;; top-level
-    (let (y (cat (compile 'eval-result) '= x)
-          f (load y))
-      (if f
-          (do (f) eval-result)
+    ;; lua requires a statement at the top level
+    (let (f (load (cat (compile 'eval-result) '= x)))
+      (if f (do (f) eval-result)
         (let (|f,e| (load x))
           (if f (f) (error (cat e " in " x))))))))
