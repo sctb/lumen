@@ -9,12 +9,12 @@
   (let (step (fn (str) (rep str) (write "> ")))
     (write "> ")
     (target
-     (js (do (process.stdin.resume)
-	     (process.stdin.setEncoding 'utf8)
-	     (process.stdin.on 'data step)))
-     (lua (while true
-	    (let (str (io.stdin.read io.stdin))
-	      (if str (step str) (break))))))))
+     js: (do (process.stdin.resume)
+             (process.stdin.setEncoding 'utf8)
+             (process.stdin.on 'data step))
+     lua: (while true
+            (let (str (io.stdin.read io.stdin))
+              (if str (step str) (break)))))))
 
 (define usage ()
   (pr "usage: x [options] [inputs]")
@@ -26,7 +26,7 @@
   (exit))
 
 (define main ()
-  (let (args (target (js (sub process.argv 2)) (lua arg)))
+  (let (args (target js: (sub process.argv 2) lua: arg))
     (if (or (= (hd args) "-h")
             (= (hd args) "--help"))
         (usage))

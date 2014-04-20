@@ -298,14 +298,12 @@
 (define target (language))
 
 (define-macro target clauses
-  (find (fn (x)
-	  (if (= (hd x) target) (at x 1)))
-	clauses))
+  (get clauses target))
 
 ;; sequences
 
 (define length (x)
-  (target (js x.length) (lua |#x|)))
+  (target js: x.length lua: |#x|))
 
 (define empty? (x)
   (= (length x) 0))
@@ -314,18 +312,17 @@
   (let (from (or from 0))
     (if (string? x)
         (target
-         (js (x.substring from upto))
-         (lua (string.sub x (+ from 1) upto)))
+         js: (x.substring from upto)
+         lua: (string.sub x (+ from 1) upto))
       (let (l (target
-               (js (Array.prototype.slice.call x from upto))
-               (lua
-                (do (set upto (or upto (length x)))
-                    (let (i from j 0 x2 ())
+               js: (Array.prototype.slice.call x from upto)
+               lua: (let (i from j 0 x2 ()
+                          upto (or upto (length x)))
                       (while (< i upto)
                         (set (at x2 j) (at x i))
                         (inc i)
                         (inc j))
-                      x2)))))
+                      x2)))
         (each (x k v)
           (set (get l k) v))
         l))))
@@ -339,10 +336,10 @@
 (define tl (l) (sub l 1))
 
 (define add (l x)
-  (target (js (l.push x)) (lua (table.insert l x))))
+  (target js: (l.push x) lua: (table.insert l x)))
 
 (define drop (l)
-  (target (js (l.pop)) (lua (table.remove l))))
+  (target js: (l.pop) lua: (table.remove l)))
 
 (define last (l)
   (at l (- (length l) 1)))
@@ -360,15 +357,14 @@
       (nil? l2) l1
     (let (l ())
       (target
-       (js (set l (l1.concat l2)))
-       (lua
-        (let (i 0 len (length l1))
-          (while (< i len)
-            (set (at l i) (at l1 i))
-            (inc i))
-          (while (< i (+ len (length l2)))
-            (set (at l i) (at l2 (- i len)))
-            (inc i)))))
+       js: (set l (l1.concat l2))
+       lua: (let (i 0 len (length l1))
+              (while (< i len)
+                (set (at l i) (at l1 i))
+                (inc i))
+              (while (< i (+ len (length l2)))
+                (set (at l i) (at l2 (- i len)))
+                (inc i))))
       (each (l1 k v)
         (set (get l k) v))
       (each (l2 k v)
@@ -427,8 +423,8 @@
     `(let (,k nil ,t1 ,t)
        (for (,t1 ,k)
          (if (target
-              (lua (not (number? ,k)))
-              (js (isNaN (parseInt ,k))))
+              js: (isNaN (parseInt ,k))
+              lua: (not (number? ,k)))
              (let (,v (get ,t1 ,k))
                ,@body))))))
 
@@ -464,62 +460,61 @@
 ;; strings
 
 (define char (str n)
-  (target (js (str.charAt n)) (lua (sub str n (+ n 1)))))
+  (target js: (str.charAt n) lua: (sub str n (+ n 1))))
 
 (define code (str n)
   (target
-   (js (str.charCodeAt n))
-   (lua (string.byte str (if n (+ n 1))))))
+   js: (str.charCodeAt n)
+   lua: (string.byte str (if n (+ n 1)))))
 
 (define search (str pattern start)
   (target
-   (js (let (i (str.indexOf pattern start))
-	 (if (>= i 0) i)))
-   (lua (let (start (if start (+ start 1))
+   js: (let (i (str.indexOf pattern start))
+         (if (>= i 0) i))
+   lua: (let (start (if start (+ start 1))
               i (string.find str pattern start true))
-          (and i (- i 1))))))
+          (and i (- i 1)))))
 
 (define split (str sep)
   (target
-   (js (str.split sep))
-   (lua (if (or (= str "") (= sep ""))
+   js: (str.split sep)
+   lua: (if (or (= str "") (= sep ""))
             ()
           (let (strs ())
             (while true
               (let (i (search str sep))
-                (if (nil? i)
-                    (break)
+                (if (nil? i) (break)
                   (do (add strs (sub str 0 i))
                       (set str (sub str (+ i 1)))))))
             (add strs str)
-            strs)))))
+            strs))))
 
 (define-macro cat! (a rest: bs)
   `(set ,a (cat ,a ,@bs)))
 
 ;; io
 
-(target (js (define fs (require 'fs))))
+(target js: (define fs (require 'fs)))
 
 (define read-file (path)
   (target
-    (js (fs.readFileSync path 'utf8))
-    (lua (let (f (io.open path))
-	   (f.read f '*a)))))
+    js: (fs.readFileSync path 'utf8)
+    lua: (let (f (io.open path))
+	   (f.read f '*a))))
 
 (define write-file (path data)
   (target
-    (js (fs.writeFileSync path data 'utf8))
-    (lua (let (f (io.open path 'w))
-	   (f.write f data)))))
+    js: (fs.writeFileSync path data 'utf8)
+    lua: (let (f (io.open path 'w))
+           (f.write f data))))
 
-(target (js (define print (x) (console.log x))))
+(target js: (define print (x) (console.log x)))
 
 (define write (x)
-  (target (js (process.stdout.write x)) (lua (io.write x))))
+  (target js: (process.stdout.write x) lua: (io.write x)))
 
 (define exit (code)
-  (target (js (process.exit code)) (lua (os.exit code))))
+  (target js: (process.exit code) lua: (os.exit code)))
 
 ;; predicates
 
@@ -531,7 +526,7 @@
 (define number? (x) (= (type x) 'number))
 (define boolean? (x) (= (type x) 'boolean))
 (define function? (x) (= (type x) 'function))
-(define composite? (x) (= (type x) (target (js 'object) (lua 'table))))
+(define composite? (x) (= (type x) (target js: 'object lua: 'table)))
 (define atom? (x) (not (composite? x)))
 (define table? (x) (and (composite? x) (nil? (hd x))))
 (define list? (x) (and (composite? x) (is? (hd x))))
@@ -540,9 +535,9 @@
 
 (define parse-number (str)
   (target
-   (js (let (n (parseFloat str))
-	 (if (not (isNaN n)) n)))
-   (lua (tonumber str))))
+   js: (let (n (parseFloat str))
+         (if (not (isNaN n)) n))
+   lua: (tonumber str)))
 
 (define-macro inc (n by)
   `(set ,n (+ ,n ,(or by 1))))
@@ -576,11 +571,11 @@
 
 ;; misc
 
-(target (js (define type (x) (typeof x))))
+(target js: (define type (x) (typeof x)))
 
 (define apply (f args)
   (let (args (stash args))
-    (target (js (f.apply f args)) (lua (f (unpack args))))))
+    (target js: (f.apply f args) lua: (f (unpack args)))))
 
 (define id-count 0)
 
@@ -590,13 +585,13 @@
 
 (define eval-result nil)
 
-(target
- (lua (define eval (x)
-	;; lua does not allow expressions to be evaluated at the
-	;; top-level
-        (let (y (cat (compile 'eval-result) '= x)
-	      f (load y))
-	  (if f
-	      (do (f) eval-result)
-	    (let (|f,e| (load x))
-	      (if f (f) (error (cat e " in " x)))))))))
+(target lua:
+  (define eval (x)
+    ;; lua does not allow expressions to be evaluated at the
+    ;; top-level
+    (let (y (cat (compile 'eval-result) '= x)
+          f (load y))
+      (if f
+          (do (f) eval-result)
+        (let (|f,e| (load x))
+          (if f (f) (error (cat e " in " x))))))))
