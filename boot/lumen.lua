@@ -213,7 +213,7 @@ quasiexpand = function (form, depth)
   elseif atom63(form) then
     return(form)
   elseif (hd(form) == "quote") then
-    return({"quote", form[2]})
+    return(form)
   elseif (hd(form) == "quasiquote") then
     return(quasiexpand(form[2], 1))
   else

@@ -216,22 +216,16 @@
   (quasiexpand form 1))
 
 (define macroexpand (form)
-  (if ;; expand symbol macro
-      (symbol-macro? form) (macroexpand (getenv form))
-      ;; atom
+  (if (symbol-macro? form) (macroexpand (getenv form))
       (atom? form) form
     (let (name (hd form))
-      (if ;; pass-through
-	  (= name 'define-macro) form
-	  ;; expand macro
+      (if (= name 'define-macro) form
 	  (macro? name)
           (macroexpand (apply (getenv name) (tl form)))
-	  ;; new scope
 	  (= name 'function)
 	  (let ((_ args rest: body) form)
 	    (with-scope (args)
 	      `(,name ,args ,@(macroexpand body))))
-	;; list
         (map* macroexpand form)))))
 
 (define quasiexpand (form depth)
@@ -248,25 +242,19 @@
 	  ;; increase quasiquoting depth
 	  (= (hd form) 'quasiquote)
 	  (quasiquote-list form (+ depth 1))
-	;; list
 	(quasiquote-list form depth))
-      ;; atom
       (atom? form) form
-      ;; quote
-      (= (hd form) 'quote)
-      (list 'quote (at form 1))
-      ;; quasiquote
+      (= (hd form) 'quote) form
       (= (hd form) 'quasiquote)
+      ;; start quasiquoting
       (quasiexpand (at form 1) 1)
-    ;; list
     (map* (fn (x) (quasiexpand x depth)) form)))
 
 (define quasiquote-list (form depth)
   (let (xs (list '(list)))
-    ;; collect keys
     (each (form k v)
       (let (v (if (quasisplice? v depth)
-                  ;; values don't get to escape their keys
+                  ;; don't splice, just expand
                   (quasiexpand (at v 1))
                 (quasiexpand v depth)))
         (set (get (last xs) k) v)))
@@ -277,9 +265,7 @@
             (add xs x)
             (add xs '(list)))
 	(add (last xs) (quasiexpand x depth))))
-    (if (= (length xs) 1)		; no splicing needed
-	(hd xs)
-      ;; join all
+    (if (= (length xs) 1) (hd xs)
       (reduce (fn (a b)
                 (list 'join a b))
 	      ;; remove empty lists
