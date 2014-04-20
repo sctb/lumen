@@ -53,6 +53,9 @@
 (define valid-id? (id)
   (if (empty? id) false
       (get special id) false
+      ;; TODO reserved
+      (= id 'and) false
+      (= id 'or) false
     (let (i 0)
       (while (< i (length id))
         (let (n (code id i)
@@ -262,11 +265,11 @@
       (if (not (string? k))
           (error (cat "Illegal object key: " (to-string k))))
       (let (v (compile v)
-            k (if (string-literal? k) k
-                  (and (= target 'js) (valid-id? k)) k
-                (quoted k)))
-        (if (= target 'lua)
-            (set k (cat "[" k "]")))
+            k (if (valid-id? k) k
+                  (and (= target 'js) (string-literal? k)) k
+                  (= target 'js) (quoted k)
+                  (string-literal? k) (cat "[" k "]")
+                (cat "[" (quoted k) "]")))
         (cat! str k sep v))
       (if (< i (- (length pairs) 1)) (cat! str ", ")))
     (cat str "}")))

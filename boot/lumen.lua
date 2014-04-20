@@ -49,7 +49,7 @@ end
 
 stash = function (args)
   if keys63(args) then
-    local p = {["_stash"] = true}
+    local p = {_stash = true}
     local k = nil
     local _19 = args
     for k in next, _19 do
@@ -430,7 +430,7 @@ iterate = function (f, count)
 end
 
 splice = function (x)
-  return({["_splice"] = x})
+  return({_splice = x})
 end
 
 splice63 = function (x)
@@ -670,7 +670,7 @@ delimiters = {["("] = true, [")"] = true, [";"] = true, ["\n"] = true}
 whitespace = {[" "] = true, ["\t"] = true, ["\n"] = true}
 
 make_stream = function (str)
-  return({["pos"] = 0, ["string"] = str, ["len"] = length(str)})
+  return({pos = 0, string = str, len = length(str)})
 end
 
 peek_char = function (s)
@@ -852,7 +852,7 @@ read_from_string = function (str)
   return(read(make_stream(str)))
 end
 
-infix = {["common"] = {["+"] = true, ["-"] = true, ["%"] = true, ["*"] = true, ["/"] = true, ["<"] = true, [">"] = true, ["<="] = true, [">="] = true}, ["js"] = {["="] = "===", ["~="] = "!=", ["and"] = "&&", ["or"] = "||", ["cat"] = "+"}, ["lua"] = {["="] = "==", ["cat"] = "..", ["~="] = true, ["and"] = true, ["or"] = true}}
+infix = {common = {["+"] = true, ["-"] = true, ["%"] = true, ["*"] = true, ["/"] = true, ["<"] = true, [">"] = true, ["<="] = true, [">="] = true}, js = {["="] = "===", ["~="] = "!=", ["and"] = "&&", ["or"] = "||", cat = "+"}, lua = {["="] = "==", cat = "..", ["~="] = true, ["and"] = true, ["or"] = true}}
 
 getop = function (op)
   local op1 = (infix.common[op] or infix[target][op])
@@ -917,6 +917,10 @@ valid_id63 = function (id)
   if empty63(id) then
     return(false)
   elseif special[id] then
+    return(false)
+  elseif (id == "and") then
+    return(false)
+  elseif (id == "or") then
     return(false)
   else
     local i = 0
@@ -1104,11 +1108,11 @@ self_tr63 = function (name)
   return(special[name].tr)
 end
 
-special["do"] = {["compiler"] = function (forms, tail63)
+special["do"] = {compiler = function (forms, tail63)
   return(compile_body(forms, tail63))
-end, ["stmt"] = true, ["tr"] = true}
+end, stmt = true, tr = true}
 
-special["if"] = {["compiler"] = function (form, tail63)
+special["if"] = {compiler = function (form, tail63)
   local str = ""
   local i = 0
   local _71 = form
@@ -1127,9 +1131,9 @@ special["if"] = {["compiler"] = function (form, tail63)
     i = (i + 1)
   end
   return(str)
-end, ["stmt"] = true, ["tr"] = true}
+end, stmt = true, tr = true}
 
-special["while"] = {["compiler"] = function (form)
+special["while"] = {compiler = function (form)
   local condition = compile(hd(form))
   local body = (function ()
     indent_level = (indent_level + 1)
@@ -1143,9 +1147,9 @@ special["while"] = {["compiler"] = function (form)
   else
     return((ind .. "while " .. condition .. " do\n" .. body .. ind .. "end\n"))
   end
-end, ["stmt"] = true, ["tr"] = true}
+end, stmt = true, tr = true}
 
-special["for"] = {["compiler"] = function (_73)
+special["for"] = {compiler = function (_73)
   local _74 = _73[1]
   local t = _74[1]
   local k = _74[2]
@@ -1163,13 +1167,13 @@ special["for"] = {["compiler"] = function (_73)
   else
     return((ind .. "for (" .. k .. " in " .. t .. ") {\n" .. body .. ind .. "}\n"))
   end
-end, ["stmt"] = true, ["tr"] = true}
+end, stmt = true, tr = true}
 
-special["break"] = {["compiler"] = function (_76)
+special["break"] = {compiler = function (_76)
   return((indentation() .. "break"))
-end, ["stmt"] = true}
+end, stmt = true}
 
-special["function"] = {["compiler"] = function (_77)
+special["function"] = {compiler = function (_77)
   local args = _77[1]
   local body = sub(_77, 1)
   return(compile_function(args, body))
@@ -1177,7 +1181,7 @@ end}
 
 macros = ""
 
-special["define-macro"] = {["compiler"] = function (_78)
+special["define-macro"] = {compiler = function (_78)
   local name = _78[1]
   local args = _78[2]
   local body = sub(_78, 2)
@@ -1187,14 +1191,14 @@ special["define-macro"] = {["compiler"] = function (_78)
     macros = (macros .. compile_toplevel(macro))
   end
   return("")
-end, ["stmt"] = true, ["tr"] = true}
+end, stmt = true, tr = true}
 
-special["return"] = {["compiler"] = function (_79)
+special["return"] = {compiler = function (_79)
   local x = _79[1]
   return((indentation() .. compile_call({"return", x})))
-end, ["stmt"] = true}
+end, stmt = true}
 
-special["error"] = {["compiler"] = function (_80)
+special["error"] = {compiler = function (_80)
   local x = _80[1]
   local e = (function ()
     if (target == "js") then
@@ -1204,9 +1208,9 @@ special["error"] = {["compiler"] = function (_80)
     end
   end)()
   return((indentation() .. e))
-end, ["stmt"] = true}
+end, stmt = true}
 
-special["local"] = {["compiler"] = function (_81)
+special["local"] = {compiler = function (_81)
   local name = _81[1]
   local value = _81[2]
   local id = compile(name)
@@ -1220,18 +1224,18 @@ special["local"] = {["compiler"] = function (_81)
   end)()
   local ind = indentation()
   return((ind .. keyword .. id .. " = " .. value))
-end, ["stmt"] = true}
+end, stmt = true}
 
-special["set"] = {["compiler"] = function (_82)
+special["set"] = {compiler = function (_82)
   local lh = _82[1]
   local rh = _82[2]
   if nil63(rh) then
     error("Missing right-hand side in assignment")
   end
   return((indentation() .. compile(lh) .. " = " .. compile(rh)))
-end, ["stmt"] = true}
+end, stmt = true}
 
-special["get"] = {["compiler"] = function (_83)
+special["get"] = {compiler = function (_83)
   local t = _83[1]
   local k = _83[2]
   local t = compile(t)
@@ -1246,7 +1250,7 @@ special["get"] = {["compiler"] = function (_83)
   end
 end}
 
-special["not"] = {["compiler"] = function (_84)
+special["not"] = {compiler = function (_84)
   local x = _84[1]
   local x = compile(x)
   local open = (function ()
@@ -1259,7 +1263,7 @@ special["not"] = {["compiler"] = function (_84)
   return((open .. x .. ")"))
 end}
 
-special["array"] = {["compiler"] = function (forms)
+special["array"] = {compiler = function (forms)
   local open = (function ()
     if (target == "lua") then
       return("{")
@@ -1288,7 +1292,7 @@ special["array"] = {["compiler"] = function (forms)
   return((open .. str .. close))
 end}
 
-special["object"] = {["compiler"] = function (forms)
+special["object"] = {compiler = function (forms)
   local str = "{"
   local sep = (function ()
     if (target == "lua") then
@@ -1309,17 +1313,18 @@ special["object"] = {["compiler"] = function (forms)
     end
     local v = compile(v)
     local k = (function ()
-      if string_literal63(k) then
+      if valid_id63(k) then
         return(k)
-      elseif ((target == "js") and valid_id63(k)) then
+      elseif ((target == "js") and string_literal63(k)) then
         return(k)
-      else
+      elseif (target == "js") then
         return(quoted(k))
+      elseif string_literal63(k) then
+        return(("[" .. k .. "]"))
+      else
+        return(("[" .. quoted(k) .. "]"))
       end
     end)()
-    if (target == "lua") then
-      k = ("[" .. k .. "]")
-    end
     str = (str .. k .. sep .. v)
     if (i < (length(pairs) - 1)) then
       str = (str .. ", ")

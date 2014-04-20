@@ -624,7 +624,7 @@ delimiters = {"(": true, ")": true, ";": true, "\n": true};
 whitespace = {" ": true, "\t": true, "\n": true};
 
 make_stream = function (str) {
-  return({pos: 0, len: length(str), string: str});
+  return({len: length(str), string: str, pos: 0});
 };
 
 peek_char = function (s) {
@@ -806,7 +806,7 @@ read_from_string = function (str) {
   return(read(make_stream(str)));
 };
 
-infix = {js: {"=": "===", and: "&&", or: "||", cat: "+", "~=": "!="}, lua: {"=": "==", "~=": true, or: true, cat: "..", and: true}, common: {"-": true, ">": true, "+": true, "<=": true, "*": true, "%": true, "<": true, "/": true, ">=": true}};
+infix = {js: {"and": "&&", "~=": "!=", "or": "||", "=": "===", cat: "+"}, lua: {"and": true, "~=": true, cat: "..", "=": "==", "or": true}, common: {"*": true, ">=": true, "%": true, "/": true, "<=": true, "+": true, "<": true, "-": true, ">": true}};
 
 getop = function (op) {
   var op1 = (infix.common[op] || infix[target][op]);
@@ -871,6 +871,10 @@ valid_id63 = function (id) {
   if (empty63(id)) {
     return(false);
   } else if (special[id]) {
+    return(false);
+  } else if ((id === "and")) {
+    return(false);
+  } else if ((id === "or")) {
     return(false);
   } else {
     var i = 0;
@@ -1058,11 +1062,11 @@ self_tr63 = function (name) {
   return(special[name].tr);
 };
 
-special["do"] = {stmt: true, compiler: function (forms, tail63) {
+special["do"] = {compiler: function (forms, tail63) {
   return(compile_body(forms, tail63));
-}, tr: true};
+}, stmt: true, tr: true};
 
-special["if"] = {stmt: true, compiler: function (form, tail63) {
+special["if"] = {compiler: function (form, tail63) {
   var str = "";
   var i = 0;
   var _70 = form;
@@ -1081,9 +1085,9 @@ special["if"] = {stmt: true, compiler: function (form, tail63) {
     i = (i + 1);
   }
   return(str);
-}, tr: true};
+}, stmt: true, tr: true};
 
-special["while"] = {stmt: true, compiler: function (form) {
+special["while"] = {compiler: function (form) {
   var condition = compile(hd(form));
   var body = (function () {
     indent_level = (indent_level + 1);
@@ -1097,9 +1101,9 @@ special["while"] = {stmt: true, compiler: function (form) {
   } else {
     return((ind + "while " + condition + " do\n" + body + ind + "end\n"));
   }
-}, tr: true};
+}, stmt: true, tr: true};
 
-special["for"] = {stmt: true, compiler: function (_72) {
+special["for"] = {compiler: function (_72) {
   var _73 = _72[0];
   var t = _73[0];
   var k = _73[1];
@@ -1117,7 +1121,7 @@ special["for"] = {stmt: true, compiler: function (_72) {
   } else {
     return((ind + "for (" + k + " in " + t + ") {\n" + body + ind + "}\n"));
   }
-}, tr: true};
+}, stmt: true, tr: true};
 
 special["break"] = {stmt: true, compiler: function (_75) {
   return((indentation() + "break"));
@@ -1131,7 +1135,7 @@ special["function"] = {compiler: function (_76) {
 
 macros = "";
 
-special["define-macro"] = {stmt: true, compiler: function (_77) {
+special["define-macro"] = {compiler: function (_77) {
   var name = _77[0];
   var args = _77[1];
   var body = sub(_77, 2);
@@ -1141,7 +1145,7 @@ special["define-macro"] = {stmt: true, compiler: function (_77) {
     macros = (macros + compile_toplevel(macro));
   }
   return("");
-}, tr: true};
+}, tr: true, stmt: true};
 
 special["return"] = {stmt: true, compiler: function (_78) {
   var x = _78[0];
@@ -1263,17 +1267,18 @@ special["object"] = {compiler: function (forms) {
     }
     var v = compile(v);
     var k = (function () {
-      if (string_literal63(k)) {
+      if (valid_id63(k)) {
         return(k);
-      } else if (((target === "js") && valid_id63(k))) {
+      } else if (((target === "js") && string_literal63(k))) {
         return(k);
-      } else {
+      } else if ((target === "js")) {
         return(quoted(k));
+      } else if (string_literal63(k)) {
+        return(("[" + k + "]"));
+      } else {
+        return(("[" + quoted(k) + "]"));
       }
     })();
-    if ((target === "lua")) {
-      k = ("[" + k + "]");
-    }
     str = (str + k + sep + v);
     if ((i < (length(pairs) - 1))) {
       str = (str + ", ");
@@ -1650,8 +1655,8 @@ setenv("each", function (_47) {
   var t1 = make_id();
   return(["let", [k, "nil", t1, t], ["for", [t1, k], ["if", (function () {
     var _48 = ["target"];
-    _48.lua = ["not", ["number?", k]];
     _48.js = ["isNaN", ["parseInt", k]];
+    _48.lua = ["not", ["number?", k]];
     return(_48);
   })(), join(["let", [v, ["get", t1, k]]], body)]]]);
 });
