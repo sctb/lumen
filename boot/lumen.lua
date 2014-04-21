@@ -852,7 +852,7 @@ read_from_string = function (str)
   return(read(make_stream(str)))
 end
 
-infix = {common = {["+"] = true, ["-"] = true, ["%"] = true, ["*"] = true, ["/"] = true, ["<"] = true, [">"] = true, ["<="] = true, [">="] = true}, js = {["="] = "===", ["~="] = "!=", ["and"] = "&&", ["or"] = "||", cat = "+"}, lua = {["="] = "==", cat = "..", ["~="] = true, ["and"] = true, ["or"] = true}}
+infix = {common = {["+"] = true, ["-"] = true, ["%"] = true, ["*"] = true, ["/"] = true, ["<"] = true, [">"] = true, ["<="] = true, [">="] = true}, js = {["="] = "===", ["~="] = "!=", ["and"] = "&&", ["or"] = "||", ["cat"] = "+"}, lua = {["="] = "==", ["cat"] = "..", ["~="] = true, ["and"] = true, ["or"] = true}}
 
 getop = function (op)
   local op1 = (infix.common[op] or infix[target][op])
@@ -918,9 +918,7 @@ valid_id63 = function (id)
     return(false)
   elseif special[id] then
     return(false)
-  elseif (id == "and") then
-    return(false)
-  elseif (id == "or") then
+  elseif getop(id) then
     return(false)
   else
     local i = 0

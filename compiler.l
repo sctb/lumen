@@ -53,9 +53,7 @@
 (define valid-id? (id)
   (if (empty? id) false
       (get special id) false
-      ;; TODO reserved
-      (= id 'and) false
-      (= id 'or) false
+      (getop id) false
     (let (i 0)
       (while (< i (length id))
         (let (n (code id i)
