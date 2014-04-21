@@ -566,12 +566,23 @@
   (inc id-count)
   (cat "_" (or prefix "") id-count))
 
-(define eval-result nil)
+;; eval
 
-(target lua:
-  (define eval (x)
-    ;; lua requires a statement at the top level
-    (let (f (load (cat (compile 'eval-result) '= x)))
-      (if f (do (f) eval-result)
-        (let (|f,e| (load x))
-          (if f (f) (error (cat e " in " x))))))))
+(target js: (define eval0 eval))
+(target lua: (define run-result nil))
+
+(define run (x)
+  (target
+   lua: ;; requires a statement at the top level
+   (let (f (load (cat (compile 'run-result) '= x)))
+     (if f (do (f) run-result)
+       (let (|f,e| (load x))
+         (if f (f) (error (cat e " in " x))))))
+   js: (eval0 x)))
+
+(define eval (form)
+  (let (previous target)
+    (set target (language))
+    (let (str (compile (macroexpand form)))
+      (set target previous)
+      (run str))))

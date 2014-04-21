@@ -204,7 +204,7 @@
 
 (define-special define-macro ((name args rest: body)) :stmt :tr
   (let (macro `(setenv ',name (fn ,args ,@body)))
-    (eval (compile-for-target (language) macro))
+    (eval macro)
     (if embed-macros?
 	(cat! macros (compile-toplevel macro))))
   "")
@@ -288,13 +288,22 @@
                  (compile-call form)))
       (cat ind form tr))))
 
-(define compile-file (file)
-  (let (str ""
-	s (make-stream (read-file file)))
+(define map-forms (f file)
+  (let (s (make-stream (read-file file)))
     (while true
       (let (form (read s))
         (if (= form eof) (break))
-        (cat! str (compile-toplevel form))))
+        (f form)))))
+
+(define load-file (file)
+  (map-forms eval file))
+
+(define compile-file (file)
+  (let (str "")
+    (map-forms
+     (fn (form)
+       (cat! str (compile-toplevel form)))
+     file)
     str))
 
 (define compile-files (files)
@@ -307,10 +316,3 @@
   (let (form (compile (macroexpand form) true false true))
     (if (= form "") ""
       (cat form "\n"))))
-
-(define compile-for-target (target1 form)
-  (let (previous target)
-    (set target target1)
-    (let (str (compile-toplevel form))
-      (set target previous)
-      str)))

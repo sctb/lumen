@@ -648,13 +648,13 @@ make_id = function (prefix)
   return(("_" .. (prefix or "") .. id_count))
 end
 
-eval_result = nil
+run_result = nil
 
-eval = function (x)
-  local f = load((compile("eval-result") .. "=" .. x))
+run = function (x)
+  local f = load((compile("run-result") .. "=" .. x))
   if f then
     f()
-    return(eval_result)
+    return(run_result)
   else
     local f,e = load(x)
     if f then
@@ -663,6 +663,14 @@ eval = function (x)
       error((e .. " in " .. x))
     end
   end
+end
+
+eval = function (form)
+  local previous = target
+  target = "lua"
+  local str = compile(macroexpand(form))
+  target = previous
+  return(run(str))
 end
 
 delimiters = {["("] = true, [")"] = true, [";"] = true, ["\n"] = true}
@@ -1184,7 +1192,7 @@ special["define-macro"] = {compiler = function (_78)
   local args = _78[2]
   local body = sub(_78, 2)
   local macro = {"setenv", {"quote", name}, join({"fn", args}, body)}
-  eval(compile_for_target("lua", macro))
+  eval(macro)
   if embed_macros63 then
     macros = (macros .. compile_toplevel(macro))
   end
@@ -1366,16 +1374,26 @@ compile = function (form, stmt63, tail63)
   end
 end
 
-compile_file = function (file)
-  local str = ""
+map_forms = function (f, file)
   local s = make_stream(read_file(file))
   while true do
     local form = read(s)
     if (form == eof) then
       break
     end
-    str = (str .. compile_toplevel(form))
+    f(form)
   end
+end
+
+load_file = function (file)
+  return(map_forms(eval, file))
+end
+
+compile_file = function (file)
+  local str = ""
+  map_forms(function (form)
+    str = (str .. compile_toplevel(form))
+  end, file)
   return(str)
 end
 
@@ -1400,17 +1418,8 @@ compile_toplevel = function (form)
   end
 end
 
-compile_for_target = function (target1, form)
-  local previous = target
-  target = target1
-  local str = compile_toplevel(form)
-  target = previous
-  return(str)
-end
-
 rep = function (str)
-  local form = read_from_string(str)
-  local x = eval(compile_toplevel(form))
+  local x = eval(read_from_string(str))
   if is63(x) then
     return(print((to_string(x) .. " ")))
   end
@@ -1488,7 +1497,7 @@ main = function ()
     local _93 = inputs
     while (_94 < length(_93)) do
       local file = _93[(_94 + 1)]
-      eval(compile_file(file))
+      load_file(file)
       _94 = (_94 + 1)
     end
     if expr then

@@ -514,9 +514,8 @@
     (test= 17 (apply (fn a (get a 'foo)) t))))
 
 (define-test eval ()
-  (let (f (fn (x) (eval (compile (macroexpand x)))))
-    (test= 4 (f '(+ 2 2)))
-    (test= 5 (f '(let (a 3) (+ 2 a))))))
+  (test= 4 (eval '(+ 2 2)))
+  (test= 5 (eval '(let (a 3) (+ 2 a)))))
 
 (define-test parameters ()
   (let (f (fn (a (b c)) (list a b c)))

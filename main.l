@@ -1,8 +1,7 @@
 ;; -*- mode: lisp -*-
 
 (define rep (str)
-  (let (form (read-from-string str)
-        x (eval (compile-toplevel form)))
+  (let (x (eval (read-from-string str)))
     (if (is? x) (pr x))))
 
 (define repl ()
@@ -51,5 +50,5 @@
                     main (compile '(main) true))
                 (write-file output (cat compiled macros main))))
         (do (across (inputs file)
-              (eval (compile-file file)))
+              (load-file file))
             (if expr (rep expr) (repl)))))))
