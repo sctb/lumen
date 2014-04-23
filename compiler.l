@@ -16,9 +16,7 @@
 (define indent-level 0)
 
 (define indentation ()
-  (let (str "")
-    (iterate (fn () (cat! str "  ")) indent-level)
-    str))
+  (apply cat (replicate indent-level "  ")))
 
 (define-macro with-indent (form)
   (let (result (make-id))

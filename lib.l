@@ -478,7 +478,8 @@
             strs))))
 
 (define cat (rest: xs)
-  (reduce (fn (a b) (cat a b)) xs))
+  (if (empty? xs) ""
+    (reduce (fn (a b) (cat a b)) xs)))
 
 (define-macro cat! (a rest: bs)
   `(set ,a (cat ,a ,@bs)))

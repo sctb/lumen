@@ -495,9 +495,13 @@ split = function (str, sep) {
 
 cat = function () {
   var xs = unstash(sub(arguments, 0));
-  return(reduce(function (a, b) {
-    return((a + b));
-  }, xs));
+  if (empty63(xs)) {
+    return("");
+  } else {
+    return(reduce(function (a, b) {
+      return((a + b));
+    }, xs));
+  }
 };
 
 _43 = function () {
@@ -706,7 +710,7 @@ delimiters = {"(": true, ")": true, ";": true, "\n": true};
 whitespace = {" ": true, "\t": true, "\n": true};
 
 make_stream = function (str) {
-  return({pos: 0, len: length(str), string: str});
+  return({pos: 0, string: str, len: length(str)});
 };
 
 peek_char = function (s) {
@@ -888,7 +892,7 @@ read_from_string = function (str) {
   return(read(make_stream(str)));
 };
 
-infix = {common: {"+": true, "*": true, "-": true, "<": true, "/": true, ">": true, "%": true, "<=": true, ">=": true}, js: {"cat": "+", "or": "||", "~=": "!=", "and": "&&", "=": "==="}, lua: {"cat": "..", "or": true, "~=": true, "and": true, "=": "=="}};
+infix = {common: {"+": true, "-": true, "%": true, "*": true, "/": true, "<": true, ">": true, "<=": true, ">=": true}, js: {"=": "===", "~=": "!=", "and": "&&", "or": "||", "cat": "+"}, lua: {"=": "==", "cat": "..", "~=": true, "and": true, "or": true}};
 
 getop = function (op) {
   var op1 = (infix.common[op] || infix[target][op]);
@@ -906,11 +910,7 @@ infix63 = function (form) {
 indent_level = 0;
 
 indentation = function () {
-  var str = "";
-  iterate(function () {
-    str = (str + "  ");
-  }, indent_level);
-  return(str);
+  return(apply(cat, replicate(indent_level, "  ")));
 };
 
 compile_args = function (args) {
@@ -1146,7 +1146,7 @@ self_tr63 = function (name) {
 
 special["do"] = {compiler: function (forms, tail63) {
   return(compile_body(forms, tail63));
-}, tr: true, stmt: true};
+}, stmt: true, tr: true};
 
 special["if"] = {compiler: function (form, tail63) {
   var str = "";
@@ -1167,7 +1167,7 @@ special["if"] = {compiler: function (form, tail63) {
     i = (i + 1);
   }
   return(str);
-}, tr: true, stmt: true};
+}, stmt: true, tr: true};
 
 special["while"] = {compiler: function (form) {
   var condition = compile(hd(form));
@@ -1183,7 +1183,7 @@ special["while"] = {compiler: function (form) {
   } else {
     return((ind + "while " + condition + " do\n" + body + ind + "end\n"));
   }
-}, tr: true, stmt: true};
+}, stmt: true, tr: true};
 
 special["for"] = {compiler: function (_g72) {
   var _g73 = _g72[0];
@@ -1203,7 +1203,7 @@ special["for"] = {compiler: function (_g72) {
   } else {
     return((ind + "for (" + k + " in " + t + ") {\n" + body + ind + "}\n"));
   }
-}, tr: true, stmt: true};
+}, stmt: true, tr: true};
 
 special["break"] = {compiler: function (_g75) {
   return((indentation() + "break"));
