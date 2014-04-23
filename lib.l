@@ -383,6 +383,11 @@
       (f i)
       (inc i))))
 
+(define replicate (n x)
+  (let (l ())
+    (iterate (fn () (add l x)) n)
+    l))
+
 (define-macro join* xs
   (reduce (fn (a b) (list 'join a b)) xs))
 
@@ -472,8 +477,34 @@
             (add strs str)
             strs))))
 
+(define cat (rest: xs)
+  (reduce (fn (a b) (cat a b)) xs))
+
 (define-macro cat! (a rest: bs)
   `(set ,a (cat ,a ,@bs)))
+
+;; numbers
+
+(define + (rest: xs)
+  (reduce (fn (a b) (+ a b)) xs))
+
+(define - (rest: xs)
+  (reduce (fn (a b) (- b a)) (reverse xs)))
+
+(define * (rest: xs)
+  (reduce (fn (a b) (* a b)) xs))
+
+(define / (rest: xs)
+  (reduce (fn (a b) (/ b a)) (reverse xs)))
+
+(define % (rest: xs)
+  (reduce (fn (a b) (% b a)) (reverse xs)))
+
+(define > (a b) (> a b))
+(define < (a b) (< a b))
+(define = (a b) (= a b))
+(define >= (a b) (>= a b))
+(define <= (a b) (<= a b))
 
 ;; io
 
@@ -564,7 +595,7 @@
 
 (define make-id (prefix)
   (inc id-count)
-  (cat "_" (or prefix "") id-count))
+  (cat "_" (or prefix "g") id-count))
 
 ;; eval
 

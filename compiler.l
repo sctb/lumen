@@ -71,6 +71,7 @@
             n (code c)
             c1 (if (= c "-") "_"
                    (valid-char? n) c
+                   (= i 0) (cat "_" n)
                  n))
         (cat! id1 c1))
       (inc i))
