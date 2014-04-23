@@ -600,17 +600,15 @@
 
 ;; eval
 
-(target js: (define eval0 eval))
-(target lua: (define run-result nil))
+(target js: (define run eval))
 
-(define run (x)
-  (target
-   lua: ;; requires a statement at the top level
-   (let (f (load (cat (compile 'run-result) '= x)))
-     (if f (do (f) run-result)
-       (let (|f,e| (load x))
-         (if f (f) (error (cat e " in " x))))))
-   js: (eval0 x)))
+(target lua:
+ (do (define run-result nil)
+     (define run (x)
+       (let (f (load (cat (compile 'run-result) '= x)))
+         (if f (do (f) run-result)
+           (let (|f,e| (load x))
+             (if f (f) (error (cat e " in " x)))))))))
 
 (define eval (form)
   (let (previous target)
