@@ -32,11 +32,11 @@
       (if (< i (- (length args) 1)) (cat! str ", ")))
     (cat str ")")))
 
-(define compile-body (forms tail?)
+(define compile-body (forms :tail?)
   (let (str "")
     (across (forms x i)
       (let (t? (and tail? (= i (- (length forms) 1))))
-	(cat! str (compile x true t?))))
+	(cat! str (compile x :stmt? tail?: t?))))
     str))
 
 (define numeric? (n)
@@ -108,7 +108,7 @@
 
 (define compile-branch (condition body first? last? tail?)
   (let (cond1 (compile condition)
-        body (with-indent (compile body true tail?))
+        body (with-indent (compile body :stmt? tail?: tail?))
         ind (indentation)
         tr (if (and last? (= target 'lua))
                (cat ind "end\n")
@@ -129,7 +129,7 @@
 (define compile-function (args body name)
   (let (name (or name "")
         args (compile-args args)
-        body (with-indent (compile-body body true))
+        body (with-indent (compile-body body :tail?))
         ind (indentation))
     (if (= target 'js)
         (cat "function " name args " {\n" body ind "}")
@@ -143,7 +143,7 @@
 (define compile-special (form stmt? tail?)
   (let (name (hd form))
     (if (and (not stmt?) (statement? name))
-        (compile `((function () ,form)) false tail?)
+        (compile `((function () ,form)) tail?: tail?)
       (let (tr (terminator (and stmt? (not (self-tr? name)))))
         (cat ((compiler name) (tl form) tail?) tr)))))
 
@@ -161,7 +161,7 @@
 (define self-tr? (name) (get (get special name) 'tr))
 
 (define-special do (forms tail?) :stmt :tr
-  (compile-body forms tail?))
+  (compile-body forms tail?: tail?))
 
 (define-special if (form tail?) :stmt :tr
   (let (str "")
@@ -275,7 +275,7 @@
   (or (not (special? form))
       (not (statement? (hd form)))))
 
-(define compile (form stmt? tail?)
+(define compile (form :stmt? :tail?)
   (if (and tail? (can-return? form))
       (set form `(return ,form)))
   (if (nil? form) ""
@@ -312,6 +312,6 @@
     str))
 
 (define compile-toplevel (form)
-  (let (form (compile (macroexpand form) true false true))
+  (let (form (compile (macroexpand form) :stmt?))
     (if (= form "") ""
       (cat form "\n"))))
