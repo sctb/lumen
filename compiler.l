@@ -90,7 +90,7 @@
       ((compiler 'array) form) ; ()
     (let (f (hd form)
           f1 (compile f)
-          args (compile-args (tl form)))
+          args (compile-args (stash* (tl form))))
       (if (list? f) (cat "(" f1 ")" args)
           (string? f) (cat f1 args)
         (error "Invalid function call")))))

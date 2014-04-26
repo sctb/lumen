@@ -137,12 +137,21 @@
 
 ;; macro helpers
 
-(define stash (args)
+(define stash (args)                    ; runtime
   (if (keys? args)
       (let (p (object _stash true))
         (each (args k v)
           (set (get p k) v))
         (join args (list p)))
+    args))
+
+(define stash* (args)                   ; compile-time
+  (if (keys? args)
+      (let (l '(object _stash true))
+        (each (args k v)
+          (add l k)
+          (add l v))
+        (join args (list l)))
     args))
 
 (define unstash (args)
@@ -166,15 +175,17 @@
                      '(unstash (list |...|))))))
     (if (atom? args)
         (list args1 `((let ,(list args (rest)) ,@body)))
-      (let (bs ())
+      (let (bs ()
+            r (or args.rest (and (keys? args) (make-id))))
         (across (args arg)
           (if (list? arg)
               (let (v (make-id))
                 (add args1 v)
                 (join! bs (list arg v)))
             (add args1 arg)))
-        (let (r args.rest)
-          (if r (join! bs (list r (rest)))))
+        (if r (join! bs (list r (rest))))
+        (if (keys? args)
+            (join! bs (list (sub args (length args)) r)))
         (if (empty? bs)
             (list args1 body)
           (list args1 `((let ,bs ,@body))))))))
@@ -184,11 +195,14 @@
       (let (id (make-id))
 	`((,id ,rh) ,@(bind lh id)))
       (atom? lh) `((,lh ,rh))
-    (let (bs ())
+    (let (bs () r lh.rest)
       (across (lh x i)
         (join! bs (bind x `(at ,rh ,i))))
-      (if lh.rest
-          (join! bs (bind lh.rest `(sub ,rh ,(length lh)))))
+      (if r (join! bs (bind r `(sub ,rh ,(length lh)))))
+      (each (lh k v)
+        (if (= v true) (set v k))
+        (if (~= k 'rest)
+            (join! bs (bind v `(get ,rh ',k)))))
       bs)))
 
 ;; expansion
