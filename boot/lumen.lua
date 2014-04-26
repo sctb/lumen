@@ -125,12 +125,12 @@ bind_arguments = function (args, body)
     local _g40 = args
     while (_g41 < length(_g40)) do
       local arg = _g40[(_g41 + 1)]
-      if list63(arg) then
+      if atom63(arg) then
+        add(args1, arg)
+      elseif (list63(arg) or keys63(arg)) then
         local v = make_id()
         add(args1, v)
         bs = join(bs, {arg, v})
-      else
-        add(args1, arg)
       end
       _g41 = (_g41 + 1)
     end
