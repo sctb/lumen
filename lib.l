@@ -608,9 +608,9 @@
 
 (define id-count 0)
 
-(define make-id (prefix)
+(define make-id ()
   (inc id-count)
-  (cat "_" (or prefix "g") id-count))
+  (cat "_g" id-count))
 
 ;; eval
 
