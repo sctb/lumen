@@ -122,6 +122,15 @@
   (let ((args body) (bind-arguments args body))
     `(function ,args ,@body)))
 
+(define-macro guard (expr)
+  (if (= target 'js)
+      `((fn () (try (list true ,expr))))
+    (let (e (make-id)
+          x (make-id)
+          ex (cat "|" e "," x "|"))
+      `(let (,ex (xpcall (fn () ,expr) message-handler))
+         (list ,e ,x)))))
+
 (define-macro across ((l v i start) rest: body)
   (let (l1 (make-id))
     (set i (or i (make-id)))
@@ -204,6 +213,10 @@
         (if (~= k 'rest)
             (join! bs (bind v `(get ,rh ',k)))))
       bs)))
+
+(define message-handler (msg)
+  (let (i (search msg ": "))
+    (sub msg (+ i 2))))
 
 ;; expansion
 

@@ -193,6 +193,15 @@
 	(cat ind "for " k " in next, " t " do\n" body ind "end\n")
       (cat ind "for (" k " in " t ") {\n" body ind "}\n"))))
 
+(define-special try (forms) :stmt :tr
+  (let (ind (indentation)
+        body (with-indent (compile-body forms :tail?))
+        e (make-id)
+        handler `(return (array false ,e))
+        h (with-indent (compile handler :stmt?)))
+    (cat ind "try {\n" body ind "}\n"
+         ind "catch (" e ") {\n" h ind "}\n")))
+
 (define-special break (_) :stmt
   (cat (indentation) "break"))
 

@@ -184,6 +184,11 @@ bind = function (lh, rh)
   end
 end
 
+message_handler = function (msg)
+  local i = search(msg, ": ")
+  return(sub(msg, (i + 2)))
+end
+
 quoting63 = function (depth)
   return(number63(depth))
 end
@@ -758,9 +763,9 @@ end
 
 id_count = 0
 
-make_id = function (prefix)
+make_id = function ()
   id_count = (id_count + 1)
-  return(("_" .. (prefix or "g") .. id_count))
+  return(("_g" .. id_count))
 end
 
 run_result = nil
@@ -1289,22 +1294,41 @@ special["for"] = {compiler = function (_g110)
   end
 end, stmt = true, tr = true}
 
-special["break"] = {compiler = function (_g113)
+special["try"] = {compiler = function (forms)
+  local ind = indentation()
+  local body = (function ()
+    indent_level = (indent_level + 1)
+    local _g113 = compile_body(forms, {_stash = true, ["tail?"] = true})
+    indent_level = (indent_level - 1)
+    return(_g113)
+  end)()
+  local e = make_id()
+  local handler = {"return", {"array", false, e}}
+  local h = (function ()
+    indent_level = (indent_level + 1)
+    local _g114 = compile(handler, {_stash = true, ["stmt?"] = true})
+    indent_level = (indent_level - 1)
+    return(_g114)
+  end)()
+  return((ind .. "try {\n" .. body .. ind .. "}\n" .. ind .. "catch (" .. e .. ") {\n" .. h .. ind .. "}\n"))
+end, stmt = true, tr = true}
+
+special["break"] = {compiler = function (_g115)
   return((indentation() .. "break"))
 end, stmt = true}
 
-special["function"] = {compiler = function (_g114)
-  local args = _g114[1]
-  local body = sub(_g114, 1)
+special["function"] = {compiler = function (_g116)
+  local args = _g116[1]
+  local body = sub(_g116, 1)
   return(compile_function(args, body))
 end}
 
 macros = ""
 
-special["define-macro"] = {compiler = function (_g115)
-  local name = _g115[1]
-  local args = _g115[2]
-  local body = sub(_g115, 2)
+special["define-macro"] = {compiler = function (_g117)
+  local name = _g117[1]
+  local args = _g117[2]
+  local body = sub(_g117, 2)
   local macro = {"setenv", {"quote", name}, join({"fn", args}, body)}
   eval(macro)
   if embed_macros63 then
@@ -1313,13 +1337,13 @@ special["define-macro"] = {compiler = function (_g115)
   return("")
 end, stmt = true, tr = true}
 
-special["return"] = {compiler = function (_g116)
-  local x = _g116[1]
+special["return"] = {compiler = function (_g118)
+  local x = _g118[1]
   return((indentation() .. compile_call({"return", x})))
 end, stmt = true}
 
-special["error"] = {compiler = function (_g117)
-  local x = _g117[1]
+special["error"] = {compiler = function (_g119)
+  local x = _g119[1]
   local e = (function ()
     if (target == "js") then
       return(("throw " .. compile(x)))
@@ -1330,9 +1354,9 @@ special["error"] = {compiler = function (_g117)
   return((indentation() .. e))
 end, stmt = true}
 
-special["local"] = {compiler = function (_g118)
-  local name = _g118[1]
-  local value = _g118[2]
+special["local"] = {compiler = function (_g120)
+  local name = _g120[1]
+  local value = _g120[2]
   local id = compile(name)
   local value = compile(value)
   local keyword = (function ()
@@ -1346,18 +1370,18 @@ special["local"] = {compiler = function (_g118)
   return((ind .. keyword .. id .. " = " .. value))
 end, stmt = true}
 
-special["set"] = {compiler = function (_g119)
-  local lh = _g119[1]
-  local rh = _g119[2]
+special["set"] = {compiler = function (_g121)
+  local lh = _g121[1]
+  local rh = _g121[2]
   if nil63(rh) then
     error("Missing right-hand side in assignment")
   end
   return((indentation() .. compile(lh) .. " = " .. compile(rh)))
 end, stmt = true}
 
-special["get"] = {compiler = function (_g120)
-  local t = _g120[1]
-  local k = _g120[2]
+special["get"] = {compiler = function (_g122)
+  local t = _g122[1]
+  local k = _g122[2]
   local t = compile(t)
   local k1 = compile(k)
   if ((target == "lua") and (char(t, 0) == "{")) then
@@ -1370,8 +1394,8 @@ special["get"] = {compiler = function (_g120)
   end
 end}
 
-special["not"] = {compiler = function (_g121)
-  local x = _g121[1]
+special["not"] = {compiler = function (_g123)
+  local x = _g123[1]
   local x = compile(x)
   local open = (function ()
     if (target == "js") then
@@ -1400,9 +1424,9 @@ special["array"] = {compiler = function (forms)
   end)()
   local str = ""
   local i = 0
-  local _g122 = forms
-  while (i < length(_g122)) do
-    local x = _g122[(i + 1)]
+  local _g124 = forms
+  while (i < length(_g124)) do
+    local x = _g124[(i + 1)]
     str = (str .. compile(x))
     if (i < (length(forms) - 1)) then
       str = (str .. ", ")
@@ -1423,11 +1447,11 @@ special["object"] = {compiler = function (forms)
   end)()
   local pairs = pairwise(forms)
   local i = 0
-  local _g123 = pairs
-  while (i < length(_g123)) do
-    local _g124 = _g123[(i + 1)]
-    local k = _g124[1]
-    local v = _g124[2]
+  local _g125 = pairs
+  while (i < length(_g125)) do
+    local _g126 = _g125[(i + 1)]
+    local k = _g126[1]
+    local v = _g126[2]
     if (not string63(k)) then
       error(("Illegal object key: " .. to_string(k)))
     end
@@ -1459,9 +1483,9 @@ can_return63 = function (form)
 end
 
 compile = function (form, ...)
-  local _g125 = unstash({...})
-  local stmt63 = _g125["stmt?"]
-  local tail63 = _g125["tail?"]
+  local _g127 = unstash({...})
+  local stmt63 = _g127["stmt?"]
+  local tail63 = _g127["tail?"]
   if (tail63 and can_return63(form)) then
     form = {"return", form}
   end
@@ -1516,22 +1540,22 @@ end
 
 compile_files = function (files)
   local str = ""
-  local _g127 = 0
-  local _g126 = files
-  while (_g127 < length(_g126)) do
-    local file = _g126[(_g127 + 1)]
+  local _g129 = 0
+  local _g128 = files
+  while (_g129 < length(_g128)) do
+    local file = _g128[(_g129 + 1)]
     str = (str .. compile_file(file))
-    _g127 = (_g127 + 1)
+    _g129 = (_g129 + 1)
   end
   return(str)
 end
 
 compile_toplevel = function (form)
-  local _g128 = compile(macroexpand(form), {_stash = true, ["stmt?"] = true})
-  if (_g128 == "") then
+  local _g130 = compile(macroexpand(form), {_stash = true, ["stmt?"] = true})
+  if (_g130 == "") then
     return("")
   else
-    return((_g128 .. "\n"))
+    return((_g130 .. "\n"))
   end
 end
 
@@ -1578,9 +1602,9 @@ main = function ()
   local target1 = nil
   local expr = nil
   local i = 0
-  local _g129 = args
-  while (i < length(_g129)) do
-    local arg = _g129[(i + 1)]
+  local _g131 = args
+  while (i < length(_g131)) do
+    local arg = _g131[(i + 1)]
     if ((arg == "-o") or (arg == "-t") or (arg == "-e")) then
       if (i == (length(args) - 1)) then
         print((to_string("missing argument for") .. " " .. to_string(arg) .. " "))
@@ -1610,12 +1634,12 @@ main = function ()
     local main = compile({"main"})
     return(write_file(output, (compiled .. macros .. main)))
   else
-    local _g131 = 0
-    local _g130 = inputs
-    while (_g131 < length(_g130)) do
-      local file = _g130[(_g131 + 1)]
+    local _g133 = 0
+    local _g132 = inputs
+    while (_g133 < length(_g132)) do
+      local file = _g132[(_g133 + 1)]
       load_file(file)
-      _g131 = (_g131 + 1)
+      _g133 = (_g133 + 1)
     end
     if expr then
       return(rep(expr))
@@ -1753,6 +1777,17 @@ setenv("fn", function (args, ...)
   local args = _g31[1]
   local _g32 = _g31[2]
   return(join({"function", args}, _g32))
+end)
+
+setenv("guard", function (expr)
+  if (target == "js") then
+    return({{"fn", {}, {"try", {"list", true, expr}}}})
+  else
+    local e = make_id()
+    local x = make_id()
+    local ex = ("|" .. e .. "," .. x .. "|")
+    return({"let", {ex, {"xpcall", {"fn", {}, expr}, "message-handler"}}, {"list", e, x}})
+  end
 end)
 
 setenv("across", function (_g35, ...)

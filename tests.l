@@ -260,6 +260,13 @@
     (test= 30 (f 20))
     (test= 40 ((fn (n) (+ n 10)) 30))))
 
+(define-test guard ()
+  (test= '(true 42) (guard 42))
+  (test= '(false foo) (guard (error "foo")))
+  (test= '(false foo) (guard (do (error "foo") (error "baz"))))
+  (test= '(true 42) (guard (if true 42 (error "baz"))))
+  (test= '(false baz) (guard (if false 42 (error "baz")))))
+
 ;; macros
 
 (define-test let ()
