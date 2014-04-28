@@ -87,7 +87,7 @@
 
 (define compile-call (form)
   (if (empty? form)
-      ((compiler 'array) form) ; ()
+      ((compiler '%array) form) ; ()
     (let (f (hd form)
           f1 (compile f)
           args (compile-args (stash* (tl form))))
@@ -143,7 +143,7 @@
 (define compile-special (form stmt? tail?)
   (let (name (hd form))
     (if (and (not stmt?) (statement? name))
-        (compile `((function () ,form)) tail?: tail?)
+        (compile `((%function () ,form)) tail?: tail?)
       (let (tr (terminator (and stmt? (not (self-tr? name)))))
         (cat ((compiler name) (tl form) tail?) tr)))))
 
@@ -193,11 +193,19 @@
 	(cat ind "for " k " in next, " t " do\n" body ind "end\n")
       (cat ind "for (" k " in " t ") {\n" body ind "}\n"))))
 
-(define-special try (forms) :stmt :tr
+(define-special %for (((t k) rest: body)) :stmt :tr
+  (let (t (compile t)
+        ind (indentation)
+        body (with-indent (compile-body body)))
+    (if (= target 'lua)
+	(cat ind "for " k " in next, " t " do\n" body ind "end\n")
+      (cat ind "for (" k " in " t ") {\n" body ind "}\n"))))
+
+(define-special %try (forms) :stmt :tr
   (let (ind (indentation)
         body (with-indent (compile-body forms :tail?))
         e (make-id)
-        handler `(return (array false ,e))
+        handler `(return (%array false ,e))
         h (with-indent (compile handler :stmt?)))
     (cat ind "try {\n" body ind "}\n"
          ind "catch (" e ") {\n" h ind "}\n")))
@@ -205,7 +213,7 @@
 (define-special break (_) :stmt
   (cat (indentation) "break"))
 
-(define-special function ((args rest: body))
+(define-special %function ((args rest: body))
   (compile-function args body))
 
 (define macros "")
@@ -226,7 +234,7 @@
             (compile-call `(error ,x))))
     (cat (indentation) e)))
 
-(define-special local ((name value)) :stmt
+(define-special %local ((name value)) :stmt
   (let (id (compile name)
         value (compile value)
 	keyword (if (= target 'js) "var " "local ")
@@ -254,7 +262,7 @@
 	open (if (= target 'js) "!(" "(not "))
     (cat open x ")")))
 
-(define-special array (forms)
+(define-special %array (forms)
   (let (open (if (= target 'lua) "{" "[")
 	close (if (= target 'lua) "}" "]")
 	str "")
@@ -263,7 +271,7 @@
       (if (< i (- (length forms) 1)) (cat! str ", ")))
     (cat open str close)))
 
-(define-special object (forms)
+(define-special %object (forms)
   (let (str "{"
         sep (if (= target 'lua) " = " ": ")
         pairs (pairwise forms))

@@ -176,21 +176,21 @@
   (test= 'a (macroexpand 'a))
   (test= '(17) (macroexpand '(17)))
   (test= '(1 z) (macroexpand '(1 z)))
-  (test= '(array 1 "z") (macroexpand '`(1 z)))
-  (test= '(array 1 z) (macroexpand '`(,1 ,z)))
+  (test= '(%array 1 "z") (macroexpand '`(1 z)))
+  (test= '(%array 1 z) (macroexpand '`(,1 ,z)))
   (test= 'z (macroexpand '`(,@z)))
-  (test= '(join (array 1) z) (macroexpand '`(,1 ,@z)))
-  (test= '(join (array 1) (join x y)) (macroexpand '`(,1 ,@x ,@y)))
-  (test= '(join (array 1) (join z (array 2))) (macroexpand '`(,1 ,@z ,2)))
-  (test= '(join (array 1) (join z (array "a"))) (macroexpand '`(,1 ,@z a)))
+  (test= '(join (%array 1) z) (macroexpand '`(,1 ,@z)))
+  (test= '(join (%array 1) (join x y)) (macroexpand '`(,1 ,@x ,@y)))
+  (test= '(join (%array 1) (join z (%array 2))) (macroexpand '`(,1 ,@z ,2)))
+  (test= '(join (%array 1) (join z (%array "a"))) (macroexpand '`(,1 ,@z a)))
   (test= '"x" (macroexpand '`x))
-  (test= '(array "quasiquote" "x") (macroexpand '``x))
-  (test= '(array "quasiquote" (array "quasiquote" "x")) (macroexpand '```x))
+  (test= '(%array "quasiquote" "x") (macroexpand '``x))
+  (test= '(%array "quasiquote" (%array "quasiquote" "x")) (macroexpand '```x))
   (test= 'x (macroexpand '`,x))
-  (test= '(array "quote" x) (macroexpand '`',x))
-  (test= '(array "quasiquote" (array "x")) (macroexpand '``(x)))
-  (test= '(array "quasiquote" (array "unquote" "a")) (macroexpand '``,a))
-  (test= '(array "quasiquote" (array (array "unquote" "x")))
+  (test= '(%array "quote" x) (macroexpand '`',x))
+  (test= '(%array "quasiquote" (%array "x")) (macroexpand '``(x)))
+  (test= '(%array "quasiquote" (%array "unquote" "a")) (macroexpand '``,a))
+  (test= '(%array "quasiquote" (%array (%array "unquote" "x")))
          (macroexpand '``(,x))))
 
 (define-test id ()
@@ -202,10 +202,6 @@
 
 ;; special forms
 
-(define-test local ()
-  (local a 42)
-  (test= 42 a))
-
 (define-test set ()
   (let (a 42)
     (set a 'bar)
@@ -214,11 +210,7 @@
 (define-test do ()
   (let (a 17)
     (do (set a 10)
-	(test= 10 a))
-    ;; do cannot introduce a new scope
-    (do (local a 7)
-	(test= 7 a))
-    (test= 7 a)))
+	(test= 10 a))))
 
 (define-test if ()
   (if true
@@ -323,8 +315,6 @@
     (test= '(5 6 7) z))
   (let ((:foo) (table foo: 99))
     (test= 99 foo))
-  (let ((:foo) (object foo 99))
-    (test= 99 foo))
   (let ((:foo) (list foo: 99))
     (test= 99 foo))
   (let ((foo: a) (table foo: 99))
@@ -415,9 +405,9 @@
     (test= nil (set a 7))
     (test= 10 (do (set a 10) a))))
 
-(define-test local-expr ()
+(define-test let-expr ()
   (let (a 5)
-    (test= 10 (do (local a 10) a))))
+    (test= 10 (do (let (a 10) a)))))
 
 (define-test while-expr ()
   (let (i 0)

@@ -54,7 +54,7 @@
   (quoted form))
 
 (define-macro list body
-  (let (l `(array ,@body))
+  (let (l `(%array ,@body))
     (if (not (keys? body))
         l
       (let (id (make-id)
@@ -70,7 +70,7 @@
     (each (body k v)
       (add l k)
       (add l v))
-    `(object ,@l)))
+    `(%object ,@l)))
 
 (define-macro let (bindings rest: body)
   (let (i 0
@@ -84,7 +84,7 @@
                    (add renames rename)
                    (set id rename))
                (setenv id variable))
-             (add locals `(local ,id ,val))))
+             (add locals `(%local ,id ,val))))
          (pairwise bindings))
     `(do ,@locals (let-symbol ,renames ,@body))))
 
@@ -120,11 +120,11 @@
 
 (define-macro fn (args rest: body)
   (let ((args body) (bind-arguments args body))
-    `(function ,args ,@body)))
+    `(%function ,args ,@body)))
 
 (define-macro guard (expr)
   (if (= target 'js)
-      `((fn () (try (list true ,expr))))
+      `((fn () (%try (list true ,expr))))
     (let (e (make-id)
           x (make-id)
           ex (cat "|" e "," x "|"))
@@ -142,13 +142,16 @@
 	   (inc ,i))))))
 
 (define-macro set-of elements
-  `(object ,@(map (fn (x) (splice (list x true))) elements)))
+  (let (l ())
+    (across (elements e)
+      (set (get l e) true))
+    `(table ,@l)))
 
 ;; macro helpers
 
 (define stash (args)                    ; runtime
   (if (keys? args)
-      (let (p (object _stash true))
+      (let (p (%object _stash true))
         (each (args k v)
           (set (get p k) v))
         (join args (list p)))
@@ -156,7 +159,7 @@
 
 (define stash* (args)                   ; compile-time
   (if (keys? args)
-      (let (l '(object _stash true))
+      (let (l '(%object _stash true))
         (each (args k v)
           (add l k)
           (add l v))
@@ -167,7 +170,7 @@
   (if (empty? args)
       ()
     (let (l (last args))
-      (if (and (composite? l) l._stash)
+      (if (and (table? l) l._stash)
           (let (args1 (sub args 0 (- (length args) 1)))
             (each (l k v)
               (if (~= k '_stash)
@@ -249,7 +252,7 @@
       (if (= name 'define-macro) form
 	  (macro? name)
           (macroexpand (apply (getenv name) (tl form)))
-	  (= name 'function)
+	  (= name '%function)
 	  (let ((_ args rest: body) form)
 	    (with-scope (args)
 	      `(,name ,args ,@(macroexpand body))))
@@ -436,7 +439,7 @@
 (define-macro each ((t k v) rest: body)
   (let (t1 (make-id))
     `(let (,k nil ,t1 ,t)
-       (for (,t1 ,k)
+       (%for (,t1 ,k)
          (if (target
               js: (isNaN (parseInt ,k))
               lua: (not (number? ,k)))
