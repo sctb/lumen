@@ -1274,7 +1274,7 @@ special["while"] = {compiler = function (form)
   end
 end, stmt = true, tr = true}
 
-special["for"] = {compiler = function (_g114)
+special["%for"] = {compiler = function (_g114)
   local _g115 = _g114[1]
   local t = _g115[1]
   local k = _g115[2]
@@ -1294,61 +1294,41 @@ special["for"] = {compiler = function (_g114)
   end
 end, stmt = true, tr = true}
 
-special["%for"] = {compiler = function (_g117)
-  local _g118 = _g117[1]
-  local t = _g118[1]
-  local k = _g118[2]
-  local body = sub(_g117, 1)
-  local t = compile(t)
-  local ind = indentation()
-  local body = (function ()
-    indent_level = (indent_level + 1)
-    local _g119 = compile_body(body)
-    indent_level = (indent_level - 1)
-    return(_g119)
-  end)()
-  if (target == "lua") then
-    return((ind .. "for " .. k .. " in next, " .. t .. " do\n" .. body .. ind .. "end\n"))
-  else
-    return((ind .. "for (" .. k .. " in " .. t .. ") {\n" .. body .. ind .. "}\n"))
-  end
-end, stmt = true, tr = true}
-
 special["%try"] = {compiler = function (forms)
   local ind = indentation()
   local body = (function ()
     indent_level = (indent_level + 1)
-    local _g120 = compile_body(forms, {_stash = true, ["tail?"] = true})
+    local _g117 = compile_body(forms, {_stash = true, ["tail?"] = true})
     indent_level = (indent_level - 1)
-    return(_g120)
+    return(_g117)
   end)()
   local e = make_id()
   local handler = {"return", {"%array", false, e}}
   local h = (function ()
     indent_level = (indent_level + 1)
-    local _g121 = compile(handler, {_stash = true, ["stmt?"] = true})
+    local _g118 = compile(handler, {_stash = true, ["stmt?"] = true})
     indent_level = (indent_level - 1)
-    return(_g121)
+    return(_g118)
   end)()
   return((ind .. "try {\n" .. body .. ind .. "}\n" .. ind .. "catch (" .. e .. ") {\n" .. h .. ind .. "}\n"))
 end, stmt = true, tr = true}
 
-special["break"] = {compiler = function (_g122)
+special["break"] = {compiler = function (_g119)
   return((indentation() .. "break"))
 end, stmt = true}
 
-special["%function"] = {compiler = function (_g123)
-  local args = _g123[1]
-  local body = sub(_g123, 1)
+special["%function"] = {compiler = function (_g120)
+  local args = _g120[1]
+  local body = sub(_g120, 1)
   return(compile_function(args, body))
 end}
 
 macros = ""
 
-special["define-macro"] = {compiler = function (_g124)
-  local name = _g124[1]
-  local args = _g124[2]
-  local body = sub(_g124, 2)
+special["define-macro"] = {compiler = function (_g121)
+  local name = _g121[1]
+  local args = _g121[2]
+  local body = sub(_g121, 2)
   local macro = {"setenv", {"quote", name}, join({"fn", args}, body)}
   eval(macro)
   if embed_macros63 then
@@ -1357,13 +1337,13 @@ special["define-macro"] = {compiler = function (_g124)
   return("")
 end, stmt = true, tr = true}
 
-special["return"] = {compiler = function (_g125)
-  local x = _g125[1]
+special["return"] = {compiler = function (_g122)
+  local x = _g122[1]
   return((indentation() .. compile_call({"return", x})))
 end, stmt = true}
 
-special["error"] = {compiler = function (_g126)
-  local x = _g126[1]
+special["error"] = {compiler = function (_g123)
+  local x = _g123[1]
   local e = (function ()
     if (target == "js") then
       return(("throw " .. compile(x)))
@@ -1374,9 +1354,9 @@ special["error"] = {compiler = function (_g126)
   return((indentation() .. e))
 end, stmt = true}
 
-special["%local"] = {compiler = function (_g127)
-  local name = _g127[1]
-  local value = _g127[2]
+special["%local"] = {compiler = function (_g124)
+  local name = _g124[1]
+  local value = _g124[2]
   local id = compile(name)
   local value = compile(value)
   local keyword = (function ()
@@ -1390,18 +1370,18 @@ special["%local"] = {compiler = function (_g127)
   return((ind .. keyword .. id .. " = " .. value))
 end, stmt = true}
 
-special["set"] = {compiler = function (_g128)
-  local lh = _g128[1]
-  local rh = _g128[2]
+special["set"] = {compiler = function (_g125)
+  local lh = _g125[1]
+  local rh = _g125[2]
   if nil63(rh) then
     error("Missing right-hand side in assignment")
   end
   return((indentation() .. compile(lh) .. " = " .. compile(rh)))
 end, stmt = true}
 
-special["get"] = {compiler = function (_g129)
-  local t = _g129[1]
-  local k = _g129[2]
+special["get"] = {compiler = function (_g126)
+  local t = _g126[1]
+  local k = _g126[2]
   local t = compile(t)
   local k1 = compile(k)
   if ((target == "lua") and (char(t, 0) == "{")) then
@@ -1414,8 +1394,8 @@ special["get"] = {compiler = function (_g129)
   end
 end}
 
-special["not"] = {compiler = function (_g130)
-  local x = _g130[1]
+special["not"] = {compiler = function (_g127)
+  local x = _g127[1]
   local x = compile(x)
   local open = (function ()
     if (target == "js") then
@@ -1444,9 +1424,9 @@ special["%array"] = {compiler = function (forms)
   end)()
   local str = ""
   local i = 0
-  local _g131 = forms
-  while (i < length(_g131)) do
-    local x = _g131[(i + 1)]
+  local _g128 = forms
+  while (i < length(_g128)) do
+    local x = _g128[(i + 1)]
     str = (str .. compile(x))
     if (i < (length(forms) - 1)) then
       str = (str .. ", ")
@@ -1467,11 +1447,11 @@ special["%object"] = {compiler = function (forms)
   end)()
   local pairs = pairwise(forms)
   local i = 0
-  local _g132 = pairs
-  while (i < length(_g132)) do
-    local _g133 = _g132[(i + 1)]
-    local k = _g133[1]
-    local v = _g133[2]
+  local _g129 = pairs
+  while (i < length(_g129)) do
+    local _g130 = _g129[(i + 1)]
+    local k = _g130[1]
+    local v = _g130[2]
     if (not string63(k)) then
       error(("Illegal object key: " .. to_string(k)))
     end
@@ -1503,9 +1483,9 @@ can_return63 = function (form)
 end
 
 compile = function (form, ...)
-  local _g134 = unstash({...})
-  local stmt63 = _g134["stmt?"]
-  local tail63 = _g134["tail?"]
+  local _g131 = unstash({...})
+  local stmt63 = _g131["stmt?"]
+  local tail63 = _g131["tail?"]
   if (tail63 and can_return63(form)) then
     form = {"return", form}
   end
@@ -1560,22 +1540,22 @@ end
 
 compile_files = function (files)
   local str = ""
-  local _g136 = 0
-  local _g135 = files
-  while (_g136 < length(_g135)) do
-    local file = _g135[(_g136 + 1)]
+  local _g133 = 0
+  local _g132 = files
+  while (_g133 < length(_g132)) do
+    local file = _g132[(_g133 + 1)]
     str = (str .. compile_file(file))
-    _g136 = (_g136 + 1)
+    _g133 = (_g133 + 1)
   end
   return(str)
 end
 
 compile_toplevel = function (form)
-  local _g137 = compile(macroexpand(form), {_stash = true, ["stmt?"] = true})
-  if (_g137 == "") then
+  local _g134 = compile(macroexpand(form), {_stash = true, ["stmt?"] = true})
+  if (_g134 == "") then
     return("")
   else
-    return((_g137 .. "\n"))
+    return((_g134 .. "\n"))
   end
 end
 
@@ -1622,9 +1602,9 @@ main = function ()
   local target1 = nil
   local expr = nil
   local i = 0
-  local _g138 = args
-  while (i < length(_g138)) do
-    local arg = _g138[(i + 1)]
+  local _g135 = args
+  while (i < length(_g135)) do
+    local arg = _g135[(i + 1)]
     if ((arg == "-o") or (arg == "-t") or (arg == "-e")) then
       if (i == (length(args) - 1)) then
         print((to_string("missing argument for") .. " " .. to_string(arg) .. " "))
@@ -1654,12 +1634,12 @@ main = function ()
     local main = compile({"main"})
     return(write_file(output, (compiled .. macros .. main)))
   else
-    local _g140 = 0
-    local _g139 = inputs
-    while (_g140 < length(_g139)) do
-      local file = _g139[(_g140 + 1)]
+    local _g137 = 0
+    local _g136 = inputs
+    while (_g137 < length(_g136)) do
+      local file = _g136[(_g137 + 1)]
       load_file(file)
-      _g140 = (_g140 + 1)
+      _g137 = (_g137 + 1)
     end
     if expr then
       return(rep(expr))

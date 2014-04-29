@@ -185,14 +185,6 @@
 	(cat ind "while (" condition ") {\n" body ind "}\n")
       (cat ind "while " condition " do\n" body ind "end\n"))))
 
-(define-special for (((t k) rest: body)) :stmt :tr
-  (let (t (compile t)
-        ind (indentation)
-        body (with-indent (compile-body body)))
-    (if (= target 'lua)
-	(cat ind "for " k " in next, " t " do\n" body ind "end\n")
-      (cat ind "for (" k " in " t ") {\n" body ind "}\n"))))
-
 (define-special %for (((t k) rest: body)) :stmt :tr
   (let (t (compile t)
         ind (indentation)
