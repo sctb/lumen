@@ -1,7 +1,7 @@
 ;; -*- mode: lisp -*-
 
 (define rep (str)
-  (let (x (eval (read-from-string str)))
+  (let ((_ x) (guard (eval (read-from-string str))))
     (if (is? x) (pr x))))
 
 (define repl ()

@@ -749,7 +749,7 @@ eval = function (form) {
 
 delimiters = {"\n": true, ";": true, "(": true, ")": true};
 
-whitespace = {"\n": true, "\t": true, " ": true};
+whitespace = {" ": true, "\n": true, "\t": true};
 
 make_stream = function (str) {
   return({pos: 0, string: str, len: length(str)});
@@ -934,7 +934,7 @@ read_from_string = function (str) {
   return(read(make_stream(str)));
 };
 
-infix = {common: {"<=": true, ">": true, "/": true, "%": true, "+": true, "<": true, "-": true, "*": true, ">=": true}, js: {"or": "||", "cat": "+", "=": "===", "and": "&&", "~=": "!="}, lua: {"or": true, "cat": "..", "=": "==", "and": true, "~=": true}};
+infix = {lua: {"and": true, "or": true, "~=": true, "=": "==", "cat": ".."}, common: {"%": true, "-": true, "+": true, "*": true, ">=": true, "<": true, "<=": true, ">": true, "/": true}, js: {"and": "&&", "or": "||", "~=": "!=", "cat": "+", "=": "==="}};
 
 getop = function (op) {
   var op1 = (infix.common[op] || infix[target][op]);
@@ -1188,11 +1188,11 @@ self_tr63 = function (name) {
   return(special[name].tr);
 };
 
-special["do"] = {stmt: true, compiler: function (forms, tail63) {
+special["do"] = {stmt: true, tr: true, compiler: function (forms, tail63) {
   return(compile_body(forms, {_stash: true, "tail?": tail63}));
-}, tr: true};
+}};
 
-special["if"] = {stmt: true, compiler: function (form, tail63) {
+special["if"] = {stmt: true, tr: true, compiler: function (form, tail63) {
   var str = "";
   var i = 0;
   var _g111 = form;
@@ -1211,9 +1211,9 @@ special["if"] = {stmt: true, compiler: function (form, tail63) {
     i = (i + 1);
   }
   return(str);
-}, tr: true};
+}};
 
-special["while"] = {stmt: true, compiler: function (form) {
+special["while"] = {stmt: true, tr: true, compiler: function (form) {
   var condition = compile(hd(form));
   var body = (function () {
     indent_level = (indent_level + 1);
@@ -1227,9 +1227,9 @@ special["while"] = {stmt: true, compiler: function (form) {
   } else {
     return((ind + "while " + condition + " do\n" + body + ind + "end\n"));
   }
-}, tr: true};
+}};
 
-special["%for"] = {stmt: true, compiler: function (_g113) {
+special["%for"] = {stmt: true, tr: true, compiler: function (_g113) {
   var _g114 = _g113[0];
   var t = _g114[0];
   var k = _g114[1];
@@ -1247,9 +1247,9 @@ special["%for"] = {stmt: true, compiler: function (_g113) {
   } else {
     return((ind + "for (" + k + " in " + t + ") {\n" + body + ind + "}\n"));
   }
-}, tr: true};
+}};
 
-special["%try"] = {stmt: true, compiler: function (forms) {
+special["%try"] = {stmt: true, tr: true, compiler: function (forms) {
   var ind = indentation();
   var body = (function () {
     indent_level = (indent_level + 1);
@@ -1266,11 +1266,11 @@ special["%try"] = {stmt: true, compiler: function (forms) {
     return(_g117);
   })();
   return((ind + "try {\n" + body + ind + "}\n" + ind + "catch (" + e + ") {\n" + h + ind + "}\n"));
-}, tr: true};
+}};
 
-special["break"] = {compiler: function (_g118) {
+special["break"] = {stmt: true, compiler: function (_g118) {
   return((indentation() + "break"));
-}, stmt: true};
+}};
 
 special["%function"] = {compiler: function (_g119) {
   var args = _g119[0];
@@ -1280,7 +1280,7 @@ special["%function"] = {compiler: function (_g119) {
 
 macros = "";
 
-special["define-macro"] = {tr: true, compiler: function (_g120) {
+special["define-macro"] = {stmt: true, tr: true, compiler: function (_g120) {
   var name = _g120[0];
   var args = _g120[1];
   var body = sub(_g120, 2);
@@ -1290,14 +1290,14 @@ special["define-macro"] = {tr: true, compiler: function (_g120) {
     macros = (macros + compile_toplevel(macro));
   }
   return("");
-}, stmt: true};
+}};
 
-special["return"] = {compiler: function (_g121) {
+special["return"] = {stmt: true, compiler: function (_g121) {
   var x = _g121[0];
   return((indentation() + compile_call(["return", x])));
-}, stmt: true};
+}};
 
-special["error"] = {compiler: function (_g122) {
+special["error"] = {stmt: true, compiler: function (_g122) {
   var x = _g122[0];
   var e = (function () {
     if ((target === "js")) {
@@ -1307,9 +1307,9 @@ special["error"] = {compiler: function (_g122) {
     }
   })();
   return((indentation() + e));
-}, stmt: true};
+}};
 
-special["%local"] = {compiler: function (_g123) {
+special["%local"] = {stmt: true, compiler: function (_g123) {
   var name = _g123[0];
   var value = _g123[1];
   var id = compile(name);
@@ -1323,16 +1323,16 @@ special["%local"] = {compiler: function (_g123) {
   })();
   var ind = indentation();
   return((ind + keyword + id + " = " + value));
-}, stmt: true};
+}};
 
-special["set"] = {compiler: function (_g124) {
+special["set"] = {stmt: true, compiler: function (_g124) {
   var lh = _g124[0];
   var rh = _g124[1];
   if (nil63(rh)) {
     throw "Missing right-hand side in assignment";
   }
   return((indentation() + compile(lh) + " = " + compile(rh)));
-}, stmt: true};
+}};
 
 special["get"] = {compiler: function (_g125) {
   var t = _g125[0];
@@ -1515,7 +1515,16 @@ compile_toplevel = function (form) {
 };
 
 rep = function (str) {
-  var x = eval(read_from_string(str));
+  var _g135 = (function () {
+    try {
+      return([true, eval(read_from_string(str))]);
+    }
+    catch (_g136) {
+      return([false, _g136]);
+    }
+  })();
+  var _g134 = _g135[0];
+  var x = _g135[1];
   if (is63(x)) {
     return(print((to_string(x) + " ")));
   }
@@ -1552,9 +1561,9 @@ main = function () {
   var target1 = undefined;
   var expr = undefined;
   var i = 0;
-  var _g134 = args;
-  while ((i < length(_g134))) {
-    var arg = _g134[i];
+  var _g137 = args;
+  while ((i < length(_g137))) {
+    var arg = _g137[i];
     if (((arg === "-o") || (arg === "-t") || (arg === "-e"))) {
       if ((i === (length(args) - 1))) {
         print((to_string("missing argument for") + " " + to_string(arg) + " "));
@@ -1584,12 +1593,12 @@ main = function () {
     var main = compile(["main"]);
     return(write_file(output, (compiled + macros + main)));
   } else {
-    var _g136 = 0;
-    var _g135 = inputs;
-    while ((_g136 < length(_g135))) {
-      var file = _g135[_g136];
+    var _g139 = 0;
+    var _g138 = inputs;
+    while ((_g139 < length(_g138))) {
+      var file = _g138[_g139];
       load_file(file);
-      _g136 = (_g136 + 1);
+      _g139 = (_g139 + 1);
     }
     if (expr) {
       return(rep(expr));
@@ -1829,8 +1838,8 @@ setenv("each", function (_g74) {
   var t1 = make_id();
   return(["let", [k, "nil", t1, t], ["%for", [t1, k], ["if", (function () {
     var _g76 = ["target"];
-    _g76.lua = ["not", ["number?", k]];
     _g76.js = ["isNaN", ["parseInt", k]];
+    _g76.lua = ["not", ["number?", k]];
     return(_g76);
   })(), join(["let", [v, ["get", t1, k]]], _g75)]]]);
 });

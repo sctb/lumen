@@ -1560,7 +1560,14 @@ compile_toplevel = function (form)
 end
 
 rep = function (str)
-  local x = eval(read_from_string(str))
+  local _g136 = (function ()
+    local _g137,_g138 = xpcall(function ()
+      return(eval(read_from_string(str)))
+    end, message_handler)
+    return({_g137, _g138})
+  end)()
+  local _g135 = _g136[1]
+  local x = _g136[2]
   if is63(x) then
     return(print((to_string(x) .. " ")))
   end
@@ -1602,9 +1609,9 @@ main = function ()
   local target1 = nil
   local expr = nil
   local i = 0
-  local _g135 = args
-  while (i < length(_g135)) do
-    local arg = _g135[(i + 1)]
+  local _g139 = args
+  while (i < length(_g139)) do
+    local arg = _g139[(i + 1)]
     if ((arg == "-o") or (arg == "-t") or (arg == "-e")) then
       if (i == (length(args) - 1)) then
         print((to_string("missing argument for") .. " " .. to_string(arg) .. " "))
@@ -1634,12 +1641,12 @@ main = function ()
     local main = compile({"main"})
     return(write_file(output, (compiled .. macros .. main)))
   else
-    local _g137 = 0
-    local _g136 = inputs
-    while (_g137 < length(_g136)) do
-      local file = _g136[(_g137 + 1)]
+    local _g141 = 0
+    local _g140 = inputs
+    while (_g141 < length(_g140)) do
+      local file = _g140[(_g141 + 1)]
       load_file(file)
-      _g137 = (_g137 + 1)
+      _g141 = (_g141 + 1)
     end
     if expr then
       return(rep(expr))
