@@ -83,7 +83,7 @@
       (string? x) (compile-id x)
       (boolean? x) (if x "true" "false")
       (number? x) (cat x "")
-    (error "Unrecongnized atom")))
+    (error "Unrecognized atom")))
 
 (define compile-call (form)
   (if (empty? form)
