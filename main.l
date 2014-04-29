@@ -8,11 +8,10 @@
   (let (step (fn (str) (rep str) (write "> ")))
     (write "> ")
     (target
-     js: (do (process.stdin.resume)
-             (process.stdin.setEncoding 'utf8)
+     js: (do (process.stdin.setEncoding 'utf8)
              (process.stdin.on 'data step))
      lua: (while true
-            (let (str (io.stdin.read io.stdin))
+            (let (str (io.read))
               (if str (step str) (break)))))))
 
 (define usage ()

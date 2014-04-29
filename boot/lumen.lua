@@ -1580,7 +1580,7 @@ repl = function ()
   end
   write("> ")
   while true do
-    local str = (io.stdin.read)(io.stdin)
+    local str = (io.read)()
     if str then
       step(str)
     else
