@@ -363,7 +363,7 @@
   (define-symbol zzz 42)
   (test= zzz 42))
 
-(define-test macros-and-symbol-macros ()
+(define-test macros-and-symbols ()
   (let-symbol (a 1)
     (let-macro ((a () 2))
       (test= 2 (a)))

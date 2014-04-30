@@ -14,7 +14,7 @@
 
 (define variable (table))
 
-(define symbol-macro? (k)
+(define symbol? (k)
   (let (v (getenv k))
     (and (is? v)
          (not (= v variable))
@@ -27,7 +27,7 @@
   (= (get (last environment) k) variable))
 
 (define bound? (x)
-  (or (symbol-macro? x)
+  (or (symbol? x)
       (macro? x)
       (variable? x)))
 
@@ -246,7 +246,7 @@
   (quasiexpand form 1))
 
 (define macroexpand (form)
-  (if (symbol-macro? form) (macroexpand (getenv form))
+  (if (symbol? form) (macroexpand (getenv form))
       (atom? form) form
     (let (name (hd form))
       (if (= name 'define-macro) form

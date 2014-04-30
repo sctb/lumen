@@ -14,7 +14,7 @@ end
 
 variable = {}
 
-symbol_macro63 = function (k)
+symbol63 = function (k)
   local v = getenv(k)
   return((is63(v) and (not (v == variable)) and (not macro63(k))))
 end
@@ -28,7 +28,7 @@ variable63 = function (k)
 end
 
 bound63 = function (x)
-  return((symbol_macro63(x) or macro63(x) or variable63(x)))
+  return((symbol63(x) or macro63(x) or variable63(x)))
 end
 
 embed_macros63 = false
@@ -206,7 +206,7 @@ quasisplice63 = function (x, depth)
 end
 
 macroexpand = function (form)
-  if symbol_macro63(form) then
+  if symbol63(form) then
     return(macroexpand(getenv(form)))
   elseif atom63(form) then
     return(form)
@@ -1102,7 +1102,7 @@ compile_atom = function (x)
   elseif number63(x) then
     return((x .. ""))
   else
-    error("Unrecongnized atom")
+    error("Unrecognized atom")
   end
 end
 
