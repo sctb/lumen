@@ -335,7 +335,7 @@
 
 (define-test let-macro ()
   (let-macro ((a () 17)
-	      (b (a) `(+ ,a 10)))
+              (b (a) `(+ ,a 10)))
     (test= 17 (a))
     (test= 42 (b 32))
     (let-macro ((a () 1))

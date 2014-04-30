@@ -119,7 +119,7 @@
   `(set ,name ,x))
 
 (define-macro fn (args rest: body)
-  (let ((args body) (bind-arguments args body))
+  (let ((args body) (expand-function args body))
     `(%function ,args ,@body)))
 
 (define-macro guard (expr)
@@ -217,11 +217,24 @@
             (join! bs (bind v `(get ,rh ',k)))))
       bs)))
 
+(define expand-function (args body)
+  (let ((args body) (bind-arguments args body))
+    (add environment (table))
+    (across (args arg)
+      (setenv arg variable))
+    (let (body (macroexpand body))
+      (drop environment)
+      (list args body))))
+
 (define message-handler (msg)
   (let (i (search msg ": "))
     (sub msg (+ i 2))))
 
 ;; expansion
+
+(define self-expanding? (x)
+  (or (= x '%function)
+      (= x 'define-macro)))
 
 (define quoting? (depth) (number? depth))
 (define quasiquoting? (depth) (and (quoting? depth) (> depth 0)))
@@ -232,15 +245,6 @@
        (can-unquote? depth)
        (= (hd x) 'unquote-splicing)))
 
-(define-macro with-scope ((bound) expr)
-  (let (result (make-id) x (make-id))
-    `(do (add environment (table))
-	 (across (,bound ,x)
-	   (setenv ,x variable))
-	 (let (,result ,expr)
-	   (drop environment)
-	   ,result))))
-
 (define-macro quasiquote (form)
   (quasiexpand form 1))
 
@@ -248,13 +252,9 @@
   (if (symbol? form) (macroexpand (getenv form))
       (atom? form) form
     (let (name (hd form))
-      (if (= name 'define-macro) form
+      (if (self-expanding? name) form
 	  (macro? name)
           (macroexpand (apply (getenv name) (tl form)))
-	  (= name '%function)
-	  (let ((_ args rest: body) form)
-	    (with-scope (args)
-	      `(,name ,args ,@(macroexpand body))))
         (map* macroexpand form)))))
 
 (define quasiexpand (form depth)
