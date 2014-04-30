@@ -296,22 +296,18 @@
                  (compile-call form)))
       (cat ind form tr))))
 
-(define map-forms (f file)
-  (let (s (make-stream (read-file file)))
+(define compile-toplevel (form)
+  (let (form (compile (macroexpand form) :stmt?))
+    (if (= form "") ""
+      (cat form "\n"))))
+
+(define compile-file (file)
+  (let (str ""
+        s (make-stream (read-file file)))
     (while true
       (let (form (read s))
         (if (= form eof) (break))
-        (f form)))))
-
-(define load-file (file)
-  (map-forms eval file))
-
-(define compile-file (file)
-  (let (str "")
-    (map-forms
-     (fn (form)
-       (cat! str (compile-toplevel form)))
-     file)
+        (cat! str (compile-toplevel form))))
     str))
 
 (define compile-files (files)
@@ -320,7 +316,5 @@
       (cat! str (compile-file file)))
     str))
 
-(define compile-toplevel (form)
-  (let (form (compile (macroexpand form) :stmt?))
-    (if (= form "") ""
-      (cat form "\n"))))
+(define load-file (file)
+  (run (compile-file file)))

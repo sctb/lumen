@@ -1521,48 +1521,42 @@ compile = function (form, ...)
   end
 end
 
-map_forms = function (f, file)
+compile_toplevel = function (form)
+  local _g131 = compile(macroexpand(form), {_stash = true, ["stmt?"] = true})
+  if (_g131 == "") then
+    return("")
+  else
+    return((_g131 .. "\n"))
+  end
+end
+
+compile_file = function (file)
+  local str = ""
   local s = make_stream(read_file(file))
   while true do
     local form = read(s)
     if (form == eof) then
       break
     end
-    f(form)
-  end
-end
-
-load_file = function (file)
-  return(map_forms(eval, file))
-end
-
-compile_file = function (file)
-  local str = ""
-  map_forms(function (form)
     str = (str .. compile_toplevel(form))
-  end, file)
+  end
   return(str)
 end
 
 compile_files = function (files)
   local str = ""
-  local _g132 = 0
-  local _g131 = files
-  while (_g132 < length(_g131)) do
-    local file = _g131[(_g132 + 1)]
+  local _g133 = 0
+  local _g132 = files
+  while (_g133 < length(_g132)) do
+    local file = _g132[(_g133 + 1)]
     str = (str .. compile_file(file))
-    _g132 = (_g132 + 1)
+    _g133 = (_g133 + 1)
   end
   return(str)
 end
 
-compile_toplevel = function (form)
-  local _g133 = compile(macroexpand(form), {_stash = true, ["stmt?"] = true})
-  if (_g133 == "") then
-    return("")
-  else
-    return((_g133 .. "\n"))
-  end
+load_file = function (file)
+  return(run(compile_file(file)))
 end
 
 rep = function (str)

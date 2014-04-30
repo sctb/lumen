@@ -1476,48 +1476,42 @@ compile = function (form) {
   }
 };
 
-map_forms = function (f, file) {
+compile_toplevel = function (form) {
+  var _g130 = compile(macroexpand(form), {_stash: true, "stmt?": true});
+  if ((_g130 === "")) {
+    return("");
+  } else {
+    return((_g130 + "\n"));
+  }
+};
+
+compile_file = function (file) {
+  var str = "";
   var s = make_stream(read_file(file));
   while (true) {
     var form = read(s);
     if ((form === eof)) {
       break;
     }
-    f(form);
-  }
-};
-
-load_file = function (file) {
-  return(map_forms(eval, file));
-};
-
-compile_file = function (file) {
-  var str = "";
-  map_forms(function (form) {
     str = (str + compile_toplevel(form));
-  }, file);
+  }
   return(str);
 };
 
 compile_files = function (files) {
   var str = "";
-  var _g131 = 0;
-  var _g130 = files;
-  while ((_g131 < length(_g130))) {
-    var file = _g130[_g131];
+  var _g132 = 0;
+  var _g131 = files;
+  while ((_g132 < length(_g131))) {
+    var file = _g131[_g132];
     str = (str + compile_file(file));
-    _g131 = (_g131 + 1);
+    _g132 = (_g132 + 1);
   }
   return(str);
 };
 
-compile_toplevel = function (form) {
-  var _g132 = compile(macroexpand(form), {_stash: true, "stmt?": true});
-  if ((_g132 === "")) {
-    return("");
-  } else {
-    return((_g132 + "\n"));
-  }
+load_file = function (file) {
+  return(run(compile_file(file)));
 };
 
 rep = function (str) {
