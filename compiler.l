@@ -301,20 +301,41 @@
     (if (= form "") ""
       (cat form "\n"))))
 
+;; eval
+
+(target js: (define run eval))
+
+(target lua:
+ (do (define run-result nil)
+     (define run (x)
+       (let (f (load (cat (compile 'run-result) '= x)))
+         (if f (do (f) run-result)
+           (let (|f,e| (load x))
+             (if f (f) (error (cat e " in " x)))))))))
+
+(define eval (form)
+  (let (previous target)
+    (set target (language))
+    (let (str (compile (macroexpand form)))
+      (set target previous)
+      (run str))))
+
+;; loader
+
 (define compile-file (file)
-  (let (str ""
+  (let (output ""
         s (make-stream (read-file file)))
     (while true
       (let (form (read s))
         (if (= form eof) (break))
-        (cat! str (compile-toplevel form))))
-    str))
+        (cat! output (compile-toplevel form))))
+    output))
 
 (define compile-files (files)
-  (let (str "")
+  (let (output "")
     (across (files file)
-      (cat! str (compile-file file)))
-    str))
+      (cat! output (compile-file file)))
+    output))
 
 (define load-file (file)
   (run (compile-file file)))

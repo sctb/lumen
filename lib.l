@@ -626,22 +626,3 @@
 (define make-id ()
   (inc id-count)
   (cat "_g" id-count))
-
-;; eval
-
-(target js: (define run eval))
-
-(target lua:
- (do (define run-result nil)
-     (define run (x)
-       (let (f (load (cat (compile 'run-result) '= x)))
-         (if f (do (f) run-result)
-           (let (|f,e| (load x))
-             (if f (f) (error (cat e " in " x)))))))))
-
-(define eval (form)
-  (let (previous target)
-    (set target (language))
-    (let (str (compile (macroexpand form)))
-      (set target previous)
-      (run str))))

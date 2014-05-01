@@ -774,30 +774,6 @@ make_id = function ()
   return(("_g" .. id_count))
 end
 
-run_result = nil
-run = function (x)
-  local f = load((compile("run-result") .. "=" .. x))
-  if f then
-    f()
-    return(run_result)
-  else
-    local f,e = load(x)
-    if f then
-      return(f())
-    else
-      error((e .. " in " .. x))
-    end
-  end
-end
-
-eval = function (form)
-  local previous = target
-  target = "lua"
-  local str = compile(macroexpand(form))
-  target = previous
-  return(run(str))
-end
-
 delimiters = {["("] = true, [")"] = true, [";"] = true, ["\n"] = true}
 
 whitespace = {[" "] = true, ["\t"] = true, ["\n"] = true}
@@ -1530,29 +1506,53 @@ compile_toplevel = function (form)
   end
 end
 
+run_result = nil
+run = function (x)
+  local f = load((compile("run-result") .. "=" .. x))
+  if f then
+    f()
+    return(run_result)
+  else
+    local f,e = load(x)
+    if f then
+      return(f())
+    else
+      error((e .. " in " .. x))
+    end
+  end
+end
+
+eval = function (form)
+  local previous = target
+  target = "lua"
+  local str = compile(macroexpand(form))
+  target = previous
+  return(run(str))
+end
+
 compile_file = function (file)
-  local str = ""
+  local output = ""
   local s = make_stream(read_file(file))
   while true do
     local form = read(s)
     if (form == eof) then
       break
     end
-    str = (str .. compile_toplevel(form))
+    output = (output .. compile_toplevel(form))
   end
-  return(str)
+  return(output)
 end
 
 compile_files = function (files)
-  local str = ""
+  local output = ""
   local _g133 = 0
   local _g132 = files
   while (_g133 < length(_g132)) do
     local file = _g132[(_g133 + 1)]
-    str = (str .. compile_file(file))
+    output = (output .. compile_file(file))
     _g133 = (_g133 + 1)
   end
-  return(str)
+  return(output)
 end
 
 load_file = function (file)
