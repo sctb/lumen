@@ -1741,7 +1741,7 @@ setenv("let-macro", function (definitions, ...)
   local embed63 = embed_macros63
   embed_macros63 = false
   map(function (m)
-    return((compiler("define-macro"))(m))
+    return(compile(join({"define-macro"}, m)))
   end, definitions)
   embed_macros63 = embed63
   local _g18 = macroexpand(_g17)

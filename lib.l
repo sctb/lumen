@@ -93,7 +93,7 @@
   (let (embed? embed-macros?)
     (set embed-macros? false)
     (map (fn (m)
-           ((compiler 'define-macro) m))
+           (compile `(define-macro ,@m)))
          definitions)
     (set embed-macros? embed?))
   (let (body (macroexpand body))
