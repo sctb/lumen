@@ -16,8 +16,8 @@ cross: all
 	@./lumen $(SRCS) -m -o $(JSBOOT) -t js
 
 test: cross
-	@./lumen tests.l -e "(run-tests)"
-	@LUMEN_HOST=node ./lumen tests.l -e "(run-tests)"
+	@./lumen test.l -e "(run-tests)"
+	@LUMEN_HOST=node ./lumen test.l -e "(run-tests)"
 
 clean:
 	@git checkout boot/lumen.*
