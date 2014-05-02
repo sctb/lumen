@@ -211,7 +211,7 @@
 (define macros "")
 
 (define-special define-macro ((name args rest: body)) :stmt :tr
-  (let (macro `(setenv ',name (fn ,args ,@body)))
+  (let (macro `(setenv ',name (table macro: (fn ,args ,@body))))
     (eval macro)
     (if embed-macros?
 	(cat! macros (compile-toplevel macro))))

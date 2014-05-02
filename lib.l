@@ -10,19 +10,23 @@
       (find (fn (e) (get e k))
             (reverse environment))))
 
-(define variable (table))
+(define symbol-expansion (k)
+  (let (x (getenv k))
+    (and x (get x 'symbol))))
 
 (define symbol? (k)
-  (let (v (getenv k))
-    (and (is? v)
-         (not (= v variable))
-         (not (macro? k)))))
+  (is? (symbol-expansion k)))
+
+(define macro-function (k)
+  (let (x (getenv k))
+    (and x (get x 'macro))))
 
 (define macro? (k)
-  (function? (getenv k)))
+  (is? (macro-function k)))
 
 (define variable? (k)
-  (= (get (last environment) k) variable))
+  (let (x (get (last environment) k))
+    (and x (get x 'variable))))
 
 (define bound? (x)
   (or (symbol? x)
@@ -81,7 +85,7 @@
                    (add renames id)
                    (add renames rename)
                    (set id rename))
-               (setenv id variable))
+               (setenv id (table :variable)))
              (add locals `(%local ,id ,val))))
          (pairwise bindings))
     `(do ,@locals (let-symbol ,renames ,@body))))
@@ -100,15 +104,15 @@
 
 (define-macro let-symbol (expansions rest: body)
   (add environment (table))
-  (map (fn ((name expr))
-         (setenv name expr))
+  (map (fn ((name exp))
+         (setenv name (table symbol: exp)))
        (pairwise expansions))
   (let (body (macroexpand body))
     (drop environment)
     `(do ,@body)))
 
 (define-macro define-symbol (name expansion)
-  (setenv name expansion)
+  (setenv name (table symbol: expansion))
   nil)
 
 (define-macro define (name x rest: body)
@@ -219,7 +223,7 @@
   (let ((args body) (bind-arguments args body))
     (add environment (table))
     (across (args arg)
-      (setenv arg variable))
+      (setenv arg (table :variable)))
     (let (body (macroexpand body))
       (drop environment)
       (list args body))))
@@ -247,12 +251,14 @@
   (quasiexpand form 1))
 
 (define macroexpand (form)
-  (if (symbol? form) (macroexpand (getenv form))
+  (if (symbol? form)
+      (macroexpand (symbol-expansion form))
       (atom? form) form
     (let (name (hd form))
       (if (self-expanding? name) form
 	  (macro? name)
-          (macroexpand (apply (getenv name) (tl form)))
+          (macroexpand
+           (apply (macro-function name) (tl form)))
         (map* macroexpand form)))))
 
 (define quasiexpand (form depth)
