@@ -2,8 +2,6 @@
 
 ;; environment
 
-(define environment (list (table)))
-
 (define setenv (k v)
   (set (get (last environment) k) v))
 

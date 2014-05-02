@@ -331,11 +331,17 @@
         (cat! output (compile-toplevel form))))
     output))
 
+(define embed-macros ()
+  (let (env '(define environment (list (table))))
+    (cat (compile-toplevel env) macros)))
+
 (define compile-files (files)
   (let (output "")
     (across (files file)
       (cat! output (compile-file file)))
-    output))
+    (if embed-macros?
+        (cat output (embed-macros))
+      output)))
 
 (define load-file (file)
   (run (compile-file file)))

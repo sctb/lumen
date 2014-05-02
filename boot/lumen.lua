@@ -1,5 +1,3 @@
-environment = {{}}
-
 setenv = function (k, v)
   last(environment)[k] = v
 end
@@ -1543,6 +1541,11 @@ compile_file = function (file)
   return(output)
 end
 
+embed_macros = function ()
+  local env = {"define", "environment", {"list", {"table"}}}
+  return((compile_toplevel(env) .. macros))
+end
+
 compile_files = function (files)
   local output = ""
   local _g133 = 0
@@ -1552,7 +1555,11 @@ compile_files = function (files)
     output = (output .. compile_file(file))
     _g133 = (_g133 + 1)
   end
-  return(output)
+  if embed_macros63 then
+    return((output .. embed_macros()))
+  else
+    return(output)
+  end
 end
 
 load_file = function (file)
@@ -1639,7 +1646,7 @@ main = function ()
     end
     local compiled = compile_files(inputs)
     local main = compile({"main"})
-    return(write_file(output, (compiled .. macros .. main)))
+    return(write_file(output, (compiled .. main)))
   else
     local _g140 = 0
     local _g139 = inputs
@@ -1655,6 +1662,8 @@ main = function ()
     end
   end
 end
+
+environment = {{}}
 
 setenv("at", function (l, i)
   if ((target == "lua") and number63(i)) then

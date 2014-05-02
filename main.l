@@ -47,7 +47,7 @@
           (do (if target1 (set target target1))
               (let (compiled (compile-files inputs)
                     main (compile '(main)))
-                (write-file output (cat compiled macros main))))
+                (write-file output (cat compiled main))))
         (do (across (inputs file)
               (load-file file))
             (if expr (rep expr) (repl)))))))
