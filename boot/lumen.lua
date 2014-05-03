@@ -37,15 +37,33 @@ bound63 = function (x)
   return((symbol63(x) or macro63(x) or variable63(x)))
 end
 
+escape = function (str)
+  local str1 = "\""
+  local i = 0
+  while (i < length(str)) do
+    local c = char(str, i)
+    local c1 = (function ()
+      if (c == "\n") then
+        return("\\n")
+      elseif (c == "\"") then
+        return("\\\"")
+      elseif (c == "\\") then
+        return("\\\\")
+      else
+        return(c)
+      end
+    end)()
+    str1 = (str1 .. c1)
+    i = (i + 1)
+  end
+  return((str1 .. "\""))
+end
+
 quoted = function (form)
-  if atom63(form) then
-    if string_literal63(form) then
-      return(("\"\\\"" .. inner(form) .. "\\\"\""))
-    elseif string63(form) then
-      return(("\"" .. form .. "\""))
-    else
-      return(form)
-    end
+  if string63(form) then
+    return(escape(form))
+  elseif atom63(form) then
+    return(form)
   else
     return(join({"list"}, map42(quoted, form)))
   end
@@ -1643,7 +1661,7 @@ repl = function ()
 end
 
 usage = function ()
-  print((to_string("usage: x [options] [inputs]") .. " "))
+  print((to_string("usage: lumen [options] [inputs]") .. " "))
   print((to_string("options:") .. " "))
   print((to_string("  -o <output>\tOutput file") .. " "))
   print((to_string("  -t <target>\tTarget language (default: lua)") .. " "))
@@ -1711,46 +1729,120 @@ end
 
 environment = {{}}
 
-setenv("let-symbol", {macro = function (expansions, ...)
-  local body = unstash({...})
-  local _g133 = sub(body, 0)
-  add(environment, {})
-  map(function (_g134)
-    local name = _g134[1]
-    local exp = _g134[2]
-    return(setenv(name, {symbol = exp}))
-  end, pairwise(expansions))
-  local _g135 = macroexpand(_g133)
-  drop(environment)
-  return(join({"do"}, _g135))
-end, form = {"fn", (function ()
-  local _g136 = {"expansions"}
-  _g136.rest = "body"
-  return(_g136)
-end)(), {"add", "environment", {"table"}}, {"map", {"fn", {{"name", "exp"}}, {"setenv", "name", (function ()
-  local _g137 = {"table"}
-  _g137.symbol = "exp"
-  return(_g137)
-end)()}}, {"pairwise", "expansions"}}, {"let", {"body", {"macroexpand", "body"}}, {"drop", "environment"}, {"quasiquote", {"do", {"unquote-splicing", "body"}}}}}})
-
-setenv("language", {macro = function ()
-  return({"quote", target})
-end, form = {"fn", {}, {"quasiquote", {"quote", {"unquote", "target"}}}}})
-
-setenv("dec", {macro = function (n, by)
-  return({"set", n, {"-", n, (by or 1)}})
-end, form = {"fn", {"n", "by"}, {"quasiquote", {"set", {"unquote", "n"}, {"-", {"unquote", "n"}, {"unquote", {"or", "by", 1}}}}}}})
-
-setenv("define-symbol", {macro = function (name, expansion)
+setenv("define-symbol", {form = {"fn", {"name", "expansion"}, {"setenv", "name", (function ()
+  local _g133 = {"table"}
+  _g133.symbol = "expansion"
+  return(_g133)
+end)()}, "nil"}, macro = function (name, expansion)
   setenv(name, {symbol = expansion})
   return(nil)
-end, form = {"fn", {"name", "expansion"}, {"setenv", "name", (function ()
-  local _g138 = {"table"}
-  _g138.symbol = "expansion"
-  return(_g138)
-end)()}, "nil"}})
+end})
 
-setenv("list", {macro = function (...)
+setenv("quasiquote", {form = {"fn", {"form"}, {"quasiexpand", "form", 1}}, macro = function (form)
+  return(quasiexpand(form, 1))
+end})
+
+setenv("let-macro", {form = {"fn", (function ()
+  local _g134 = {"definitions"}
+  _g134.rest = "body"
+  return(_g134)
+end)(), {"add", "environment", {"table"}}, {"map", {"fn", {"m"}, {"compile", {"quasiquote", {"define-macro", {"unquote-splicing", "m"}}}}}, "definitions"}, {"let", {"body", {"macroexpand", "body"}}, {"drop", "environment"}, {"quasiquote", {"do", {"unquote-splicing", "body"}}}}}, macro = function (definitions, ...)
+  local body = unstash({...})
+  local _g135 = sub(body, 0)
+  add(environment, {})
+  map(function (m)
+    return(compile(join({"define-macro"}, m)))
+  end, definitions)
+  local _g136 = macroexpand(_g135)
+  drop(environment)
+  return(join({"do"}, _g136))
+end})
+
+setenv("across", {form = {"fn", (function ()
+  local _g137 = {{"l", "v", "i", "start"}}
+  _g137.rest = "body"
+  return(_g137)
+end)(), {"let", {"l1", {"make-id"}}, {"set", "i", {"or", "i", {"make-id"}}}, {"set", "start", {"or", "start", 0}}, {"quasiquote", {"let", {{"unquote", "i"}, {"unquote", "start"}, {"unquote", "l1"}, {"unquote", "l"}}, {"while", {"<", {"unquote", "i"}, {"length", {"unquote", "l1"}}}, {"let", {{"unquote", "v"}, {"at", {"unquote", "l1"}, {"unquote", "i"}}}, {"unquote-splicing", "body"}, {"inc", {"unquote", "i"}}}}}}}}, macro = function (_g138, ...)
+  local l = _g138[1]
+  local v = _g138[2]
+  local i = _g138[3]
+  local start = _g138[4]
+  local body = unstash({...})
+  local _g139 = sub(body, 0)
+  local l1 = make_id()
+  i = (i or make_id())
+  start = (start or 0)
+  return({"let", {i, start, l1, l}, {"while", {"<", i, {"length", l1}}, join({"let", {v, {"at", l1, i}}}, join(_g139, {{"inc", i}}))}})
+end})
+
+setenv("target", {form = {"fn", "clauses", {"get", "clauses", "target"}}, macro = function (...)
+  local clauses = unstash({...})
+  return(clauses[target])
+end})
+
+setenv("cat!", {form = {"fn", (function ()
+  local _g140 = {"a"}
+  _g140.rest = "bs"
+  return(_g140)
+end)(), {"quasiquote", {"set", {"unquote", "a"}, {"cat", {"unquote", "a"}, {"unquote-splicing", "bs"}}}}}, macro = function (a, ...)
+  local bs = unstash({...})
+  local _g141 = sub(bs, 0)
+  return({"set", a, join({"cat", a}, _g141)})
+end})
+
+setenv("guard", {form = {"fn", {"expr"}, {"if", {"=", "target", {"quote", "js"}}, {"quasiquote", {{"fn", {}, {"%try", {"list", true, {"unquote", "expr"}}}}}}, {"let", {"e", {"make-id"}, "x", {"make-id"}, "ex", {"cat", "\"|\"", "e", "\",\"", "x", "\"|\""}}, {"quasiquote", {"let", {{"unquote", "ex"}, {"xpcall", {"fn", {}, {"unquote", "expr"}}, "message-handler"}}, {"list", {"unquote", "e"}, {"unquote", "x"}}}}}}}, macro = function (expr)
+  if (target == "js") then
+    return({{"fn", {}, {"%try", {"list", true, expr}}}})
+  else
+    local e = make_id()
+    local x = make_id()
+    local ex = ("|" .. e .. "," .. x .. "|")
+    return({"let", {ex, {"xpcall", {"fn", {}, expr}, "message-handler"}}, {"list", e, x}})
+  end
+end})
+
+setenv("inc", {form = {"fn", {"n", "by"}, {"quasiquote", {"set", {"unquote", "n"}, {"+", {"unquote", "n"}, {"unquote", {"or", "by", 1}}}}}}, macro = function (n, by)
+  return({"set", n, {"+", n, (by or 1)}})
+end})
+
+setenv("join*", {form = {"fn", "xs", {"reduce", {"fn", {"a", "b"}, {"list", {"quote", "join"}, "a", "b"}}, "xs"}}, macro = function (...)
+  local xs = unstash({...})
+  return(reduce(function (a, b)
+    return({"join", a, b})
+  end, xs))
+end})
+
+setenv("define", {form = {"fn", (function ()
+  local _g142 = {"name", "x"}
+  _g142.rest = "body"
+  return(_g142)
+end)(), {"if", {"not", {"empty?", "body"}}, {"set", "x", {"quasiquote", {"fn", {"unquote", "x"}, {"unquote-splicing", "body"}}}}}, {"quasiquote", {"set", {"unquote", "name"}, {"unquote", "x"}}}}, macro = function (name, x, ...)
+  local body = unstash({...})
+  local _g143 = sub(body, 0)
+  if (not empty63(_g143)) then
+    x = join({"fn", x}, _g143)
+  end
+  return({"set", name, x})
+end})
+
+setenv("language", {form = {"fn", {}, {"quasiquote", {"quote", {"unquote", "target"}}}}, macro = function ()
+  return({"quote", target})
+end})
+
+setenv("fn", {form = {"fn", (function ()
+  local _g144 = {"args"}
+  _g144.rest = "body"
+  return(_g144)
+end)(), {"let", {{"args", "body"}, {"expand-function", "args", "body"}}, {"quasiquote", {"%function", {"unquote", "args"}, {"unquote-splicing", "body"}}}}}, macro = function (args, ...)
+  local body = unstash({...})
+  local _g145 = sub(body, 0)
+  local _g146 = expand_function(args, _g145)
+  local args = _g146[1]
+  local _g147 = _g146[2]
+  return(join({"%function", args}, _g147))
+end})
+
+setenv("list", {form = {"fn", "body", {"let", {"l", {"quasiquote", {"%array", {"unquote-splicing", "body"}}}}, {"if", {"not", {"keys?", "body"}}, "l", {"let", {"id", {"make-id"}, "init", {}}, {"each", {"body", "k", "v"}, {"add", "init", {"quasiquote", {"set", {"get", {"unquote", "id"}, {"quote", {"unquote", "k"}}}, {"unquote", "v"}}}}}, {"quasiquote", {"let", {{"unquote", "id"}, {"unquote", "l"}}, {"unquote-splicing", "init"}, {"unquote", "id"}}}}}}}, macro = function (...)
   local body = unstash({...})
   local l = join({"%array"}, body)
   if (not keys63(body)) then
@@ -1759,44 +1851,56 @@ setenv("list", {macro = function (...)
     local id = make_id()
     local init = {}
     local k = nil
-    local _g139 = body
-    for k in next, _g139 do
+    local _g148 = body
+    for k in next, _g148 do
       if (not number63(k)) then
-        local v = _g139[k]
+        local v = _g148[k]
         add(init, {"set", {"get", id, {"quote", k}}, v})
       end
     end
     return(join({"let", {id, l}}, join(init, {id})))
   end
-end, form = {"fn", "body", {"let", {"l", {"quasiquote", {"%array", {"unquote-splicing", "body"}}}}, {"if", {"not", {"keys?", "body"}}, "l", {"let", {"id", {"make-id"}, "init", {}}, {"each", {"body", "k", "v"}, {"add", "init", {"quasiquote", {"set", {"get", {"unquote", "id"}, {"quote", {"unquote", "k"}}}, {"unquote", "v"}}}}}, {"quasiquote", {"let", {{"unquote", "id"}, {"unquote", "l"}}, {"unquote-splicing", "init"}, {"unquote", "id"}}}}}}}})
+end})
 
-setenv("with-indent", {macro = function (form)
-  local result = make_id()
-  return({"do", {"inc", "indent-level"}, {"let", {result, form}, {"dec", "indent-level"}, result}})
-end, form = {"fn", {"form"}, {"let", {"result", {"make-id"}}, {"quasiquote", {"do", {"inc", "indent-level"}, {"let", {{"unquote", "result"}, {"unquote", "form"}}, {"dec", "indent-level"}, {"unquote", "result"}}}}}}})
+setenv("define-reader", {form = {"fn", (function ()
+  local _g149 = {{"char", "stream"}}
+  _g149.rest = "body"
+  return(_g149)
+end)(), {"quasiquote", {"set", {"get", "read-table", {"unquote", "char"}}, {"fn", {{"unquote", "stream"}}, {"unquote-splicing", "body"}}}}}, macro = function (_g150, ...)
+  local char = _g150[1]
+  local stream = _g150[2]
+  local body = unstash({...})
+  local _g151 = sub(body, 0)
+  return({"set", {"get", "read-table", char}, join({"fn", {stream}}, _g151)})
+end})
 
-setenv("pr", {macro = function (...)
-  local xs = unstash({...})
-  local xs = map(function (x)
-    return(splice({{"to-string", x}, "\" \""}))
-  end, xs)
-  return({"print", join({"cat"}, xs)})
-end, form = {"fn", "xs", {"let", {"xs", {"map", {"fn", {"x"}, {"splice", {"quasiquote", {{"to-string", {"unquote", "x"}}, "\" \""}}}}, "xs"}}, {"quasiquote", {"print", {"cat", {"unquote-splicing", "xs"}}}}}}})
+setenv("dec", {form = {"fn", {"n", "by"}, {"quasiquote", {"set", {"unquote", "n"}, {"-", {"unquote", "n"}, {"unquote", {"or", "by", 1}}}}}}, macro = function (n, by)
+  return({"set", n, {"-", n, (by or 1)}})
+end})
 
-setenv("quasiquote", {macro = function (form)
-  return(quasiexpand(form, 1))
-end, form = {"fn", {"form"}, {"quasiexpand", "form", 1}}})
+setenv("set-of", {form = {"fn", "elements", {"let", {"l", {}}, {"across", {"elements", "e"}, {"set", {"get", "l", "e"}, true}}, {"quasiquote", {"table", {"unquote-splicing", "l"}}}}}, macro = function (...)
+  local elements = unstash({...})
+  local l = {}
+  local _g153 = 0
+  local _g152 = elements
+  while (_g153 < length(_g152)) do
+    local e = _g152[(_g153 + 1)]
+    l[e] = true
+    _g153 = (_g153 + 1)
+  end
+  return(join({"table"}, l))
+end})
 
-setenv("list*", {macro = function (...)
+setenv("list*", {form = {"fn", "xs", {"if", {"empty?", "xs"}, {}, {"let", {"l", {}}, {"across", {"xs", "x", "i"}, {"if", {"=", "i", {"-", {"length", "xs"}, 1}}, {"set", "l", {"list", {"quote", "join"}, {"join", {"quote", {"list"}}, "l"}, "x"}}, {"add", "l", "x"}}}, "l"}}}, macro = function (...)
   local xs = unstash({...})
   if empty63(xs) then
     return({})
   else
     local l = {}
     local i = 0
-    local _g140 = xs
-    while (i < length(_g140)) do
-      local x = _g140[(i + 1)]
+    local _g154 = xs
+    while (i < length(_g154)) do
+      local x = _g154[(i + 1)]
       if (i == (length(xs) - 1)) then
         l = {"join", join({"list"}, l), x}
       else
@@ -1806,80 +1910,95 @@ setenv("list*", {macro = function (...)
     end
     return(l)
   end
-end, form = {"fn", "xs", {"if", {"empty?", "xs"}, {}, {"let", {"l", {}}, {"across", {"xs", "x", "i"}, {"if", {"=", "i", {"-", {"length", "xs"}, 1}}, {"set", "l", {"list", {"quote", "join"}, {"join", {"quote", {"list"}}, "l"}, "x"}}, {"add", "l", "x"}}}, "l"}}}})
+end})
 
-setenv("cat!", {macro = function (a, ...)
+setenv("join!", {form = {"fn", (function ()
+  local _g155 = {"a"}
+  _g155.rest = "bs"
+  return(_g155)
+end)(), {"quasiquote", {"set", {"unquote", "a"}, {"join*", {"unquote", "a"}, {"unquote-splicing", "bs"}}}}}, macro = function (a, ...)
   local bs = unstash({...})
-  local _g141 = sub(bs, 0)
-  return({"set", a, join({"cat", a}, _g141)})
-end, form = {"fn", (function ()
-  local _g142 = {"a"}
-  _g142.rest = "bs"
-  return(_g142)
-end)(), {"quasiquote", {"set", {"unquote", "a"}, {"cat", {"unquote", "a"}, {"unquote-splicing", "bs"}}}}}})
+  local _g156 = sub(bs, 0)
+  return({"set", a, join({"join*", a}, _g156)})
+end})
 
-setenv("define-reader", {macro = function (_g143, ...)
-  local char = _g143[1]
-  local stream = _g143[2]
+setenv("pr", {form = {"fn", "xs", {"let", {"xs", {"map", {"fn", {"x"}, {"splice", {"quasiquote", {{"to-string", {"unquote", "x"}}, "\" \""}}}}, "xs"}}, {"quasiquote", {"print", {"cat", {"unquote-splicing", "xs"}}}}}}, macro = function (...)
+  local xs = unstash({...})
+  local xs = map(function (x)
+    return(splice({{"to-string", x}, "\" \""}))
+  end, xs)
+  return({"print", join({"cat"}, xs)})
+end})
+
+setenv("let-symbol", {form = {"fn", (function ()
+  local _g157 = {"expansions"}
+  _g157.rest = "body"
+  return(_g157)
+end)(), {"add", "environment", {"table"}}, {"map", {"fn", {{"name", "exp"}}, {"setenv", "name", (function ()
+  local _g158 = {"table"}
+  _g158.symbol = "exp"
+  return(_g158)
+end)()}}, {"pairwise", "expansions"}}, {"let", {"body", {"macroexpand", "body"}}, {"drop", "environment"}, {"quasiquote", {"do", {"unquote-splicing", "body"}}}}}, macro = function (expansions, ...)
   local body = unstash({...})
-  local _g144 = sub(body, 0)
-  return({"set", {"get", "read-table", char}, join({"fn", {stream}}, _g144)})
-end, form = {"fn", (function ()
-  local _g145 = {{"char", "stream"}}
-  _g145.rest = "body"
-  return(_g145)
-end)(), {"quasiquote", {"set", {"get", "read-table", {"unquote", "char"}}, {"fn", {{"unquote", "stream"}}, {"unquote-splicing", "body"}}}}}})
+  local _g159 = sub(body, 0)
+  add(environment, {})
+  map(function (_g160)
+    local name = _g160[1]
+    local exp = _g160[2]
+    return(setenv(name, {symbol = exp}))
+  end, pairwise(expansions))
+  local _g161 = macroexpand(_g159)
+  drop(environment)
+  return(join({"do"}, _g161))
+end})
 
-setenv("each", {macro = function (_g146, ...)
-  local t = _g146[1]
-  local k = _g146[2]
-  local v = _g146[3]
-  local body = unstash({...})
-  local _g147 = sub(body, 0)
-  local t1 = make_id()
-  return({"let", {k, "nil", t1, t}, {"%for", {t1, k}, {"if", (function ()
-    local _g148 = {"target"}
-    _g148.js = {"isNaN", {"parseInt", k}}
-    _g148.lua = {"not", {"number?", k}}
-    return(_g148)
-  end)(), join({"let", {v, {"get", t1, k}}}, _g147)}}})
-end, form = {"fn", (function ()
-  local _g149 = {{"t", "k", "v"}}
-  _g149.rest = "body"
-  return(_g149)
-end)(), {"let", {"t1", {"make-id"}}, {"quasiquote", {"let", {{"unquote", "k"}, "nil", {"unquote", "t1"}, {"unquote", "t"}}, {"%for", {{"unquote", "t1"}, {"unquote", "k"}}, {"if", (function ()
-  local _g150 = {"target"}
-  _g150.js = {"isNaN", {"parseInt", {"unquote", "k"}}}
-  _g150.lua = {"not", {"number?", {"unquote", "k"}}}
-  return(_g150)
-end)(), {"let", {{"unquote", "v"}, {"get", {"unquote", "t1"}, {"unquote", "k"}}}, {"unquote-splicing", "body"}}}}}}}}})
-
-setenv("guard", {macro = function (expr)
-  if (target == "js") then
-    return({{"fn", {}, {"%try", {"list", true, expr}}}})
-  else
-    local e = make_id()
-    local x = make_id()
-    local ex = ("|" .. e .. "," .. x .. "|")
-    return({"let", {ex, {"xpcall", {"fn", {}, expr}, "message-handler"}}, {"list", e, x}})
+setenv("at", {form = {"fn", {"l", "i"}, {"if", {"and", {"=", "target", {"quote", "lua"}}, {"number?", "i"}}, {"inc", "i"}, {"=", "target", {"quote", "lua"}}, {"set", "i", {"quasiquote", {"+", {"unquote", "i"}, 1}}}}, {"quasiquote", {"get", {"unquote", "l"}, {"unquote", "i"}}}}, macro = function (l, i)
+  if ((target == "lua") and number63(i)) then
+    i = (i + 1)
+  elseif (target == "lua") then
+    i = {"+", i, 1}
   end
-end, form = {"fn", {"expr"}, {"if", {"=", "target", {"quote", "js"}}, {"quasiquote", {{"fn", {}, {"%try", {"list", true, {"unquote", "expr"}}}}}}, {"let", {"e", {"make-id"}, "x", {"make-id"}, "ex", {"cat", "\"|\"", "e", "\",\"", "x", "\"|\""}}, {"quasiquote", {"let", {{"unquote", "ex"}, {"xpcall", {"fn", {}, {"unquote", "expr"}}, "message-handler"}}, {"list", {"unquote", "e"}, {"unquote", "x"}}}}}}}})
+  return({"get", l, i})
+end})
 
-setenv("let", {macro = function (bindings, ...)
+setenv("table", {form = {"fn", "body", {"let", {"l", {}}, {"each", {"body", "k", "v"}, {"add", "l", "k"}, {"add", "l", "v"}}, {"quasiquote", {"%object", {"unquote-splicing", "l"}}}}}, macro = function (...)
   local body = unstash({...})
-  local _g151 = sub(body, 0)
+  local l = {}
+  local k = nil
+  local _g162 = body
+  for k in next, _g162 do
+    if (not number63(k)) then
+      local v = _g162[k]
+      add(l, k)
+      add(l, v)
+    end
+  end
+  return(join({"%object"}, l))
+end})
+
+setenv("let", {form = {"fn", (function ()
+  local _g163 = {"bindings"}
+  _g163.rest = "body"
+  return(_g163)
+end)(), {"let", {"i", 0, "renames", {}, "locals", {}}, {"map", {"fn", {{"lh", "rh"}}, {"across", {{"bind", "lh", "rh"}, {"id", "val"}}, {"if", {"bound?", "id"}, {"let", {"rename", {"make-id"}}, {"add", "renames", "id"}, {"add", "renames", "rename"}, {"set", "id", "rename"}}, {"setenv", "id", (function ()
+  local _g164 = {"table"}
+  _g164.variable = true
+  return(_g164)
+end)()}}, {"add", "locals", {"quasiquote", {"%local", {"unquote", "id"}, {"unquote", "val"}}}}}}, {"pairwise", "bindings"}}, {"quasiquote", {"do", {"unquote-splicing", "locals"}, {"let-symbol", {"unquote", "renames"}, {"unquote-splicing", "body"}}}}}}, macro = function (bindings, ...)
+  local body = unstash({...})
+  local _g165 = sub(body, 0)
   local i = 0
   local renames = {}
   local locals = {}
-  map(function (_g152)
-    local lh = _g152[1]
-    local rh = _g152[2]
-    local _g154 = 0
-    local _g153 = bind(lh, rh)
-    while (_g154 < length(_g153)) do
-      local _g155 = _g153[(_g154 + 1)]
-      local id = _g155[1]
-      local val = _g155[2]
+  map(function (_g166)
+    local lh = _g166[1]
+    local rh = _g166[2]
+    local _g168 = 0
+    local _g167 = bind(lh, rh)
+    while (_g168 < length(_g167)) do
+      local _g169 = _g167[(_g168 + 1)]
+      local id = _g169[1]
+      local val = _g169[2]
       if bound63(id) then
         local rename = make_id()
         add(renames, id)
@@ -1889,162 +2008,61 @@ setenv("let", {macro = function (bindings, ...)
         setenv(id, {variable = true})
       end
       add(locals, {"%local", id, val})
-      _g154 = (_g154 + 1)
+      _g168 = (_g168 + 1)
     end
   end, pairwise(bindings))
-  return(join({"do"}, join(locals, {join({"let-symbol", renames}, _g151)})))
-end, form = {"fn", (function ()
-  local _g156 = {"bindings"}
-  _g156.rest = "body"
-  return(_g156)
-end)(), {"let", {"i", 0, "renames", {}, "locals", {}}, {"map", {"fn", {{"lh", "rh"}}, {"across", {{"bind", "lh", "rh"}, {"id", "val"}}, {"if", {"bound?", "id"}, {"let", {"rename", {"make-id"}}, {"add", "renames", "id"}, {"add", "renames", "rename"}, {"set", "id", "rename"}}, {"setenv", "id", (function ()
-  local _g157 = {"table"}
-  _g157.variable = true
-  return(_g157)
-end)()}}, {"add", "locals", {"quasiquote", {"%local", {"unquote", "id"}, {"unquote", "val"}}}}}}, {"pairwise", "bindings"}}, {"quasiquote", {"do", {"unquote-splicing", "locals"}, {"let-symbol", {"unquote", "renames"}, {"unquote-splicing", "body"}}}}}}})
+  return(join({"do"}, join(locals, {join({"let-symbol", renames}, _g165)})))
+end})
 
-setenv("table", {macro = function (...)
+setenv("with-indent", {form = {"fn", {"form"}, {"let", {"result", {"make-id"}}, {"quasiquote", {"do", {"inc", "indent-level"}, {"let", {{"unquote", "result"}, {"unquote", "form"}}, {"dec", "indent-level"}, {"unquote", "result"}}}}}}, macro = function (form)
+  local result = make_id()
+  return({"do", {"inc", "indent-level"}, {"let", {result, form}, {"dec", "indent-level"}, result}})
+end})
+
+setenv("each", {form = {"fn", (function ()
+  local _g170 = {{"t", "k", "v"}}
+  _g170.rest = "body"
+  return(_g170)
+end)(), {"let", {"t1", {"make-id"}}, {"quasiquote", {"let", {{"unquote", "k"}, "nil", {"unquote", "t1"}, {"unquote", "t"}}, {"%for", {{"unquote", "t1"}, {"unquote", "k"}}, {"if", (function ()
+  local _g171 = {"target"}
+  _g171.js = {"isNaN", {"parseInt", {"unquote", "k"}}}
+  _g171.lua = {"not", {"number?", {"unquote", "k"}}}
+  return(_g171)
+end)(), {"let", {{"unquote", "v"}, {"get", {"unquote", "t1"}, {"unquote", "k"}}}, {"unquote-splicing", "body"}}}}}}}}, macro = function (_g172, ...)
+  local t = _g172[1]
+  local k = _g172[2]
+  local v = _g172[3]
   local body = unstash({...})
-  local l = {}
-  local k = nil
-  local _g158 = body
-  for k in next, _g158 do
-    if (not number63(k)) then
-      local v = _g158[k]
-      add(l, k)
-      add(l, v)
-    end
-  end
-  return(join({"%object"}, l))
-end, form = {"fn", "body", {"let", {"l", {}}, {"each", {"body", "k", "v"}, {"add", "l", "k"}, {"add", "l", "v"}}, {"quasiquote", {"%object", {"unquote-splicing", "l"}}}}}})
+  local _g173 = sub(body, 0)
+  local t1 = make_id()
+  return({"let", {k, "nil", t1, t}, {"%for", {t1, k}, {"if", (function ()
+    local _g174 = {"target"}
+    _g174.js = {"isNaN", {"parseInt", k}}
+    _g174.lua = {"not", {"number?", k}}
+    return(_g174)
+  end)(), join({"let", {v, {"get", t1, k}}}, _g173)}}})
+end})
 
-setenv("target", {macro = function (...)
-  local clauses = unstash({...})
-  return(clauses[target])
-end, form = {"fn", "clauses", {"get", "clauses", "target"}}})
-
-setenv("at", {macro = function (l, i)
-  if ((target == "lua") and number63(i)) then
-    i = (i + 1)
-  elseif (target == "lua") then
-    i = {"+", i, 1}
-  end
-  return({"get", l, i})
-end, form = {"fn", {"l", "i"}, {"if", {"and", {"=", "target", {"quote", "lua"}}, {"number?", "i"}}, {"inc", "i"}, {"=", "target", {"quote", "lua"}}, {"set", "i", {"quasiquote", {"+", {"unquote", "i"}, 1}}}}, {"quasiquote", {"get", {"unquote", "l"}, {"unquote", "i"}}}}})
-
-setenv("set-of", {macro = function (...)
-  local elements = unstash({...})
-  local l = {}
-  local _g160 = 0
-  local _g159 = elements
-  while (_g160 < length(_g159)) do
-    local e = _g159[(_g160 + 1)]
-    l[e] = true
-    _g160 = (_g160 + 1)
-  end
-  return(join({"table"}, l))
-end, form = {"fn", "elements", {"let", {"l", {}}, {"across", {"elements", "e"}, {"set", {"get", "l", "e"}, true}}, {"quasiquote", {"table", {"unquote-splicing", "l"}}}}}})
-
-setenv("fn", {macro = function (args, ...)
-  local body = unstash({...})
-  local _g161 = sub(body, 0)
-  local _g162 = expand_function(args, _g161)
-  local args = _g162[1]
-  local _g163 = _g162[2]
-  return(join({"%function", args}, _g163))
-end, form = {"fn", (function ()
-  local _g164 = {"args"}
-  _g164.rest = "body"
-  return(_g164)
-end)(), {"let", {{"args", "body"}, {"expand-function", "args", "body"}}, {"quasiquote", {"%function", {"unquote", "args"}, {"unquote-splicing", "body"}}}}}})
-
-setenv("join*", {macro = function (...)
-  local xs = unstash({...})
-  return(reduce(function (a, b)
-    return({"join", a, b})
-  end, xs))
-end, form = {"fn", "xs", {"reduce", {"fn", {"a", "b"}, {"list", {"quote", "join"}, "a", "b"}}, "xs"}}})
-
-setenv("quote", {macro = function (form)
-  return(quoted(form))
-end, form = {"fn", {"form"}, {"quoted", "form"}}})
-
-setenv("let-macro", {macro = function (definitions, ...)
-  local body = unstash({...})
-  local _g165 = sub(body, 0)
-  add(environment, {})
-  map(function (m)
-    return(compile(join({"define-macro"}, m)))
-  end, definitions)
-  local _g166 = macroexpand(_g165)
-  drop(environment)
-  return(join({"do"}, _g166))
-end, form = {"fn", (function ()
-  local _g167 = {"definitions"}
-  _g167.rest = "body"
-  return(_g167)
-end)(), {"add", "environment", {"table"}}, {"map", {"fn", {"m"}, {"compile", {"quasiquote", {"define-macro", {"unquote-splicing", "m"}}}}}, "definitions"}, {"let", {"body", {"macroexpand", "body"}}, {"drop", "environment"}, {"quasiquote", {"do", {"unquote-splicing", "body"}}}}}})
-
-setenv("define", {macro = function (name, x, ...)
-  local body = unstash({...})
-  local _g168 = sub(body, 0)
-  if (not empty63(_g168)) then
-    x = join({"fn", x}, _g168)
-  end
-  return({"set", name, x})
-end, form = {"fn", (function ()
-  local _g169 = {"name", "x"}
-  _g169.rest = "body"
-  return(_g169)
-end)(), {"if", {"not", {"empty?", "body"}}, {"set", "x", {"quasiquote", {"fn", {"unquote", "x"}, {"unquote-splicing", "body"}}}}}, {"quasiquote", {"set", {"unquote", "name"}, {"unquote", "x"}}}}})
-
-setenv("inc", {macro = function (n, by)
-  return({"set", n, {"+", n, (by or 1)}})
-end, form = {"fn", {"n", "by"}, {"quasiquote", {"set", {"unquote", "n"}, {"+", {"unquote", "n"}, {"unquote", {"or", "by", 1}}}}}}})
-
-setenv("define-special", {macro = function (name, args, ...)
-  local body = unstash({...})
-  local _g170 = sub(body, 0)
-  return({"set", {"get", "special", {"quote", name}}, join((function ()
-    local _g171 = {"table"}
-    _g171.compiler = join({"fn", args}, _g170)
-    return(_g171)
-  end)(), _g170)})
-end, form = {"fn", (function ()
-  local _g172 = {"name", "args"}
-  _g172.rest = "body"
-  return(_g172)
-end)(), {"quasiquote", {"set", {"get", "special", {"quote", {"unquote", "name"}}}, (function ()
-  local _g173 = {"table", {"unquote-splicing", "body"}}
-  _g173.compiler = {"fn", {"unquote", "args"}, {"unquote-splicing", "body"}}
-  return(_g173)
-end)()}}}})
-
-setenv("join!", {macro = function (a, ...)
-  local bs = unstash({...})
-  local _g174 = sub(bs, 0)
-  return({"set", a, join({"join*", a}, _g174)})
-end, form = {"fn", (function ()
-  local _g175 = {"a"}
-  _g175.rest = "bs"
+setenv("define-special", {form = {"fn", (function ()
+  local _g175 = {"name", "args"}
+  _g175.rest = "body"
   return(_g175)
-end)(), {"quasiquote", {"set", {"unquote", "a"}, {"join*", {"unquote", "a"}, {"unquote-splicing", "bs"}}}}}})
-
-setenv("across", {macro = function (_g176, ...)
-  local l = _g176[1]
-  local v = _g176[2]
-  local i = _g176[3]
-  local start = _g176[4]
+end)(), {"quasiquote", {"set", {"get", "special", {"quote", {"unquote", "name"}}}, (function ()
+  local _g176 = {"table", {"unquote-splicing", "body"}}
+  _g176.compiler = {"fn", {"unquote", "args"}, {"unquote-splicing", "body"}}
+  return(_g176)
+end)()}}}, macro = function (name, args, ...)
   local body = unstash({...})
   local _g177 = sub(body, 0)
-  local l1 = make_id()
-  i = (i or make_id())
-  start = (start or 0)
-  return({"let", {i, start, l1, l}, {"while", {"<", i, {"length", l1}}, join({"let", {v, {"at", l1, i}}}, join(_g177, {{"inc", i}}))}})
-end, form = {"fn", (function ()
-  local _g178 = {{"l", "v", "i", "start"}}
-  _g178.rest = "body"
-  return(_g178)
-end)(), {"let", {"l1", {"make-id"}}, {"set", "i", {"or", "i", {"make-id"}}}, {"set", "start", {"or", "start", 0}}, {"quasiquote", {"let", {{"unquote", "i"}, {"unquote", "start"}, {"unquote", "l1"}, {"unquote", "l"}}, {"while", {"<", {"unquote", "i"}, {"length", {"unquote", "l1"}}}, {"let", {{"unquote", "v"}, {"at", {"unquote", "l1"}, {"unquote", "i"}}}, {"unquote-splicing", "body"}, {"inc", {"unquote", "i"}}}}}}}}})
+  return({"set", {"get", "special", {"quote", name}}, join((function ()
+    local _g178 = {"table"}
+    _g178.compiler = join({"fn", args}, _g177)
+    return(_g178)
+  end)(), _g177)})
+end})
+
+setenv("quote", {form = {"fn", {"form"}, {"quoted", "form"}}, macro = function (form)
+  return(quoted(form))
+end})
 
 main()

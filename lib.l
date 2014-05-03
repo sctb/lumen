@@ -139,21 +139,20 @@
 ;; macro helpers
 
 (define escape (str)
-  (let (str1 "" i 0)
+  (let (str1 "\"" i 0)
     (while (< i (length str))
       (let (c (char str i)
             c1 (if (= c "\n") "\\n"
                    (= c "\"") "\\\""
+                   (= c "\\") "\\\\"
                  c))
         (cat! str1 c1))
       (inc i))
-    str1))
+    (cat str1 "\"")))
 
 (define quoted (form)
-  (if (atom? form)
-      (if (string? form)
-          (cat "\"" (escape form) "\"")
-        form)
+  (if (string? form) (escape form)
+      (atom? form) form
     `(list ,@(map* quoted form))))
 
 (define stash (args)                    ; runtime

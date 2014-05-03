@@ -95,6 +95,8 @@
   (test= (quote a) 'a)
   (test= (quote (quote a)) ''a)
   (test= "\"a\"" '"a")
+  (test= "\"\\n\"" (quote "\n"))
+  (test= "\"\\\\\"" (quote "\\"))
   (test= '(quote "a") ''"a")
   (test= "|(|" '|(|)
   (test= (quote unquote) 'unquote)
