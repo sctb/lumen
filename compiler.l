@@ -317,24 +317,20 @@
       (set target previous)
       (run str))))
 
-;; loader
+;; linker
 
 (define save-environment? false)
+
+(define save-entry (x)
+  (if (or (nil? x) x.variable) nil
+      (is? x.macro) `(table macro: ,x.form)
+    `(table symbol: ,x.symbol)))
 
 (define save-environment ()
   (let (env '(define environment (list (table)))
         output (compile-toplevel env)
-        toplevel (hd environment)
-        entries (table))
-    (each (toplevel k v)
-      (let ((:form :macro :symbol) v
-            entry 
-            (if (is? macro)
-                `(table macro: ,form form: ',form)
-                (is? symbol)
-                `(table symbol: ',symbol)))
-        (if entry (set (get entries k) entry))))
-    (each (entries k v)
+        toplevel (hd environment))
+    (each ((map* save-entry toplevel) k v)
       (let (compiled (compile-toplevel `(setenv ',k ,v)))
         (cat! output compiled)))
     output))

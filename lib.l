@@ -92,7 +92,7 @@
 (define-macro let-symbol (expansions rest: body)
   (add environment (table))
   (map (fn ((name exp))
-         (setenv name (table symbol: exp)))
+         (macroexpand `(define-symbol ,name ,exp)))
        (pairwise expansions))
   (let (body (macroexpand body))
     (drop environment)
