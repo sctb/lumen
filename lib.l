@@ -12,21 +12,21 @@
 
 (define symbol-expansion (k)
   (let (x (getenv k))
-    (and x (get x 'symbol))))
+    (and x x.symbol)))
 
 (define symbol? (k)
   (is? (symbol-expansion k)))
 
 (define macro-function (k)
   (let (x (getenv k))
-    (and x (get x 'macro))))
+    (and x x.macro)))
 
 (define macro? (k)
   (is? (macro-function k)))
 
 (define variable? (k)
   (let (x (get (last environment) k))
-    (and x (get x 'variable))))
+    (and x x.variable)))
 
 (define bound? (x)
   (or (symbol? x)
@@ -210,7 +210,7 @@
           (list args1 `((let ,bs ,@body))))))))
 
 (define bind (lh rh)
-  (if (and (list? lh) (list? rh))
+  (if (and (composite? lh) (list? rh))
       (let (id (make-id))
 	`((,id ,rh) ,@(bind lh id)))
       (atom? lh) `((,lh ,rh))

@@ -50,7 +50,7 @@
 
 (define valid-id? (id)
   (if (empty? id) false
-      (get special id) false
+      (special? id) false
       (getop id) false
     (let (i 0)
       (while (< i (length id))
@@ -87,7 +87,7 @@
 
 (define compile-call (form)
   (if (empty? form)
-      ((compiler '%array) form) ; ()
+      (compile-special '(%array))       ; ()
     (let (f (hd form)
           f1 (compile f)
           args (compile-args (stash* (tl form))))
@@ -141,24 +141,24 @@
     "\n"))
 
 (define compile-special (form stmt? tail?)
-  (let (name (hd form))
-    (if (and (not stmt?) (statement? name))
+  (let ((:special :stmt tr: self-tr?) (getenv (hd form)))
+    (if (and (not stmt?) stmt)
         (compile `((%function () ,form)) tail?: tail?)
-      (let (tr (terminator (and stmt? (not (self-tr? name)))))
-        (cat ((compiler name) (tl form) tail?) tr)))))
+      (let (tr (terminator (and stmt? (not self-tr?))))
+        (cat (special (tl form) tail?) tr)))))
 
-(define special (table))
+(define special? (k)
+  (let (x (getenv k))
+    (and x x.special)))
 
-(define special? (form)
-  (and (list? form) (is? (get special (hd form)))))
+(define special-form? (form)
+  (and (list? form) (special? (hd form))))
 
 (define-macro define-special (name args rest: body)
-  `(set (get special ',name)
-        (table compiler: (fn ,args ,@body) ,@body)))
-
-(define compiler (name) (get (get special name) 'compiler))
-(define statement? (name) (get (get special name) 'stmt))
-(define self-tr? (name) (get (get special name) 'tr))
+  (let (form `(fn ,args ,@body)
+        entry `(table special: ,form form: ',form ,@body)
+        special `(setenv ',name ,entry))
+    (eval special)))
 
 (define-special do (forms tail?) :stmt :tr
   (compile-body forms tail?: tail?))
@@ -278,14 +278,15 @@
     (cat str "}")))
 
 (define can-return? (form)
-  (or (not (special? form))
-      (not (statement? (hd form)))))
+  (or (not (special-form? form))
+      (not (get (getenv (hd form)) 'stmt))))
 
 (define compile (form :stmt? :tail?)
   (if (and tail? (can-return? form))
       (set form `(return ,form)))
   (if (nil? form) ""
-      (special? form) (compile-special form stmt? tail?)
+      (special-form? form)
+      (compile-special form stmt? tail?)
     (let (tr (terminator stmt?)
           ind (if stmt? (indentation) "")
           form (if (atom? form) (compile-atom form)
@@ -321,16 +322,18 @@
 
 (define save-environment? false)
 
-(define save-entry (x)
-  (if (or (nil? x) x.variable) nil
-      (is? x.macro) `(table macro: ,x.form)
-    `(table symbol: ,x.symbol)))
+(define quote-binding (x)
+  (if (is? x.symbol) `(table symbol: ,x.symbol)
+      (or x.variable (nil? x.form)) nil
+      x.macro `(table macro: ,x.form)
+    (let ((:stmt :tr) x)
+      `(table special: ,x.form stmt: ,stmt tr: ,tr))))
 
 (define save-environment ()
   (let (env '(define environment (list (table)))
         output (compile-toplevel env)
         toplevel (hd environment))
-    (each ((map* save-entry toplevel) k v)
+    (each ((map* quote-binding toplevel) k v)
       (let (compiled (compile-toplevel `(setenv ',k ,v)))
         (cat! output compiled)))
     output))
