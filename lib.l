@@ -60,8 +60,9 @@
 (define-macro table body
   (let (l ())
     (each (body k v)
-      (add l k)
-      (add l v))
+      (if (is? v)
+          (do (add l k)
+              (add l v))))
     `(%object ,@l)))
 
 (define-macro let (bindings rest: body)
@@ -472,7 +473,9 @@
 (define map* (f t)
   (let (l (map f t))
     (each (t k v)
-      (set (get l k) (f v)))
+      (let (x (f v))
+        (if (is? x)
+            (set (get l k) x))))
     l))
 
 (define keys? (t)
