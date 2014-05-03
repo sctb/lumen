@@ -15,12 +15,12 @@
               (if str (step str) (break)))))))
 
 (define usage ()
-  (pr "usage: x [options] [inputs]")
+  (pr "usage: lumen [options] [inputs]")
   (pr "options:")
   (pr "  -o <output>\tOutput file")
   (pr "  -t <target>\tTarget language (default: lua)")
   (pr "  -e <expr>\tExpression to evaluate")
-  (pr "  -m \t\tEmbed macro definitions in output")
+  (pr "  -s \t\tSave environment")
   (exit))
 
 (define main ()
@@ -41,7 +41,7 @@
                     (if (= arg "-o") (set output val)
 		        (= arg "-t") (set target1 val)
 		        (= arg "-e") (set expr val)))))
-	    (= arg "-m") (set embed-macros? true)
+            (= arg "-s") (set save-environment? true)
 	    (~= "-" (char arg 0)) (add inputs arg)))
       (if output
           (do (if target1 (set target target1))

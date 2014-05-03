@@ -208,13 +208,10 @@
 (define-special %function ((args rest: body))
   (compile-function args body))
 
-(define macros "")
-
 (define-special define-macro ((name args rest: body)) :stmt :tr
-  (let (macro `(setenv ',name (table macro: (fn ,args ,@body))))
-    (eval macro)
-    (if embed-macros?
-	(cat! macros (compile-toplevel macro))))
+  (let (form `(fn ,args ,@body)
+        macro `(setenv ',name (table macro: ,form form: ',form)))
+    (eval macro))
   "")
 
 (define-special return ((x)) :stmt
@@ -322,6 +319,26 @@
 
 ;; loader
 
+(define save-environment? false)
+
+(define save-environment ()
+  (let (env '(define environment (list (table)))
+        output (compile-toplevel env)
+        toplevel (hd environment)
+        entries (table))
+    (each (toplevel k v)
+      (let ((:form :macro :symbol) v
+            entry 
+            (if (is? macro)
+                `(table macro: ,form form: ',form)
+                (is? symbol)
+                `(table symbol: ',symbol)))
+        (if entry (set (get entries k) entry))))
+    (each (entries k v)
+      (let (compiled (compile-toplevel `(setenv ',k ,v)))
+        (cat! output compiled)))
+    output))
+
 (define compile-file (file)
   (let (output ""
         s (make-stream (read-file file)))
@@ -331,16 +348,12 @@
         (cat! output (compile-toplevel form))))
     output))
 
-(define embed-macros ()
-  (let (env '(define environment (list (table))))
-    (cat (compile-toplevel env) macros)))
-
 (define compile-files (files)
   (let (output "")
     (across (files file)
       (cat! output (compile-file file)))
-    (if embed-macros?
-        (cat output (embed-macros))
+    (if save-environment?
+        (cat output (save-environment))
       output)))
 
 (define load-file (file)

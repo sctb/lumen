@@ -33,8 +33,6 @@
       (macro? x)
       (variable? x)))
 
-(define embed-macros? false)
-
 ;; macros
 
 (define-macro at (l i)
@@ -92,12 +90,9 @@
 
 (define-macro let-macro (definitions rest: body)
   (add environment (table))
-  (let (embed? embed-macros?)
-    (set embed-macros? false)
-    (map (fn (m)
-           (compile `(define-macro ,@m)))
-         definitions)
-    (set embed-macros? embed?))
+  (map (fn (m)
+         (compile `(define-macro ,@m)))
+       definitions)
   (let (body (macroexpand body))
     (drop environment)
     `(do ,@body)))

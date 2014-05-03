@@ -6,14 +6,14 @@ JSBOOT := boot/lumen.js
 
 
 $(LUABOOT) $(JSBOOT): $(SRCS)
-	@./lumen $(SRCS) -m -o $(LUABOOT)
-	@LUMEN_HOST=node ./lumen $(SRCS) -m -o $(JSBOOT)
+	@./lumen $(SRCS) -s -o $(LUABOOT)
+	@LUMEN_HOST=node ./lumen $(SRCS) -s -o $(JSBOOT)
 
 all: $(JSBOOT) $(LUABOOT)
 
 cross: all
-	@LUMEN_HOST=node ./lumen $(SRCS) -m -o $(LUABOOT) -t lua
-	@./lumen $(SRCS) -m -o $(JSBOOT) -t js
+	@LUMEN_HOST=node ./lumen $(SRCS) -s -o $(LUABOOT) -t lua
+	@./lumen $(SRCS) -s -o $(JSBOOT) -t js
 
 test: cross
 	@./lumen test.l -e "(run-tests)"
