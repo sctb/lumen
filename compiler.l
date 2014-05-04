@@ -305,10 +305,10 @@
 
 (define quote-binding (x)
   (if (is? x.symbol) `(table symbol: ',x.symbol)
-      (or x.variable (nil? x.form)) nil
-      x.macro `(table macro: ,x.form)
-    (let ((:stmt :tr) x)
-      `(table special: ,x.form stmt: ,stmt tr: ,tr))))
+      (and x.macro x.form) `(table macro: ,x.form)
+      (and x.special x.form)
+      (let ((:stmt :tr) x)
+        `(table special: ,x.form stmt: ,stmt tr: ,tr))))
 
 (define save-environment ()
   (let (env '(define environment (list (table)))
