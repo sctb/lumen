@@ -126,14 +126,16 @@
         (cat " else if (" cond1 ") {\n" body ind "}" tr)
       (cat ind "elseif " cond1 " then\n" body tr))))
 
-(define compile-function (args body name)
-  (let (name (or name "")
+(define compile-function (args body :name :prefix)
+  (let (id (if name (compile name) "")
+        prefix (or prefix "")
         args (compile-args args)
         body (with-indent (compile-body body :tail?))
-        ind (indentation))
+        ind (indentation)
+        tr (if name "end\n" "end"))
     (if (= target 'js)
-        (cat "function " name args " {\n" body ind "}")
-      (cat "function " name args "\n" body ind "end"))))
+        (cat "function " id args " {\n" body ind "}")
+      (cat prefix "function " id args "\n" body ind tr))))
 
 (define terminator (stmt?)
   (if (not stmt?) ""
@@ -194,6 +196,16 @@
 
 (define-special %function ((args rest: body))
   (compile-function args body))
+
+(define-special %global-function
+    ((name args rest: body)) :stmt :tr
+  (if (= target 'lua)
+      (compile-function args body name: name)
+    (compile `(set ,name (%function ,args ,@body)) :stmt?)))
+
+(define-special %local-function
+    ((name args rest: body)) :stmt :tr
+  (compile-function args body name: name prefix: "local "))
 
 (define-special return ((x)) :stmt
   (cat (indentation) (compile-call `(return ,x))))
