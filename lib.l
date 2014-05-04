@@ -131,7 +131,7 @@
     `(do ,@body)))
 
 (define-macro fn (args rest: body)
-  (let ((args body) (expand-function args body))
+  (let ((args body) (bind-arguments args body))
     `(%function ,args ,@body)))
 
 (define-macro guard (expr)
@@ -245,15 +245,6 @@
         (if (~= k 'rest)
             (join! bs (bind v `(get ,rh ',k)))))
       bs)))
-
-(define expand-function (args body)
-  (let ((args body) (bind-arguments args body))
-    (add environment (table))
-    (across (args arg)
-      (setenv arg (table :variable)))
-    (let (body (macroexpand body))
-      (drop environment)
-      (list args body))))
 
 (define message-handler (msg)
   (let (i (search msg ": "))
