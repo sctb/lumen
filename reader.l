@@ -129,5 +129,13 @@
 	 s)
       eof)))
 
+(define read-all (s)
+  (let (l ())
+    (while true
+      (let (form (read s))
+        (if (= form eof) (break))
+        (add l form)))
+    l))
+
 (define read-from-string (str)
   (read (make-stream str)))

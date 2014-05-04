@@ -311,7 +311,9 @@
 
 ;; linker
 
-(define save-environment? false)
+(define compiler-output nil)
+(define save-env? false)
+(define compiling? false)
 
 (define quote-binding (x)
   (if (is? x.symbol) `(table symbol: ',x.symbol)
@@ -322,29 +324,25 @@
 
 (define save-environment ()
   (let (env '(define environment (list (table)))
-        output (compile-toplevel env)
         toplevel (hd environment))
+    (cat! compiler-output (compile-toplevel env))
     (each ((map* quote-binding toplevel) k v)
       (let (compiled (compile-toplevel `(setenv ',k ,v)))
-        (cat! output compiled)))
-    output))
+        (cat! compiler-output compiled)))))
 
 (define compile-file (file)
-  (let (body ()
-        s (make-stream (read-file file)))
-    (while true
-      (let (form (read s))
-        (if (= form eof) (break))
-        (add body form)))
+  (let (str (read-file file)
+        body (read-all (make-stream str)))
     (compile-toplevel `(do ,@body))))
 
-(define compile-files (files)
-  (let (output "")
-    (across (files file)
-      (cat! output (compile-file file)))
-    (if save-environment?
-        (cat output (save-environment))
-      output)))
-
 (define load-file (file)
-  (run (compile-file file)))
+  (let (compiled (compile-file file))
+    (if compiling?
+        (cat! compiler-output compiled)
+      (run compiled))))
+
+(define compile-files (files)
+  (set compiling? true)
+  (set compiler-output "")
+  (map load-file files)
+  (if save-env? (save-environment)))
