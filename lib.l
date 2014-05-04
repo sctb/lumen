@@ -284,8 +284,14 @@
                ,@(macroexpand body)))
           (= name '%function)
           (let ((_ args rest: body) form)
-            `(%function ,(map* macroexpand args)
-               ,@(macroexpand body)))
+            (add environment (table))
+            (across (args arg)
+              (setenv arg (table :variable)))
+            (let (expanded 
+                  `(%function ,(map* macroexpand args)
+                     ,@(macroexpand body)))
+              (drop environment)
+              expanded))
 	  (macro? name)
           (macroexpand
            (apply (macro-function name) (tl form)))
