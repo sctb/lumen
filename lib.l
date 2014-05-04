@@ -112,23 +112,26 @@
       (set x `(fn ,x ,@body)))
   `(set ,name ,x))
 
+(define-macro with-frame body
+  (let (x (make-id))
+    `(do (add environment (table))
+         (let (,x (do ,@body))
+           (drop environment)
+           ,x))))
+
 (define-macro let-macro (definitions rest: body)
-  (add environment (table))
-  (map (fn (m)
-         (macroexpand `(define-macro ,@m)))
-       definitions)
-  (let (body (macroexpand body))
-    (drop environment)
-    `(do ,@body)))
+  (with-frame
+    (map (fn (m)
+           (macroexpand `(define-macro ,@m)))
+         definitions)
+    `(do ,@(macroexpand body))))
 
 (define-macro let-symbol (expansions rest: body)
-  (add environment (table))
-  (map (fn ((name exp))
-         (macroexpand `(define-symbol ,name ,exp)))
-       (pairwise expansions))
-  (let (body (macroexpand body))
-    (drop environment)
-    `(do ,@body)))
+  (with-frame
+    (map (fn ((name exp))
+           (macroexpand `(define-symbol ,name ,exp)))
+         (pairwise expansions))
+    `(do ,@(macroexpand body))))
 
 (define-macro fn (args rest: body)
   (let ((args body) (bind-arguments args body))
@@ -275,14 +278,11 @@
                ,@(macroexpand body)))
           (= name '%function)
           (let ((_ args rest: body) form)
-            (add environment (table))
-            (across (args arg)
-              (setenv arg (table :variable)))
-            (let (expanded 
-                  `(%function ,(map* macroexpand args)
-                     ,@(macroexpand body)))
-              (drop environment)
-              expanded))
+            (with-frame
+              (across (args arg)
+                (setenv arg (table :variable)))
+              `(%function ,(map* macroexpand args)
+                 ,@(macroexpand body))))
 	  (macro? name)
           (macroexpand
            (apply (macro-function name) (tl form)))
