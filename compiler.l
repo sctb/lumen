@@ -276,9 +276,7 @@
       (cat ind form tr))))
 
 (define compile-toplevel (form)
-  (let (form (compile (macroexpand form) :stmt?))
-    (if (= form "") ""
-      (cat form "\n"))))
+  (compile (macroexpand form) :stmt?))
 
 ;; eval
 
@@ -320,13 +318,13 @@
     output))
 
 (define compile-file (file)
-  (let (output ""
+  (let (body ()
         s (make-stream (read-file file)))
     (while true
       (let (form (read s))
         (if (= form eof) (break))
-        (cat! output (compile-toplevel form))))
-    output))
+        (add body form)))
+    (compile-toplevel `(do ,@body))))
 
 (define compile-files (files)
   (let (output "")
