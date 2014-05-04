@@ -10,13 +10,6 @@
       (find (fn (e) (get e k))
             (reverse environment))))
 
-(define symbol-expansion (k)
-  (let (x (getenv k))
-    (and x x.symbol)))
-
-(define symbol? (k)
-  (is? (symbol-expansion k)))
-
 (define macro-function (k)
   (let (x (getenv k))
     (and x x.macro)))
@@ -24,13 +17,28 @@
 (define macro? (k)
   (is? (macro-function k)))
 
+(define special? (k)
+  (let (x (getenv k))
+    (and x x.special)))
+
+(define special-form? (form)
+  (and (list? form) (special? (hd form))))
+
+(define symbol-expansion (k)
+  (let (x (getenv k))
+    (and x x.symbol)))
+
+(define symbol? (k)
+  (is? (symbol-expansion k)))
+
 (define variable? (k)
   (let (x (get (last environment) k))
     (and x x.variable)))
 
 (define bound? (x)
-  (or (symbol? x)
-      (macro? x)
+  (or (macro? x)
+      (special? x)
+      (symbol? x)
       (variable? x)))
 
 ;; macros
@@ -81,10 +89,33 @@
          (pairwise bindings))
     `(do ,@locals (let-symbol ,renames ,@body))))
 
+(define-macro define-macro (name args rest: body)
+  (let (form `(fn ,args ,@body)
+        value `(table macro: ,form form: ',form)
+        binding `(setenv ',name ,value))
+    (eval binding))
+  nil)
+
+(define-macro define-special (name args rest: body)
+  (let (form `(fn ,args ,@body)
+        value `(table special: ,form form: ',form ,@body)
+        binding `(setenv ',name ,value))
+    (eval binding))
+  nil)
+
+(define-macro define-symbol (name expansion)
+  (setenv name (table symbol: expansion))
+  nil)
+
+(define-macro define (name x rest: body)
+  (if (not (empty? body))
+      (set x `(fn ,x ,@body)))
+  `(set ,name ,x))
+
 (define-macro let-macro (definitions rest: body)
   (add environment (table))
   (map (fn (m)
-         (compile `(define-macro ,@m)))
+         (macroexpand `(define-macro ,@m)))
        definitions)
   (let (body (macroexpand body))
     (drop environment)
@@ -98,15 +129,6 @@
   (let (body (macroexpand body))
     (drop environment)
     `(do ,@body)))
-
-(define-macro define-symbol (name expansion)
-  (setenv name (table symbol: expansion))
-  nil)
-
-(define-macro define (name x rest: body)
-  (if (not (empty? body))
-      (set x `(fn ,x ,@body)))
-  `(set ,name ,x))
 
 (define-macro fn (args rest: body)
   (let ((args body) (expand-function args body))
@@ -240,8 +262,7 @@
 ;; expansion
 
 (define self-expanding? (x)
-  (or (= x '%function)
-      (= x 'define-macro)))
+  (= x '%function))
 
 (define quoting? (depth) (number? depth))
 (define quasiquoting? (depth) (and (quoting? depth) (> depth 0)))

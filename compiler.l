@@ -147,19 +147,6 @@
       (let (tr (terminator (and stmt? (not self-tr?))))
         (cat (special (tl form) tail?) tr)))))
 
-(define special? (k)
-  (let (x (getenv k))
-    (and x x.special)))
-
-(define special-form? (form)
-  (and (list? form) (special? (hd form))))
-
-(define-macro define-special (name args rest: body)
-  (let (form `(fn ,args ,@body)
-        value `(table special: ,form form: ',form ,@body)
-        binding `(setenv ',name ,value))
-    (eval binding)))
-
 (define-special do (forms tail?) :stmt :tr
   (compile-body forms tail?: tail?))
 
@@ -207,13 +194,6 @@
 
 (define-special %function ((args rest: body))
   (compile-function args body))
-
-(define-special define-macro ((name args rest: body)) :stmt :tr
-  (let (form `(fn ,args ,@body)
-        value `(table macro: ,form form: ',form)
-        binding `(setenv ',name ,value))
-    (eval binding))
-  "")
 
 (define-special return ((x)) :stmt
   (cat (indentation) (compile-call `(return ,x))))
