@@ -304,7 +304,7 @@
 (define save-environment? false)
 
 (define quote-binding (x)
-  (if (is? x.symbol) `(table symbol: ,x.symbol)
+  (if (is? x.symbol) `(table symbol: ',x.symbol)
       (or x.variable (nil? x.form)) nil
       x.macro `(table macro: ,x.form)
     (let ((:stmt :tr) x)
