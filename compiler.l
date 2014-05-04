@@ -156,9 +156,9 @@
 
 (define-macro define-special (name args rest: body)
   (let (form `(fn ,args ,@body)
-        entry `(table special: ,form form: ',form ,@body)
-        special `(setenv ',name ,entry))
-    (eval special)))
+        value `(table special: ,form form: ',form ,@body)
+        binding `(setenv ',name ,value))
+    (eval binding)))
 
 (define-special do (forms tail?) :stmt :tr
   (compile-body forms tail?: tail?))
@@ -210,8 +210,9 @@
 
 (define-special define-macro ((name args rest: body)) :stmt :tr
   (let (form `(fn ,args ,@body)
-        macro `(setenv ',name (table macro: ,form form: ',form)))
-    (eval macro))
+        value `(table macro: ,form form: ',form)
+        binding `(setenv ',name ,value))
+    (eval binding))
   "")
 
 (define-special return ((x)) :stmt
