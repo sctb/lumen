@@ -164,9 +164,9 @@
       (inc i))
     str))
 
-(define-special while (form) :stmt :tr
-  (let (condition (compile (hd form))
-        body (with-indent (compile-body (tl form)))
+(define-special while ((condition rest: body)) :stmt :tr
+  (let (condition (compile condition)
+        body (with-indent (compile-body body))
         ind (indentation))
     (if (= target 'js)
 	(cat ind "while (" condition ") {\n" body ind "}\n")

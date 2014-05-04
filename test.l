@@ -195,6 +195,15 @@
   (test= '(%array "quasiquote" (%array (%array "unquote" "x")))
          (macroexpand '``(,x))))
 
+(define-test macroexpand-special ()
+  (let-macro ((a () 17))
+    (test= 42 ((fn (x) (+ x 2)) 40))
+    (let (a (table :foo :bar)
+          b ())
+      (each (a k v)
+        (add b k))
+      (test= 2 (length b)))))
+
 (define-test id ()
   (let (a 10
         b (table x: 20))

@@ -261,9 +261,6 @@
 
 ;; expansion
 
-(define self-expanding? (x)
-  (= x '%function))
-
 (define quoting? (depth) (number? depth))
 (define quasiquoting? (depth) (and (quoting? depth) (> depth 0)))
 (define can-unquote? (depth) (and (quoting? depth) (= depth 1)))
@@ -281,7 +278,14 @@
       (macroexpand (symbol-expansion form))
       (atom? form) form
     (let (name (hd form))
-      (if (self-expanding? name) form
+      (if (= name '%for)
+          (let ((_ (t k) rest: body) form)
+            `(%for (,(macroexpand t) ,(macroexpand k))
+               ,@(macroexpand body)))
+          (= name '%function)
+          (let ((_ args rest: body) form)
+            `(%function ,(map* macroexpand args)
+               ,@(macroexpand body)))
 	  (macro? name)
           (macroexpand
            (apply (macro-function name) (tl form)))
