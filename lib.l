@@ -119,6 +119,13 @@
            (drop environment)
            ,x))))
 
+(define-macro with-bindings ((names) rest: body)
+  (let (x (make-id))
+   `(with-frame
+      (across (,names ,x)
+        (setenv ,x (table :variable)))
+      ,@body)))
+
 (define-macro let-macro (definitions rest: body)
   (with-frame
     (map (fn (m)
@@ -278,9 +285,7 @@
                ,@(macroexpand body)))
           (= name '%function)
           (let ((_ args rest: body) form)
-            (with-frame
-              (across (args arg)
-                (setenv arg (table :variable)))
+            (with-bindings (args)
               `(%function ,(map* macroexpand args)
                  ,@(macroexpand body))))
 	  (macro? name)
