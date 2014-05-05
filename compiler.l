@@ -315,6 +315,8 @@
 (define save-env? false)
 (define compiling? false)
 
+(define modules (table))
+
 (define quote-binding (x)
   (if (is? x.symbol) `(table symbol: ',x.symbol)
       (and x.macro x.form) `(table macro: ,x.form)
@@ -336,10 +338,12 @@
     (compile-toplevel `(do ,@body))))
 
 (define load-file (file)
-  (let (compiled (compile-file file))
-    (if compiling?
-        (cat! compiler-output compiled)
-      (run compiled))))
+  (if (get modules file) nil
+    (do (set (get modules file) true)
+        (let (compiled (compile-file file))
+          (if compiling?
+              (cat! compiler-output compiled)
+            (run compiled))))))
 
 (define compile-files (files)
   (set compiling? true)
