@@ -1,5 +1,8 @@
 ;; -*- mode: lisp -*-
 
+(define-module test
+  import: (lib reader compiler))
+
 ;; infrastructure
 
 (define passed 0)

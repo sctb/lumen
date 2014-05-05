@@ -1,5 +1,8 @@
 ;; -*- mode: lisp -*-
 
+(define-module reader
+  import: (lib))
+
 (define delimiters (set-of "(" ")" ";" "\n"))
 (define whitespace (set-of " " "\t" "\n"))
 

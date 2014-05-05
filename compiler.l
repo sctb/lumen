@@ -1,5 +1,8 @@
 ;; -*- mode: lisp -*-
 
+(define-module compiler
+  import: (reader lib))
+
 (define infix
   (table common: (table :+ :- :% :* :/ :< :> :<= :>=)
 	 js: (table =: "===" ~=: "!=" and: "&&" or: "||" cat: "+")
@@ -292,7 +295,10 @@
 
 ;; eval
 
-(target js: (define run eval))
+(target js:
+  (do (define vm (require 'vm))
+      (define global.require require)
+      (define run vm.runInThisContext)))
 
 (target lua:
  (do (define run-result nil)
@@ -329,24 +335,33 @@
         toplevel (hd environment))
     (cat! compiler-output (compile-toplevel env))
     (each ((map* quote-binding toplevel) k v)
-      (let (compiled (compile-toplevel `(setenv ',k ,v)))
-        (cat! compiler-output compiled)))))
+      (let (x (compile-toplevel `(setenv ',k ,v)))
+        (cat! compiler-output x)))))
 
 (define compile-file (file)
   (let (str (read-file file)
         body (read-all (make-stream str)))
     (compile-toplevel `(do ,@body))))
 
-(define load-file (file)
-  (if (get modules file) nil
-    (do (set (get modules file) true)
+(define load-module (spec)
+  (let (k (to-string spec))
+    (if (list? spec)
+        (error "Unsupported module specification")
+        (get modules k) nil
+      (let (file (cat k ".l"))
+        (set (get modules k) true)
         (let (compiled (compile-file file))
           (if compiling?
               (cat! compiler-output compiled)
-            (run compiled))))))
+            (run compiled)))))))
 
-(define compile-files (files)
+(define-macro define-module (spec rest: body)
+  (let ((import: imports) body)
+    (map load-module imports))
+  nil)
+
+(define compile-module (spec)
   (set compiling? true)
   (set compiler-output "")
-  (map load-file files)
+  (load-module spec)
   (if save-env? (save-environment)))

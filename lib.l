@@ -1,5 +1,8 @@
 ;; -*- mode: lisp -*-
 
+(define-module lib
+  import: (compiler))
+
 ;; environment
 
 (define setenv (k v)

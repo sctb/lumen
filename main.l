@@ -1,5 +1,8 @@
 ;; -*- mode: lisp -*-
 
+(define-module main
+  import: (lib compiler))
+
 (define rep (str)
   (let ((_ x) (guard (eval (read-from-string str))))
     (if (is? x) (pr x))))
@@ -45,10 +48,9 @@
 	    (~= "-" (char arg 0)) (add inputs arg)))
       (if output
           (do (if target1 (set target target1))
-              (compile-files inputs)
+              (map compile-module inputs)
               (let (main (compile '(main))
                     compiled (cat compiler-output main))
                 (write-file output compiled)))
-        (do (across (inputs file)
-              (load-file file))
+        (do (map load-module inputs)
             (if expr (rep expr) (repl)))))))
