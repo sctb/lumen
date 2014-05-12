@@ -353,10 +353,19 @@
         (error "Unsupported module specification")
         (get loading k) nil
         (and (not compiling?) (get modules k)) nil
-      (let (file (cat k ".l"))
+      (let (file (cat k ".l")
+            frame (table))
         (set (get loading k) true)
-        (let (compiled (compile-file file))
-          (set (get modules k) true)
+        (add environment frame)
+        (let (module (table)
+              compiled (compile-file file))
+          (drop environment)
+          (each (frame x v)
+            (if (not v.variable)
+                (set (get module x) v)))
+          (each (module x v)
+            (setenv x v))
+          (set (get modules k) module)
           (if compiling?
               (cat! compiler-output compiled)
             (run compiled)))))))
