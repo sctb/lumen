@@ -24,7 +24,6 @@
   (pr "  -t <target>\tTarget language (default: lua)")
   (pr "  -e <expr>\tExpression to evaluate")
   (pr "  -s \t\tSave environment")
-  (pr "  -f \t\tForce recompilation")
   (exit))
 
 (define main ()
@@ -35,8 +34,7 @@
     (let (inputs ()
           output nil
           target1 nil
-          expr nil
-          force? false)
+          expr nil)
       (across (args arg i)
         (if (or (= arg "-o") (= arg "-t") (= arg "-e"))
             (if (= i (- (length args) 1))
@@ -47,13 +45,10 @@
 		        (= arg "-t") (set target1 val)
 		        (= arg "-e") (set expr val)))))
             (= arg "-s") (set save-env? true)
-            (= arg "-f") (set force? true)
 	    (~= "-" (char arg 0)) (add inputs arg)))
       (if output
           (do (if target1 (set target target1))
-              (map (fn (x)
-                     (compile-module x force?))
-                   inputs)
+              (map compile-module inputs)
               (let (main (compile '(main))
                     compiled (cat compiler-output main))
                 (write-file output compiled)))

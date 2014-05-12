@@ -322,6 +322,7 @@
 (define compiling? false)
 
 (define modules (table))
+(define loading (table))
 
 (define quote-binding (x)
   (if (is? x.symbol) `(table symbol: ',x.symbol)
@@ -350,10 +351,12 @@
   (let (k (to-string spec))
     (if (list? spec)
         (error "Unsupported module specification")
-        (get modules k) nil
+        (get loading k) nil
+        (and (not compiling?) (get modules k)) nil
       (let (file (cat k ".l"))
-        (set (get modules k) true)
+        (set (get loading k) true)
         (let (compiled (compile-file file))
+          (set (get modules k) true)
           (if compiling?
               (cat! compiler-output compiled)
             (run compiled)))))))
@@ -363,9 +366,8 @@
     (map load-module imports))
   nil)
 
-(define compile-module (spec force?)
+(define compile-module (spec)
   (set compiling? true)
   (set compiler-output "")
-  (if force? (set modules (table)))
   (load-module spec)
   (if save-env? (save-environment)))
