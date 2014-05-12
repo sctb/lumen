@@ -336,6 +336,9 @@
     (cat! compiler-output (compile-toplevel env))
     (each ((map* quote-binding toplevel) k v)
       (let (x (compile-toplevel `(setenv ',k ,v)))
+        (cat! compiler-output x)))
+    (each (modules k v)
+      (let (x (compile-toplevel `(set (get modules ',k) true)))
         (cat! compiler-output x)))))
 
 (define compile-file (file)
@@ -360,8 +363,9 @@
     (map load-module imports))
   nil)
 
-(define compile-module (spec)
+(define compile-module (spec force?)
   (set compiling? true)
   (set compiler-output "")
+  (if force? (set modules (table)))
   (load-module spec)
   (if save-env? (save-environment)))
