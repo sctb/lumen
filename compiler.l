@@ -367,9 +367,15 @@
     (each ((map* quote-binding toplevel) k v)
       (let (x (compile-toplevel `(setenv ',k ,v)))
         (cat! compiler-output x)))
-    (each (modules k v)
-      (let (x (compile-toplevel `(set (get modules ',k) true)))
-        (cat! compiler-output x)))))
+    ;; TODO: use serialized modules instead of the saved environment
+    (each (modules m v)
+      (let (x (compile-toplevel
+               `(set (get modules ',m) (table))))
+        (cat! compiler-output x)
+        (each ((map* quote-binding v) k v)
+          (let (x (compile-toplevel
+                   `(set (get (get modules ',m) ',k) ,v)))
+            (cat! compiler-output x)))))))
 
 (define compile-file (file)
   (let (str (read-file file)
@@ -377,26 +383,26 @@
     (compile-toplevel `(do ,@body))))
 
 (define load-module (spec)
-  (let (k (to-string spec))
+  (let (k (to-string spec) module (table))
     (if (list? spec)
         (error "Unsupported module specification")
-        (get loading k) nil
-        (and (not compiling?) (get modules k)) nil
+        (get loading k) (return)
+        (and (not compiling?) (get modules k))
+        (set module (get modules k))
       (let (file (cat k ".l")
             frame (table))
         (set (get loading k) true)
         (add environment frame)
-        (let (module (table)
-              compiled (compile-file file))
+        (let (compiled (compile-file file))
           (drop environment)
           (each (frame x v)
             (set (get module x) v))
-          (each (module x v)
-            (setenv x v))
           (set (get modules k) module)
           (if compiling?
               (cat! compiler-output compiled)
-            (run compiled)))))))
+            (run compiled)))))
+    (each (module x v)
+      (setenv x v))))
 
 (define-macro define-module (spec rest: body)
   (let ((import: imp export: exp) body)
