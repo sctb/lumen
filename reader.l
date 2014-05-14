@@ -1,7 +1,12 @@
 ;; -*- mode: lisp -*-
 
 (define-module reader
-  import: (lib))
+  import: (lib)
+  export: (make-stream
+           define-reader
+           read
+           read-all
+           read-from-string))
 
 (define delimiters (set-of "(" ")" ";" "\n"))
 (define whitespace (set-of " " "\t" "\n"))

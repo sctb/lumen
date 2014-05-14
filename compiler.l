@@ -1,7 +1,32 @@
 ;; -*- mode: lisp -*-
 
 (define-module compiler
-  import: (reader lib))
+  import: (reader lib)
+  export: (eval
+           compile
+           compile-toplevel
+           compile-module
+           compiler-output
+           load-module
+           define-module
+           ;; special
+           do
+           if
+           while
+           %for
+           %try
+           break
+           %function
+           %global-function
+           %local-function
+           %return
+           error
+           %local
+           set
+           get
+           not
+           %array
+           %object))
 
 (define infix
   (table common: (table :+ :- :% :* :/ :< :> :<= :>=)
@@ -317,12 +342,13 @@
 
 ;; linker
 
+(define modules (table))
+(define exports (table))
+(define loading (table))
+
 (define compiler-output nil)
 (define save-env? false)
 (define compiling? false)
-
-(define modules (table))
-(define loading (table))
 
 (define quote-binding (x)
   (if (is? x.symbol) `(table symbol: ',x.symbol)
@@ -371,8 +397,9 @@
             (run compiled)))))))
 
 (define-macro define-module (spec rest: body)
-  (let ((import: imports) body)
-    (map load-module imports))
+  (let ((import: imp export: exp) body)
+    (map load-module imp)
+    (set exports (or exp (table))))
   nil)
 
 (define compile-module (spec)

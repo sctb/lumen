@@ -1,7 +1,92 @@
 ;; -*- mode: lisp -*-
 
 (define-module lib
-  import: (compiler))
+  import: (compiler)
+  export: (setenv
+           getenv
+           special?
+           special-form?
+           at
+           quote
+           list
+           table
+           let
+           define-macro
+           define-special
+           define-symbol
+           define-global
+           define-local
+           define
+           let-macro
+           let-symbol
+           fn
+           guard
+           across
+           set-of
+           quoted
+           stash*
+           unstash
+           macroexpand
+           target
+           language
+           length
+           empty?
+           sub
+           inner
+           hd
+           tl
+           add
+           drop
+           last
+           reverse
+           join
+           reduce
+           keep
+           find
+           pairwise
+           iterate
+           replicate
+           join*
+           join!
+           list*
+           each
+           splice
+           map
+           map*
+           keys?
+           char
+           code
+           search
+           split
+           cat
+           cat!
+           + - * / %
+           > < = >= <=
+           read-file
+           write-file
+           print
+           write
+           exit
+           nil?
+           is?
+           string?
+           string-literal?
+           id-literal?
+           number?
+           boolean?
+           function?
+           composite?
+           atom?
+           table?
+           list?
+           parse-number
+           inc
+           dec
+           to-string
+           pr
+           type
+           apply
+           make-id))
 
 ;; environment
 

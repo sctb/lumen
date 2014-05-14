@@ -26,7 +26,7 @@
   (pr "  -s \t\tSave environment")
   (exit))
 
-(define main ()
+(define-global main ()
   (let (args (target js: (sub process.argv 2) lua: arg))
     (if (or (= (hd args) "-h")
             (= (hd args) "--help"))
