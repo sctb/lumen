@@ -98,6 +98,12 @@
       (find (fn (e) (get e k))
             (reverse environment))))
 
+(define setenv* (k v)
+  (let (x (getenv k))
+    (if x
+        (set x.variable v)
+      (setenv k (table variable: v)))))
+
 (define macro-function (k)
   (let (x (getenv k))
     (and x x.macro)))
@@ -128,6 +134,8 @@
       (special? x)
       (symbol? x)
       (variable? x)))
+
+(define pending (table))
 
 ;; macros
 
@@ -172,7 +180,7 @@
                    (add renames id)
                    (add renames rename)
                    (set id rename))
-               (setenv id (table :variable)))
+               (setenv* id pending))
              (add locals `(%local ,id ,val))))
          (pairwise bindings))
     `(do ,@locals (let-symbol ,renames ,@body))))
@@ -196,18 +204,21 @@
   nil)
 
 (define-macro define-global (name x rest: body)
+  (setenv* name pending)
   (if (not (empty? body))
       (let ((args body) (bind-arguments x body))
         `(%global-function ,name ,args ,@body))
     `(set ,name ,x)))
 
 (define-macro define-local (name x rest: body)
+  (setenv* name pending)
   (if (not (empty? body))
       (let ((args body) (bind-arguments x body))
         `(%local-function ,name ,args ,@body))
     `(%local ,name ,x)))
 
 (define-macro define (name x rest: body)
+  (setenv* name pending)
   `(define-global ,name ,x ,@body))
 
 (define-macro with-frame body
@@ -221,7 +232,7 @@
   (let (x (make-id))
    `(with-frame
       (across (,names ,x)
-        (setenv ,x (table :variable)))
+        (setenv* ,x pending))
       ,@body)))
 
 (define-macro let-macro (definitions rest: body)
