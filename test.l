@@ -175,7 +175,8 @@
     (test= 42 (f))
     (test= 42 ((at l 0)))
     (test= 42 (t.f))
-    (test= 42 ((get t 'f)))))
+    (test= 42 ((get t 'f)))
+    (test= nil ((fn () (return))))))
 
 (define-test quasiexpand ()
   (test= 'a (macroexpand 'a))

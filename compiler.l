@@ -236,7 +236,10 @@
   (compile-function args body name: name prefix: "local "))
 
 (define-special return ((x)) :stmt
-  (cat (indentation) (compile-call `(return ,x))))
+  (let (x (if (nil? x)
+              "return"
+            (compile-call `(return ,x))))
+    (cat (indentation) x)))
 
 (define-special error ((x)) :stmt
   (let (e (if (= target 'js)

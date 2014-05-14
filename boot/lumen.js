@@ -1,7 +1,7 @@
-delimiters = {"(": true, ")": true, ";": true, "\n": true};
-whitespace = {" ": true, "\t": true, "\n": true};
+delimiters = {")": true, "(": true, ";": true, "\n": true};
+whitespace = {"\t": true, "\n": true, " ": true};
 make_stream = function (str) {
-  return({pos: 0, string: str, len: length(str)});
+  return({pos: 0, len: length(str), string: str});
 };
 peek_char = function (s) {
   if ((s.pos < s.len)) {
@@ -176,7 +176,7 @@ read_all = function (s) {
 read_from_string = function (str) {
   return(read(make_stream(str)));
 };
-infix = {common: {"+": true, "-": true, "%": true, "*": true, "/": true, "<": true, ">": true, "<=": true, ">=": true}, js: {"=": "===", "~=": "!=", "and": "&&", "or": "||", "cat": "+"}, lua: {"=": "==", "cat": "..", "~=": true, "and": true, "or": true}};
+infix = {common: {"/": true, "<": true, "+": true, ">": true, "-": true, "*": true, "<=": true, ">=": true, "%": true}, lua: {"cat": "..", "and": true, "=": "==", "or": true, "~=": true}, js: {"cat": "+", "and": "&&", "=": "===", "or": "||", "~=": "!="}};
 getop = function (op) {
   var op1 = (infix.common[op] || infix[target][op]);
   if ((op1 === true)) {
@@ -332,7 +332,7 @@ compile_branch = function (condition, body, first63, last63, tail63) {
   var cond1 = compile(condition);
   var _g14 = (function () {
     indent_level = (indent_level + 1);
-    var _g15 = compile(body, {_stash: true, "stmt?": true, "tail?": tail63});
+    var _g15 = compile(body, {_stash: true, "tail?": tail63, "stmt?": true});
     indent_level = (indent_level - 1);
     return(_g15);
   })();
@@ -405,8 +405,8 @@ terminator = function (stmt63) {
 compile_special = function (form, stmt63, tail63) {
   var _g18 = getenv(hd(form));
   var special = _g18.special;
-  var stmt = _g18.stmt;
   var self_tr63 = _g18.tr;
+  var stmt = _g18.stmt;
   if ((!(stmt63) && stmt)) {
     return(compile([["%function", [], form]], {_stash: true, "tail?": tail63}));
   } else {
@@ -478,12 +478,12 @@ quote_binding = function (x) {
     _g64.macro = x.form;
     return(_g64);
   } else if ((x.special && x.form)) {
-    var stmt = x.stmt;
     var tr = x.tr;
+    var stmt = x.stmt;
     var _g65 = ["table"];
-    _g65.special = x.form;
     _g65.stmt = stmt;
     _g65.tr = tr;
+    _g65.special = x.form;
     return(_g65);
   }
 };
@@ -1368,64 +1368,369 @@ main = function () {
   }
 };
 environment = [{}];
-setenv("define-macro", {macro: function (name, args) {
-  var body = unstash(sub(arguments, 2));
-  var _g180 = sub(body, 0);
-  var form = join(["fn", args], _g180);
-  var value = (function () {
-    var _g181 = ["table"];
-    _g181.macro = form;
-    _g181.form = ["quote", form];
+setenv("%try", {tr: true, stmt: true, special: function (forms) {
+  var ind = indentation();
+  var body = (function () {
+    indent_level = (indent_level + 1);
+    var _g180 = compile_body(forms, {_stash: true, "tail?": true});
+    indent_level = (indent_level - 1);
+    return(_g180);
+  })();
+  var e = make_id();
+  var handler = ["return", ["%array", false, e]];
+  var h = (function () {
+    indent_level = (indent_level + 1);
+    var _g181 = compile(handler, {_stash: true, "stmt?": true});
+    indent_level = (indent_level - 1);
     return(_g181);
   })();
+  return((ind + "try {\n" + body + ind + "}\n" + ind + "catch (" + e + ") {\n" + h + ind + "}\n"));
+}});
+setenv("%array", {special: function (forms) {
+  var open = (function () {
+    if ((target === "lua")) {
+      return("{");
+    } else {
+      return("[");
+    }
+  })();
+  var close = (function () {
+    if ((target === "lua")) {
+      return("}");
+    } else {
+      return("]");
+    }
+  })();
+  var str = "";
+  var i = 0;
+  var _g182 = forms;
+  while ((i < length(_g182))) {
+    var x = _g182[i];
+    str = (str + compile(x));
+    if ((i < (length(forms) - 1))) {
+      str = (str + ", ");
+    }
+    i = (i + 1);
+  }
+  return((open + str + close));
+}});
+setenv("at", {macro: function (l, i) {
+  if (((target === "lua") && number63(i))) {
+    i = (i + 1);
+  } else if ((target === "lua")) {
+    i = ["+", i, 1];
+  }
+  return(["get", l, i]);
+}});
+setenv("join!", {macro: function (a) {
+  var bs = unstash(sub(arguments, 1));
+  var _g183 = sub(bs, 0);
+  return(["set", a, join(["join*", a], _g183)]);
+}});
+setenv("break", {special: function (_g5) {
+  return((indentation() + "break"));
+}, stmt: true});
+setenv("set-of", {macro: function () {
+  var elements = unstash(sub(arguments, 0));
+  var l = [];
+  var _g185 = 0;
+  var _g184 = elements;
+  while ((_g185 < length(_g184))) {
+    var e = _g184[_g185];
+    l[e] = true;
+    _g185 = (_g185 + 1);
+  }
+  return(join(["table"], l));
+}});
+setenv("define-module", {macro: function (spec) {
+  var body = unstash(sub(arguments, 1));
+  var _g186 = sub(body, 0);
+  var exp = _g186.export;
+  var imp = _g186.import;
+  map(load_module, imp);
+  exports = {};
+  var _g188 = 0;
+  var _g187 = (exp || []);
+  while ((_g188 < length(_g187))) {
+    var x = _g187[_g188];
+    exports[x] = true;
+    _g188 = (_g188 + 1);
+  }
+  return(undefined);
+}});
+setenv("language", {macro: function () {
+  return(["quote", target]);
+}});
+setenv("get", {special: function (_g189) {
+  var t = _g189[0];
+  var k = _g189[1];
+  var t = compile(t);
+  var k1 = compile(k);
+  if (((target === "lua") && (char(t, 0) === "{"))) {
+    t = ("(" + t + ")");
+  }
+  if ((string_literal63(k) && valid_id63(inner(k)))) {
+    return((t + "." + inner(k)));
+  } else {
+    return((t + "[" + k1 + "]"));
+  }
+}});
+setenv("with-bindings", {macro: function (_g190) {
+  var names = _g190[0];
+  var body = unstash(sub(arguments, 1));
+  var _g191 = sub(body, 0);
+  var x = make_id();
+  return(join(["with-frame", ["across", [names, x], ["setenv*", x, "pending"]]], _g191));
+}});
+setenv("define-special", {macro: function (name, args) {
+  var body = unstash(sub(arguments, 2));
+  var _g192 = sub(body, 0);
+  var form = join(["fn", args], _g192);
+  var value = join((function () {
+    var _g193 = ["table"];
+    _g193.form = ["quote", form];
+    _g193.special = form;
+    return(_g193);
+  })(), _g192);
   var binding = ["setenv", ["quote", name], value];
   eval(binding);
   return(undefined);
 }});
-setenv("across", {macro: function (_g182) {
-  var l = _g182[0];
-  var v = _g182[1];
-  var i = _g182[2];
-  var start = _g182[3];
+setenv("%local", {special: function (_g194) {
+  var name = _g194[0];
+  var value = _g194[1];
+  var id = compile(name);
+  var value = compile(value);
+  var keyword = (function () {
+    if ((target === "js")) {
+      return("var ");
+    } else {
+      return("local ");
+    }
+  })();
+  var ind = indentation();
+  return((ind + keyword + id + " = " + value));
+}, stmt: true});
+setenv("list*", {macro: function () {
+  var xs = unstash(sub(arguments, 0));
+  if (empty63(xs)) {
+    return([]);
+  } else {
+    var l = [];
+    var i = 0;
+    var _g195 = xs;
+    while ((i < length(_g195))) {
+      var x = _g195[i];
+      if ((i === (length(xs) - 1))) {
+        l = ["join", join(["list"], l), x];
+      } else {
+        add(l, x);
+      }
+      i = (i + 1);
+    }
+    return(l);
+  }
+}});
+setenv("%global-function", {tr: true, stmt: true, special: function (_g196) {
+  var name = _g196[0];
+  var args = _g196[1];
+  var body = sub(_g196, 2);
+  if ((target === "lua")) {
+    return(compile_function(args, body, {_stash: true, name: name}));
+  } else {
+    return(compile(["set", name, join(["%function", args], body)], {_stash: true, "stmt?": true}));
+  }
+}});
+setenv("list", {macro: function () {
+  var body = unstash(sub(arguments, 0));
+  var l = join(["%array"], body);
+  if (!(keys63(body))) {
+    return(l);
+  } else {
+    var id = make_id();
+    var init = [];
+    var k = undefined;
+    var _g197 = body;
+    for (k in _g197) {
+      if (isNaN(parseInt(k))) {
+        var v = _g197[k];
+        add(init, ["set", ["get", id, ["quote", k]], v]);
+      }
+    }
+    return(join(["let", [id, l]], join(init, [id])));
+  }
+}});
+setenv("inc", {macro: function (n, by) {
+  return(["set", n, ["+", n, (by || 1)]]);
+}});
+setenv("quote", {macro: function (form) {
+  return(quoted(form));
+}});
+setenv("each", {macro: function (_g198) {
+  var t = _g198[0];
+  var k = _g198[1];
+  var v = _g198[2];
   var body = unstash(sub(arguments, 1));
-  var _g183 = sub(body, 0);
+  var _g199 = sub(body, 0);
+  var t1 = make_id();
+  return(["let", [k, "nil", t1, t], ["%for", [t1, k], ["if", (function () {
+    var _g200 = ["target"];
+    _g200.lua = ["not", ["number?", k]];
+    _g200.js = ["isNaN", ["parseInt", k]];
+    return(_g200);
+  })(), join(["let", [v, ["get", t1, k]]], _g199)]]]);
+}});
+setenv("pr", {macro: function () {
+  var xs = unstash(sub(arguments, 0));
+  var xs = map(function (x) {
+    return(splice([["to-string", x], "\" \""]));
+  }, xs);
+  return(["print", join(["cat"], xs)]);
+}});
+setenv("let-macro", {macro: function (definitions) {
+  var body = unstash(sub(arguments, 1));
+  var _g201 = sub(body, 0);
+  add(environment, {});
+  var _g202 = (function () {
+    map(function (m) {
+      return(macroexpand(join(["define-macro"], m)));
+    }, definitions);
+    return(join(["do"], macroexpand(_g201)));
+  })();
+  drop(environment);
+  return(_g202);
+}});
+setenv("define", {macro: function (name, x) {
+  var body = unstash(sub(arguments, 2));
+  var _g203 = sub(body, 0);
+  setenv42(name, pending);
+  return(join(["define-global", name, x], _g203));
+}});
+setenv("dec", {macro: function (n, by) {
+  return(["set", n, ["-", n, (by || 1)]]);
+}});
+setenv("let-symbol", {macro: function (expansions) {
+  var body = unstash(sub(arguments, 1));
+  var _g204 = sub(body, 0);
+  add(environment, {});
+  var _g205 = (function () {
+    map(function (_g206) {
+      var name = _g206[0];
+      var exp = _g206[1];
+      return(macroexpand(["define-symbol", name, exp]));
+    }, pairwise(expansions));
+    return(join(["do"], macroexpand(_g204)));
+  })();
+  drop(environment);
+  return(_g205);
+}});
+setenv("define-symbol", {macro: function (name, expansion) {
+  setenv(name, {symbol: expansion});
+  return(undefined);
+}});
+setenv("target", {macro: function () {
+  var clauses = unstash(sub(arguments, 0));
+  return(clauses[target]);
+}});
+setenv("define-local", {macro: function (name, x) {
+  var body = unstash(sub(arguments, 2));
+  var _g207 = sub(body, 0);
+  setenv42(name, pending);
+  if (!(empty63(_g207))) {
+    var _g208 = bind_arguments(x, _g207);
+    var args = _g208[0];
+    var _g209 = _g208[1];
+    return(join(["%local-function", name, args], _g209));
+  } else {
+    return(["%local", name, x]);
+  }
+}});
+setenv("%function", {special: function (_g210) {
+  var args = _g210[0];
+  var body = sub(_g210, 1);
+  return(compile_function(args, body));
+}});
+setenv("with-frame", {macro: function () {
+  var body = unstash(sub(arguments, 0));
+  var x = make_id();
+  return(["do", ["add", "environment", ["table"]], ["let", [x, join(["do"], body)], ["drop", "environment"], x]]);
+}});
+setenv("across", {macro: function (_g211) {
+  var l = _g211[0];
+  var v = _g211[1];
+  var i = _g211[2];
+  var start = _g211[3];
+  var body = unstash(sub(arguments, 1));
+  var _g212 = sub(body, 0);
   var l1 = make_id();
   i = (i || make_id());
   start = (start || 0);
-  return(["let", [i, start, l1, l], ["while", ["<", i, ["length", l1]], join(["let", [v, ["at", l1, i]]], join(_g183, [["inc", i]]))]]);
+  return(["let", [i, start, l1, l], ["while", ["<", i, ["length", l1]], join(["let", [v, ["at", l1, i]]], join(_g212, [["inc", i]]))]]);
 }});
-setenv("with-indent", {macro: function (form) {
-  var result = make_id();
-  return(["do", ["inc", "indent-level"], ["let", [result, form], ["dec", "indent-level"], result]]);
+setenv("%local-function", {tr: true, stmt: true, special: function (_g213) {
+  var name = _g213[0];
+  var args = _g213[1];
+  var body = sub(_g213, 2);
+  return(compile_function(args, body, {_stash: true, name: name, prefix: "local "}));
 }});
-setenv("define-module", {macro: function (spec) {
-  var body = unstash(sub(arguments, 1));
-  var _g184 = sub(body, 0);
-  var imp = _g184.import;
-  var exp = _g184.export;
-  map(load_module, imp);
-  exports = {};
-  var _g186 = 0;
-  var _g185 = (exp || []);
-  while ((_g186 < length(_g185))) {
-    var x = _g185[_g186];
-    exports[x] = true;
-    _g186 = (_g186 + 1);
+setenv("if", {tr: true, stmt: true, special: function (form, tail63) {
+  var str = "";
+  var i = 0;
+  var _g214 = form;
+  while ((i < length(_g214))) {
+    var condition = _g214[i];
+    var last63 = (i >= (length(form) - 2));
+    var else63 = (i === (length(form) - 1));
+    var first63 = (i === 0);
+    var body = form[(i + 1)];
+    if (else63) {
+      body = condition;
+      condition = undefined;
+    }
+    str = (str + compile_branch(condition, body, first63, last63, tail63));
+    i = (i + 1);
+    i = (i + 1);
   }
-  return(undefined);
+  return(str);
 }});
-setenv("%function", {special: function (_g187) {
-  var args = _g187[0];
-  var body = sub(_g187, 1);
-  return(compile_function(args, body));
+setenv("table", {macro: function () {
+  var body = unstash(sub(arguments, 0));
+  var l = [];
+  var k = undefined;
+  var _g215 = body;
+  for (k in _g215) {
+    if (isNaN(parseInt(k))) {
+      var v = _g215[k];
+      if (is63(v)) {
+        add(l, k);
+        add(l, v);
+      }
+    }
+  }
+  return(join(["%object"], l));
 }});
-setenv("fn", {macro: function (args) {
+setenv("do", {tr: true, stmt: true, special: function (forms, tail63) {
+  return(compile_body(forms, {_stash: true, "tail?": tail63}));
+}});
+setenv("quasiquote", {macro: function (form) {
+  return(quasiexpand(form, 1));
+}});
+setenv("guard", {macro: function (expr) {
+  if ((target === "js")) {
+    return([["fn", [], ["%try", ["list", true, expr]]]]);
+  } else {
+    var e = make_id();
+    var x = make_id();
+    var ex = ("|" + e + "," + x + "|");
+    return(["let", [ex, ["xpcall", ["fn", [], expr], "message-handler"]], ["list", e, x]]);
+  }
+}});
+setenv("define-reader", {macro: function (_g216) {
+  var char = _g216[0];
+  var stream = _g216[1];
   var body = unstash(sub(arguments, 1));
-  var _g188 = sub(body, 0);
-  var _g189 = bind_arguments(args, _g188);
-  var args = _g189[0];
-  var _g190 = _g189[1];
-  return(join(["%function", args], _g190));
+  var _g217 = sub(body, 0);
+  return(["set", ["get", "read-table", char], join(["fn", [stream]], _g217)]);
 }});
 setenv("%object", {special: function (forms) {
   var str = "{";
@@ -1438,11 +1743,11 @@ setenv("%object", {special: function (forms) {
   })();
   var pairs = pairwise(forms);
   var i = 0;
-  var _g191 = pairs;
-  while ((i < length(_g191))) {
-    var _g192 = _g191[i];
-    var k = _g192[0];
-    var v = _g192[1];
+  var _g218 = pairs;
+  while ((i < length(_g218))) {
+    var _g219 = _g218[i];
+    var k = _g219[0];
+    var v = _g219[1];
     if (!(string63(k))) {
       throw ("Illegal object key: " + to_string(k));
     }
@@ -1468,114 +1773,109 @@ setenv("%object", {special: function (forms) {
   }
   return((str + "}"));
 }});
-setenv("guard", {macro: function (expr) {
-  if ((target === "js")) {
-    return([["fn", [], ["%try", ["list", true, expr]]]]);
-  } else {
-    var e = make_id();
-    var x = make_id();
-    var ex = ("|" + e + "," + x + "|");
-    return(["let", [ex, ["xpcall", ["fn", [], expr], "message-handler"]], ["list", e, x]]);
-  }
-}});
-setenv("set", {special: function (_g193) {
-  var lh = _g193[0];
-  var rh = _g193[1];
-  if (nil63(rh)) {
-    throw "Missing right-hand side in assignment";
-  }
-  return((indentation() + compile(lh) + " = " + compile(rh)));
+setenv("return", {special: function (_g220) {
+  var x = _g220[0];
+  var x = (function () {
+    if (nil63(x)) {
+      return("return");
+    } else {
+      return(compile_call(["return", x]));
+    }
+  })();
+  return((indentation() + x));
 }, stmt: true});
-setenv("quote", {macro: function (form) {
-  return(quoted(form));
+setenv("with-indent", {macro: function (form) {
+  var result = make_id();
+  return(["do", ["inc", "indent-level"], ["let", [result, form], ["dec", "indent-level"], result]]);
 }});
-setenv("language", {macro: function () {
-  return(["quote", target]);
+setenv("define-macro", {macro: function (name, args) {
+  var body = unstash(sub(arguments, 2));
+  var _g221 = sub(body, 0);
+  var form = join(["fn", args], _g221);
+  var value = (function () {
+    var _g222 = ["table"];
+    _g222.form = ["quote", form];
+    _g222.macro = form;
+    return(_g222);
+  })();
+  var binding = ["setenv", ["quote", name], value];
+  eval(binding);
+  return(undefined);
 }});
-setenv("%for", {special: function (_g194) {
-  var _g195 = _g194[0];
-  var t = _g195[0];
-  var k = _g195[1];
-  var body = sub(_g194, 1);
+setenv("define-global", {macro: function (name, x) {
+  var body = unstash(sub(arguments, 2));
+  var _g223 = sub(body, 0);
+  setenv42(name, pending);
+  if (!(empty63(_g223))) {
+    var _g224 = bind_arguments(x, _g223);
+    var args = _g224[0];
+    var _g225 = _g224[1];
+    return(join(["%global-function", name, args], _g225));
+  } else {
+    return(["set", name, x]);
+  }
+}});
+setenv("let", {macro: function (bindings) {
+  var body = unstash(sub(arguments, 1));
+  var _g226 = sub(body, 0);
+  var i = 0;
+  var renames = [];
+  var locals = [];
+  map(function (_g227) {
+    var lh = _g227[0];
+    var rh = _g227[1];
+    var _g229 = 0;
+    var _g228 = bind(lh, rh);
+    while ((_g229 < length(_g228))) {
+      var _g230 = _g228[_g229];
+      var id = _g230[0];
+      var val = _g230[1];
+      if (bound63(id)) {
+        var rename = make_id();
+        add(renames, id);
+        add(renames, rename);
+        id = rename;
+      } else {
+        setenv42(id, pending);
+      }
+      add(locals, ["%local", id, val]);
+      _g229 = (_g229 + 1);
+    }
+  }, pairwise(bindings));
+  return(join(["do"], join(locals, [join(["let-symbol", renames], _g226)])));
+}});
+setenv("cat!", {macro: function (a) {
+  var bs = unstash(sub(arguments, 1));
+  var _g231 = sub(bs, 0);
+  return(["set", a, join(["cat", a], _g231)]);
+}});
+setenv("%for", {tr: true, stmt: true, special: function (_g232) {
+  var _g233 = _g232[0];
+  var t = _g233[0];
+  var k = _g233[1];
+  var body = sub(_g232, 1);
   var t = compile(t);
   var ind = indentation();
   var body = (function () {
     indent_level = (indent_level + 1);
-    var _g196 = compile_body(body);
+    var _g234 = compile_body(body);
     indent_level = (indent_level - 1);
-    return(_g196);
+    return(_g234);
   })();
   if ((target === "lua")) {
     return((ind + "for " + k + " in next, " + t + " do\n" + body + ind + "end\n"));
   } else {
     return((ind + "for (" + k + " in " + t + ") {\n" + body + ind + "}\n"));
   }
-}, stmt: true, tr: true});
-setenv("cat!", {macro: function (a) {
-  var bs = unstash(sub(arguments, 1));
-  var _g197 = sub(bs, 0);
-  return(["set", a, join(["cat", a], _g197)]);
 }});
-setenv("quasiquote", {macro: function (form) {
-  return(quasiexpand(form, 1));
-}});
-setenv("return", {special: function (_g198) {
-  var x = _g198[0];
-  return((indentation() + compile_call(["return", x])));
-}, stmt: true});
-setenv("let-macro", {macro: function (definitions) {
-  var body = unstash(sub(arguments, 1));
-  var _g199 = sub(body, 0);
-  add(environment, {});
-  var _g200 = (function () {
-    map(function (m) {
-      return(macroexpand(join(["define-macro"], m)));
-    }, definitions);
-    return(join(["do"], macroexpand(_g199)));
-  })();
-  drop(environment);
-  return(_g200);
-}});
-setenv("get", {special: function (_g201) {
-  var t = _g201[0];
-  var k = _g201[1];
-  var t = compile(t);
-  var k1 = compile(k);
-  if (((target === "lua") && (char(t, 0) === "{"))) {
-    t = ("(" + t + ")");
-  }
-  if ((string_literal63(k) && valid_id63(inner(k)))) {
-    return((t + "." + inner(k)));
-  } else {
-    return((t + "[" + k1 + "]"));
-  }
-}});
-setenv("define-symbol", {macro: function (name, expansion) {
-  setenv(name, {symbol: expansion});
-  return(undefined);
-}});
-setenv("list*", {macro: function () {
+setenv("join*", {macro: function () {
   var xs = unstash(sub(arguments, 0));
-  if (empty63(xs)) {
-    return([]);
-  } else {
-    var l = [];
-    var i = 0;
-    var _g202 = xs;
-    while ((i < length(_g202))) {
-      var x = _g202[i];
-      if ((i === (length(xs) - 1))) {
-        l = ["join", join(["list"], l), x];
-      } else {
-        add(l, x);
-      }
-      i = (i + 1);
-    }
-    return(l);
-  }
+  return(reduce(function (a, b) {
+    return(["join", a, b]);
+  }, xs));
 }});
-setenv("error", {special: function (_g203) {
-  var x = _g203[0];
+setenv("error", {special: function (_g235) {
+  var x = _g235[0];
   var e = (function () {
     if ((target === "js")) {
       return(("throw " + compile(x)));
@@ -1585,248 +1885,8 @@ setenv("error", {special: function (_g203) {
   })();
   return((indentation() + e));
 }, stmt: true});
-setenv("if", {special: function (form, tail63) {
-  var str = "";
-  var i = 0;
-  var _g204 = form;
-  while ((i < length(_g204))) {
-    var condition = _g204[i];
-    var last63 = (i >= (length(form) - 2));
-    var else63 = (i === (length(form) - 1));
-    var first63 = (i === 0);
-    var body = form[(i + 1)];
-    if (else63) {
-      body = condition;
-      condition = undefined;
-    }
-    str = (str + compile_branch(condition, body, first63, last63, tail63));
-    i = (i + 1);
-    i = (i + 1);
-  }
-  return(str);
-}, stmt: true, tr: true});
-setenv("set-of", {macro: function () {
-  var elements = unstash(sub(arguments, 0));
-  var l = [];
-  var _g206 = 0;
-  var _g205 = elements;
-  while ((_g206 < length(_g205))) {
-    var e = _g205[_g206];
-    l[e] = true;
-    _g206 = (_g206 + 1);
-  }
-  return(join(["table"], l));
-}});
-setenv("pr", {macro: function () {
-  var xs = unstash(sub(arguments, 0));
-  var xs = map(function (x) {
-    return(splice([["to-string", x], "\" \""]));
-  }, xs);
-  return(["print", join(["cat"], xs)]);
-}});
-setenv("each", {macro: function (_g207) {
-  var t = _g207[0];
-  var k = _g207[1];
-  var v = _g207[2];
-  var body = unstash(sub(arguments, 1));
-  var _g208 = sub(body, 0);
-  var t1 = make_id();
-  return(["let", [k, "nil", t1, t], ["%for", [t1, k], ["if", (function () {
-    var _g209 = ["target"];
-    _g209.js = ["isNaN", ["parseInt", k]];
-    _g209.lua = ["not", ["number?", k]];
-    return(_g209);
-  })(), join(["let", [v, ["get", t1, k]]], _g208)]]]);
-}});
-setenv("let-symbol", {macro: function (expansions) {
-  var body = unstash(sub(arguments, 1));
-  var _g210 = sub(body, 0);
-  add(environment, {});
-  var _g211 = (function () {
-    map(function (_g212) {
-      var name = _g212[0];
-      var exp = _g212[1];
-      return(macroexpand(["define-symbol", name, exp]));
-    }, pairwise(expansions));
-    return(join(["do"], macroexpand(_g210)));
-  })();
-  drop(environment);
-  return(_g211);
-}});
-setenv("%try", {special: function (forms) {
-  var ind = indentation();
-  var body = (function () {
-    indent_level = (indent_level + 1);
-    var _g213 = compile_body(forms, {_stash: true, "tail?": true});
-    indent_level = (indent_level - 1);
-    return(_g213);
-  })();
-  var e = make_id();
-  var handler = ["return", ["%array", false, e]];
-  var h = (function () {
-    indent_level = (indent_level + 1);
-    var _g214 = compile(handler, {_stash: true, "stmt?": true});
-    indent_level = (indent_level - 1);
-    return(_g214);
-  })();
-  return((ind + "try {\n" + body + ind + "}\n" + ind + "catch (" + e + ") {\n" + h + ind + "}\n"));
-}, stmt: true, tr: true});
-setenv("break", {special: function (_g5) {
-  return((indentation() + "break"));
-}, stmt: true});
-setenv("inc", {macro: function (n, by) {
-  return(["set", n, ["+", n, (by || 1)]]);
-}});
-setenv("dec", {macro: function (n, by) {
-  return(["set", n, ["-", n, (by || 1)]]);
-}});
-setenv("do", {special: function (forms, tail63) {
-  return(compile_body(forms, {_stash: true, "tail?": tail63}));
-}, stmt: true, tr: true});
-setenv("define-special", {macro: function (name, args) {
-  var body = unstash(sub(arguments, 2));
-  var _g215 = sub(body, 0);
-  var form = join(["fn", args], _g215);
-  var value = join((function () {
-    var _g216 = ["table"];
-    _g216.special = form;
-    _g216.form = ["quote", form];
-    return(_g216);
-  })(), _g215);
-  var binding = ["setenv", ["quote", name], value];
-  eval(binding);
-  return(undefined);
-}});
-setenv("table", {macro: function () {
-  var body = unstash(sub(arguments, 0));
-  var l = [];
-  var k = undefined;
-  var _g217 = body;
-  for (k in _g217) {
-    if (isNaN(parseInt(k))) {
-      var v = _g217[k];
-      if (is63(v)) {
-        add(l, k);
-        add(l, v);
-      }
-    }
-  }
-  return(join(["%object"], l));
-}});
-setenv("define", {macro: function (name, x) {
-  var body = unstash(sub(arguments, 2));
-  var _g218 = sub(body, 0);
-  setenv42(name, pending);
-  return(join(["define-global", name, x], _g218));
-}});
-setenv("%local", {special: function (_g219) {
-  var name = _g219[0];
-  var value = _g219[1];
-  var id = compile(name);
-  var value = compile(value);
-  var keyword = (function () {
-    if ((target === "js")) {
-      return("var ");
-    } else {
-      return("local ");
-    }
-  })();
-  var ind = indentation();
-  return((ind + keyword + id + " = " + value));
-}, stmt: true});
-setenv("define-reader", {macro: function (_g220) {
-  var char = _g220[0];
-  var stream = _g220[1];
-  var body = unstash(sub(arguments, 1));
-  var _g221 = sub(body, 0);
-  return(["set", ["get", "read-table", char], join(["fn", [stream]], _g221)]);
-}});
-setenv("join*", {macro: function () {
-  var xs = unstash(sub(arguments, 0));
-  return(reduce(function (a, b) {
-    return(["join", a, b]);
-  }, xs));
-}});
-setenv("at", {macro: function (l, i) {
-  if (((target === "lua") && number63(i))) {
-    i = (i + 1);
-  } else if ((target === "lua")) {
-    i = ["+", i, 1];
-  }
-  return(["get", l, i]);
-}});
-setenv("list", {macro: function () {
-  var body = unstash(sub(arguments, 0));
-  var l = join(["%array"], body);
-  if (!(keys63(body))) {
-    return(l);
-  } else {
-    var id = make_id();
-    var init = [];
-    var k = undefined;
-    var _g222 = body;
-    for (k in _g222) {
-      if (isNaN(parseInt(k))) {
-        var v = _g222[k];
-        add(init, ["set", ["get", id, ["quote", k]], v]);
-      }
-    }
-    return(join(["let", [id, l]], join(init, [id])));
-  }
-}});
-setenv("%local-function", {special: function (_g223) {
-  var name = _g223[0];
-  var args = _g223[1];
-  var body = sub(_g223, 2);
-  return(compile_function(args, body, {_stash: true, name: name, prefix: "local "}));
-}, stmt: true, tr: true});
-setenv("while", {special: function (_g224) {
-  var condition = _g224[0];
-  var body = sub(_g224, 1);
-  var condition = compile(condition);
-  var body = (function () {
-    indent_level = (indent_level + 1);
-    var _g225 = compile_body(body);
-    indent_level = (indent_level - 1);
-    return(_g225);
-  })();
-  var ind = indentation();
-  if ((target === "js")) {
-    return((ind + "while (" + condition + ") {\n" + body + ind + "}\n"));
-  } else {
-    return((ind + "while " + condition + " do\n" + body + ind + "end\n"));
-  }
-}, stmt: true, tr: true});
-setenv("%array", {special: function (forms) {
-  var open = (function () {
-    if ((target === "lua")) {
-      return("{");
-    } else {
-      return("[");
-    }
-  })();
-  var close = (function () {
-    if ((target === "lua")) {
-      return("}");
-    } else {
-      return("]");
-    }
-  })();
-  var str = "";
-  var i = 0;
-  var _g226 = forms;
-  while ((i < length(_g226))) {
-    var x = _g226[i];
-    str = (str + compile(x));
-    if ((i < (length(forms) - 1))) {
-      str = (str + ", ");
-    }
-    i = (i + 1);
-  }
-  return((open + str + close));
-}});
-setenv("not", {special: function (_g227) {
-  var x = _g227[0];
+setenv("not", {special: function (_g236) {
+  var x = _g236[0];
   var x = compile(x);
   var open = (function () {
     if ((target === "js")) {
@@ -1837,94 +1897,41 @@ setenv("not", {special: function (_g227) {
   })();
   return((open + x + ")"));
 }});
-setenv("target", {macro: function () {
-  var clauses = unstash(sub(arguments, 0));
-  return(clauses[target]);
-}});
-setenv("%global-function", {special: function (_g228) {
-  var name = _g228[0];
-  var args = _g228[1];
-  var body = sub(_g228, 2);
-  if ((target === "lua")) {
-    return(compile_function(args, body, {_stash: true, name: name}));
-  } else {
-    return(compile(["set", name, join(["%function", args], body)], {_stash: true, "stmt?": true}));
-  }
-}, stmt: true, tr: true});
-setenv("define-local", {macro: function (name, x) {
-  var body = unstash(sub(arguments, 2));
-  var _g229 = sub(body, 0);
-  setenv42(name, pending);
-  if (!(empty63(_g229))) {
-    var _g230 = bind_arguments(x, _g229);
-    var args = _g230[0];
-    var _g231 = _g230[1];
-    return(join(["%local-function", name, args], _g231));
-  } else {
-    return(["%local", name, x]);
-  }
-}});
-setenv("with-bindings", {macro: function (_g232) {
-  var names = _g232[0];
+setenv("fn", {macro: function (args) {
   var body = unstash(sub(arguments, 1));
-  var _g233 = sub(body, 0);
-  var x = make_id();
-  return(join(["with-frame", ["across", [names, x], ["setenv*", x, "pending"]]], _g233));
+  var _g237 = sub(body, 0);
+  var _g238 = bind_arguments(args, _g237);
+  var args = _g238[0];
+  var _g239 = _g238[1];
+  return(join(["%function", args], _g239));
 }});
-setenv("with-frame", {macro: function () {
-  var body = unstash(sub(arguments, 0));
-  var x = make_id();
-  return(["do", ["add", "environment", ["table"]], ["let", [x, join(["do"], body)], ["drop", "environment"], x]]);
-}});
-setenv("let", {macro: function (bindings) {
-  var body = unstash(sub(arguments, 1));
-  var _g234 = sub(body, 0);
-  var i = 0;
-  var renames = [];
-  var locals = [];
-  map(function (_g235) {
-    var lh = _g235[0];
-    var rh = _g235[1];
-    var _g237 = 0;
-    var _g236 = bind(lh, rh);
-    while ((_g237 < length(_g236))) {
-      var _g238 = _g236[_g237];
-      var id = _g238[0];
-      var val = _g238[1];
-      if (bound63(id)) {
-        var rename = make_id();
-        add(renames, id);
-        add(renames, rename);
-        id = rename;
-      } else {
-        setenv42(id, pending);
-      }
-      add(locals, ["%local", id, val]);
-      _g237 = (_g237 + 1);
-    }
-  }, pairwise(bindings));
-  return(join(["do"], join(locals, [join(["let-symbol", renames], _g234)])));
-}});
-setenv("define-global", {macro: function (name, x) {
-  var body = unstash(sub(arguments, 2));
-  var _g239 = sub(body, 0);
-  setenv42(name, pending);
-  if (!(empty63(_g239))) {
-    var _g240 = bind_arguments(x, _g239);
-    var args = _g240[0];
-    var _g241 = _g240[1];
-    return(join(["%global-function", name, args], _g241));
-  } else {
-    return(["set", name, x]);
+setenv("set", {special: function (_g240) {
+  var lh = _g240[0];
+  var rh = _g240[1];
+  if (nil63(rh)) {
+    throw "Missing right-hand side in assignment";
   }
-}});
-setenv("join!", {macro: function (a) {
-  var bs = unstash(sub(arguments, 1));
-  var _g242 = sub(bs, 0);
-  return(["set", a, join(["join*", a], _g242)]);
+  return((indentation() + compile(lh) + " = " + compile(rh)));
+}, stmt: true});
+setenv("while", {tr: true, stmt: true, special: function (_g241) {
+  var condition = _g241[0];
+  var body = sub(_g241, 1);
+  var condition = compile(condition);
+  var body = (function () {
+    indent_level = (indent_level + 1);
+    var _g242 = compile_body(body);
+    indent_level = (indent_level - 1);
+    return(_g242);
+  })();
+  var ind = indentation();
+  if ((target === "js")) {
+    return((ind + "while (" + condition + ") {\n" + body + ind + "}\n"));
+  } else {
+    return((ind + "while " + condition + " do\n" + body + ind + "end\n"));
+  }
 }});
 modules.compiler = true;
-modules.main = true;
-modules.lib = true;
 modules.reader = true;
+modules.lib = true;
+modules.main = true;
 main()
