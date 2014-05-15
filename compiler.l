@@ -349,10 +349,11 @@
 
 (define modules (table))
 (define exports (table))
+(define imports (table))
 (define loading (table))
 
+(define save-modules? false)
 (define compiler-output nil)
-(define save-env? false)
 (define compiling? false)
 
 (define compile-file (file)
@@ -398,6 +399,7 @@
 (define-macro define-module (spec rest: body)
   (let ((import: imp export: exp) body)
     (map load-module imp)
+    (set imports imp)
     (set exports (table))
     (across ((or exp ()) x)
       (set (get exports x) true)))
@@ -410,14 +412,12 @@
       (let ((:stmt :tr) x)
         `(table special: ,x.form stmt: ,stmt tr: ,tr))))
 
-(define save-environment ()
-  (let (toplevel (hd environment)
-        save (fn (x) (cat! compiler-output (compile-toplevel x))))
+(define save-modules ()
+  (let (save (fn (x) (cat! compiler-output (compile-toplevel x))))
+    ;; bootstrap module system
     (save '(define environment (list (table))))
-    (each ((map* quote-binding toplevel) k v)
-      (save `(setenv ',k ,v)))
-    (let (m (quote-binding (getenv 'define-module)))
-      (save `(setenv 'define-module ,m)))
+    (let (x (quote-binding (getenv 'define-module)))
+      (save `(setenv 'define-module ,x)))
     (each (modules m v)
       (save `(set (get modules ',m) (table)))
       (each ((map* quote-binding v) k v)
@@ -427,5 +427,5 @@
   (set compiling? true)
   (set compiler-output "")
   (load-module spec)
-  (map open-module '(lib compiler))
-  (if save-env? (save-environment)))
+  (map open-module imports)
+  (if save-modules? (save-modules)))

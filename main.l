@@ -44,7 +44,7 @@
                     (if (= arg "-o") (set output val)
 		        (= arg "-t") (set target1 val)
 		        (= arg "-e") (set expr val)))))
-            (= arg "-s") (set save-env? true)
+            (= arg "-s") (set save-modules? true)
 	    (~= "-" (char arg 0)) (add inputs arg)))
       (if output
           (do (if target1 (set target target1))
@@ -53,4 +53,5 @@
                     compiled (cat compiler-output main))
                 (write-file output compiled)))
         (do (map load-module inputs)
+            (map open-module imports)
             (if expr (rep expr) (repl)))))))
