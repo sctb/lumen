@@ -1,7 +1,7 @@
 ;; -*- mode: lisp -*-
 
 (define-module lib
-  import: (compiler)
+  import: (lib compiler)
   export: (setenv
            getenv
            special?
@@ -17,6 +17,8 @@
            define-global
            define-local
            define
+           with-frame
+           with-bindings
            let-macro
            let-symbol
            fn
@@ -26,6 +28,7 @@
            quoted
            stash*
            unstash
+           quasiquote
            macroexpand
            target
            language

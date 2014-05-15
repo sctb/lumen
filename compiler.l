@@ -1,7 +1,7 @@
 ;; -*- mode: lisp -*-
 
 (define-module compiler
-  import: (reader lib)
+  import: (reader lib compiler)
   export: (eval
            compile
            compile-toplevel
@@ -9,6 +9,8 @@
            compiler-output
            load-module
            define-module
+           open-module
+           with-indent
            ;; special
            do
            if
@@ -19,7 +21,7 @@
            %function
            %global-function
            %local-function
-           %return
+           return
            error
            %local
            set
@@ -353,56 +355,45 @@
 (define save-env? false)
 (define compiling? false)
 
-(define quote-binding (x)
-  (if (is? x.symbol) `(table symbol: ',x.symbol)
-      (and x.macro x.form) `(table macro: ,x.form)
-      (and x.special x.form)
-      (let ((:stmt :tr) x)
-        `(table special: ,x.form stmt: ,stmt tr: ,tr))))
-
-(define save-environment ()
-  (let (env '(define environment (list (table)))
-        toplevel (hd environment))
-    (cat! compiler-output (compile-toplevel env))
-    (each ((map* quote-binding toplevel) k v)
-      (let (x (compile-toplevel `(setenv ',k ,v)))
-        (cat! compiler-output x)))
-    ;; TODO: use serialized modules instead of the saved environment
-    (each (modules m v)
-      (let (x (compile-toplevel
-               `(set (get modules ',m) (table))))
-        (cat! compiler-output x)
-        (each ((map* quote-binding v) k v)
-          (let (x (compile-toplevel
-                   `(set (get (get modules ',m) ',k) ,v)))
-            (cat! compiler-output x)))))))
-
 (define compile-file (file)
   (let (str (read-file file)
         body (read-all (make-stream str)))
     (compile-toplevel `(do ,@body))))
 
 (define load-module (spec)
-  (let (k (to-string spec) module (table))
+  (let (k (to-string spec))
     (if (list? spec)
         (error "Unsupported module specification")
-        (get loading k) (return)
-        (and (not compiling?) (get modules k))
-        (set module (get modules k))
-      (let (file (cat k ".l")
-            frame (table))
-        (set (get loading k) true)
-        (add environment frame)
-        (let (compiled (compile-file file))
-          (drop environment)
-          (each (frame x v)
-            (set (get module x) v))
-          (set (get modules k) module)
-          (if compiling?
-              (cat! compiler-output compiled)
-            (run compiled)))))
-    (each (module x v)
-      (setenv x v))))
+        (and (get loading k)
+             (not (get modules k)))
+        (return)
+        (or (nil? (get modules k))
+            (and compiling?
+                 (nil? (get loading k))))
+        (%load-module k))
+    (open-module spec)))
+
+(define %load-module (k)
+  (let (file (cat k ".l")
+        frame (table)
+        module (table))
+    (set (get loading k) true)
+    (add environment frame)
+    (let (compiled (compile-file file))
+      (drop environment)
+      (each (frame x v)
+        (if (get exports x)
+            (set (get module x) v)))
+      (set (get modules k) module)
+      (if compiling?
+          (cat! compiler-output compiled)
+        (run compiled)))))
+
+(define open-module (spec)
+  (let (k (to-string spec)
+        module (get modules k))
+    (each (module k v)
+      (setenv k v))))
 
 (define-macro define-module (spec rest: body)
   (let ((import: imp export: exp) body)
@@ -412,8 +403,29 @@
       (set (get exports x) true)))
   nil)
 
+(define quote-binding (x)
+  (if (is? x.symbol) `(table symbol: ',x.symbol)
+      (and x.macro x.form) `(table macro: ,x.form)
+      (and x.special x.form)
+      (let ((:stmt :tr) x)
+        `(table special: ,x.form stmt: ,stmt tr: ,tr))))
+
+(define save-environment ()
+  (let (toplevel (hd environment)
+        save (fn (x) (cat! compiler-output (compile-toplevel x))))
+    (save '(define environment (list (table))))
+    (each ((map* quote-binding toplevel) k v)
+      (save `(setenv ',k ,v)))
+    (let (m (quote-binding (getenv 'define-module)))
+      (save `(setenv 'define-module ,m)))
+    (each (modules m v)
+      (save `(set (get modules ',m) (table)))
+      (each ((map* quote-binding v) k v)
+        (save `(set (get (get modules ',m) ',k) ,v))))))
+
 (define compile-module (spec)
   (set compiling? true)
   (set compiler-output "")
   (load-module spec)
+  (map open-module '(lib compiler))
   (if save-env? (save-environment)))
