@@ -13,7 +13,7 @@ cross: all
 	@LUMEN_HOST=node ./lumen main -s -f -o $(LUABOOT) -t lua
 	@./lumen main -s -f -o $(JSBOOT) -t js
 
-test:
+test: all
 	@./lumen test -e "(run-tests)"
 	@LUMEN_HOST=node ./lumen test -e "(run-tests)"
 

@@ -154,10 +154,14 @@
     (test= '(quasiquote ((unquote-splicing (list 42)))) ``(,@(list ,a))))
   (test= true (get `(:foo) 'foo))
   (let (a 17
-        b '(1 2))
+        b '(1 2)
+        c (table a: 10)
+        d (list a: 10))
     (test= 17 (get `(foo: ,a) 'foo))
     (test= 2 (length `(foo: ,a ,@b)))
     (test= 17 (get `(foo: ,@a) 'foo))
+    (test= '(1 a: 10) `(1 ,@c))
+    (test= '(1 a: 10) `(1 ,@d))
     (test= true (get (hd `((:foo))) 'foo))
     (test= true (get (hd `(,(list :foo))) 'foo))
     (test= true (get `(,@(list :foo)) 'foo))
@@ -465,6 +469,12 @@
 (define-test map ()
   (test= '(1) (map (fn (x) x) '(1)))
   (test= '(2 3 4) (map (fn (x) (+ x 1)) '(1 2 3))))
+
+(define-test map* ()
+  (test= '(2 3 4 a: 5) (map* (fn (x) (+ x 1)) (list 1 2 3 a: 4))))
+
+(define-test extend ()
+  (test= '(a: 1 b: 2) (extend '(a: 1) b: 2)))
 
 (define-test map-splice ()
   (test= '(1 a 2 a) (map (fn (x) (splice (list x 'a))) '(1 2)))

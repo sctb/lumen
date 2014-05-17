@@ -57,6 +57,7 @@
            map
            map*
            keys?
+           extend
            char
            code
            search
@@ -516,16 +517,13 @@
 (define join (l1 l2)
   (if (nil? l1) l2
       (nil? l2) l1
-    (let (l ())
-      (target
-       js: (set l (l1.concat l2))
-       lua: (let (i 0 len (length l1))
-              (while (< i len)
-                (set (at l i) (at l1 i))
-                (inc i))
-              (while (< i (+ len (length l2)))
-                (set (at l i) (at l2 (- i len)))
-                (inc i))))
+    (let (l () i 0 len (length l1))
+      (while (< i len)
+        (set (at l i) (at l1 i))
+        (inc i))
+      (while (< i (+ len (length l2)))
+        (set (at l i) (at l2 (- i len)))
+        (inc i))
       (each (l1 k v)
         (set (get l k) v))
       (each (l2 k v)
@@ -624,6 +622,11 @@
       (set k? true)
       (break))
     k?))
+
+(define extend (t rest: keys)
+  (each (keys k v)
+    (set (get t k) v))
+  t)
 
 ;; strings
 
