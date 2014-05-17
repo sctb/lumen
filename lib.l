@@ -93,20 +93,17 @@
 
 ;; environment
 
-(define setenv (k v)
-  (set (get (last environment) k) v))
+(define setenv (k rest: keys)
+  (let (frame (last environment)
+        x (or (get frame k) (table)))
+    (each (keys k1 v)
+      (set (get x k1) v))
+    (set (get frame k) x)))
 
 (define getenv (k)
   (if (string? k)
       (find (fn (e) (get e k))
             (reverse environment))))
-
-(define setenv* (k v)
-  (let (frame (last environment)
-        x (get frame k))
-    (if x
-        (set x.variable v)
-      (setenv k (table variable: v)))))
 
 (define macro-function (k)
   (let (x (getenv k))
@@ -184,45 +181,42 @@
                    (add renames id)
                    (add renames rename)
                    (set id rename))
-               (setenv* id pending))
+               (setenv id :variable))
              (add locals `(%local ,id ,val))))
          (pairwise bindings))
     `(do ,@locals (let-symbol ,renames ,@body))))
 
 (define-macro define-macro (name args rest: body)
-  (let (form `(fn ,args ,@body)
-        value `(table macro: ,form form: ',form)
-        binding `(setenv ',name ,value))
-    (eval binding))
+  (let (form `(fn ,args ,@body))
+    (eval `(setenv ',name macro: ,form form: ',form)))
   nil)
 
 (define-macro define-special (name args rest: body)
   (let (form `(fn ,args ,@body)
-        value `(table special: ,form form: ',form ,@body)
-        binding `(setenv ',name ,value))
-    (eval binding))
+        keys (sub body (length body)))
+    (eval `(setenv ',name special: ,form form: ',form ,@keys)))
   nil)
 
 (define-macro define-symbol (name expansion)
-  (setenv name (table symbol: expansion))
+  (setenv name symbol: expansion)
   nil)
 
 (define-macro define-global (name x rest: body)
-  (setenv* name pending)
+  (setenv name :variable)
   (if (not (empty? body))
       (let ((args body) (bind-arguments x body))
         `(%global-function ,name ,args ,@body))
     `(set ,name ,x)))
 
 (define-macro define-local (name x rest: body)
-  (setenv* name pending)
+  (setenv name :variable)
   (if (not (empty? body))
       (let ((args body) (bind-arguments x body))
         `(%local-function ,name ,args ,@body))
     `(%local ,name ,x)))
 
 (define-macro define (name x rest: body)
-  (setenv* name pending)
+  (setenv name :variable)
   `(define-global ,name ,x ,@body))
 
 (define-macro with-frame body
@@ -236,7 +230,7 @@
   (let (x (make-id))
    `(with-frame
       (across (,names ,x)
-        (setenv* ,x pending))
+        (setenv ,x :variable))
       ,@body)))
 
 (define-macro let-macro (definitions rest: body)

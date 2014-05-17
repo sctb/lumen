@@ -392,9 +392,10 @@
 
 (define open-module (spec)
   (let (k (to-string spec)
-        module (get modules k))
+        module (get modules k)
+        toplevel (hd environment))
     (each (module k v)
-      (setenv k v))))
+      (set (get toplevel k) v))))
 
 (define-macro define-module (spec rest: body)
   (let ((import: imp export: exp) body)
@@ -406,22 +407,22 @@
   nil)
 
 (define quote-binding (x)
-  (if (is? x.symbol) `(table symbol: ',x.symbol)
-      (and x.macro x.form) `(table macro: ,x.form)
+  (if (is? x.symbol) `(symbol: ',x.symbol)
+      (and x.macro x.form) `(macro: ,x.form)
       (and x.special x.form)
       (let ((:stmt :tr) x)
-        `(table special: ,x.form stmt: ,stmt tr: ,tr))))
+        `(special: ,x.form stmt: ,stmt tr: ,tr))))
 
 (define save-modules ()
   (let (save (fn (x) (cat! compiler-output (compile-toplevel x))))
     ;; bootstrap module system
     (save '(define environment (list (table))))
     (let (x (quote-binding (getenv 'define-module)))
-      (save `(setenv 'define-module ,x)))
+      (save `(setenv 'define-module ,@x)))
     (each (modules m v)
       (save `(set (get modules ',m) (table)))
       (each ((map* quote-binding v) k v)
-        (save `(set (get (get modules ',m) ',k) ,v))))))
+        (save `(set (get (get modules ',m) ',k) (table ,@v)))))))
 
 (define compile-module (spec)
   (set compiling? true)
