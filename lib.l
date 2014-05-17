@@ -102,7 +102,8 @@
             (reverse environment))))
 
 (define setenv* (k v)
-  (let (x (getenv k))
+  (let (frame (last environment)
+        x (get frame k))
     (if x
         (set x.variable v)
       (setenv k (table variable: v)))))

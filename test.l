@@ -259,7 +259,11 @@
       (cat! a k)
       (set b (+ b v)))
     (test= 3 (length a))
-    (test= 60 b)))
+    (test= 60 b)
+    ((fn (k)
+       (each ((table :a :b) k v))
+       (test= 10 k))
+     10)))
 
 (define-test fn ()
   (let (f (fn (n) (+ n 10)))
