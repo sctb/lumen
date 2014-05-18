@@ -407,11 +407,12 @@
   nil)
 
 (define quote-binding (x)
-  (if (is? x.symbol) `(symbol: ',x.symbol)
-      (and x.macro x.form) `(macro: ,x.form)
+  (if (is? x.symbol)
+      (extend x symbol: `',x.symbol)
+      (and x.macro x.form)
+      (extend x macro: x.form)
       (and x.special x.form)
-      (let ((:stmt :tr) x)
-        `(special: ,x.form stmt: ,stmt tr: ,tr))))
+      (extend x special: x.form)))
 
 (define save-modules ()
   (let (save (fn (x) (cat! compiler-output (compile-toplevel x))))

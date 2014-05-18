@@ -623,10 +623,8 @@
       (break))
     k?))
 
-(define extend (t rest: keys)
-  (each (keys k v)
-    (set (get t k) v))
-  t)
+(define extend (t rest: xs)
+  (join (sub t) xs))
 
 ;; strings
 
