@@ -25,7 +25,7 @@
   (pr "  -e <expr>\tExpression to evaluate")
   (exit))
 
-(define-global main ()
+(define main ()
   (let (args (target js: (sub process.argv 2) lua: arg))
     (if (or (= (hd args) "-h")
             (= (hd args) "--help"))
@@ -47,9 +47,9 @@
       (if output
           (do (if target1 (set target target1))
               (map compile-module inputs)
-              (let (main (compile '(main))
-                    compiled (cat compiler-output main))
-                (write-file output compiled)))
+              (write-file output compiler-output))
         (do (map load-module inputs)
             (map open-module imports)
             (if expr (rep expr) (repl)))))))
+
+(main)

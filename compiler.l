@@ -446,7 +446,7 @@
   `(list ,@(map quote-frame env)))
 
 (define quote-module (k m)
-  `(%object 
+  `(%object
     ,@(mapo (fn (_ x)
               (if (and x.export
                        (= k x.module))

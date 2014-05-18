@@ -1960,9 +1960,7 @@ main = function () {
       target = target1;
     }
     map(compile_module, inputs);
-    var main = compile(["main"]);
-    var compiled = (compiler_output + main);
-    return(write_file(output, compiled));
+    return(write_file(output, compiler_output));
   } else {
     map(load_module, inputs);
     map(open_module, imports);
@@ -1973,4 +1971,4 @@ main = function () {
     }
   }
 };
-main()
+main();
