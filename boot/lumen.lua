@@ -1,4 +1,4 @@
-infix = {js = {["~="] = "!=", ["and"] = "&&", ["="] = "===", ["or"] = "||", ["cat"] = "+"}, common = {["%"] = true, ["<="] = true, ["*"] = true, ["+"] = true, ["<"] = true, ["-"] = true, [">"] = true, ["/"] = true, [">="] = true}, lua = {["or"] = true, ["and"] = true, ["="] = "==", ["~="] = true, ["cat"] = ".."}}
+infix = {common = {["+"] = true, ["-"] = true, ["%"] = true, ["*"] = true, ["/"] = true, ["<"] = true, [">"] = true, ["<="] = true, [">="] = true}, js = {["="] = "===", ["~="] = "!=", ["and"] = "&&", ["or"] = "||", ["cat"] = "+"}, lua = {["="] = "==", ["cat"] = "..", ["~="] = true, ["and"] = true, ["or"] = true}}
 function getop(op)
   local op1 = (infix.common[op] or infix[target][op])
   if (op1 == true) then
@@ -154,7 +154,7 @@ function compile_branch(condition, body, first63, last63, tail63)
   local cond1 = compile(condition)
   local _g11 = (function ()
     indent_level = (indent_level + 1)
-    local _g12 = compile(body, {_stash = true, ["tail?"] = tail63, ["stmt?"] = true})
+    local _g12 = compile(body, {_stash = true, ["stmt?"] = true, ["tail?"] = tail63})
     indent_level = (indent_level - 1)
     return(_g12)
   end)()
@@ -184,8 +184,8 @@ function compile_branch(condition, body, first63, last63, tail63)
 end
 function compile_function(args, body, ...)
   local _g13 = unstash({...})
-  local prefix = _g13.prefix
   local name = _g13.name
+  local prefix = _g13.prefix
   local id = (function ()
     if name then
       return(compile(name))
@@ -226,9 +226,9 @@ function terminator(stmt63)
 end
 function compile_special(form, stmt63, tail63)
   local _g15 = getenv(hd(form))
-  local self_tr63 = _g15.tr
-  local stmt = _g15.stmt
   local special = _g15.special
+  local stmt = _g15.stmt
+  local self_tr63 = _g15.tr
   if ((not stmt63) and stmt) then
     return(compile({{"%function", {}, form}}, {_stash = true, ["tail?"] = tail63}))
   else
@@ -760,10 +760,10 @@ function substring(str, from, upto)
   return((string.sub)(str, (from + 1), upto))
 end
 function sublist(l, from, upto)
-  local i = from
+  local i = (from or 0)
   local j = 0
-  local l2 = {}
   local _g145 = (upto or length(l))
+  local l2 = {}
   while (i < _g145) do
     l2[(j + 1)] = l[(i + 1)]
     i = (i + 1)
@@ -971,6 +971,22 @@ function extend(t, ...)
   local _g167 = sub(xs, 0)
   return(join(t, _g167))
 end
+function exclude(t, ...)
+  local keys = unstash({...})
+  local _g168 = sub(keys, 0)
+  local t1 = sublist(t)
+  local k = nil
+  local _g169 = t
+  for k in next, _g169 do
+    if (not number63(k)) then
+      local v = _g169[k]
+      if (not _g168[k]) then
+        t1[k] = v
+      end
+    end
+  end
+  return(t1)
+end
 function char(str, n)
   return(sub(str, n, (n + 1)))
 end
@@ -982,7 +998,7 @@ function code(str, n)
   end)()))
 end
 function search(str, pattern, start)
-  local _g168 = (function ()
+  local _g170 = (function ()
     if start then
       return((start + 1))
     end
@@ -1010,49 +1026,49 @@ function split(str, sep)
 end
 function cat(...)
   local xs = unstash({...})
-  local _g169 = sub(xs, 0)
-  if empty63(_g169) then
+  local _g171 = sub(xs, 0)
+  if empty63(_g171) then
     return("")
   else
     return(reduce(function (a, b)
       return((a .. b))
-    end, _g169))
+    end, _g171))
   end
 end
 function _43(...)
   local xs = unstash({...})
-  local _g172 = sub(xs, 0)
+  local _g174 = sub(xs, 0)
   return(reduce(function (a, b)
     return((a + b))
-  end, _g172))
+  end, _g174))
 end
 function _(...)
   local xs = unstash({...})
-  local _g173 = sub(xs, 0)
+  local _g175 = sub(xs, 0)
   return(reduce(function (a, b)
     return((b - a))
-  end, reverse(_g173)))
+  end, reverse(_g175)))
 end
 function _42(...)
   local xs = unstash({...})
-  local _g174 = sub(xs, 0)
+  local _g176 = sub(xs, 0)
   return(reduce(function (a, b)
     return((a * b))
-  end, _g174))
+  end, _g176))
 end
 function _47(...)
   local xs = unstash({...})
-  local _g175 = sub(xs, 0)
+  local _g177 = sub(xs, 0)
   return(reduce(function (a, b)
     return((b / a))
-  end, reverse(_g175)))
+  end, reverse(_g177)))
 end
 function _37(...)
   local xs = unstash({...})
-  local _g176 = sub(xs, 0)
+  local _g178 = sub(xs, 0)
   return(reduce(function (a, b)
     return((b % a))
-  end, reverse(_g176)))
+  end, reverse(_g178)))
 end
 function _62(a, b)
   return((a > b))
@@ -1139,18 +1155,18 @@ function to_string(x)
     local str = "("
     local x1 = sub(x)
     local k = nil
-    local _g177 = x
-    for k in next, _g177 do
+    local _g179 = x
+    for k in next, _g179 do
       if (not number63(k)) then
-        local v = _g177[k]
+        local v = _g179[k]
         add(x1, (k .. ":"))
         add(x1, v)
       end
     end
     local i = 0
-    local _g178 = x1
-    while (i < length(_g178)) do
-      local y = _g178[(i + 1)]
+    local _g180 = x1
+    while (i < length(_g180)) do
+      local y = _g180[(i + 1)]
       str = (str .. to_string(y))
       if (i < (length(x1) - 1)) then
         str = (str .. " ")
@@ -1161,18 +1177,18 @@ function to_string(x)
   end
 end
 function apply(f, args)
-  local _g179 = stash(args)
-  return(f(unpack(_g179)))
+  local _g181 = stash(args)
+  return(f(unpack(_g181)))
 end
 id_count = 0
 function make_id()
   id_count = (id_count + 1)
   return(("_g" .. id_count))
 end
-delimiters = {[";"] = true, ["\n"] = true, ["("] = true, [")"] = true}
-whitespace = {[" "] = true, ["\n"] = true, ["\t"] = true}
+delimiters = {["("] = true, [")"] = true, [";"] = true, ["\n"] = true}
+whitespace = {[" "] = true, ["\t"] = true, ["\n"] = true}
 function make_stream(str)
-  return({len = length(str), pos = 0, string = str})
+  return({pos = 0, string = str, len = length(str)})
 end
 function peek_char(s)
   if (s.pos < s.len) then
@@ -1348,14 +1364,14 @@ function read_from_string(str)
   return(read(make_stream(str)))
 end
 function rep(str)
-  local _g183 = (function ()
-    local _g184,_g185 = xpcall(function ()
+  local _g185 = (function ()
+    local _g186,_g187 = xpcall(function ()
       return(eval(read_from_string(str)))
     end, message_handler)
-    return({_g184, _g185})
+    return({_g186, _g187})
   end)()
-  local _g1 = _g183[1]
-  local x = _g183[2]
+  local _g1 = _g185[1]
+  local x = _g185[2]
   if is63(x) then
     return(print((to_string(x) .. " ")))
   end
@@ -1394,9 +1410,9 @@ function main()
   local target1 = nil
   local expr = nil
   local i = 0
-  local _g186 = args
-  while (i < length(_g186)) do
-    local arg = _g186[(i + 1)]
+  local _g188 = args
+  while (i < length(_g188)) do
+    local arg = _g188[(i + 1)]
     if ((arg == "-o") or (arg == "-t") or (arg == "-e")) then
       if (i == (length(args) - 1)) then
         print((to_string("missing argument for") .. " " .. to_string(arg) .. " "))
@@ -1439,142 +1455,397 @@ end
 environment = {{}}
 setenv("define-module", {_stash = true, macro = function (spec, ...)
   local body = unstash({...})
-  local _g187 = sub(body, 0)
-  local imp = _g187.import
-  local exp = _g187.export
+  local _g189 = sub(body, 0)
+  local imp = _g189.import
+  local exp = _g189.export
   map(load_module, imp)
   imports = imp
   exports = {}
-  local _g189 = 0
-  local _g188 = (exp or {})
-  while (_g189 < length(_g188)) do
-    local x = _g188[(_g189 + 1)]
+  local _g191 = 0
+  local _g190 = (exp or {})
+  while (_g191 < length(_g190)) do
+    local x = _g190[(_g191 + 1)]
     exports[x] = true
-    _g189 = (_g189 + 1)
+    _g191 = (_g191 + 1)
   end
   return(nil)
 end, form = function (spec, ...)
   local body = unstash({...})
-  local _g190 = sub(body, 0)
-  local imp = _g190.import
-  local exp = _g190.export
+  local _g192 = sub(body, 0)
+  local imp = _g192.import
+  local exp = _g192.export
   map(load_module, imp)
   imports = imp
   exports = {}
-  local _g192 = 0
-  local _g191 = (exp or {})
-  while (_g192 < length(_g191)) do
-    local x = _g191[(_g192 + 1)]
+  local _g194 = 0
+  local _g193 = (exp or {})
+  while (_g194 < length(_g193)) do
+    local x = _g193[(_g194 + 1)]
     exports[x] = true
-    _g192 = (_g192 + 1)
+    _g194 = (_g194 + 1)
   end
   return(nil)
 end})
-modules.main = {}
 modules.lib = {}
-modules.lib["list*"] = {macro = function (...)
-  local xs = unstash({...})
-  if empty63(xs) then
-    return({})
-  else
-    local l = {}
-    local i = 0
-    local _g193 = xs
-    while (i < length(_g193)) do
-      local x = _g193[(i + 1)]
-      if (i == (length(xs) - 1)) then
-        l = {"join", join({"list"}, l), x}
-      else
-        add(l, x)
-      end
-      i = (i + 1)
-    end
+modules.lib.at = {macro = function (l, i)
+  if ((target == "lua") and number63(i)) then
+    i = (i + 1)
+  elseif (target == "lua") then
+    i = {"+", i, 1}
+  end
+  return({"get", l, i})
+end, form = function (l, i)
+  if ((target == "lua") and number63(i)) then
+    i = (i + 1)
+  elseif (target == "lua") then
+    i = {"+", i, 1}
+  end
+  return({"get", l, i})
+end}
+modules.lib.quote = {macro = function (form)
+  return(quoted(form))
+end, form = function (form)
+  return(quoted(form))
+end}
+modules.lib.list = {macro = function (...)
+  local body = unstash({...})
+  local l = join({"%array"}, body)
+  if (not keys63(body)) then
     return(l)
+  else
+    local id = make_id()
+    local init = {}
+    local k = nil
+    local _g195 = body
+    for k in next, _g195 do
+      if (not number63(k)) then
+        local v = _g195[k]
+        add(init, {"set", {"get", id, {"quote", k}}, v})
+      end
+    end
+    return(join({"let", {id, l}}, join(init, {id})))
   end
 end, form = function (...)
-  local xs = unstash({...})
-  if empty63(xs) then
-    return({})
-  else
-    local l = {}
-    local i = 0
-    local _g194 = xs
-    while (i < length(_g194)) do
-      local x = _g194[(i + 1)]
-      if (i == (length(xs) - 1)) then
-        l = {"join", join({"list"}, l), x}
-      else
-        add(l, x)
-      end
-      i = (i + 1)
-    end
+  local body = unstash({...})
+  local l = join({"%array"}, body)
+  if (not keys63(body)) then
     return(l)
+  else
+    local id = make_id()
+    local init = {}
+    local k = nil
+    local _g196 = body
+    for k in next, _g196 do
+      if (not number63(k)) then
+        local v = _g196[k]
+        add(init, {"set", {"get", id, {"quote", k}}, v})
+      end
+    end
+    return(join({"let", {id, l}}, join(init, {id})))
   end
 end}
-modules.lib.inc = {macro = function (n, by)
-  return({"set", n, {"+", n, (by or 1)}})
-end, form = function (n, by)
-  return({"set", n, {"+", n, (by or 1)}})
-end}
-modules.lib.target = {macro = function (...)
-  local clauses = unstash({...})
-  return(clauses[target])
+modules.lib.table = {macro = function (...)
+  local body = unstash({...})
+  local l = {}
+  local k = nil
+  local _g197 = body
+  for k in next, _g197 do
+    if (not number63(k)) then
+      local v = _g197[k]
+      if is63(v) then
+        add(l, k)
+        add(l, v)
+      end
+    end
+  end
+  return(join({"%object"}, l))
 end, form = function (...)
-  local clauses = unstash({...})
-  return(clauses[target])
-end, variable = true}
-modules.lib.dec = {macro = function (n, by)
-  return({"set", n, {"-", n, (by or 1)}})
-end, form = function (n, by)
-  return({"set", n, {"-", n, (by or 1)}})
+  local body = unstash({...})
+  local l = {}
+  local k = nil
+  local _g198 = body
+  for k in next, _g198 do
+    if (not number63(k)) then
+      local v = _g198[k]
+      if is63(v) then
+        add(l, k)
+        add(l, v)
+      end
+    end
+  end
+  return(join({"%object"}, l))
+end}
+modules.lib.let = {macro = function (bindings, ...)
+  local body = unstash({...})
+  local _g199 = sub(body, 0)
+  local i = 0
+  local renames = {}
+  local locals = {}
+  map(function (_g200)
+    local lh = _g200[1]
+    local rh = _g200[2]
+    local _g202 = 0
+    local _g201 = bind(lh, rh)
+    while (_g202 < length(_g201)) do
+      local _g203 = _g201[(_g202 + 1)]
+      local id = _g203[1]
+      local val = _g203[2]
+      if bound63(id) then
+        local rename = make_id()
+        add(renames, id)
+        add(renames, rename)
+        id = rename
+      else
+        setenv(id, {_stash = true, variable = true})
+      end
+      add(locals, {"%local", id, val})
+      _g202 = (_g202 + 1)
+    end
+  end, pairwise(bindings))
+  return(join({"do"}, join(locals, {join({"let-symbol", renames}, _g199)})))
+end, form = function (bindings, ...)
+  local body = unstash({...})
+  local _g204 = sub(body, 0)
+  local i = 0
+  local renames = {}
+  local locals = {}
+  map(function (_g205)
+    local lh = _g205[1]
+    local rh = _g205[2]
+    local _g207 = 0
+    local _g206 = bind(lh, rh)
+    while (_g207 < length(_g206)) do
+      local _g208 = _g206[(_g207 + 1)]
+      local id = _g208[1]
+      local val = _g208[2]
+      if bound63(id) then
+        local rename = make_id()
+        add(renames, id)
+        add(renames, rename)
+        id = rename
+      else
+        setenv(id, {_stash = true, variable = true})
+      end
+      add(locals, {"%local", id, val})
+      _g207 = (_g207 + 1)
+    end
+  end, pairwise(bindings))
+  return(join({"do"}, join(locals, {join({"let-symbol", renames}, _g204)})))
+end}
+modules.lib["define-macro"] = {macro = function (name, args, ...)
+  local body = unstash({...})
+  local _g209 = sub(body, 0)
+  local form = join({"fn", args}, _g209)
+  eval((function ()
+    local _g210 = {"setenv", {"quote", name}}
+    _g210.macro = form
+    _g210.form = {"quote", form}
+    return(_g210)
+  end)())
+  return(nil)
+end, form = function (name, args, ...)
+  local body = unstash({...})
+  local _g211 = sub(body, 0)
+  local form = join({"fn", args}, _g211)
+  eval((function ()
+    local _g212 = {"setenv", {"quote", name}}
+    _g212.macro = form
+    _g212.form = {"quote", form}
+    return(_g212)
+  end)())
+  return(nil)
+end}
+modules.lib["define-special"] = {macro = function (name, args, ...)
+  local body = unstash({...})
+  local _g213 = sub(body, 0)
+  local form = join({"fn", args}, _g213)
+  local keys = sub(_g213, length(_g213))
+  eval(join((function ()
+    local _g214 = {"setenv", {"quote", name}}
+    _g214.special = form
+    _g214.form = {"quote", form}
+    return(_g214)
+  end)(), keys))
+  return(nil)
+end, form = function (name, args, ...)
+  local body = unstash({...})
+  local _g215 = sub(body, 0)
+  local form = join({"fn", args}, _g215)
+  local keys = sub(_g215, length(_g215))
+  eval(join((function ()
+    local _g216 = {"setenv", {"quote", name}}
+    _g216.special = form
+    _g216.form = {"quote", form}
+    return(_g216)
+  end)(), keys))
+  return(nil)
+end}
+modules.lib["define-symbol"] = {macro = function (name, expansion)
+  setenv(name, {_stash = true, symbol = expansion})
+  return(nil)
+end, form = function (name, expansion)
+  setenv(name, {_stash = true, symbol = expansion})
+  return(nil)
 end}
 modules.lib["define-global"] = {macro = function (name, x, ...)
   local body = unstash({...})
-  local _g195 = sub(body, 0)
+  local _g217 = sub(body, 0)
   setenv(name, {_stash = true, variable = true})
-  if (not empty63(_g195)) then
-    local _g196 = bind_arguments(x, _g195)
-    local args = _g196[1]
-    local _g197 = _g196[2]
-    return(join({"%global-function", name, args}, _g197))
+  if (not empty63(_g217)) then
+    local _g218 = bind_arguments(x, _g217)
+    local args = _g218[1]
+    local _g219 = _g218[2]
+    return(join({"%global-function", name, args}, _g219))
   else
     return({"set", name, x})
   end
 end, form = function (name, x, ...)
   local body = unstash({...})
-  local _g198 = sub(body, 0)
+  local _g220 = sub(body, 0)
   setenv(name, {_stash = true, variable = true})
-  if (not empty63(_g198)) then
-    local _g199 = bind_arguments(x, _g198)
-    local args = _g199[1]
-    local _g200 = _g199[2]
-    return(join({"%global-function", name, args}, _g200))
+  if (not empty63(_g220)) then
+    local _g221 = bind_arguments(x, _g220)
+    local args = _g221[1]
+    local _g222 = _g221[2]
+    return(join({"%global-function", name, args}, _g222))
   else
     return({"set", name, x})
   end
 end}
-modules.lib["define-macro"] = {macro = function (name, args, ...)
+modules.lib["define-local"] = {macro = function (name, x, ...)
   local body = unstash({...})
-  local _g201 = sub(body, 0)
-  local form = join({"fn", args}, _g201)
-  eval((function ()
-    local _g202 = {"setenv", {"quote", name}}
-    _g202.macro = form
-    _g202.form = {"quote", form}
-    return(_g202)
-  end)())
-  return(nil)
-end, form = function (name, args, ...)
+  local _g223 = sub(body, 0)
+  setenv(name, {_stash = true, variable = true})
+  if (not empty63(_g223)) then
+    local _g224 = bind_arguments(x, _g223)
+    local args = _g224[1]
+    local _g225 = _g224[2]
+    return(join({"%local-function", name, args}, _g225))
+  else
+    return({"%local", name, x})
+  end
+end, form = function (name, x, ...)
   local body = unstash({...})
-  local _g203 = sub(body, 0)
-  local form = join({"fn", args}, _g203)
-  eval((function ()
-    local _g204 = {"setenv", {"quote", name}}
-    _g204.macro = form
-    _g204.form = {"quote", form}
-    return(_g204)
-  end)())
-  return(nil)
+  local _g226 = sub(body, 0)
+  setenv(name, {_stash = true, variable = true})
+  if (not empty63(_g226)) then
+    local _g227 = bind_arguments(x, _g226)
+    local args = _g227[1]
+    local _g228 = _g227[2]
+    return(join({"%local-function", name, args}, _g228))
+  else
+    return({"%local", name, x})
+  end
+end}
+modules.lib.define = {macro = function (name, x, ...)
+  local body = unstash({...})
+  local _g229 = sub(body, 0)
+  setenv(name, {_stash = true, variable = true})
+  return(join({"define-global", name, x}, _g229))
+end, form = function (name, x, ...)
+  local body = unstash({...})
+  local _g230 = sub(body, 0)
+  setenv(name, {_stash = true, variable = true})
+  return(join({"define-global", name, x}, _g230))
+end}
+modules.lib["with-frame"] = {macro = function (...)
+  local body = unstash({...})
+  local x = make_id()
+  return({"do", {"add", "environment", {"table"}}, {"let", {x, join({"do"}, body)}, {"drop", "environment"}, x}})
+end, form = function (...)
+  local body = unstash({...})
+  local x = make_id()
+  return({"do", {"add", "environment", {"table"}}, {"let", {x, join({"do"}, body)}, {"drop", "environment"}, x}})
+end}
+modules.lib["with-bindings"] = {macro = function (_g231, ...)
+  local names = _g231[1]
+  local body = unstash({...})
+  local _g232 = sub(body, 0)
+  local x = make_id()
+  return(join({"with-frame", {"across", {names, x}, (function ()
+    local _g233 = {"setenv", x}
+    _g233.variable = true
+    return(_g233)
+  end)()}}, _g232))
+end, form = function (_g234, ...)
+  local names = _g234[1]
+  local body = unstash({...})
+  local _g235 = sub(body, 0)
+  local x = make_id()
+  return(join({"with-frame", {"across", {names, x}, (function ()
+    local _g236 = {"setenv", x}
+    _g236.variable = true
+    return(_g236)
+  end)()}}, _g235))
+end}
+modules.lib["let-macro"] = {macro = function (definitions, ...)
+  local body = unstash({...})
+  local _g237 = sub(body, 0)
+  add(environment, {})
+  local _g238 = (function ()
+    map(function (m)
+      return(macroexpand(join({"define-macro"}, m)))
+    end, definitions)
+    return(join({"do"}, macroexpand(_g237)))
+  end)()
+  drop(environment)
+  return(_g238)
+end, form = function (definitions, ...)
+  local body = unstash({...})
+  local _g239 = sub(body, 0)
+  add(environment, {})
+  local _g240 = (function ()
+    map(function (m)
+      return(macroexpand(join({"define-macro"}, m)))
+    end, definitions)
+    return(join({"do"}, macroexpand(_g239)))
+  end)()
+  drop(environment)
+  return(_g240)
+end}
+modules.lib["let-symbol"] = {macro = function (expansions, ...)
+  local body = unstash({...})
+  local _g241 = sub(body, 0)
+  add(environment, {})
+  local _g242 = (function ()
+    map(function (_g243)
+      local name = _g243[1]
+      local exp = _g243[2]
+      return(macroexpand({"define-symbol", name, exp}))
+    end, pairwise(expansions))
+    return(join({"do"}, macroexpand(_g241)))
+  end)()
+  drop(environment)
+  return(_g242)
+end, form = function (expansions, ...)
+  local body = unstash({...})
+  local _g244 = sub(body, 0)
+  add(environment, {})
+  local _g245 = (function ()
+    map(function (_g246)
+      local name = _g246[1]
+      local exp = _g246[2]
+      return(macroexpand({"define-symbol", name, exp}))
+    end, pairwise(expansions))
+    return(join({"do"}, macroexpand(_g244)))
+  end)()
+  drop(environment)
+  return(_g245)
+end}
+modules.lib.fn = {macro = function (args, ...)
+  local body = unstash({...})
+  local _g247 = sub(body, 0)
+  local _g248 = bind_arguments(args, _g247)
+  local args = _g248[1]
+  local _g249 = _g248[2]
+  return(join({"%function", args}, _g249))
+end, form = function (args, ...)
+  local body = unstash({...})
+  local _g250 = sub(body, 0)
+  local _g251 = bind_arguments(args, _g250)
+  local args = _g251[1]
+  local _g252 = _g251[2]
+  return(join({"%function", args}, _g252))
 end}
 modules.lib.guard = {macro = function (expr)
   if (target == "js") then
@@ -1595,127 +1866,68 @@ end, form = function (expr)
     return({"let", {ex, {"xpcall", {"fn", {}, expr}, "message-handler"}}, {"list", e, x}})
   end
 end}
-modules.lib["define-symbol"] = {macro = function (name, expansion)
-  setenv(name, {_stash = true, symbol = expansion})
-  return(nil)
-end, form = function (name, expansion)
-  setenv(name, {_stash = true, symbol = expansion})
-  return(nil)
+modules.lib.across = {macro = function (_g253, ...)
+  local l = _g253[1]
+  local v = _g253[2]
+  local i = _g253[3]
+  local start = _g253[4]
+  local body = unstash({...})
+  local _g254 = sub(body, 0)
+  local l1 = make_id()
+  i = (i or make_id())
+  start = (start or 0)
+  return({"let", {i, start, l1, l}, {"while", {"<", i, {"length", l1}}, join({"let", {v, {"at", l1, i}}}, join(_g254, {{"inc", i}}))}})
+end, form = function (_g255, ...)
+  local l = _g255[1]
+  local v = _g255[2]
+  local i = _g255[3]
+  local start = _g255[4]
+  local body = unstash({...})
+  local _g256 = sub(body, 0)
+  local l1 = make_id()
+  i = (i or make_id())
+  start = (start or 0)
+  return({"let", {i, start, l1, l}, {"while", {"<", i, {"length", l1}}, join({"let", {v, {"at", l1, i}}}, join(_g256, {{"inc", i}}))}})
 end}
-modules.lib.define = {macro = function (name, x, ...)
-  local body = unstash({...})
-  local _g205 = sub(body, 0)
-  setenv(name, {_stash = true, variable = true})
-  return(join({"define-global", name, x}, _g205))
-end, form = function (name, x, ...)
-  local body = unstash({...})
-  local _g206 = sub(body, 0)
-  setenv(name, {_stash = true, variable = true})
-  return(join({"define-global", name, x}, _g206))
+modules.lib["set-of"] = {macro = function (...)
+  local elements = unstash({...})
+  local l = {}
+  local _g258 = 0
+  local _g257 = elements
+  while (_g258 < length(_g257)) do
+    local e = _g257[(_g258 + 1)]
+    l[e] = true
+    _g258 = (_g258 + 1)
+  end
+  return(join({"table"}, l))
+end, form = function (...)
+  local elements = unstash({...})
+  local l = {}
+  local _g260 = 0
+  local _g259 = elements
+  while (_g260 < length(_g259)) do
+    local e = _g259[(_g260 + 1)]
+    l[e] = true
+    _g260 = (_g260 + 1)
+  end
+  return(join({"table"}, l))
 end}
-modules.lib.each = {macro = function (_g207, ...)
-  local t = _g207[1]
-  local k = _g207[2]
-  local v = _g207[3]
-  local body = unstash({...})
-  local _g208 = sub(body, 0)
-  local t1 = make_id()
-  return({"let", {k, "nil", t1, t}, {"%for", {t1, k}, {"if", (function ()
-    local _g209 = {"target"}
-    _g209.lua = {"not", {"number?", k}}
-    _g209.js = {"isNaN", {"parseInt", k}}
-    return(_g209)
-  end)(), join({"let", {v, {"get", t1, k}}}, _g208)}}})
-end, form = function (_g210, ...)
-  local t = _g210[1]
-  local k = _g210[2]
-  local v = _g210[3]
-  local body = unstash({...})
-  local _g211 = sub(body, 0)
-  local t1 = make_id()
-  return({"let", {k, "nil", t1, t}, {"%for", {t1, k}, {"if", (function ()
-    local _g212 = {"target"}
-    _g212.lua = {"not", {"number?", k}}
-    _g212.js = {"isNaN", {"parseInt", k}}
-    return(_g212)
-  end)(), join({"let", {v, {"get", t1, k}}}, _g211)}}})
-end}
-modules.lib.fn = {macro = function (args, ...)
-  local body = unstash({...})
-  local _g213 = sub(body, 0)
-  local _g214 = bind_arguments(args, _g213)
-  local args = _g214[1]
-  local _g215 = _g214[2]
-  return(join({"%function", args}, _g215))
-end, form = function (args, ...)
-  local body = unstash({...})
-  local _g216 = sub(body, 0)
-  local _g217 = bind_arguments(args, _g216)
-  local args = _g217[1]
-  local _g218 = _g217[2]
-  return(join({"%function", args}, _g218))
-end}
-modules.lib.let = {macro = function (bindings, ...)
-  local body = unstash({...})
-  local _g219 = sub(body, 0)
-  local i = 0
-  local renames = {}
-  local locals = {}
-  map(function (_g220)
-    local lh = _g220[1]
-    local rh = _g220[2]
-    local _g222 = 0
-    local _g221 = bind(lh, rh)
-    while (_g222 < length(_g221)) do
-      local _g223 = _g221[(_g222 + 1)]
-      local id = _g223[1]
-      local val = _g223[2]
-      if bound63(id) then
-        local rename = make_id()
-        add(renames, id)
-        add(renames, rename)
-        id = rename
-      else
-        setenv(id, {_stash = true, variable = true})
-      end
-      add(locals, {"%local", id, val})
-      _g222 = (_g222 + 1)
-    end
-  end, pairwise(bindings))
-  return(join({"do"}, join(locals, {join({"let-symbol", renames}, _g219)})))
-end, form = function (bindings, ...)
-  local body = unstash({...})
-  local _g224 = sub(body, 0)
-  local i = 0
-  local renames = {}
-  local locals = {}
-  map(function (_g225)
-    local lh = _g225[1]
-    local rh = _g225[2]
-    local _g227 = 0
-    local _g226 = bind(lh, rh)
-    while (_g227 < length(_g226)) do
-      local _g228 = _g226[(_g227 + 1)]
-      local id = _g228[1]
-      local val = _g228[2]
-      if bound63(id) then
-        local rename = make_id()
-        add(renames, id)
-        add(renames, rename)
-        id = rename
-      else
-        setenv(id, {_stash = true, variable = true})
-      end
-      add(locals, {"%local", id, val})
-      _g227 = (_g227 + 1)
-    end
-  end, pairwise(bindings))
-  return(join({"do"}, join(locals, {join({"let-symbol", renames}, _g224)})))
-end}
-modules.lib.quote = {macro = function (form)
-  return(quoted(form))
+modules.lib.quasiquote = {macro = function (form)
+  return(quasiexpand(form, 1))
 end, form = function (form)
-  return(quoted(form))
+  return(quasiexpand(form, 1))
+end}
+modules.lib.language = {macro = function ()
+  return({"quote", target})
+end, form = function ()
+  return({"quote", target})
+end}
+modules.lib.target = {variable = true, macro = function (...)
+  local clauses = unstash({...})
+  return(clauses[target])
+end, form = function (...)
+  local clauses = unstash({...})
+  return(clauses[target])
 end}
 modules.lib["join*"] = {macro = function (...)
   local xs = unstash({...})
@@ -1728,126 +1940,99 @@ end, form = function (...)
     return({"join", a, b})
   end, xs))
 end}
-modules.lib.quasiquote = {macro = function (form)
-  return(quasiexpand(form, 1))
-end, form = function (form)
-  return(quasiexpand(form, 1))
+modules.lib["join!"] = {macro = function (a, ...)
+  local bs = unstash({...})
+  local _g261 = sub(bs, 0)
+  return({"set", a, join({"join*", a}, _g261)})
+end, form = function (a, ...)
+  local bs = unstash({...})
+  local _g262 = sub(bs, 0)
+  return({"set", a, join({"join*", a}, _g262)})
 end}
-modules.lib["let-symbol"] = {macro = function (expansions, ...)
-  local body = unstash({...})
-  local _g229 = sub(body, 0)
-  add(environment, {})
-  local _g230 = (function ()
-    map(function (_g231)
-      local name = _g231[1]
-      local exp = _g231[2]
-      return(macroexpand({"define-symbol", name, exp}))
-    end, pairwise(expansions))
-    return(join({"do"}, macroexpand(_g229)))
-  end)()
-  drop(environment)
-  return(_g230)
-end, form = function (expansions, ...)
-  local body = unstash({...})
-  local _g232 = sub(body, 0)
-  add(environment, {})
-  local _g233 = (function ()
-    map(function (_g234)
-      local name = _g234[1]
-      local exp = _g234[2]
-      return(macroexpand({"define-symbol", name, exp}))
-    end, pairwise(expansions))
-    return(join({"do"}, macroexpand(_g232)))
-  end)()
-  drop(environment)
-  return(_g233)
+modules.lib["list*"] = {macro = function (...)
+  local xs = unstash({...})
+  if empty63(xs) then
+    return({})
+  else
+    local l = {}
+    local i = 0
+    local _g263 = xs
+    while (i < length(_g263)) do
+      local x = _g263[(i + 1)]
+      if (i == (length(xs) - 1)) then
+        l = {"join", join({"list"}, l), x}
+      else
+        add(l, x)
+      end
+      i = (i + 1)
+    end
+    return(l)
+  end
+end, form = function (...)
+  local xs = unstash({...})
+  if empty63(xs) then
+    return({})
+  else
+    local l = {}
+    local i = 0
+    local _g264 = xs
+    while (i < length(_g264)) do
+      local x = _g264[(i + 1)]
+      if (i == (length(xs) - 1)) then
+        l = {"join", join({"list"}, l), x}
+      else
+        add(l, x)
+      end
+      i = (i + 1)
+    end
+    return(l)
+  end
 end}
-modules.lib.at = {macro = function (l, i)
-  if ((target == "lua") and number63(i)) then
-    i = (i + 1)
-  elseif (target == "lua") then
-    i = {"+", i, 1}
-  end
-  return({"get", l, i})
-end, form = function (l, i)
-  if ((target == "lua") and number63(i)) then
-    i = (i + 1)
-  elseif (target == "lua") then
-    i = {"+", i, 1}
-  end
-  return({"get", l, i})
+modules.lib.each = {macro = function (_g265, ...)
+  local t = _g265[1]
+  local k = _g265[2]
+  local v = _g265[3]
+  local body = unstash({...})
+  local _g266 = sub(body, 0)
+  local t1 = make_id()
+  return({"let", {k, "nil", t1, t}, {"%for", {t1, k}, {"if", (function ()
+    local _g267 = {"target"}
+    _g267.js = {"isNaN", {"parseInt", k}}
+    _g267.lua = {"not", {"number?", k}}
+    return(_g267)
+  end)(), join({"let", {v, {"get", t1, k}}}, _g266)}}})
+end, form = function (_g268, ...)
+  local t = _g268[1]
+  local k = _g268[2]
+  local v = _g268[3]
+  local body = unstash({...})
+  local _g269 = sub(body, 0)
+  local t1 = make_id()
+  return({"let", {k, "nil", t1, t}, {"%for", {t1, k}, {"if", (function ()
+    local _g270 = {"target"}
+    _g270.js = {"isNaN", {"parseInt", k}}
+    _g270.lua = {"not", {"number?", k}}
+    return(_g270)
+  end)(), join({"let", {v, {"get", t1, k}}}, _g269)}}})
 end}
 modules.lib["cat!"] = {macro = function (a, ...)
   local bs = unstash({...})
-  local _g235 = sub(bs, 0)
-  return({"set", a, join({"cat", a}, _g235)})
+  local _g271 = sub(bs, 0)
+  return({"set", a, join({"cat", a}, _g271)})
 end, form = function (a, ...)
   local bs = unstash({...})
-  local _g236 = sub(bs, 0)
-  return({"set", a, join({"cat", a}, _g236)})
+  local _g272 = sub(bs, 0)
+  return({"set", a, join({"cat", a}, _g272)})
 end}
-modules.lib.across = {macro = function (_g237, ...)
-  local l = _g237[1]
-  local v = _g237[2]
-  local i = _g237[3]
-  local start = _g237[4]
-  local body = unstash({...})
-  local _g238 = sub(body, 0)
-  local l1 = make_id()
-  i = (i or make_id())
-  start = (start or 0)
-  return({"let", {i, start, l1, l}, {"while", {"<", i, {"length", l1}}, join({"let", {v, {"at", l1, i}}}, join(_g238, {{"inc", i}}))}})
-end, form = function (_g239, ...)
-  local l = _g239[1]
-  local v = _g239[2]
-  local i = _g239[3]
-  local start = _g239[4]
-  local body = unstash({...})
-  local _g240 = sub(body, 0)
-  local l1 = make_id()
-  i = (i or make_id())
-  start = (start or 0)
-  return({"let", {i, start, l1, l}, {"while", {"<", i, {"length", l1}}, join({"let", {v, {"at", l1, i}}}, join(_g240, {{"inc", i}}))}})
+modules.lib.inc = {macro = function (n, by)
+  return({"set", n, {"+", n, (by or 1)}})
+end, form = function (n, by)
+  return({"set", n, {"+", n, (by or 1)}})
 end}
-modules.lib.table = {macro = function (...)
-  local body = unstash({...})
-  local l = {}
-  local k = nil
-  local _g241 = body
-  for k in next, _g241 do
-    if (not number63(k)) then
-      local v = _g241[k]
-      if is63(v) then
-        add(l, k)
-        add(l, v)
-      end
-    end
-  end
-  return(join({"%object"}, l))
-end, form = function (...)
-  local body = unstash({...})
-  local l = {}
-  local k = nil
-  local _g242 = body
-  for k in next, _g242 do
-    if (not number63(k)) then
-      local v = _g242[k]
-      if is63(v) then
-        add(l, k)
-        add(l, v)
-      end
-    end
-  end
-  return(join({"%object"}, l))
-end}
-modules.lib["join!"] = {macro = function (a, ...)
-  local bs = unstash({...})
-  local _g243 = sub(bs, 0)
-  return({"set", a, join({"join*", a}, _g243)})
-end, form = function (a, ...)
-  local bs = unstash({...})
-  local _g244 = sub(bs, 0)
-  return({"set", a, join({"join*", a}, _g244)})
+modules.lib.dec = {macro = function (n, by)
+  return({"set", n, {"-", n, (by or 1)}})
+end, form = function (n, by)
+  return({"set", n, {"-", n, (by or 1)}})
 end}
 modules.lib.pr = {macro = function (...)
   local xs = unstash({...})
@@ -1862,190 +2047,343 @@ end, form = function (...)
   end, xs)
   return({"print", join({"cat"}, xs)})
 end}
-modules.lib["let-macro"] = {macro = function (definitions, ...)
-  local body = unstash({...})
-  local _g245 = sub(body, 0)
-  add(environment, {})
-  local _g246 = (function ()
-    map(function (m)
-      return(macroexpand(join({"define-macro"}, m)))
-    end, definitions)
-    return(join({"do"}, macroexpand(_g245)))
-  end)()
-  drop(environment)
-  return(_g246)
-end, form = function (definitions, ...)
-  local body = unstash({...})
-  local _g247 = sub(body, 0)
-  add(environment, {})
-  local _g248 = (function ()
-    map(function (m)
-      return(macroexpand(join({"define-macro"}, m)))
-    end, definitions)
-    return(join({"do"}, macroexpand(_g247)))
-  end)()
-  drop(environment)
-  return(_g248)
-end}
-modules.lib["define-local"] = {macro = function (name, x, ...)
-  local body = unstash({...})
-  local _g249 = sub(body, 0)
-  setenv(name, {_stash = true, variable = true})
-  if (not empty63(_g249)) then
-    local _g250 = bind_arguments(x, _g249)
-    local args = _g250[1]
-    local _g251 = _g250[2]
-    return(join({"%local-function", name, args}, _g251))
-  else
-    return({"%local", name, x})
-  end
-end, form = function (name, x, ...)
-  local body = unstash({...})
-  local _g252 = sub(body, 0)
-  setenv(name, {_stash = true, variable = true})
-  if (not empty63(_g252)) then
-    local _g253 = bind_arguments(x, _g252)
-    local args = _g253[1]
-    local _g254 = _g253[2]
-    return(join({"%local-function", name, args}, _g254))
-  else
-    return({"%local", name, x})
-  end
-end}
-modules.lib.list = {macro = function (...)
-  local body = unstash({...})
-  local l = join({"%array"}, body)
-  if (not keys63(body)) then
-    return(l)
-  else
-    local id = make_id()
-    local init = {}
-    local k = nil
-    local _g255 = body
-    for k in next, _g255 do
-      if (not number63(k)) then
-        local v = _g255[k]
-        add(init, {"set", {"get", id, {"quote", k}}, v})
-      end
-    end
-    return(join({"let", {id, l}}, join(init, {id})))
-  end
-end, form = function (...)
-  local body = unstash({...})
-  local l = join({"%array"}, body)
-  if (not keys63(body)) then
-    return(l)
-  else
-    local id = make_id()
-    local init = {}
-    local k = nil
-    local _g256 = body
-    for k in next, _g256 do
-      if (not number63(k)) then
-        local v = _g256[k]
-        add(init, {"set", {"get", id, {"quote", k}}, v})
-      end
-    end
-    return(join({"let", {id, l}}, join(init, {id})))
-  end
-end}
-modules.lib["with-frame"] = {macro = function (...)
-  local body = unstash({...})
-  local x = make_id()
-  return({"do", {"add", "environment", {"table"}}, {"let", {x, join({"do"}, body)}, {"drop", "environment"}, x}})
-end, form = function (...)
-  local body = unstash({...})
-  local x = make_id()
-  return({"do", {"add", "environment", {"table"}}, {"let", {x, join({"do"}, body)}, {"drop", "environment"}, x}})
-end}
-modules.lib["with-bindings"] = {macro = function (_g257, ...)
-  local names = _g257[1]
-  local body = unstash({...})
-  local _g258 = sub(body, 0)
-  local x = make_id()
-  return(join({"with-frame", {"across", {names, x}, (function ()
-    local _g259 = {"setenv", x}
-    _g259.variable = true
-    return(_g259)
-  end)()}}, _g258))
-end, form = function (_g260, ...)
-  local names = _g260[1]
-  local body = unstash({...})
-  local _g261 = sub(body, 0)
-  local x = make_id()
-  return(join({"with-frame", {"across", {names, x}, (function ()
-    local _g262 = {"setenv", x}
-    _g262.variable = true
-    return(_g262)
-  end)()}}, _g261))
-end}
-modules.lib["set-of"] = {macro = function (...)
-  local elements = unstash({...})
-  local l = {}
-  local _g264 = 0
-  local _g263 = elements
-  while (_g264 < length(_g263)) do
-    local e = _g263[(_g264 + 1)]
-    l[e] = true
-    _g264 = (_g264 + 1)
-  end
-  return(join({"table"}, l))
-end, form = function (...)
-  local elements = unstash({...})
-  local l = {}
-  local _g266 = 0
-  local _g265 = elements
-  while (_g266 < length(_g265)) do
-    local e = _g265[(_g266 + 1)]
-    l[e] = true
-    _g266 = (_g266 + 1)
-  end
-  return(join({"table"}, l))
-end}
-modules.lib.language = {macro = function ()
-  return({"quote", target})
-end, form = function ()
-  return({"quote", target})
-end}
-modules.lib["define-special"] = {macro = function (name, args, ...)
-  local body = unstash({...})
-  local _g267 = sub(body, 0)
-  local form = join({"fn", args}, _g267)
-  local keys = sub(_g267, length(_g267))
-  eval(join((function ()
-    local _g268 = {"setenv", {"quote", name}}
-    _g268.special = form
-    _g268.form = {"quote", form}
-    return(_g268)
-  end)(), keys))
-  return(nil)
-end, form = function (name, args, ...)
-  local body = unstash({...})
-  local _g269 = sub(body, 0)
-  local form = join({"fn", args}, _g269)
-  local keys = sub(_g269, length(_g269))
-  eval(join((function ()
-    local _g270 = {"setenv", {"quote", name}}
-    _g270.special = form
-    _g270.form = {"quote", form}
-    return(_g270)
-  end)(), keys))
-  return(nil)
-end}
+modules.main = {}
 modules.compiler = {}
+modules.compiler["with-indent"] = {macro = function (form)
+  local result = make_id()
+  return({"do", {"inc", "indent-level"}, {"let", {result, form}, {"dec", "indent-level"}, result}})
+end, form = function (form)
+  local result = make_id()
+  return({"do", {"inc", "indent-level"}, {"let", {result, form}, {"dec", "indent-level"}, result}})
+end}
 modules.compiler["do"] = {special = function (forms, tail63)
   return(compile_body(forms, {_stash = true, ["tail?"] = tail63}))
 end, form = function (forms, tail63)
   return(compile_body(forms, {_stash = true, ["tail?"] = tail63}))
 end, stmt = true, tr = true}
-modules.compiler["%function"] = {special = function (_g271)
-  local args = _g271[1]
-  local body = sub(_g271, 1)
+modules.compiler["if"] = {special = function (form, tail63)
+  local str = ""
+  local i = 0
+  local _g273 = form
+  while (i < length(_g273)) do
+    local condition = _g273[(i + 1)]
+    local last63 = (i >= (length(form) - 2))
+    local else63 = (i == (length(form) - 1))
+    local first63 = (i == 0)
+    local body = form[((i + 1) + 1)]
+    if else63 then
+      body = condition
+      condition = nil
+    end
+    str = (str .. compile_branch(condition, body, first63, last63, tail63))
+    i = (i + 1)
+    i = (i + 1)
+  end
+  return(str)
+end, form = function (form, tail63)
+  local str = ""
+  local i = 0
+  local _g274 = form
+  while (i < length(_g274)) do
+    local condition = _g274[(i + 1)]
+    local last63 = (i >= (length(form) - 2))
+    local else63 = (i == (length(form) - 1))
+    local first63 = (i == 0)
+    local body = form[((i + 1) + 1)]
+    if else63 then
+      body = condition
+      condition = nil
+    end
+    str = (str .. compile_branch(condition, body, first63, last63, tail63))
+    i = (i + 1)
+    i = (i + 1)
+  end
+  return(str)
+end, stmt = true, tr = true}
+modules.compiler["while"] = {special = function (_g275)
+  local condition = _g275[1]
+  local body = sub(_g275, 1)
+  local condition = compile(condition)
+  local body = (function ()
+    indent_level = (indent_level + 1)
+    local _g276 = compile_body(body)
+    indent_level = (indent_level - 1)
+    return(_g276)
+  end)()
+  local ind = indentation()
+  if (target == "js") then
+    return((ind .. "while (" .. condition .. ") {\n" .. body .. ind .. "}\n"))
+  else
+    return((ind .. "while " .. condition .. " do\n" .. body .. ind .. "end\n"))
+  end
+end, form = function (_g277)
+  local condition = _g277[1]
+  local body = sub(_g277, 1)
+  local condition = compile(condition)
+  local body = (function ()
+    indent_level = (indent_level + 1)
+    local _g278 = compile_body(body)
+    indent_level = (indent_level - 1)
+    return(_g278)
+  end)()
+  local ind = indentation()
+  if (target == "js") then
+    return((ind .. "while (" .. condition .. ") {\n" .. body .. ind .. "}\n"))
+  else
+    return((ind .. "while " .. condition .. " do\n" .. body .. ind .. "end\n"))
+  end
+end, stmt = true, tr = true}
+modules.compiler["%for"] = {special = function (_g279)
+  local _g280 = _g279[1]
+  local t = _g280[1]
+  local k = _g280[2]
+  local body = sub(_g279, 1)
+  local t = compile(t)
+  local ind = indentation()
+  local body = (function ()
+    indent_level = (indent_level + 1)
+    local _g281 = compile_body(body)
+    indent_level = (indent_level - 1)
+    return(_g281)
+  end)()
+  if (target == "lua") then
+    return((ind .. "for " .. k .. " in next, " .. t .. " do\n" .. body .. ind .. "end\n"))
+  else
+    return((ind .. "for (" .. k .. " in " .. t .. ") {\n" .. body .. ind .. "}\n"))
+  end
+end, form = function (_g282)
+  local _g283 = _g282[1]
+  local t = _g283[1]
+  local k = _g283[2]
+  local body = sub(_g282, 1)
+  local t = compile(t)
+  local ind = indentation()
+  local body = (function ()
+    indent_level = (indent_level + 1)
+    local _g284 = compile_body(body)
+    indent_level = (indent_level - 1)
+    return(_g284)
+  end)()
+  if (target == "lua") then
+    return((ind .. "for " .. k .. " in next, " .. t .. " do\n" .. body .. ind .. "end\n"))
+  else
+    return((ind .. "for (" .. k .. " in " .. t .. ") {\n" .. body .. ind .. "}\n"))
+  end
+end, stmt = true, tr = true}
+modules.compiler["%try"] = {special = function (forms)
+  local ind = indentation()
+  local body = (function ()
+    indent_level = (indent_level + 1)
+    local _g285 = compile_body(forms, {_stash = true, ["tail?"] = true})
+    indent_level = (indent_level - 1)
+    return(_g285)
+  end)()
+  local e = make_id()
+  local handler = {"return", {"%array", false, e}}
+  local h = (function ()
+    indent_level = (indent_level + 1)
+    local _g286 = compile(handler, {_stash = true, ["stmt?"] = true})
+    indent_level = (indent_level - 1)
+    return(_g286)
+  end)()
+  return((ind .. "try {\n" .. body .. ind .. "}\n" .. ind .. "catch (" .. e .. ") {\n" .. h .. ind .. "}\n"))
+end, form = function (forms)
+  local ind = indentation()
+  local body = (function ()
+    indent_level = (indent_level + 1)
+    local _g287 = compile_body(forms, {_stash = true, ["tail?"] = true})
+    indent_level = (indent_level - 1)
+    return(_g287)
+  end)()
+  local e = make_id()
+  local handler = {"return", {"%array", false, e}}
+  local h = (function ()
+    indent_level = (indent_level + 1)
+    local _g288 = compile(handler, {_stash = true, ["stmt?"] = true})
+    indent_level = (indent_level - 1)
+    return(_g288)
+  end)()
+  return((ind .. "try {\n" .. body .. ind .. "}\n" .. ind .. "catch (" .. e .. ") {\n" .. h .. ind .. "}\n"))
+end, stmt = true, tr = true}
+modules.compiler["break"] = {special = function (_g5)
+  return((indentation() .. "break"))
+end, form = function (_g5)
+  return((indentation() .. "break"))
+end, stmt = true}
+modules.compiler["%function"] = {special = function (_g289)
+  local args = _g289[1]
+  local body = sub(_g289, 1)
   return(compile_function(args, body))
-end, form = function (_g272)
-  local args = _g272[1]
-  local body = sub(_g272, 1)
+end, form = function (_g290)
+  local args = _g290[1]
+  local body = sub(_g290, 1)
   return(compile_function(args, body))
+end}
+modules.compiler["%global-function"] = {special = function (_g291)
+  local name = _g291[1]
+  local args = _g291[2]
+  local body = sub(_g291, 2)
+  if (target == "lua") then
+    return(compile_function(args, body, {_stash = true, name = name}))
+  else
+    return(compile({"set", name, join({"%function", args}, body)}, {_stash = true, ["stmt?"] = true}))
+  end
+end, form = function (_g292)
+  local name = _g292[1]
+  local args = _g292[2]
+  local body = sub(_g292, 2)
+  if (target == "lua") then
+    return(compile_function(args, body, {_stash = true, name = name}))
+  else
+    return(compile({"set", name, join({"%function", args}, body)}, {_stash = true, ["stmt?"] = true}))
+  end
+end, stmt = true, tr = true}
+modules.compiler["%local-function"] = {special = function (_g293)
+  local name = _g293[1]
+  local args = _g293[2]
+  local body = sub(_g293, 2)
+  return(compile_function(args, body, {_stash = true, name = name, prefix = "local "}))
+end, form = function (_g294)
+  local name = _g294[1]
+  local args = _g294[2]
+  local body = sub(_g294, 2)
+  return(compile_function(args, body, {_stash = true, name = name, prefix = "local "}))
+end, stmt = true, tr = true}
+modules.compiler["return"] = {special = function (_g295)
+  local x = _g295[1]
+  local x = (function ()
+    if nil63(x) then
+      return("return")
+    else
+      return(compile_call({"return", x}))
+    end
+  end)()
+  return((indentation() .. x))
+end, form = function (_g296)
+  local x = _g296[1]
+  local x = (function ()
+    if nil63(x) then
+      return("return")
+    else
+      return(compile_call({"return", x}))
+    end
+  end)()
+  return((indentation() .. x))
+end, stmt = true}
+modules.compiler["error"] = {special = function (_g297)
+  local x = _g297[1]
+  local e = (function ()
+    if (target == "js") then
+      return(("throw " .. compile(x)))
+    else
+      return(compile_call({"error", x}))
+    end
+  end)()
+  return((indentation() .. e))
+end, form = function (_g298)
+  local x = _g298[1]
+  local e = (function ()
+    if (target == "js") then
+      return(("throw " .. compile(x)))
+    else
+      return(compile_call({"error", x}))
+    end
+  end)()
+  return((indentation() .. e))
+end, stmt = true}
+modules.compiler["%local"] = {special = function (_g299)
+  local name = _g299[1]
+  local value = _g299[2]
+  local id = compile(name)
+  local value = compile(value)
+  local keyword = (function ()
+    if (target == "js") then
+      return("var ")
+    else
+      return("local ")
+    end
+  end)()
+  local ind = indentation()
+  return((ind .. keyword .. id .. " = " .. value))
+end, form = function (_g300)
+  local name = _g300[1]
+  local value = _g300[2]
+  local id = compile(name)
+  local value = compile(value)
+  local keyword = (function ()
+    if (target == "js") then
+      return("var ")
+    else
+      return("local ")
+    end
+  end)()
+  local ind = indentation()
+  return((ind .. keyword .. id .. " = " .. value))
+end, stmt = true}
+modules.compiler["set"] = {special = function (_g301)
+  local lh = _g301[1]
+  local rh = _g301[2]
+  if nil63(rh) then
+    error("Missing right-hand side in assignment")
+  end
+  return((indentation() .. compile(lh) .. " = " .. compile(rh)))
+end, form = function (_g302)
+  local lh = _g302[1]
+  local rh = _g302[2]
+  if nil63(rh) then
+    error("Missing right-hand side in assignment")
+  end
+  return((indentation() .. compile(lh) .. " = " .. compile(rh)))
+end, stmt = true}
+modules.compiler["get"] = {special = function (_g303)
+  local t = _g303[1]
+  local k = _g303[2]
+  local t = compile(t)
+  local k1 = compile(k)
+  if ((target == "lua") and (char(t, 0) == "{")) then
+    t = ("(" .. t .. ")")
+  end
+  if (string_literal63(k) and valid_id63(inner(k))) then
+    return((t .. "." .. inner(k)))
+  else
+    return((t .. "[" .. k1 .. "]"))
+  end
+end, form = function (_g304)
+  local t = _g304[1]
+  local k = _g304[2]
+  local t = compile(t)
+  local k1 = compile(k)
+  if ((target == "lua") and (char(t, 0) == "{")) then
+    t = ("(" .. t .. ")")
+  end
+  if (string_literal63(k) and valid_id63(inner(k))) then
+    return((t .. "." .. inner(k)))
+  else
+    return((t .. "[" .. k1 .. "]"))
+  end
+end}
+modules.compiler["not"] = {special = function (_g305)
+  local x = _g305[1]
+  local x = compile(x)
+  local open = (function ()
+    if (target == "js") then
+      return("!(")
+    else
+      return("(not ")
+    end
+  end)()
+  return((open .. x .. ")"))
+end, form = function (_g306)
+  local x = _g306[1]
+  local x = compile(x)
+  local open = (function ()
+    if (target == "js") then
+      return("!(")
+    else
+      return("(not ")
+    end
+  end)()
+  return((open .. x .. ")"))
 end}
 modules.compiler["%array"] = {special = function (forms)
   local open = (function ()
@@ -2064,9 +2402,9 @@ modules.compiler["%array"] = {special = function (forms)
   end)()
   local str = ""
   local i = 0
-  local _g273 = forms
-  while (i < length(_g273)) do
-    local x = _g273[(i + 1)]
+  local _g307 = forms
+  while (i < length(_g307)) do
+    local x = _g307[(i + 1)]
     str = (str .. compile(x))
     if (i < (length(forms) - 1)) then
       str = (str .. ", ")
@@ -2091,9 +2429,9 @@ end, form = function (forms)
   end)()
   local str = ""
   local i = 0
-  local _g274 = forms
-  while (i < length(_g274)) do
-    local x = _g274[(i + 1)]
+  local _g308 = forms
+  while (i < length(_g308)) do
+    local x = _g308[(i + 1)]
     str = (str .. compile(x))
     if (i < (length(forms) - 1)) then
       str = (str .. ", ")
@@ -2102,266 +2440,6 @@ end, form = function (forms)
   end
   return((open .. str .. close))
 end}
-modules.compiler["define-module"] = {macro = function (spec, ...)
-  local body = unstash({...})
-  local _g275 = sub(body, 0)
-  local imp = _g275.import
-  local exp = _g275.export
-  map(load_module, imp)
-  imports = imp
-  exports = {}
-  local _g277 = 0
-  local _g276 = (exp or {})
-  while (_g277 < length(_g276)) do
-    local x = _g276[(_g277 + 1)]
-    exports[x] = true
-    _g277 = (_g277 + 1)
-  end
-  return(nil)
-end, form = function (spec, ...)
-  local body = unstash({...})
-  local _g278 = sub(body, 0)
-  local imp = _g278.import
-  local exp = _g278.export
-  map(load_module, imp)
-  imports = imp
-  exports = {}
-  local _g280 = 0
-  local _g279 = (exp or {})
-  while (_g280 < length(_g279)) do
-    local x = _g279[(_g280 + 1)]
-    exports[x] = true
-    _g280 = (_g280 + 1)
-  end
-  return(nil)
-end}
-modules.compiler["return"] = {form = function (_g281)
-  local x = _g281[1]
-  local x = (function ()
-    if nil63(x) then
-      return("return")
-    else
-      return(compile_call({"return", x}))
-    end
-  end)()
-  return((indentation() .. x))
-end, stmt = true, special = function (_g282)
-  local x = _g282[1]
-  local x = (function ()
-    if nil63(x) then
-      return("return")
-    else
-      return(compile_call({"return", x}))
-    end
-  end)()
-  return((indentation() .. x))
-end}
-modules.compiler["set"] = {form = function (_g283)
-  local lh = _g283[1]
-  local rh = _g283[2]
-  if nil63(rh) then
-    error("Missing right-hand side in assignment")
-  end
-  return((indentation() .. compile(lh) .. " = " .. compile(rh)))
-end, stmt = true, special = function (_g284)
-  local lh = _g284[1]
-  local rh = _g284[2]
-  if nil63(rh) then
-    error("Missing right-hand side in assignment")
-  end
-  return((indentation() .. compile(lh) .. " = " .. compile(rh)))
-end}
-modules.compiler["%global-function"] = {special = function (_g285)
-  local name = _g285[1]
-  local args = _g285[2]
-  local body = sub(_g285, 2)
-  if (target == "lua") then
-    return(compile_function(args, body, {_stash = true, name = name}))
-  else
-    return(compile({"set", name, join({"%function", args}, body)}, {_stash = true, ["stmt?"] = true}))
-  end
-end, form = function (_g286)
-  local name = _g286[1]
-  local args = _g286[2]
-  local body = sub(_g286, 2)
-  if (target == "lua") then
-    return(compile_function(args, body, {_stash = true, name = name}))
-  else
-    return(compile({"set", name, join({"%function", args}, body)}, {_stash = true, ["stmt?"] = true}))
-  end
-end, stmt = true, tr = true}
-modules.compiler["error"] = {form = function (_g287)
-  local x = _g287[1]
-  local e = (function ()
-    if (target == "js") then
-      return(("throw " .. compile(x)))
-    else
-      return(compile_call({"error", x}))
-    end
-  end)()
-  return((indentation() .. e))
-end, stmt = true, special = function (_g288)
-  local x = _g288[1]
-  local e = (function ()
-    if (target == "js") then
-      return(("throw " .. compile(x)))
-    else
-      return(compile_call({"error", x}))
-    end
-  end)()
-  return((indentation() .. e))
-end}
-modules.compiler["if"] = {special = function (form, tail63)
-  local str = ""
-  local i = 0
-  local _g289 = form
-  while (i < length(_g289)) do
-    local condition = _g289[(i + 1)]
-    local last63 = (i >= (length(form) - 2))
-    local else63 = (i == (length(form) - 1))
-    local first63 = (i == 0)
-    local body = form[((i + 1) + 1)]
-    if else63 then
-      body = condition
-      condition = nil
-    end
-    str = (str .. compile_branch(condition, body, first63, last63, tail63))
-    i = (i + 1)
-    i = (i + 1)
-  end
-  return(str)
-end, form = function (form, tail63)
-  local str = ""
-  local i = 0
-  local _g290 = form
-  while (i < length(_g290)) do
-    local condition = _g290[(i + 1)]
-    local last63 = (i >= (length(form) - 2))
-    local else63 = (i == (length(form) - 1))
-    local first63 = (i == 0)
-    local body = form[((i + 1) + 1)]
-    if else63 then
-      body = condition
-      condition = nil
-    end
-    str = (str .. compile_branch(condition, body, first63, last63, tail63))
-    i = (i + 1)
-    i = (i + 1)
-  end
-  return(str)
-end, stmt = true, tr = true}
-modules.compiler["with-indent"] = {macro = function (form)
-  local result = make_id()
-  return({"do", {"inc", "indent-level"}, {"let", {result, form}, {"dec", "indent-level"}, result}})
-end, form = function (form)
-  local result = make_id()
-  return({"do", {"inc", "indent-level"}, {"let", {result, form}, {"dec", "indent-level"}, result}})
-end}
-modules.compiler["while"] = {special = function (_g291)
-  local condition = _g291[1]
-  local body = sub(_g291, 1)
-  local condition = compile(condition)
-  local body = (function ()
-    indent_level = (indent_level + 1)
-    local _g292 = compile_body(body)
-    indent_level = (indent_level - 1)
-    return(_g292)
-  end)()
-  local ind = indentation()
-  if (target == "js") then
-    return((ind .. "while (" .. condition .. ") {\n" .. body .. ind .. "}\n"))
-  else
-    return((ind .. "while " .. condition .. " do\n" .. body .. ind .. "end\n"))
-  end
-end, form = function (_g293)
-  local condition = _g293[1]
-  local body = sub(_g293, 1)
-  local condition = compile(condition)
-  local body = (function ()
-    indent_level = (indent_level + 1)
-    local _g294 = compile_body(body)
-    indent_level = (indent_level - 1)
-    return(_g294)
-  end)()
-  local ind = indentation()
-  if (target == "js") then
-    return((ind .. "while (" .. condition .. ") {\n" .. body .. ind .. "}\n"))
-  else
-    return((ind .. "while " .. condition .. " do\n" .. body .. ind .. "end\n"))
-  end
-end, stmt = true, tr = true}
-modules.compiler["%for"] = {special = function (_g295)
-  local _g296 = _g295[1]
-  local t = _g296[1]
-  local k = _g296[2]
-  local body = sub(_g295, 1)
-  local t = compile(t)
-  local ind = indentation()
-  local body = (function ()
-    indent_level = (indent_level + 1)
-    local _g297 = compile_body(body)
-    indent_level = (indent_level - 1)
-    return(_g297)
-  end)()
-  if (target == "lua") then
-    return((ind .. "for " .. k .. " in next, " .. t .. " do\n" .. body .. ind .. "end\n"))
-  else
-    return((ind .. "for (" .. k .. " in " .. t .. ") {\n" .. body .. ind .. "}\n"))
-  end
-end, form = function (_g298)
-  local _g299 = _g298[1]
-  local t = _g299[1]
-  local k = _g299[2]
-  local body = sub(_g298, 1)
-  local t = compile(t)
-  local ind = indentation()
-  local body = (function ()
-    indent_level = (indent_level + 1)
-    local _g300 = compile_body(body)
-    indent_level = (indent_level - 1)
-    return(_g300)
-  end)()
-  if (target == "lua") then
-    return((ind .. "for " .. k .. " in next, " .. t .. " do\n" .. body .. ind .. "end\n"))
-  else
-    return((ind .. "for (" .. k .. " in " .. t .. ") {\n" .. body .. ind .. "}\n"))
-  end
-end, stmt = true, tr = true}
-modules.compiler["%try"] = {special = function (forms)
-  local ind = indentation()
-  local body = (function ()
-    indent_level = (indent_level + 1)
-    local _g301 = compile_body(forms, {_stash = true, ["tail?"] = true})
-    indent_level = (indent_level - 1)
-    return(_g301)
-  end)()
-  local e = make_id()
-  local handler = {"return", {"%array", false, e}}
-  local h = (function ()
-    indent_level = (indent_level + 1)
-    local _g302 = compile(handler, {_stash = true, ["stmt?"] = true})
-    indent_level = (indent_level - 1)
-    return(_g302)
-  end)()
-  return((ind .. "try {\n" .. body .. ind .. "}\n" .. ind .. "catch (" .. e .. ") {\n" .. h .. ind .. "}\n"))
-end, form = function (forms)
-  local ind = indentation()
-  local body = (function ()
-    indent_level = (indent_level + 1)
-    local _g303 = compile_body(forms, {_stash = true, ["tail?"] = true})
-    indent_level = (indent_level - 1)
-    return(_g303)
-  end)()
-  local e = make_id()
-  local handler = {"return", {"%array", false, e}}
-  local h = (function ()
-    indent_level = (indent_level + 1)
-    local _g304 = compile(handler, {_stash = true, ["stmt?"] = true})
-    indent_level = (indent_level - 1)
-    return(_g304)
-  end)()
-  return((ind .. "try {\n" .. body .. ind .. "}\n" .. ind .. "catch (" .. e .. ") {\n" .. h .. ind .. "}\n"))
-end, stmt = true, tr = true}
 modules.compiler["%object"] = {special = function (forms)
   local str = "{"
   local sep = (function ()
@@ -2373,11 +2451,11 @@ modules.compiler["%object"] = {special = function (forms)
   end)()
   local pairs = pairwise(forms)
   local i = 0
-  local _g305 = pairs
-  while (i < length(_g305)) do
-    local _g306 = _g305[(i + 1)]
-    local k = _g306[1]
-    local v = _g306[2]
+  local _g309 = pairs
+  while (i < length(_g309)) do
+    local _g310 = _g309[(i + 1)]
+    local k = _g310[1]
+    local v = _g310[2]
     if (not string63(k)) then
       error(("Illegal object key: " .. to_string(k)))
     end
@@ -2413,11 +2491,11 @@ end, form = function (forms)
   end)()
   local pairs = pairwise(forms)
   local i = 0
-  local _g307 = pairs
-  while (i < length(_g307)) do
-    local _g308 = _g307[(i + 1)]
-    local k = _g308[1]
-    local v = _g308[2]
+  local _g311 = pairs
+  while (i < length(_g311)) do
+    local _g312 = _g311[(i + 1)]
+    local k = _g312[1]
+    local v = _g312[2]
     if (not string63(k)) then
       error(("Illegal object key: " .. to_string(k)))
     end
@@ -2443,113 +2521,51 @@ end, form = function (forms)
   end
   return((str .. "}"))
 end}
-modules.compiler["not"] = {special = function (_g309)
-  local x = _g309[1]
-  local x = compile(x)
-  local open = (function ()
-    if (target == "js") then
-      return("!(")
-    else
-      return("(not ")
-    end
-  end)()
-  return((open .. x .. ")"))
-end, form = function (_g310)
-  local x = _g310[1]
-  local x = compile(x)
-  local open = (function ()
-    if (target == "js") then
-      return("!(")
-    else
-      return("(not ")
-    end
-  end)()
-  return((open .. x .. ")"))
-end}
-modules.compiler["%local-function"] = {special = function (_g311)
-  local name = _g311[1]
-  local args = _g311[2]
-  local body = sub(_g311, 2)
-  return(compile_function(args, body, {_stash = true, prefix = "local ", name = name}))
-end, form = function (_g312)
-  local name = _g312[1]
-  local args = _g312[2]
-  local body = sub(_g312, 2)
-  return(compile_function(args, body, {_stash = true, prefix = "local ", name = name}))
-end, stmt = true, tr = true}
-modules.compiler["get"] = {special = function (_g313)
-  local t = _g313[1]
-  local k = _g313[2]
-  local t = compile(t)
-  local k1 = compile(k)
-  if ((target == "lua") and (char(t, 0) == "{")) then
-    t = ("(" .. t .. ")")
+modules.compiler["define-module"] = {macro = function (spec, ...)
+  local body = unstash({...})
+  local _g313 = sub(body, 0)
+  local imp = _g313.import
+  local exp = _g313.export
+  map(load_module, imp)
+  imports = imp
+  exports = {}
+  local _g315 = 0
+  local _g314 = (exp or {})
+  while (_g315 < length(_g314)) do
+    local x = _g314[(_g315 + 1)]
+    exports[x] = true
+    _g315 = (_g315 + 1)
   end
-  if (string_literal63(k) and valid_id63(inner(k))) then
-    return((t .. "." .. inner(k)))
-  else
-    return((t .. "[" .. k1 .. "]"))
+  return(nil)
+end, form = function (spec, ...)
+  local body = unstash({...})
+  local _g316 = sub(body, 0)
+  local imp = _g316.import
+  local exp = _g316.export
+  map(load_module, imp)
+  imports = imp
+  exports = {}
+  local _g318 = 0
+  local _g317 = (exp or {})
+  while (_g318 < length(_g317)) do
+    local x = _g317[(_g318 + 1)]
+    exports[x] = true
+    _g318 = (_g318 + 1)
   end
-end, form = function (_g314)
-  local t = _g314[1]
-  local k = _g314[2]
-  local t = compile(t)
-  local k1 = compile(k)
-  if ((target == "lua") and (char(t, 0) == "{")) then
-    t = ("(" .. t .. ")")
-  end
-  if (string_literal63(k) and valid_id63(inner(k))) then
-    return((t .. "." .. inner(k)))
-  else
-    return((t .. "[" .. k1 .. "]"))
-  end
-end}
-modules.compiler["break"] = {form = function (_g5)
-  return((indentation() .. "break"))
-end, stmt = true, special = function (_g5)
-  return((indentation() .. "break"))
-end}
-modules.compiler["%local"] = {form = function (_g315)
-  local name = _g315[1]
-  local value = _g315[2]
-  local id = compile(name)
-  local value = compile(value)
-  local keyword = (function ()
-    if (target == "js") then
-      return("var ")
-    else
-      return("local ")
-    end
-  end)()
-  local ind = indentation()
-  return((ind .. keyword .. id .. " = " .. value))
-end, stmt = true, special = function (_g316)
-  local name = _g316[1]
-  local value = _g316[2]
-  local id = compile(name)
-  local value = compile(value)
-  local keyword = (function ()
-    if (target == "js") then
-      return("var ")
-    else
-      return("local ")
-    end
-  end)()
-  local ind = indentation()
-  return((ind .. keyword .. id .. " = " .. value))
+  return(nil)
 end}
 modules.reader = {}
-modules.reader["define-reader"] = {macro = function (_g317, ...)
-  local char = _g317[1]
-  local stream = _g317[2]
-  local body = unstash({...})
-  local _g318 = sub(body, 0)
-  return({"set", {"get", "read-table", char}, join({"fn", {stream}}, _g318)})
-end, form = function (_g319, ...)
+modules.reader["define-reader"] = {macro = function (_g319, ...)
   local char = _g319[1]
   local stream = _g319[2]
   local body = unstash({...})
   local _g320 = sub(body, 0)
   return({"set", {"get", "read-table", char}, join({"fn", {stream}}, _g320)})
+end, form = function (_g321, ...)
+  local char = _g321[1]
+  local stream = _g321[2]
+  local body = unstash({...})
+  local _g322 = sub(body, 0)
+  return({"set", {"get", "read-table", char}, join({"fn", {stream}}, _g322)})
 end}
 main()

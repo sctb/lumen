@@ -58,6 +58,7 @@
            map*
            keys?
            extend
+           exclude
            char
            code
            search
@@ -477,8 +478,9 @@
 (define sublist (l from upto)
   (target
    js: (Array.prototype.slice.call l from upto)
-   lua: (let (i from j 0 l2 ()
-                upto (or upto (length l)))
+   lua: (let (i (or from 0) j 0
+              upto (or upto (length l))
+              l2 ())
           (while (< i upto)
             (set (at l2 j) (at l i))
             (inc i)
@@ -637,6 +639,13 @@
 
 (define extend (t rest: xs)
   (join t xs))
+
+(define exclude (t rest: keys)
+  (let (t1 (sublist t))
+    (each (t k v)
+      (if (not (get keys k))
+          (set (get t1 k) v)))
+    t1))
 
 ;; strings
 
