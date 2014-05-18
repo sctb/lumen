@@ -487,7 +487,9 @@
   (test= '(b c) (sub '(a b c d) 1 3))
   (test= "uux" (sub "quux" 1))
   (test= "uu" (sub "quux" 1 3))
-  (test= "" (sub "quux" 5)))
+  (test= "" (sub "quux" 5))
+  (test= '(2 :a) (sub '(1 2 :a) 1))
+  (test= '(:a b: 2) (sub '(:a b: 2))))
 
 (define-test search ()
   (test= 0 (search "abc" "a"))
