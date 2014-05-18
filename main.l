@@ -1,7 +1,7 @@
 ;; -*- mode: lisp -*-
 
 (define-module main
-  import: (reader lib compiler))
+  import: (reader lib compiler boot))
 
 (define rep (str)
   (let ((_ x) (guard (eval (read-from-string str))))
@@ -23,7 +23,6 @@
   (pr "  -o <output>\tOutput file")
   (pr "  -t <target>\tTarget language (default: lua)")
   (pr "  -e <expr>\tExpression to evaluate")
-  (pr "  -s \t\tSave environment")
   (exit))
 
 (define-global main ()
@@ -44,7 +43,6 @@
                     (if (= arg "-o") (set output val)
 		        (= arg "-t") (set target1 val)
 		        (= arg "-e") (set expr val)))))
-            (= arg "-s") (set save-modules? true)
 	    (~= "-" (char arg 0)) (add inputs arg)))
       (if output
           (do (if target1 (set target target1))

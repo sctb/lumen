@@ -10,6 +10,8 @@
            load-module
            define-module
            open-module
+           quote-modules
+           quote-environment
            with-indent
            ;; special
            do
@@ -349,12 +351,10 @@
 
 (define module nil)
 
-(define modules (table))
 (define exports (table))
 (define imports (table))
 (define loading (table))
 
-(define save-modules? false)
 (define compiler-output nil)
 (define compiling? false)
 
@@ -418,6 +418,14 @@
       (set (get exports x) true)))
   nil)
 
+(define compile-module (spec)
+  (set compiling? true)
+  (set compiler-output "")
+  (load-module spec)
+  (map open-module imports))
+
+;; bootstrap
+
 (define quote-binding (x)
   (if x.module
       (set x (extend x module: `',x.module)))
@@ -427,33 +435,24 @@
       (exclude (extend x macro: x.form) :form)
       (and x.special x.form)
       (exclude (extend x special: x.form) :form)
-    x))
+      (is? x.variable) x))
 
 (define quote-frame (frame)
-  `(table ,@(map* (fn (x)
+  `(table ,@(mapt (fn (_ x)
                     `(table ,@(quote-binding x)))
                   frame)))
 
 (define quote-environment (env)
   `(list ,@(map quote-frame env)))
 
-(define save-modules ()
-  (let (save (fn (x) (cat! compiler-output (compile-toplevel x))))
-    ;; bootstrap module system
-    (save `(define environment
-             ,(quote-environment (initial-environment))))
-    (each (modules m v)
-      (save `(set (get modules ',m) (table)))
-      (each (v k v)
-        (let (q `(table ,@(quote-binding v))
-              slot `(get (get modules ',m) ',k))
-          (if (and v.export
-                   (= m v.module))
-              (save `(set ,slot ,q))))))))
+(define quote-module (k m)
+  `(%object 
+    ,@(mapo (fn (_ x)
+              (if (and x.export
+                       (= k x.module))
+                  `(table ,@(quote-binding x))))
+            m)))
 
-(define compile-module (spec)
-  (set compiling? true)
-  (set compiler-output "")
-  (load-module spec)
-  (map open-module imports)
-  (if save-modules? (save-modules)))
+(define quote-modules ()
+  `(table ,@(mapt quote-module modules)))
+

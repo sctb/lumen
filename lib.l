@@ -56,6 +56,8 @@
            splice
            map
            map*
+           mapt
+           mapo
            keys?
            extend
            exclude
@@ -166,12 +168,7 @@
            ,id)))))
 
 (define-macro table body
-  (let (l ())
-    (each (body k v)
-      (if (is? v)
-          (do (add l k)
-              (add l v))))
-    `(%object ,@l)))
+  `(%object ,@(mapo (fn (_ x) x) body)))
 
 (define-macro let (bindings rest: body)
   (let (i 0
@@ -630,6 +627,23 @@
         (if (is? x)
             (set (get l k) x))))
     l))
+
+(define mapt (f t)
+  (let (t1 (table))
+    (each (t k v)
+      (let (x (f k v))
+        (if (is? x)
+            (set (get t1 k) x))))
+    t1))
+
+(define mapo (f t)
+  (let (o ())
+    (each (t k v)
+      (let (x (f k v))
+        (if (is? x)
+            (do (add o k)
+                (add o x)))))
+    o))
 
 (define keys? (t)
   (let (k? false)
