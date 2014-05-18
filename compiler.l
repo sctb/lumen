@@ -347,6 +347,8 @@
 
 ;; linker
 
+(define module nil)
+
 (define modules (table))
 (define exports (table))
 (define imports (table))
@@ -374,18 +376,28 @@
         (%load-module k))
     (open-module spec)))
 
+(define initial-environment ()
+  (let (m (getenv 'define-module)
+        x (table define-module: m))
+    (list x)))
+
 (define %load-module (k)
   (let (file (cat k ".l")
-        frame (table)
-        module (table))
+        mod0 module
+        env0 environment
+        env1 (initial-environment))
     (set (get loading k) true)
-    (add environment frame)
-    (let (compiled (compile-file file))
-      (drop environment)
-      (each (frame x v)
+    (set module k)
+    (set environment env1)
+    (let (m (table)
+          compiled (compile-file file))
+      (set module mod0)
+      (set environment env0)
+      (each ((hd env1) x v)
         (if (get exports x)
-            (set (get module x) v)))
-      (set (get modules k) module)
+            (set v.export true))
+        (set (get m x) v))
+      (set (get modules k) m)
       (if compiling?
           (cat! compiler-output compiled)
         (run compiled)))))
@@ -407,23 +419,37 @@
   nil)
 
 (define quote-binding (x)
+  (if x.module
+      (set x (extend x module: `',x.module)))
   (if (is? x.symbol)
       (extend x symbol: `',x.symbol)
       (and x.macro x.form)
-      (extend x macro: x.form)
+      (exclude (extend x macro: x.form) :form)
       (and x.special x.form)
-      (extend x special: x.form)))
+      (exclude (extend x special: x.form) :form)
+    x))
+
+(define quote-frame (frame)
+  `(table ,@(map* (fn (x)
+                    `(table ,@(quote-binding x)))
+                  frame)))
+
+(define quote-environment (env)
+  `(list ,@(map quote-frame env)))
 
 (define save-modules ()
   (let (save (fn (x) (cat! compiler-output (compile-toplevel x))))
     ;; bootstrap module system
-    (save '(define environment (list (table))))
-    (let (x (quote-binding (getenv 'define-module)))
-      (save `(setenv 'define-module ,@x)))
+    (save `(define environment
+             ,(quote-environment (initial-environment))))
     (each (modules m v)
       (save `(set (get modules ',m) (table)))
-      (each ((map* quote-binding v) k v)
-        (save `(set (get (get modules ',m) ',k) (table ,@v)))))))
+      (each (v k v)
+        (let (q `(table ,@(quote-binding v))
+              slot `(get (get modules ',m) ',k))
+          (if (and v.export
+                   (= m v.module))
+              (save `(set ,slot ,q))))))))
 
 (define compile-module (spec)
   (set compiling? true)

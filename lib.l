@@ -100,6 +100,7 @@
         x (or (get frame k) (table)))
     (each (keys k1 v)
       (set (get x k1) v))
+    (set x.module module)
     (set (get frame k) x)))
 
 (define getenv (k)
