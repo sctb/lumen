@@ -18,7 +18,7 @@
               (if str (step str) (break)))))))
 
 (define usage ()
-  (pr "usage: lumen [options] [inputs]")
+  (pr "usage: lumen [options] <module>")
   (pr "options:")
   (pr "  -o <output>\tOutput file")
   (pr "  -t <target>\tTarget language (default: lua)")
@@ -30,7 +30,7 @@
     (if (or (= (hd args) "-h")
             (= (hd args) "--help"))
         (usage))
-    (let (inputs ()
+    (let (module nil
           output nil
           target1 nil
           expr nil)
@@ -43,13 +43,16 @@
                     (if (= arg "-o") (set output val)
 		        (= arg "-t") (set target1 val)
 		        (= arg "-e") (set expr val)))))
-	    (~= "-" (char arg 0)) (add inputs arg)))
+	    (and (nil? module)
+                 (~= "-" (char arg 0)))
+            (set module arg)))
       (if output
           (do (if target1 (set target target1))
-              (map compile-module inputs)
+              (compile-module module)
               (write-file output compiler-output))
-        (do (map load-module inputs)
-            (map open-module imports)
+        (do (if module
+                (do (load-module module)
+                    (map open-module imports)))
             (if expr (rep expr) (repl)))))))
 
 (main)

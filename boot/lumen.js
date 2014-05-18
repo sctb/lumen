@@ -1915,7 +1915,7 @@ repl = function () {
   return((process.stdin.on)("data", step));
 };
 usage = function () {
-  print((to_string("usage: lumen [options] [inputs]") + " "));
+  print((to_string("usage: lumen [options] <module>") + " "));
   print((to_string("options:") + " "));
   print((to_string("  -o <output>\tOutput file") + " "));
   print((to_string("  -t <target>\tTarget language (default: lua)") + " "));
@@ -1927,7 +1927,7 @@ main = function () {
   if (((hd(args) === "-h") || (hd(args) === "--help"))) {
     usage();
   }
-  var inputs = [];
+  var module = undefined;
   var output = undefined;
   var target1 = undefined;
   var expr = undefined;
@@ -1949,8 +1949,8 @@ main = function () {
           expr = val;
         }
       }
-    } else if (("-" != char(arg, 0))) {
-      add(inputs, arg);
+    } else if ((nil63(module) && ("-" != char(arg, 0)))) {
+      module = arg;
     }
     i = (i + 1);
   }
@@ -1958,11 +1958,13 @@ main = function () {
     if (target1) {
       target = target1;
     }
-    map(compile_module, inputs);
+    compile_module(module);
     return(write_file(output, compiler_output));
   } else {
-    map(load_module, inputs);
-    map(open_module, imports);
+    if (module) {
+      load_module(module);
+      map(open_module, imports);
+    }
     if (expr) {
       return(rep(expr));
     } else {
