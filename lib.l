@@ -624,7 +624,7 @@
     k?))
 
 (define extend (t rest: xs)
-  (join (sub t) xs))
+  (join t xs))
 
 ;; strings
 
