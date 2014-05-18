@@ -357,8 +357,7 @@ open_module = function (spec) {
 compile_module = function (spec) {
   compiling63 = true;
   compiler_output = "";
-  load_module(spec);
-  return(map(open_module, imports));
+  return(load_module(spec));
 };
 quote_binding = function (x) {
   if (x.module) {

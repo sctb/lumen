@@ -421,8 +421,7 @@
 (define compile-module (spec)
   (set compiling? true)
   (set compiler-output "")
-  (load-module spec)
-  (map open-module imports))
+  (load-module spec))
 
 ;; bootstrap
 
