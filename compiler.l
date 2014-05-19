@@ -351,9 +351,6 @@
 ;; linker
 
 (define module nil)
-
-(define exports (table))
-(define imports (table))
 (define loading (table))
 
 (define compiler-output nil)
@@ -387,15 +384,10 @@
     (set (get loading k) true)
     (set module k)
     (set environment env1)
-    (let (m (table)
-          compiled (compile-file file))
+    (let (compiled (compile-file file))
       (set module mod0)
       (set environment env0)
-      (each ((hd env1) x v)
-        (if (get exports x)
-            (set v.export true))
-        (set (get m x) v))
-      (set (get modules k) m)
+      (set (get modules k) (hd env1))
       (if compiling?
           (cat! compiler-output compiled)
         (run compiled)))))
@@ -424,10 +416,8 @@
 (define-macro define-module (spec rest: body)
   (let ((import: imp export: exp) body)
     (map load-module imp)
-    (set imports imp)
-    (set exports (table))
-    (across ((or exp ()) x)
-      (set (get exports x) true)))
+    (each ((or exp ()) k _)
+      (setenv k :export)))
   nil)
 
 (define compile-module (spec)
