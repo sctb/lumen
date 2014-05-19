@@ -361,6 +361,11 @@
         body (read-all (make-stream str)))
     (compile-toplevel `(do ,@body))))
 
+(define initial-environment ()
+  (let (m (getenv 'define-module)
+        x (table define-module: m))
+    (list x)))
+
 (define load-module (spec)
   (let (k (to-string spec))
     (if (list? spec)
@@ -368,15 +373,10 @@
         (or (nil? (get modules k))
             (and compiling?
                  (nil? (get loading k))))
-        (%load-module k))
+        (%compile-module k))
     (open-module spec)))
 
-(define initial-environment ()
-  (let (m (getenv 'define-module)
-        x (table define-module: m))
-    (list x)))
-
-(define %load-module (k)
+(define %compile-module (k)
   (let (file (cat k ".l")
         mod0 module
         env0 environment
@@ -384,31 +384,46 @@
     (set (get loading k) true)
     (set module k)
     (set environment env1)
-    (let (compiled (compile-file file))
+    (let (compiled (compile-file file)
+          top (toplevel k))
       (set module mod0)
       (set environment env0)
-      (set (get modules k) (hd env1))
+      (each ((hd env1) b x)
+        (if (= x.module k)
+            (set (get top b) x)))
       (if compiling?
           (cat! compiler-output compiled)
         (run compiled)))))
 
-(define exported? (m x)
-  (and x.export (= m x.module)))
+(define %load-module (spec)
+  (let (k (to-string spec)
+        m (get modules k))
+    (if (not m.environment)
+        (let (env0 environment
+              env1 (list m.toplevel (table)))
+          (set m.environment env1)
+          (set environment env1)
+          (map open-module m.import)
+          (set environment env0)))))
+
+(define toplevel (m)
+  (get (get modules m) 'toplevel))
 
 (define open-module (spec)
   (let (m (to-string spec)
-        toplevel (hd environment))
-    (each ((get modules m) k v)
-      (if (exported? m v)
-          (set (get toplevel k) v)))))
+        frame (last environment))
+    (each ((toplevel m) k v)
+      (if v.export (set (get frame k) v)))))
 
-(define-macro with-module (k rest: body)
+(define-macro with-module (spec rest: body)
   (let (env0 (make-id)
         env1 (make-id)
-        x (make-id))
+        x (make-id)
+        m (make-id))
     `(let (,env0 environment
-           ,env1 (list (get modules ,k) (tl environment)))
-       (set environment ,env1)
+           ,m (get modules (to-string ,spec)))
+       (%load-module ,spec)
+       (set environment (get ,m 'environment))
        (let (,x (do ,@body))
          (set environment ,env0)
          ,x))))
@@ -416,7 +431,10 @@
 (define-macro define-module (spec rest: body)
   (let ((import: imp export: exp) body)
     (map load-module imp)
-    (each ((or exp ()) k _)
+    (let (k (to-string spec))
+      (set (get modules k)
+           (table import: imp toplevel: (table))))
+    (across ((or exp ()) k)
       (setenv k :export)))
   nil)
 
@@ -438,20 +456,18 @@
       (exclude (extend x special: x.form) :form)
       (is? x.variable) x))
 
-(define quote-frame (frame)
-  `(table ,@(mapt (fn (_ x)
-                    `(table ,@(quote-binding x)))
-                  frame)))
+(define quote-frame (t)
+  `(%object
+    ,@(mapo (fn (_ x)
+              `(table ,@(quote-binding x)))
+            t)))
 
 (define quote-environment (env)
   `(list ,@(map quote-frame env)))
 
-(define quote-module (k m)
-  `(%object
-    ,@(mapo (fn (_ x)
-              (if (exported? k x)
-                  `(table ,@(quote-binding x))))
-            m)))
+(define quote-module (m)
+  `(table import: ,(quoted m.import)
+          toplevel: ,(quote-frame m.toplevel)))
 
 (define quote-modules ()
-  `(table ,@(mapt quote-module modules)))
+  `(table ,@(map* quote-module modules)))
