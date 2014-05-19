@@ -1,6 +1,6 @@
 ;; -*- mode: lisp -*-
 
-(define-module main
+(define-module boot
   import: (lib compiler)
   export (environment modules))
 
