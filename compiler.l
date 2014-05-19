@@ -10,6 +10,7 @@
            load-module
            define-module
            open-module
+           with-module
            quote-modules
            quote-environment
            with-indent
@@ -367,9 +368,6 @@
   (let (k (to-string spec))
     (if (list? spec)
         (error "Unsupported module specification")
-        (and (get loading k)
-             (not (get modules k)))
-        (return)
         (or (nil? (get modules k))
             (and compiling?
                  (nil? (get loading k))))
@@ -402,12 +400,26 @@
           (cat! compiler-output compiled)
         (run compiled)))))
 
+(define exported? (m x)
+  (and x.export (= m x.module)))
+
 (define open-module (spec)
-  (let (k (to-string spec)
-        module (get modules k)
+  (let (m (to-string spec)
         toplevel (hd environment))
-    (each (module k v)
-      (set (get toplevel k) v))))
+    (each ((get modules m) k v)
+      (if (exported? m v)
+          (set (get toplevel k) v)))))
+
+(define-macro with-module (k rest: body)
+  (let (env0 (make-id)
+        env1 (make-id)
+        x (make-id))
+    `(let (,env0 environment
+           ,env1 (list (get modules ,k) (tl environment)))
+       (set environment ,env1)
+       (let (,x (do ,@body))
+         (set environment ,env0)
+         ,x))))
 
 (define-macro define-module (spec rest: body)
   (let ((import: imp export: exp) body)
@@ -447,11 +459,9 @@
 (define quote-module (k m)
   `(%object
     ,@(mapo (fn (_ x)
-              (if (and x.export
-                       (= k x.module))
+              (if (exported? k x)
                   `(table ,@(quote-binding x))))
             m)))
 
 (define quote-modules ()
   `(table ,@(mapt quote-module modules)))
-

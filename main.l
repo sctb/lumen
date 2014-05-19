@@ -50,9 +50,9 @@
           (do (if target1 (set target target1))
               (compile-module module)
               (write-file output compiler-output))
-        (do (if module
-                (do (load-module module)
-                    (map open-module imports)))
-            (if expr (rep expr) (repl)))))))
+        (do (set module (or module 'main))
+            (load-module module)
+            (with-module module
+              (if expr (rep expr) (repl))))))))
 
 (main)
