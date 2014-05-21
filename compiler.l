@@ -10,6 +10,7 @@
            load-module
            define-module
            open-module
+           with-environment
            with-module
            quote-modules
            quote-environment
@@ -395,16 +396,22 @@
           (cat! compiler-output compiled)
         (run compiled)))))
 
+(define-macro with-environment (env rest: body)
+  (let (env0 (make-id) x (make-id))
+    `(let (,env0 environment)
+       (set environment ,env)
+       (let (,x (do ,@body))
+         (set environment ,env0)
+         ,x))))
+
 (define %load-module (spec)
   (let (k (to-string spec)
         m (get modules k))
     (if (not m.environment)
-        (let (env0 environment
-              env1 (list m.toplevel (table)))
-          (set m.environment env1)
-          (set environment env1)
-          (map open-module m.import)
-          (set environment env0)))))
+        (let (env (list m.toplevel (table)))
+          (with-environment env
+            (map open-module m.import)
+            (set m.environment env))))))
 
 (define toplevel (m)
   (get (get modules m) 'toplevel))
@@ -416,17 +423,11 @@
       (if v.export (set (get frame k) v)))))
 
 (define-macro with-module (spec rest: body)
-  (let (env0 (make-id)
-        env1 (make-id)
-        x (make-id)
-        m (make-id))
-    `(let (,env0 environment
-           ,m (get modules (to-string ,spec)))
+  (let (m (make-id) env (make-id))
+    `(let (,m (get modules (to-string ,spec)))
        (%load-module ,spec)
-       (set environment (get ,m 'environment))
-       (let (,x (do ,@body))
-         (set environment ,env0)
-         ,x))))
+       (with-environment (get ,m 'environment)
+         ,@body))))
 
 (define-macro define-module (spec rest: body)
   (let ((import: imp export: exp) body)
