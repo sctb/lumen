@@ -4,14 +4,14 @@ LUABOOT := boot/lumen.lua
 JSBOOT := boot/lumen.js
 
 $(LUABOOT) $(JSBOOT): *.l
-	@./lumen main -s -f -o $(LUABOOT)
-	@LUMEN_HOST=node ./lumen main -s -f -o $(JSBOOT)
+	@./lumen main -o $(LUABOOT)
+	@LUMEN_HOST=node ./lumen main -o $(JSBOOT)
 
 all: $(JSBOOT) $(LUABOOT)
 
 cross: all
-	@LUMEN_HOST=node ./lumen main -s -f -o $(LUABOOT) -t lua
-	@./lumen main -s -f -o $(JSBOOT) -t js
+	@LUMEN_HOST=node ./lumen main -o $(LUABOOT) -t lua
+	@./lumen main -o $(JSBOOT) -t js
 
 test: all
 	@./lumen test -e "(run-tests)"
