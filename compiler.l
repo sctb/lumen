@@ -296,7 +296,7 @@
         pairs (pairwise forms))
     (across (pairs (k v) i)
       (if (not (string? k))
-          (error (cat "Illegal object key: " (to-string k))))
+          (error (cat "Illegal key: " (to-string k))))
       (let (v (compile v)
             k (if (valid-id? k) k
                   (and (= target 'js) (string-literal? k)) k

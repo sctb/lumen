@@ -98,12 +98,13 @@
 ;; environment
 
 (define setenv (k rest: keys)
-  (let (frame (last environment)
-        x (or (get frame k) (table)))
-    (each (keys k1 v)
-      (set (get x k1) v))
-    (set x.module module)
-    (set (get frame k) x)))
+  (if (string? k)
+      (let (frame (last environment)
+            x (or (get frame k) (table)))
+        (each (keys k1 v)
+          (set (get x k1) v))
+        (set x.module module)
+        (set (get frame k) x))))
 
 (define getenv (k)
   (if (string? k)
