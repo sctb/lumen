@@ -375,6 +375,7 @@
             (and compiling?
                  (nil? (get loading k))))
         (%compile-module k))
+    (%load-module spec)
     (open-module spec)))
 
 (define %compile-module (k)
@@ -425,7 +426,6 @@
 (define-macro with-module (spec rest: body)
   (let (m (make-id))
     `(let (,m (get modules (to-string ,spec)))
-       (%load-module ,spec)
        (with-environment (get ,m 'environment)
          ,@body))))
 
