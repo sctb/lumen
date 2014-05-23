@@ -7,6 +7,7 @@
            compile-toplevel
            compile-module
            compiler-output
+           current-module
            load-module
            define-module
            open-module
@@ -351,11 +352,10 @@
 
 ;; linker
 
-(define module nil)
-(define loading (table))
-
+(define current-module nil)
 (define compiler-output nil)
 (define compiling? false)
+(define loading (table))
 
 (define compile-file (file)
   (let (str (read-file file)
@@ -380,15 +380,15 @@
 
 (define %compile-module (k)
   (let (file (cat k ".l")
-        mod0 module
+        mod0 current-module
         env0 environment
         env1 (initial-environment))
     (set (get loading k) true)
-    (set module k)
+    (set current-module k)
     (set environment env1)
     (let (compiled (compile-file file)
           top (toplevel k))
-      (set module mod0)
+      (set current-module mod0)
       (set environment env0)
       (each ((hd env1) b x)
         (if (= x.module k)
