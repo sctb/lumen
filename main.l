@@ -30,7 +30,7 @@
     (if (or (= (hd args) "-h")
             (= (hd args) "--help"))
         (usage))
-    (let (module nil
+    (let (spec nil
           output nil
           target1 nil
           expr nil)
@@ -43,16 +43,16 @@
                     (if (= arg "-o") (set output val)
 		        (= arg "-t") (set target1 val)
 		        (= arg "-e") (set expr val)))))
-	    (and (nil? module)
+	    (and (nil? spec)
                  (~= "-" (char arg 0)))
-            (set module arg)))
+            (set spec arg)))
       (if output
           (do (if target1 (set target target1))
-              (compile-module module)
+              (compile-module spec)
               (write-file output compiler-output))
-        (do (set module (or module 'main))
-            (load-module module)
-            (with-module module
+        (do (set spec (or spec 'main))
+            (load-module spec)
+            (with-module spec
               (if expr (rep expr) (repl))))))))
 
 (main)

@@ -350,12 +350,12 @@
       (set target previous)
       (run str))))
 
-;; linker
+;; modules
 
 (define current-module nil)
 (define compiler-output nil)
 (define compiling? false)
-(define loading (table))
+(define compiling (table))
 
 (define compile-file (file)
   (let (str (read-file file)
@@ -367,32 +367,42 @@
         x (table define-module: m))
     (list x)))
 
-(define load-module (spec)
-  (let (k (to-string spec))
-    (if (list? spec)
-        (error "Unsupported module specification")
-        (or (nil? (get modules k))
-            (and compiling?
-                 (nil? (get loading k))))
-        (%compile-module k))
-    (%load-module spec)
-    (open-module spec)))
+(define module-key (spec)
+  (if (not (atom? spec))
+      (error "Unsupported module specification")
+    (to-string spec)))
 
-(define %compile-module (k)
-  (let (file (cat k ".l")
+(define module (spec)
+  (get modules (module-key spec)))
+
+(define module-path (spec)
+  (cat (module-key spec) ".l"))
+
+(define load-module (spec)
+  (if (or (nil? (module spec))
+          (and compiling?
+               (nil? (get compiling (module-key spec)))))
+      (%compile-module spec))
+  (%load-module spec)
+  (open-module spec))
+
+(define %compile-module (spec)
+  (let (path (module-path spec)
         mod0 current-module
         env0 environment
-        env1 (initial-environment))
-    (set (get loading k) true)
-    (set current-module k)
+        env1 (initial-environment)
+        k (module-key spec))
+    (set (get compiling k) true)
+    (set current-module (module-key spec))
     (set environment env1)
-    (let (compiled (compile-file file)
-          top (toplevel k))
+    (let (compiled (compile-file path)
+          toplevel (hd environment))
+      (set m (module spec))
       (set current-module mod0)
       (set environment env0)
-      (each ((hd env1) b x)
-        (if (= x.module k)
-            (set (get top b) x)))
+      (each (toplevel name binding)
+        (if (= binding.module k)
+            (set (get m.toplevel name) binding)))
       (if compiling?
           (cat! compiler-output compiled)
         (run compiled)))))
@@ -406,35 +416,30 @@
          ,x))))
 
 (define %load-module (spec)
-  (let (k (to-string spec)
-        m (get modules k))
+  (let (m (module spec))
     (if (not m.environment)
         (let (env (list m.toplevel (table)))
           (with-environment env
             (map open-module m.import)
             (set m.environment env))))))
 
-(define toplevel (m)
-  (get (get modules m) 'toplevel))
-
 (define open-module (spec)
-  (let (m (to-string spec)
+  (let (m (module spec)
         frame (last environment))
-    (each ((toplevel m) k v)
+    (each (m.toplevel k v)
       (if v.export (set (get frame k) v)))))
 
 (define-macro with-module (spec rest: body)
   (let (m (make-id))
-    `(let (,m (get modules (to-string ,spec)))
+    `(let (,m (module ,spec))
        (with-environment (get ,m 'environment)
          ,@body))))
 
 (define-macro define-module (spec rest: body)
   (let ((import: imp export: exp) body)
     (map load-module imp)
-    (let (k (to-string spec))
-      (set (get modules k)
-           (table import: imp toplevel: (table))))
+    (set (get modules (module-key spec))
+         (table import: imp toplevel: (table)))
     (across ((or exp ()) k)
       (setenv k :export)))
   nil)
@@ -446,21 +451,21 @@
 
 ;; bootstrap
 
-(define quote-binding (x)
-  (if x.module
-      (set x (extend x module: `',x.module)))
-  (if (is? x.symbol)
-      (extend x symbol: `',x.symbol)
-      (and x.macro x.form)
-      (exclude (extend x macro: x.form) :form)
-      (and x.special x.form)
-      (exclude (extend x special: x.form) :form)
-      (is? x.variable) x))
+(define quote-binding (b)
+  (if b.module
+      (set b (extend b module: `',b.module)))
+  (if (is? b.symbol)
+      (extend b symbol: `',b.symbol)
+      (and b.macro b.form)
+      (exclude (extend b macro: b.form) :form)
+      (and b.special b.form)
+      (exclude (extend b special: b.form) :form)
+      (is? b.variable) b))
 
 (define quote-frame (t)
   `(%object
-    ,@(mapo (fn (_ x)
-              `(table ,@(quote-binding x)))
+    ,@(mapo (fn (_ b)
+              `(table ,@(quote-binding b)))
             t)))
 
 (define quote-environment (env)
