@@ -8,8 +8,9 @@
            compile-module
            compiler-output
            current-module
+           initial-environment
+           %define-module
            load-module
-           define-module
            open-module
            in-module
            quote-modules
@@ -327,6 +328,20 @@
 (define compile-toplevel (form)
   (compile (macroexpand form) :stmt?))
 
+(define compile-file (file)
+  (let (str (read-file file)
+        body (read-all (make-stream str))
+        form `(do ,@body))
+    (compile-toplevel form)))
+
+(define compiler-output nil)
+(define compilation-level nil)
+
+(define compile-module (spec)
+  (set compilation-level 0)
+  (set compiler-output "")
+  (load-module spec))
+
 ;; eval
 
 (target js:
@@ -351,14 +366,6 @@
 ;; modules
 
 (define current-module nil)
-(define compiler-output nil)
-(define compilation-level nil)
-
-(define compile-file (file)
-  (let (str (read-file file)
-        body (read-all (make-stream str))
-        form `(do ,@body))
-    (compile-toplevel form)))
 
 (define initial-environment ()
   (list (table define-module: (getenv 'define-module))))
@@ -373,6 +380,14 @@
 
 (define module-path (spec)
   (cat (module-key spec) ".l"))
+
+(define %define-module (spec body)
+  (let ((import: imp export: exp) body)
+    (map load-module imp)
+    (set (get modules (module-key spec))
+         (table import: imp toplevel: (table) export: (table)))
+    (across ((or exp ()) k)
+      (setenv k :export))))
 
 (define load-module (spec)
   (if (nil? (module spec))
@@ -413,20 +428,6 @@
   (load-module spec)
   (let (m (module spec))
     (map open-module m.import)))
-
-(define-macro define-module (spec rest: body)
-  (let ((import: imp export: exp) body)
-    (map load-module imp)
-    (set (get modules (module-key spec))
-         (table import: imp toplevel: (table)))
-    (across ((or exp ()) k)
-      (setenv k :export)))
-  nil)
-
-(define compile-module (spec)
-  (set compilation-level 0)
-  (set compiler-output "")
-  (load-module spec))
 
 ;; bootstrap
 
