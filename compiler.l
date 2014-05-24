@@ -362,9 +362,7 @@
     (compile-toplevel `(do ,@body))))
 
 (define initial-environment ()
-  (let (b (getenv 'define-module)
-        x (table define-module: b))
-    (list x)))
+  (list (table define-module: (getenv 'define-module))))
 
 (define module-key (spec)
   (if (not (atom? spec))
