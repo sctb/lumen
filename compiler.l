@@ -396,7 +396,8 @@
       (set current-module mod0)
       (set environment env0)
       (each (toplevel name binding)
-        (if (= binding.module k)
+        (if (and binding.export
+                 (= binding.module k))
             (set (get m.toplevel name) binding)))
       (if (number? compilation-level)
           (cat! compiler-output compiled)
@@ -406,14 +407,11 @@
   (let (m (module spec)
         frame (last environment))
     (each (m.toplevel k v)
-      (if v.export (set (get frame k) v)))))
+      (set (get frame k) v))))
 
 (define in-module (spec)
   (load-module spec)
-  (let (m (module spec)
-        frame (last environment))
-    (each (m.toplevel k v)
-      (set (get frame k) v))
+  (let (m (module spec))
     (map open-module m.import)))
 
 (define-macro define-module (spec rest: body)
