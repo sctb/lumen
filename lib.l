@@ -111,30 +111,27 @@
       (find (fn (e) (get e k))
             (reverse environment))))
 
-(define macro-function (k)
-  (let (x (getenv k))
-    (and x x.macro)))
-
 (define macro? (k)
-  (is? (macro-function k)))
+  (let (b (getenv k))
+    (and b b.macro)))
 
 (define special? (k)
-  (let (x (getenv k))
-    (and x x.special)))
+  (let (b (getenv k))
+    (and b b.special)))
 
 (define special-form? (form)
   (and (list? form) (special? (hd form))))
 
 (define symbol-expansion (k)
-  (let (x (getenv k))
-    (and x x.symbol)))
+  (let (b (getenv k))
+    (and b b.symbol)))
 
 (define symbol? (k)
   (is? (symbol-expansion k)))
 
 (define variable? (k)
-  (let (x (get (last environment) k))
-    (and x x.variable)))
+  (let (b (get (last environment) k))
+    (and b b.variable)))
 
 (define bound? (x)
   (or (macro? x)
@@ -403,8 +400,8 @@
               `(,x ,name ,(map* macroexpand args)
                  ,@(macroexpand body))))
 	  (macro? x)
-          (macroexpand
-           (apply (macro-function x) (tl form)))
+          (let (b (getenv x))
+            (macroexpand (apply b.macro (tl form))))
         (map* macroexpand form)))))
 
 (define quasiexpand (form depth)
