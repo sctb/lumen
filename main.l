@@ -50,9 +50,8 @@
           (do (if target1 (set target target1))
               (compile-module spec)
               (write-file output compiler-output))
-        (do (set spec (or spec 'main))
-            (load-module spec)
-            (with-module spec
-              (if expr (rep expr) (repl))))))))
+        (let (spec (or spec 'main))
+          (in-module spec)
+          (if expr (rep expr) (repl)))))))
 
 (main)

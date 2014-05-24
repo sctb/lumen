@@ -11,8 +11,7 @@
            load-module
            define-module
            open-module
-           with-environment
-           with-module
+           in-module
            quote-modules
            quote-environment
            with-indent
@@ -384,43 +383,28 @@
 (define load-module (spec)
   (if (or (nil? (module spec))
           (recompile? spec))
-      (%compile-module spec)
-    (%load-module spec))
+      (%compile-module spec))
   (open-module spec))
 
 (define %compile-module (spec)
   (let (path (module-path spec)
         mod0 current-module
+        env0 environment
         k (module-key spec))
     (set (get compiling k) true)
     (set current-module spec)
-    (with-environment (initial-environment)
-      (let (compiled (compile-file path)
-            m (module spec)
-            toplevel (hd environment))
-        (set current-module mod0)
-        (each (toplevel name binding)
-          (if (= binding.module k)
-              (set (get m.toplevel name) binding)))
-        (if compiling?
-            (cat! compiler-output compiled)
-          (run compiled))))))
-
-(define-macro with-environment (env rest: body)
-  (let (env0 (make-id) x (make-id))
-    `(let (,env0 environment)
-       (set environment ,env)
-       (let (,x (do ,@body))
-         (set environment ,env0)
-         ,x))))
-
-(define %load-module (spec)
-  (let (m (module spec))
-    (if (not m.environment)
-        (let (env (list m.toplevel (table)))
-          (with-environment env
-            (map open-module m.import)
-            (set m.environment env))))))
+    (set environment (initial-environment))
+    (let (compiled (compile-file path)
+          m (module spec)
+          toplevel (hd environment))
+      (set current-module mod0)
+      (set environment env0)
+      (each (toplevel name binding)
+        (if (= binding.module k)
+            (set (get m.toplevel name) binding)))
+      (if compiling?
+          (cat! compiler-output compiled)
+        (run compiled)))))
 
 (define open-module (spec)
   (let (m (module spec)
@@ -428,19 +412,19 @@
     (each (m.toplevel k v)
       (if v.export (set (get frame k) v)))))
 
-(define-macro with-module (spec rest: body)
-  (let (m (make-id))
-    `(let (,m (module ,spec))
-       (with-environment (get ,m 'environment)
-         ,@body))))
+(define in-module (spec)
+  (load-module spec)
+  (let (m (module spec)
+        frame (last environment))
+    (each (m.toplevel k v)
+      (set (get frame k) v))
+    (map open-module m.import)))
 
 (define-macro define-module (spec rest: body)
   (let ((import: imp export: exp) body)
     (map load-module imp)
     (set (get modules (module-key spec))
-         (table import: imp
-                toplevel: (table)
-                environment: environment))
+         (table import: imp toplevel: (table)))
     (across ((or exp ()) k)
       (setenv k :export)))
   nil)

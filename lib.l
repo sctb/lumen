@@ -111,13 +111,16 @@
       (find (fn (e) (get e k))
             (reverse environment))))
 
-(define macro? (k)
+(define macro-function (k)
   (let (b (getenv k))
     (and b b.macro)))
 
+(define macro? (k)
+  (is? (macro-function k)))
+
 (define special? (k)
   (let (b (getenv k))
-    (and b b.special)))
+    (and b (is? b.special))))
 
 (define special-form? (form)
   (and (list? form) (special? (hd form))))
@@ -131,15 +134,13 @@
 
 (define variable? (k)
   (let (b (get (last environment) k))
-    (and b b.variable)))
+    (and b (is? b.variable))))
 
 (define bound? (x)
   (or (macro? x)
       (special? x)
       (symbol? x)
       (variable? x)))
-
-(define pending (table))
 
 ;; macros
 
