@@ -364,9 +364,9 @@
   (list (table define-module: (getenv 'define-module))))
 
 (define module-key (spec)
-  (if (not (atom? spec))
-      (error "Unsupported module specification")
-    (to-string spec)))
+  (if (atom? spec)
+      (to-string spec)
+    (error "Unsupported module specification")))
 
 (define module (spec)
   (get modules (module-key spec)))
