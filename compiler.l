@@ -378,10 +378,12 @@
 (define module-path (spec)
   (cat (module-key spec) ".l"))
 
+(define recompile? (spec)
+  (and compiling? (nil? (get compiling (module-key spec)))))
+
 (define load-module (spec)
   (if (or (nil? (module spec))
-          (and compiling?
-               (nil? (get compiling (module-key spec)))))
+          (recompile? spec))
       (%compile-module spec)
     (%load-module spec))
   (open-module spec))
