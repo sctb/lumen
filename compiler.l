@@ -9,7 +9,7 @@
            compiler-output
            current-module
            initial-environment
-           %define-module
+           define-module
            load-module
            open-module
            in-module
@@ -381,7 +381,7 @@
 (define module-path (spec)
   (cat (module-key spec) ".l"))
 
-(define %define-module (spec body)
+(define-macro define-module (spec rest: body)
   (let ((import: imp export: exp) body)
     (map load-module imp)
     (set (get modules (module-key spec))
@@ -436,9 +436,9 @@
   (if (is? b.symbol)
       (extend b symbol: `',b.symbol)
       (and b.macro b.form)
-      (extend b macro: b.form form: `',b.form)
+      (exclude (extend b macro: b.form) :form)
       (and b.special b.form)
-      (extend b special: b.form form: `',b.form)
+      (exclude (extend b special: b.form) :form)
       (is? b.variable) b))
 
 (define quote-frame (t)
