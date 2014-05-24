@@ -352,13 +352,13 @@
 
 (define current-module nil)
 (define compiler-output nil)
-(define compiling? false)
-(define compiling (table))
+(define compilation-level nil)
 
 (define compile-file (file)
   (let (str (read-file file)
-        body (read-all (make-stream str)))
-    (compile-toplevel `(do ,@body))))
+        body (read-all (make-stream str))
+        form `(do ,@body))
+    (compile-toplevel form)))
 
 (define initial-environment ()
   (list (table define-module: (getenv 'define-module))))
@@ -374,13 +374,13 @@
 (define module-path (spec)
   (cat (module-key spec) ".l"))
 
-(define recompile? (spec)
-  (and compiling? (nil? (get compiling (module-key spec)))))
-
 (define load-module (spec)
-  (if (or (nil? (module spec))
-          (recompile? spec))
-      (%compile-module spec))
+  (if (nil? (module spec))
+      (%compile-module spec)
+      (= compilation-level 0)
+      (do (inc compilation-level)
+          (%compile-module spec)
+          (dec compilation-level)))
   (open-module spec))
 
 (define %compile-module (spec)
@@ -388,7 +388,6 @@
         mod0 current-module
         env0 environment
         k (module-key spec))
-    (set (get compiling k) true)
     (set current-module spec)
     (set environment (initial-environment))
     (let (compiled (compile-file path)
@@ -399,7 +398,7 @@
       (each (toplevel name binding)
         (if (= binding.module k)
             (set (get m.toplevel name) binding)))
-      (if compiling?
+      (if (number? compilation-level)
           (cat! compiler-output compiled)
         (run compiled)))))
 
@@ -427,21 +426,20 @@
   nil)
 
 (define compile-module (spec)
-  (set compiling? true)
+  (set compilation-level 0)
   (set compiler-output "")
   (load-module spec))
 
 ;; bootstrap
 
 (define quote-binding (b)
-  (if b.module
-      (set b (extend b module: `',b.module)))
+  (set b (extend b module: `',b.module))
   (if (is? b.symbol)
       (extend b symbol: `',b.symbol)
       (and b.macro b.form)
-      (exclude (extend b macro: b.form) :form)
+      (extend b macro: b.form form: `',b.form)
       (and b.special b.form)
-      (exclude (extend b special: b.form) :form)
+      (extend b special: b.form form: `',b.form)
       (is? b.variable) b))
 
 (define quote-frame (t)

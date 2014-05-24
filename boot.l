@@ -2,7 +2,7 @@
 
 (define-module boot
   import: (lib compiler)
-  export (environment modules))
+  export: (environment modules))
 
 (define-macro %initial-environment ()
   (quote-environment (initial-environment)))
