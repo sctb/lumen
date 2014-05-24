@@ -330,9 +330,8 @@
 ;; eval
 
 (target js:
-  (do (define vm (require 'vm))
-      (define global.require require)
-      (define run vm.runInThisContext)))
+  (do (define global.require require)
+      (define run eval)))
 
 (target lua:
  (do (define run-result nil)
