@@ -333,7 +333,6 @@ _37compile_module = function (spec) {
   var toplevel = hd(env1);
   current_module = mod0;
   environment = env0;
-  m.environment = env1;
   var name = undefined;
   var _g62 = toplevel;
   for (name in _g62) {
@@ -1658,7 +1657,7 @@ modules = {lib: {import: ["lib", "compiler"], toplevel: {"string-literal?": {var
   var imp = _g233.import;
   var exp = _g233.export;
   map(load_module, imp);
-  modules[module_key(spec)] = {import: imp, toplevel: {}};
+  modules[module_key(spec)] = {import: imp, toplevel: {}, environment: environment};
   var _g235 = 0;
   var _g234 = (exp || []);
   while ((_g235 < length(_g234))) {
@@ -1912,7 +1911,7 @@ environment = [{"define-module": {module: "compiler", export: true, macro: funct
   var imp = _g258.import;
   var exp = _g258.export;
   map(load_module, imp);
-  modules[module_key(spec)] = {import: imp, toplevel: {}};
+  modules[module_key(spec)] = {import: imp, toplevel: {}, environment: environment};
   var _g260 = 0;
   var _g259 = (exp || []);
   while ((_g260 < length(_g259))) {

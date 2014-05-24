@@ -400,7 +400,6 @@
           toplevel (hd env1))
       (set current-module mod0)
       (set environment env0)
-      (set m.environment env1)
       (each (toplevel name binding)
         (if (= binding.module k)
             (set (get m.toplevel name) binding)))
@@ -440,7 +439,9 @@
   (let ((import: imp export: exp) body)
     (map load-module imp)
     (set (get modules (module-key spec))
-         (table import: imp toplevel: (table)))
+         (table import: imp
+                toplevel: (table)
+                environment: environment))
     (across ((or exp ()) k)
       (setenv k :export)))
   nil)
