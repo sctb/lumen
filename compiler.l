@@ -331,7 +331,7 @@
 (define compile-file (file)
   (let (str (read-file file)
         body (read-all (make-stream str))
-        form `(do ,@body))
+        form `(do ,@body (%export)))
     (compile-toplevel form)))
 
 (define compiler-output nil)
@@ -344,9 +344,7 @@
 
 ;; eval
 
-(target js:
-  (do (define global.require require)
-      (define run eval)))
+(target js: (define run eval))
 
 (target lua:
  (do (define run-result nil)

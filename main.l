@@ -1,7 +1,7 @@
 ;; -*- mode: lisp -*-
 
 (define-module main
-  import: (init reader lib compiler boot))
+  import: (lib reader compiler boot))
 
 (define rep (str)
   (let ((_ x) (guard (eval (read-from-string str))))

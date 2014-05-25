@@ -93,9 +93,14 @@
            pr
            type
            apply
-           make-id))
+           make-id
+           %export))
 
 ;; environment
+
+(target
+ lua: (define-global exports (table))
+ js: (define global.exports (table)))
 
 (define setenv (k rest: keys)
   (if (string? k)
@@ -813,3 +818,16 @@
 (define make-id ()
   (inc id-count)
   (cat "_g" id-count))
+
+(define-macro %export ()
+  (let (toplevel (hd environment)
+        m (make-id)
+        k (module-key current-module)
+        form `(do (define ,m (table))
+                  (set (get exports ',k) ,m)))
+    (each (toplevel k v)
+      (if (and v.variable
+               v.export
+               (= v.module current-module))
+          (add form `(set (get ,m ',k) ,k))))
+    form))
