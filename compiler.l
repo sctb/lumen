@@ -15,7 +15,6 @@
            compile-toplevel
            compiler-output
            eval
-           current-module
            initial-environment
            module-key
            define-module
@@ -373,7 +372,7 @@
 
 ;; modules
 
-(define current-module nil)
+(define-global current-module nil)
 
 (define initial-environment ()
   (list (table define-module: (getenv 'define-module))))
