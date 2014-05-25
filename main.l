@@ -3,11 +3,11 @@
 (define-module main
   import: (lib reader compiler boot))
 
-(define rep (str)
+(define-local rep (str)
   (let ((_ x) (guard (eval (read-from-string str))))
     (if (is? x) (pr x))))
 
-(define repl ()
+(define-local repl ()
   (let (step (fn (str) (rep str) (write "> ")))
     (write "> ")
     (target
@@ -17,7 +17,7 @@
             (let (str (io.read))
               (if str (step str) (break)))))))
 
-(define usage ()
+(define-local usage ()
   (pr "usage: lumen [options] <module>")
   (pr "options:")
   (pr "  -o <output>\tOutput file")
@@ -25,7 +25,7 @@
   (pr "  -e <expr>\tExpression to evaluate")
   (exit))
 
-(define main ()
+(define-local main ()
   (let (args (target js: (sub process.argv 2) lua: arg))
     (if (or (= (hd args) "-h")
             (= (hd args) "--help"))
@@ -48,8 +48,7 @@
             (set spec arg)))
       (if output
           (do (if target1 (set target target1))
-              (compile-module spec)
-              (write-file output compiler-output))
+              (write-file output (compile-module spec)))
         (let (spec (or spec 'main))
           (in-module spec)
           (if expr (rep expr) (repl)))))))

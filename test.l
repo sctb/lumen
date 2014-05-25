@@ -1,13 +1,14 @@
 ;; -*- mode: lisp -*-
 
 (define-module test
+  export: (run-tests)
   import: (lib reader compiler))
 
 ;; infrastructure
 
-(define passed 0)
-(define failed 0)
-(define tests ())
+(define-local passed 0)
+(define-local failed 0)
+(define-local tests ())
 
 (define-macro test (x msg)
   `(if (not ,x)
@@ -15,7 +16,7 @@
 	   (return ,msg))
      (inc passed)))
 
-(define equal? (a b)
+(define-local equal? (a b)
   (if (atom? a)
       (= a b)
     (= (to-string a) (to-string b))))
@@ -53,14 +54,6 @@
   (test= '(quasiquote a) (read-from-string "`a"))
   (test= '(quasiquote (unquote a)) (read-from-string "`,a"))
   (test= '(quasiquote (unquote-splicing a)) (read-from-string "`,@a"))
-  (test= true (key? "foo:"))
-  (test= false (key? "foo:a"))
-  (test= false (key? ":a"))
-  (test= false (key? ":"))
-  (test= false (key? ""))
-  (test= true (flag? ":foo"))
-  (test= false (flag? "foo:"))
-  (test= false (flag? ":"))
   (test= 2 (length (read-from-string "(1 2 a: 7)")))
   (test= 7 (get (read-from-string "(1 2 a: 7)") 'a))
   (test= true (get (read-from-string "(:a)") 'a)))

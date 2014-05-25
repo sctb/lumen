@@ -2,20 +2,29 @@
 
 (define-module compiler
   import: (reader lib compiler)
-  export: (eval
+  export: (indent-level
+           indentation
+           with-indent
+           compile-body
+           valid-id?
+           compile-call
+           compile-branch
+           compile-function
+           compile-special
            compile
            compile-toplevel
-           compile-module
            compiler-output
+           eval
            current-module
            initial-environment
+           module-key
            define-module
+           compile-module
            load-module
            open-module
            in-module
            quote-modules
            quote-environment
-           with-indent
            ;; special
            do
            if
@@ -35,17 +44,17 @@
            %array
            %object))
 
-(define infix
+(define-local infix
   (table common: (table :+ :- :% :* :/ :< :> :<= :>=)
 	 js: (table =: "===" ~=: "!=" and: "&&" or: "||" cat: "+")
 	 lua: (table =: "==" cat: ".." :~= :and :or)))
 
-(define getop (op)
+(define-local getop (op)
   (let (op1 (or (get infix.common op)
                 (get (get infix target) op)))
     (if (= op1 true) op op1)))
 
-(define infix? (form)
+(define-local infix? (form)
   (and (list? form) (is? (getop (hd form)))))
 
 (define indent-level 0)
@@ -60,7 +69,7 @@
            (dec indent-level)
            ,result))))
 
-(define compile-args (args)
+(define-local compile-args (args)
   (let (str "(")
     (across (args arg i)
       (cat! str (compile arg))
@@ -74,10 +83,10 @@
 	(cat! str (compile x :stmt? tail?: t?))))
     str))
 
-(define numeric? (n)
+(define-local numeric? (n)
   (and (> n 47) (< n 58)))
 
-(define valid-char? (n)
+(define-local valid-char? (n)
   (or (numeric? n)             ; 0-9
       (and (> n 64) (< n 91))  ; A-Z
       (and (> n 96) (< n 123)) ; a-z
@@ -97,7 +106,7 @@
         (inc i))
       true)))
 
-(define compile-id (id)
+(define-local compile-id (id)
   (let (id1 "" i 0)
     (while (< i (length id))
       (let (c (char id i)
@@ -110,7 +119,7 @@
       (inc i))
     id1))
 
-(define compile-atom (x)
+(define-local compile-atom (x)
   (if (and (= x "nil") (= target 'lua)) x
       (= x "nil") "undefined"
       (id-literal? x) (inner x)
@@ -130,7 +139,7 @@
           (string? f) (cat f1 args)
         (error "Invalid function call")))))
 
-(define compile-infix ((op rest: args))
+(define-local compile-infix ((op rest: args))
   (let (str "("
         op (getop op))
     (across (args arg i)
@@ -172,7 +181,7 @@
         (cat "function " id args " {\n" body ind "}")
       (cat prefix "function " id args "\n" body ind tr))))
 
-(define terminator (stmt?)
+(define-local terminator (stmt?)
   (if (not stmt?) ""
       (= target 'js) ";\n"
     "\n"))
@@ -310,7 +319,7 @@
       (if (< i (- (length pairs) 1)) (cat! str ", ")))
     (cat str "}")))
 
-(define can-return? (form)
+(define-local can-return? (form)
   (or (not (special-form? form))
       (not (get (getenv (hd form)) 'stmt))))
 
@@ -330,7 +339,7 @@
 (define compile-toplevel (form)
   (compile (macroexpand form) :stmt?))
 
-(define encapsulate (body)
+(define-local encapsulate (body)
   (let (form `(do ,@body (%export)))
     `((%function () ,(macroexpand form)))))
 
@@ -340,23 +349,18 @@
         form (encapsulate body))
     (cat (compile form) ";\n")))
 
-(define compiler-output nil)
-(define compilation-level nil)
-
-(define compile-module (spec)
-  (set compilation-level 0)
-  (set compiler-output "")
-  (load-module spec))
+(define-local compiler-output nil)
+(define-local compilation-level nil)
 
 ;; eval
 
-(target js: (define run eval))
+(target js: (define-local run eval))
 
 (target lua:
- (do (define run-result nil)
-     (define run (x)
-       (let (f (load (cat (compile 'run-result) '= x)))
-         (if f (do (f) run-result)
+ (do (define-global %result nil)
+     (define-local run (x)
+       (let (f (load (cat (compile '%result) '= x)))
+         (if f (do (f) %result)
            (let (|f,e| (load x))
              (if f (f) (error (cat e " in " x)))))))))
 
@@ -379,10 +383,10 @@
       (to-string spec)
     (error "Unsupported module specification")))
 
-(define module (spec)
+(define-local module (spec)
   (get modules (module-key spec)))
 
-(define module-path (spec)
+(define-local module-path (spec)
   (cat (module-key spec) ".l"))
 
 (define-macro define-module (spec rest: body)
@@ -393,13 +397,13 @@
     (across ((or exp ()) k)
       (setenv k :export))))
 
-(define load-module (spec)
-  (if (or (nil? (module spec))
-          (= compilation-level 1))
-      (%compile-module spec))
-  (open-module spec))
+(define compile-module (spec)
+  (set compilation-level 0)
+  (set compiler-output "")
+  (load-module spec)
+  compiler-output)
 
-(define %compile-module (spec)
+(define-local %compile-module (spec)
   (let (path (module-path spec)
         mod0 current-module
         env0 environment
@@ -422,6 +426,12 @@
               (cat! compiler-output compiled))
         (run compiled)))))
 
+(define load-module (spec)
+  (if (or (nil? (module spec))
+          (= compilation-level 1))
+      (%compile-module spec))
+  (open-module spec))
+
 (define open-module (spec)
   (let (m (module spec)
         frame (last environment))
@@ -435,7 +445,7 @@
 
 ;; bootstrap
 
-(define quote-binding (b)
+(define-local quote-binding (b)
   (set b (extend b module: `',b.module))
   (if (is? b.symbol)
       (extend b symbol: `',b.symbol)
@@ -445,7 +455,7 @@
       (exclude (extend b special: b.form) :form)
       (is? b.variable) b))
 
-(define quote-frame (t)
+(define-local quote-frame (t)
   `(%object
     ,@(mapo (fn (_ b)
               `(table ,@(quote-binding b)))
@@ -454,7 +464,7 @@
 (define quote-environment (env)
   `(list ,@(map quote-frame env)))
 
-(define quote-module (m)
+(define-local quote-module (m)
   `(table import: ,(quoted m.import)
           export: ,(quote-frame m.export)))
 

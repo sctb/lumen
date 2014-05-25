@@ -3,25 +3,26 @@
 (define-module reader
   import: (lib compiler)
   export: (make-stream
+           read-table
            define-reader
            read
            read-all
            read-from-string))
 
-(define delimiters (set-of "(" ")" ";" "\n"))
-(define whitespace (set-of " " "\t" "\n"))
+(define-local delimiters (set-of "(" ")" ";" "\n"))
+(define-local whitespace (set-of " " "\t" "\n"))
 
 (define make-stream (str)
   (table pos: 0 string: str len: (length str)))
 
-(define peek-char (s)
+(define-local peek-char (s)
   (if (< s.pos s.len) (char s.string s.pos)))
 
-(define read-char (s)
+(define-local read-char (s)
   (let (c (peek-char s))
     (if c (do (inc s.pos) c))))
 
-(define skip-non-code (s)
+(define-local skip-non-code (s)
   (while true
     (let (c (peek-char s))
       (if (nil? c) (break)
@@ -33,14 +34,14 @@
         (break)))))
 
 (define read-table (table))
-(define eof (table))
+(define-local eof (table))
 
-(define key? (atom)
+(define-local key? (atom)
   (and (string? atom)
        (> (length atom) 1)
        (= (char atom (- (length atom) 1)) ":")))
 
-(define flag? (atom)
+(define-local flag? (atom)
   (and (string? atom)
        (> (length atom) 1)
        (= (char atom 0) ":")))

@@ -6,6 +6,7 @@
            getenv
            special?
            special-form?
+           bound?
            at
            quote
            list
@@ -28,12 +29,18 @@
            quoted
            stash*
            unstash
+           %bind*
+           %bind
+           %message-handler
            quasiquote
+           quasiexpand
            macroexpand
            target
            language
            length
            empty?
+           substring
+           sublist
            sub
            inner
            hd
@@ -116,11 +123,11 @@
       (find (fn (e) (get e k))
             (reverse environment))))
 
-(define macro-function (k)
+(define-local macro-function (k)
   (let (b (getenv k))
     (and b b.macro)))
 
-(define macro? (k)
+(define-local macro? (k)
   (is? (macro-function k)))
 
 (define special? (k)
@@ -130,14 +137,14 @@
 (define special-form? (form)
   (and (list? form) (special? (hd form))))
 
-(define symbol-expansion (k)
+(define-local symbol-expansion (k)
   (let (b (getenv k))
     (and b b.symbol)))
 
-(define symbol? (k)
+(define-local symbol? (k)
   (is? (symbol-expansion k)))
 
-(define variable? (k)
+(define-local variable? (k)
   (let (b (get (last environment) k))
     (and b (is? b.variable))))
 
@@ -179,7 +186,7 @@
 	renames ()
 	locals ())
     (map (fn ((lh rh))
-           (across ((bind lh rh) (id val))
+           (across ((%bind lh rh) (id val))
              (if (bound? id)
                  (let (rename (make-id))
                    (add renames id)
@@ -208,14 +215,14 @@
 (define-macro define-global (name x rest: body)
   (setenv name :variable)
   (if (not (empty? body))
-      (let ((args body) (bind-arguments x body))
+      (let ((args body) (%bind* x body))
         `(%global-function ,name ,args ,@body))
     `(set ,name ,x)))
 
 (define-macro define-local (name x rest: body)
   (setenv name :variable)
   (if (not (empty? body))
-      (let ((args body) (bind-arguments x body))
+      (let ((args body) (%bind* x body))
         `(%local-function ,name ,args ,@body))
     `(%local ,name ,x)))
 
@@ -252,7 +259,7 @@
     `(do ,@(macroexpand body))))
 
 (define-macro fn (args rest: body)
-  (let ((args body) (bind-arguments args body))
+  (let ((args body) (%bind* args body))
     `(%function ,args ,@body)))
 
 (define-macro guard (expr)
@@ -261,7 +268,7 @@
     (let (e (make-id)
           x (make-id)
           ex (cat "|" e "," x "|"))
-      `(let (,ex (xpcall (fn () ,expr) message-handler))
+      `(let (,ex (xpcall (fn () ,expr) %message-handler))
          (list ,e ,x)))))
 
 (define-macro across ((l v i start) rest: body)
@@ -282,7 +289,7 @@
 
 ;; macro helpers
 
-(define escape (str)
+(define-local escape (str)
   (let (str1 "\"" i 0)
     (while (< i (length str))
       (let (c (char str i)
@@ -328,7 +335,7 @@
             args1)
         args))))
 
-(define bind-arguments (args body)
+(define %bind* (args body)
   (let (args1 ()
         rest (fn ()
                (if (= target 'js)
@@ -352,32 +359,32 @@
             (list args1 body)
           (list args1 `((let ,bs ,@body))))))))
 
-(define bind (lh rh)
+(define %bind (lh rh)
   (if (and (composite? lh) (list? rh))
       (let (id (make-id))
-	`((,id ,rh) ,@(bind lh id)))
+	`((,id ,rh) ,@(%bind lh id)))
       (atom? lh) `((,lh ,rh))
     (let (bs () r lh.rest)
       (across (lh x i)
-        (join! bs (bind x `(at ,rh ,i))))
-      (if r (join! bs (bind r `(sub ,rh ,(length lh)))))
+        (join! bs (%bind x `(at ,rh ,i))))
+      (if r (join! bs (%bind r `(sub ,rh ,(length lh)))))
       (each (lh k v)
         (if (= v true) (set v k))
         (if (~= k 'rest)
-            (join! bs (bind v `(get ,rh ',k)))))
+            (join! bs (%bind v `(get ,rh ',k)))))
       bs)))
 
-(define message-handler (msg)
+(define %message-handler (msg)
   (let (i (search msg ": "))
     (sub msg (+ i 2))))
 
 ;; expansion
 
-(define quoting? (depth) (number? depth))
-(define quasiquoting? (depth) (and (quoting? depth) (> depth 0)))
-(define can-unquote? (depth) (and (quoting? depth) (= depth 1)))
+(define-local quoting? (depth) (number? depth))
+(define-local quasiquoting? (depth) (and (quoting? depth) (> depth 0)))
+(define-local can-unquote? (depth) (and (quoting? depth) (= depth 1)))
 
-(define quasisplice? (x depth)
+(define-local quasisplice? (x depth)
   (and (list? x)
        (can-unquote? depth)
        (= (hd x) 'unquote-splicing)))
@@ -410,29 +417,7 @@
            (apply (macro-function x) (tl form)))
         (map* macroexpand form)))))
 
-(define quasiexpand (form depth)
-  (if (quasiquoting? depth)
-      (if (atom? form) (list 'quote form)
-	  ;; unquote
-	  (and (can-unquote? depth)
-	       (= (hd form) 'unquote))
-	  (quasiexpand (at form 1))
-	  ;; decrease quasiquoting depth
-	  (or (= (hd form) 'unquote)
-	      (= (hd form) 'unquote-splicing))
-	  (quasiquote-list form (- depth 1))
-	  ;; increase quasiquoting depth
-	  (= (hd form) 'quasiquote)
-	  (quasiquote-list form (+ depth 1))
-	(quasiquote-list form depth))
-      (atom? form) form
-      (= (hd form) 'quote) form
-      (= (hd form) 'quasiquote)
-      ;; start quasiquoting
-      (quasiexpand (at form 1) 1)
-    (map* (fn (x) (quasiexpand x depth)) form)))
-
-(define quasiquote-list (form depth)
+(define-local quasiquote-list (form depth)
   (let (xs (list '(list)))
     (each (form k v)
       (let (v (if (quasisplice? v depth)
@@ -457,10 +442,32 @@
                           (keys? x)))
                     xs)))))
 
+(define quasiexpand (form depth)
+  (if (quasiquoting? depth)
+      (if (atom? form) (list 'quote form)
+	  ;; unquote
+	  (and (can-unquote? depth)
+	       (= (hd form) 'unquote))
+	  (quasiexpand (at form 1))
+	  ;; decrease quasiquoting depth
+	  (or (= (hd form) 'unquote)
+	      (= (hd form) 'unquote-splicing))
+	  (quasiquote-list form (- depth 1))
+	  ;; increase quasiquoting depth
+	  (= (hd form) 'quasiquote)
+	  (quasiquote-list form (+ depth 1))
+	(quasiquote-list form depth))
+      (atom? form) form
+      (= (hd form) 'quote) form
+      (= (hd form) 'quasiquote)
+      ;; start quasiquoting
+      (quasiexpand (at form 1) 1)
+    (map* (fn (x) (quasiexpand x depth)) form)))
+
 ;; languages
 
 (define-macro language () `',target)
-(define target (language))
+(define-global target (language))
 
 (define-macro target clauses
   (get clauses target))
@@ -611,7 +618,7 @@
 (define splice (x)
   (table _splice: x))
 
-(define splice? (x)
+(define-local splice? (x)
   (if (table? x) x._splice))
 
 (define map (f l)
@@ -813,7 +820,7 @@
   (let (args (stash args))
     (target js: (f.apply f args) lua: (f (unpack args)))))
 
-(define id-count 0)
+(define-local id-count 0)
 
 (define make-id ()
   (inc id-count)
