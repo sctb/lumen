@@ -406,8 +406,8 @@
               `(,x ,name ,(map* macroexpand args)
                  ,@(macroexpand body))))
 	  (macro? x)
-          (let (b (getenv x))
-            (macroexpand (apply b.macro (tl form))))
+          (macroexpand
+           (apply (macro-function x) (tl form)))
         (map* macroexpand form)))))
 
 (define quasiexpand (form depth)
