@@ -235,12 +235,14 @@
 (define-special %global-function
     ((name args rest: body)) :stmt :tr
   (if (= target 'lua)
-      (compile-function args body name: name)
+      (let (x (compile-function args body name: name))
+        (cat (indentation) x))
     (compile `(set ,name (%function ,args ,@body)) :stmt?)))
 
 (define-special %local-function
     ((name args rest: body)) :stmt :tr
-  (compile-function args body name: name prefix: "local "))
+  (let (x (compile-function args body name: name prefix: "local "))
+    (cat (indentation) x)))
 
 (define-special return ((x)) :stmt
   (let (x (if (nil? x)
@@ -328,13 +330,15 @@
 (define compile-toplevel (form)
   (compile (macroexpand form) :stmt?))
 
+(define encapsulate (body)
+  (let (form `(do ,@body (%export)))
+    `((%function () ,(macroexpand form)))))
+
 (define compile-file (file)
   (let (str (read-file file)
         body (read-all (make-stream str))
-        ; form `((%function () ,@body (%export)))
-        form `(do ,@body (%export))
-        )
-    (compile-toplevel form)))
+        form (encapsulate body))
+    (cat (compile form) ";\n")))
 
 (define compiler-output nil)
 (define compilation-level nil)
