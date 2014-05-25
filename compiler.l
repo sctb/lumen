@@ -331,7 +331,9 @@
 (define compile-file (file)
   (let (str (read-file file)
         body (read-all (make-stream str))
-        form `(do ,@body (%export)))
+        ; form `((%function () ,@body (%export)))
+        form `(do ,@body (%export))
+        )
     (compile-toplevel form)))
 
 (define compiler-output nil)
@@ -383,7 +385,7 @@
   (let ((import: imp export: exp) body)
     (map load-module imp)
     (set (get modules (module-key spec))
-         (table import: imp toplevel: (table) export: (table)))
+         (table import: imp export: (table)))
     (across ((or exp ()) k)
       (setenv k :export))))
 
@@ -410,7 +412,7 @@
       (each (toplevel name binding)
         (if (and binding.export
                  (= binding.module k))
-            (set (get m.toplevel name) binding)))
+            (set (get m.export name) binding)))
       (if (number? compilation-level)
           (do (dec compilation-level)
               (cat! compiler-output compiled))
@@ -419,7 +421,7 @@
 (define open-module (spec)
   (let (m (module spec)
         frame (last environment))
-    (each (m.toplevel k v)
+    (each (m.export k v)
       (set (get frame k) v))))
 
 (define in-module (spec)
@@ -450,7 +452,7 @@
 
 (define quote-module (m)
   `(table import: ,(quoted m.import)
-          toplevel: ,(quote-frame m.toplevel)))
+          export: ,(quote-frame m.export)))
 
 (define quote-modules ()
   `(table ,@(map* quote-module modules)))
