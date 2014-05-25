@@ -474,7 +474,8 @@
   (test= '(2 3 4 a: 5) (map* (fn (x) (+ x 1)) (list 1 2 3 a: 4))))
 
 (define-test extend ()
-  (test= '(a: 1 b: 2) (extend '(a: 1) b: 2))
+  (test= 2 (get (extend '(a: 1) b: 2) 'b))
+  (test= 1 (get (extend '(a: 1) b: 2) 'a))
   (test= '(1 :a) (extend '(1) :a)))
 
 (define-test exclude ()
