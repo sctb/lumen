@@ -390,12 +390,9 @@
       (setenv k :export))))
 
 (define load-module (spec)
-  (if (nil? (module spec))
-      (%compile-module spec)
-      (= compilation-level 0)
-      (do (inc compilation-level)
-          (%compile-module spec)
-          (dec compilation-level)))
+  (if (or (nil? (module spec))
+          (= compilation-level 1))
+      (%compile-module spec))
   (open-module spec))
 
 (define %compile-module (spec)
@@ -403,6 +400,8 @@
         mod0 current-module
         env0 environment
         k (module-key spec))
+    (if (number? compilation-level)
+        (inc compilation-level))
     (set current-module spec)
     (set environment (initial-environment))
     (let (compiled (compile-file path)
@@ -415,7 +414,8 @@
                  (= binding.module k))
             (set (get m.toplevel name) binding)))
       (if (number? compilation-level)
-          (cat! compiler-output compiled)
+          (do (dec compilation-level)
+              (cat! compiler-output compiled))
         (run compiled)))))
 
 (define open-module (spec)
