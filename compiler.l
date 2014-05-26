@@ -10,9 +10,7 @@
            compile-special
            compile
            eval
-           module-key
            define-module
-           compile-module
            load-module
            open-module
            in-module))
@@ -172,16 +170,6 @@
                  (compile-call form)))
       (cat ind form tr))))
 
-(define-local encapsulate (body)
-  (let (form `(do ,@body (%export)))
-    `((%function () ,(macroexpand form)))))
-
-(define compile-file (file)
-  (let (str (read-file file)
-        body (read-all (make-stream str))
-        form (encapsulate body))
-    (cat (compile form) ";\n")))
-
 ;; eval
 
 (target js: (define-local run eval))
@@ -205,16 +193,35 @@
 
 (define-global current-module nil)
 
-(define module-key (spec)
-  (if (atom? spec)
-      (to-string spec)
-    (error "Unsupported module specification")))
-
 (define-local module (spec)
   (get modules (module-key spec)))
 
 (define-local module-path (spec)
   (cat (module-key spec) ".l"))
+
+(define-local exported ()
+  (let (toplevel (hd environment)
+        m (make-id)
+        k (module-key current-module)
+        form `(do (define ,m (table))
+                  (set (get exports ',k) ,m)))
+    (each (toplevel k v)
+      (if (and v.variable
+               v.export
+               (= v.module current-module))
+          (add form `(set (get ,m ',k) ,k))))
+    form))
+
+(define-local encapsulate (body)
+  (let (body (macroexpand body)
+        epilog (macroexpand (exported)))
+    `((%function () ,@body ,epilog))))
+
+(define-local compile-file (file)
+  (let (str (read-file file)
+        body (read-all (make-stream str))
+        form (encapsulate body))
+    (cat (compile form) ";\n")))
 
 (define-macro define-module (spec rest: body)
   (let ((import: imp export: exp) body)

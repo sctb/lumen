@@ -29,8 +29,7 @@
            cat!
            inc
            dec
-           pr
-           %export))
+           pr))
 
 (define-macro quote (form)
   (quoted form))
@@ -232,16 +231,3 @@
                   (splice `((to-string ,x) " ")))
                 xs))
     `(print (cat ,@xs))))
-
-(define-macro %export ()
-  (let (toplevel (hd environment)
-        m (make-id)
-        k (module-key current-module)
-        form `(do (define ,m (table))
-                  (set (get exports ',k) ,m)))
-    (each (toplevel k v)
-      (if (and v.variable
-               v.export
-               (= v.module current-module))
-          (add form `(set (get ,m ',k) ,k))))
-    form))

@@ -22,6 +22,7 @@
            target
            indentation
            with-indent
+           module-key
            quote-environment
            quote-modules
            initial-environment))
@@ -246,6 +247,11 @@
          (let (,result ,form)
            (dec indent-level)
            ,result))))
+
+(define module-key (spec)
+  (if (atom? spec)
+      (to-string spec)
+    (error "Unsupported module specification")))
 
 ;; bootstrap
 
