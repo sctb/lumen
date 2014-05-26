@@ -1,7 +1,7 @@
 ;; -*- mode: lisp -*-
 
 (define-module utilities
-  import: (core special)
+  import: (special core)
   export: (setenv
            getenv
            macro-function

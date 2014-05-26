@@ -1,7 +1,7 @@
 ;; -*- mode: lisp -*-
 
 (define-module reader
-  import: (core special)
+  import: (special core)
   export: (make-stream
            read-table
            define-reader

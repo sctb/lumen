@@ -1,7 +1,7 @@
 ;; -*- mode: lisp -*-
 
 (define-module boot
-  import: (core special utilities)
+  import: (utilities special core)
   export: (environment modules))
 
 (define-macro %initial-environment ()

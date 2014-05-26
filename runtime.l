@@ -1,7 +1,7 @@
 ;; -*- mode: lisp -*-
 
 (define-module runtime
-  import: (core special)
+  import: (special core)
   export: (length
            empty?
            substring
