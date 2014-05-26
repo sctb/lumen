@@ -2,7 +2,7 @@
 
 (define-module test
   export: (run-tests)
-  import: (lib reader compiler))
+  import: (lib reader special))
 
 ;; infrastructure
 

@@ -1,12 +1,9 @@
 ;; -*- mode: lisp -*-
 
 (define-module compiler
-  import: (reader lib compiler)
-  export: (indent-level
-           indentation
-           with-indent
+  import: (reader lib utilities special)
+  export: (valid-id?
            compile-body
-           valid-id?
            compile-call
            compile-branch
            compile-function
@@ -15,33 +12,12 @@
            compile-toplevel
            compiler-output
            eval
-           initial-environment
            module-key
            define-module
            compile-module
            load-module
            open-module
-           in-module
-           quote-modules
-           quote-environment
-           ;; special
-           do
-           if
-           while
-           %for
-           %try
-           break
-           %function
-           %global-function
-           %local-function
-           return
-           error
-           %local
-           set
-           get
-           not
-           %array
-           %object))
+           in-module))
 
 (define-local infix
   (table common: (table :+ :- :% :* :/ :< :> :<= :>=)
@@ -55,32 +31,6 @@
 
 (define-local infix? (form)
   (and (list? form) (is? (getop (hd form)))))
-
-(define indent-level 0)
-
-(define indentation ()
-  (apply cat (replicate indent-level "  ")))
-
-(define-macro with-indent (form)
-  (let (result (make-id))
-    `(do (inc indent-level)
-         (let (,result ,form)
-           (dec indent-level)
-           ,result))))
-
-(define-local compile-args (args)
-  (let (str "(")
-    (across (args arg i)
-      (cat! str (compile arg))
-      (if (< i (- (length args) 1)) (cat! str ", ")))
-    (cat str ")")))
-
-(define compile-body (forms :tail?)
-  (let (str "")
-    (across (forms x i)
-      (let (t? (and tail? (= i (- (length forms) 1))))
-	(cat! str (compile x :stmt? tail?: t?))))
-    str))
 
 (define-local numeric? (n)
   (and (> n 47) (< n 58)))
@@ -118,6 +68,13 @@
       (inc i))
     id1))
 
+(define-local compile-args (args)
+  (let (str "(")
+    (across (args arg i)
+      (cat! str (compile arg))
+      (if (< i (- (length args) 1)) (cat! str ", ")))
+    (cat str ")")))
+
 (define-local compile-atom (x)
   (if (and (= x "nil") (= target 'lua)) x
       (= x "nil") "undefined"
@@ -127,6 +84,13 @@
       (boolean? x) (if x "true" "false")
       (number? x) (cat x "")
     (error "Unrecognized atom")))
+
+(define compile-body (forms :tail?)
+  (let (str "")
+    (across (forms x i)
+      (let (t? (and tail? (= i (- (length forms) 1))))
+	(cat! str (compile x :stmt? tail?: t?))))
+    str))
 
 (define compile-call (form)
   (if (empty? form)
@@ -192,132 +156,6 @@
       (let (tr (terminator (and stmt? (not self-tr?))))
         (cat (special (tl form) tail?) tr)))))
 
-(define-special do (forms tail?) :stmt :tr
-  (compile-body forms tail?: tail?))
-
-(define-special if (form tail?) :stmt :tr
-  (let (str "")
-    (across (form condition i)
-      (let (last? (>= i (- (length form) 2))
-	    else? (= i (- (length form) 1))
-	    first? (= i 0)
-	    body (at form (+ i 1)))
-	(if else?
-	    (do (set body condition)
-		(set condition nil)))
-	(cat! str (compile-branch condition body first? last? tail?)))
-      (inc i))
-    str))
-
-(define-special while ((condition rest: body)) :stmt :tr
-  (let (condition (compile condition)
-        body (with-indent (compile-body body))
-        ind (indentation))
-    (if (= target 'js)
-	(cat ind "while (" condition ") {\n" body ind "}\n")
-      (cat ind "while " condition " do\n" body ind "end\n"))))
-
-(define-special %for (((t k) rest: body)) :stmt :tr
-  (let (t (compile t)
-        ind (indentation)
-        body (with-indent (compile-body body)))
-    (if (= target 'lua)
-	(cat ind "for " k " in next, " t " do\n" body ind "end\n")
-      (cat ind "for (" k " in " t ") {\n" body ind "}\n"))))
-
-(define-special %try (forms) :stmt :tr
-  (let (ind (indentation)
-        body (with-indent (compile-body forms :tail?))
-        e (make-id)
-        handler `(return (%array false ,e))
-        h (with-indent (compile handler :stmt?)))
-    (cat ind "try {\n" body ind "}\n"
-         ind "catch (" e ") {\n" h ind "}\n")))
-
-(define-special break (_) :stmt
-  (cat (indentation) "break"))
-
-(define-special %function ((args rest: body))
-  (compile-function args body))
-
-(define-special %global-function
-    ((name args rest: body)) :stmt :tr
-  (if (= target 'lua)
-      (let (x (compile-function args body name: name))
-        (cat (indentation) x))
-    (compile `(set ,name (%function ,args ,@body)) :stmt?)))
-
-(define-special %local-function
-    ((name args rest: body)) :stmt :tr
-  (let (x (compile-function args body name: name prefix: "local "))
-    (cat (indentation) x)))
-
-(define-special return ((x)) :stmt
-  (let (x (if (nil? x)
-              "return"
-            (compile-call `(return ,x))))
-    (cat (indentation) x)))
-
-(define-special error ((x)) :stmt
-  (let (e (if (= target 'js)
-              (cat "throw " (compile x))
-            (compile-call `(error ,x))))
-    (cat (indentation) e)))
-
-(define-special %local ((name value)) :stmt
-  (let (id (compile name)
-        value (compile value)
-	keyword (if (= target 'js) "var " "local ")
-        ind (indentation))
-    (cat ind keyword id " = " value)))
-
-(define-special set ((lh rh)) :stmt
-  (if (nil? rh)
-      (error "Missing right-hand side in assignment"))
-  (cat (indentation) (compile lh) " = " (compile rh)))
-
-(define-special get ((t k))
-  (let (t (compile t)
-	k1 (compile k))
-    (if (and (= target 'lua)
-	     (= (char t 0) "{"))
-	(set t (cat "(" t ")")))
-    (if (and (string-literal? k)
-             (valid-id? (inner k)))
-        (cat t "." (inner k))
-      (cat t "[" k1 "]"))))
-
-(define-special not ((x))
-  (let (x (compile x)
-	open (if (= target 'js) "!(" "(not "))
-    (cat open x ")")))
-
-(define-special %array (forms)
-  (let (open (if (= target 'lua) "{" "[")
-	close (if (= target 'lua) "}" "]")
-	str "")
-    (across (forms x i)
-      (cat! str (compile x))
-      (if (< i (- (length forms) 1)) (cat! str ", ")))
-    (cat open str close)))
-
-(define-special %object (forms)
-  (let (str "{"
-        sep (if (= target 'lua) " = " ": ")
-        pairs (pairwise forms))
-    (across (pairs (k v) i)
-      (if (not (string? k))
-          (error (cat "Illegal key: " (to-string k))))
-      (let (v (compile v)
-            k (if (valid-id? k) k
-                  (and (= target 'js) (string-literal? k)) k
-                  (= target 'js) (quoted k)
-                  (string-literal? k) (cat "[" k "]")
-                (cat "[" (quoted k) "]")))
-        (cat! str k sep v))
-      (if (< i (- (length pairs) 1)) (cat! str ", ")))
-    (cat str "}")))
-
 (define-local can-return? (form)
   (or (not (special-form? form))
       (not (get (getenv (hd form)) 'stmt))))
@@ -373,9 +211,6 @@
 ;; modules
 
 (define-global current-module nil)
-
-(define initial-environment ()
-  (list (table define-module: (getenv 'define-module))))
 
 (define module-key (spec)
   (if (atom? spec)
@@ -441,31 +276,3 @@
   (load-module spec)
   (let (m (module spec))
     (map open-module m.import)))
-
-;; bootstrap
-
-(define-local quote-binding (b)
-  (set b (extend b module: `',b.module))
-  (if (is? b.symbol)
-      (extend b symbol: `',b.symbol)
-      (and b.macro b.form)
-      (exclude (extend b macro: b.form) :form)
-      (and b.special b.form)
-      (exclude (extend b special: b.form) :form)
-      (is? b.variable) b))
-
-(define-local quote-frame (t)
-  `(%object
-    ,@(mapo (fn (_ b)
-              `(table ,@(quote-binding b)))
-            t)))
-
-(define quote-environment (env)
-  `(list ,@(map quote-frame env)))
-
-(define-local quote-module (m)
-  `(table import: ,(quoted m.import)
-          export: ,(quote-frame m.export)))
-
-(define quote-modules ()
-  `(table ,@(map* quote-module modules)))
