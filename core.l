@@ -1,7 +1,7 @@
 ;; -*- mode: lisp -*-
 
-(define-module lib
-  import: (lib special)
+(define-module core
+  import: (core special)
   export: (setenv
            getenv
            special?

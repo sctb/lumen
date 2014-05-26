@@ -1,7 +1,7 @@
 ;; -*- mode: lisp -*-
 
 (define-module compiler
-  import: (reader lib utilities special)
+  import: (reader core utilities special)
   export: (valid-id?
            compile-body
            compile-call

@@ -1,7 +1,7 @@
 ;; -*- mode: lisp -*-
 
 (define-module special
-  import: (lib compiler special utilities)
+  import: (core compiler special utilities)
   export: (do
            if
            while

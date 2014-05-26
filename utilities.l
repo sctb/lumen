@@ -1,13 +1,15 @@
 ;; -*- mode: lisp -*-
 
 (define-module utilities
-  import: (lib special)
+  import: (core special)
   export: (indent-level
            indentation
            with-indent
            quote-environment
            quote-modules
            initial-environment))
+
+;; compiler
 
 (define indent-level 0)
 
@@ -20,6 +22,8 @@
          (let (,result ,form)
            (dec indent-level)
            ,result))))
+
+;; bootstrap
 
 (define-local quote-binding (b)
   (set b (extend b module: `',b.module))

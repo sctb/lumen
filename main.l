@@ -1,7 +1,7 @@
 ;; -*- mode: lisp -*-
 
 (define-module main
-  import: (lib
+  import: (core
            reader
            compiler
            utilities

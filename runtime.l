@@ -1,5 +1,5 @@
 ;; -*- mode: lisp -*-
 
 (define-module runtime
-  import: (lib special)
+  import: (core special)
   export: ())
