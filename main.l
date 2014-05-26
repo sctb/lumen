@@ -1,10 +1,11 @@
 ;; -*- mode: lisp -*-
 
 (define-module main
-  import: (core
+  import: (utilities
+           runtime
+           core
            reader
            compiler
-           utilities
            special
            boot))
 

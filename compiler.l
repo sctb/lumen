@@ -9,8 +9,6 @@
            compile-function
            compile-special
            compile
-           compile-toplevel
-           compiler-output
            eval
            module-key
            define-module
@@ -139,9 +137,10 @@
         args (compile-args args)
         body (with-indent (compile-body body :tail?))
         ind (indentation)
-        tr (if name "end\n" "end"))
+        tr (if (= target 'js) "" "end"))
+    (if name (cat! tr "\n"))
     (if (= target 'js)
-        (cat "function " id args " {\n" body ind "}")
+        (cat "function " id args " {\n" body ind "}" tr)
       (cat prefix "function " id args "\n" body ind tr))))
 
 (define-local terminator (stmt?)
@@ -173,9 +172,6 @@
                  (compile-call form)))
       (cat ind form tr))))
 
-(define compile-toplevel (form)
-  (compile (macroexpand form) :stmt?))
-
 (define-local encapsulate (body)
   (let (form `(do ,@body (%export)))
     `((%function () ,(macroexpand form)))))
@@ -185,9 +181,6 @@
         body (read-all (make-stream str))
         form (encapsulate body))
     (cat (compile form) ";\n")))
-
-(define-local compiler-output nil)
-(define-local compilation-level nil)
 
 ;; eval
 
@@ -230,6 +223,9 @@
          (table import: imp export: (table)))
     (across ((or exp ()) k)
       (setenv k :export))))
+
+(define-local compiler-output nil)
+(define-local compilation-level nil)
 
 (define compile-module (spec)
   (set compilation-level 0)
