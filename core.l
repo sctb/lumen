@@ -199,27 +199,6 @@
 (define-macro cat! (a rest: bs)
   `(set ,a (cat ,a ,@bs)))
 
-(define nil? (x) (= x nil))
-(define is? (x) (not (nil? x)))
-(define string? (x) (= (type x) 'string))
-(define string-literal? (x) (and (string? x) (= (char x 0) "\"")))
-(define id-literal? (x) (and (string? x) (= (char x 0) "|")))
-(define number? (x) (= (type x) 'number))
-(define boolean? (x) (= (type x) 'boolean))
-(define function? (x) (= (type x) 'function))
-(define composite? (x) (= (type x) (target js: 'object lua: 'table)))
-(define atom? (x) (not (composite? x)))
-(define table? (x) (and (composite? x) (nil? (hd x))))
-(define list? (x) (and (composite? x) (is? (hd x))))
-
-;; numbers
-
-(define parse-number (str)
-  (target
-   js: (let (n (parseFloat str))
-         (if (not (isNaN n)) n))
-   lua: (tonumber str)))
-
 (define-macro inc (n by)
   `(set ,n (+ ,n ,(or by 1))))
 
