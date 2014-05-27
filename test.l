@@ -360,7 +360,12 @@
   (let-macro ((a () 18))
     (let (b (fn () 20))
       (test= 18 (a))
-      (test= 20 (b)))))
+      (test= 20 (b))))
+  (let-macro ((a (x)
+                (let (x 10)
+                  (set x 20))
+                `(+ ,x 1)))
+    (test= 2 (a 1))))
 
 (define-test let-symbol ()
   (let-symbol (a 17
