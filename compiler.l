@@ -2,8 +2,7 @@
 
 (define-module compiler
   import: (utilities runtime special core reader)
-  export: (valid-id?
-           compile-body
+  export: (compile-body
            compile-call
            compile-branch
            compile-function
@@ -28,42 +27,6 @@
 (define-local infix? (form)
   (and (list? form) (is? (getop (hd form)))))
 
-(define-local numeric? (n)
-  (and (> n 47) (< n 58)))
-
-(define-local valid-char? (n)
-  (or (numeric? n)             ; 0-9
-      (and (> n 64) (< n 91))  ; A-Z
-      (and (> n 96) (< n 123)) ; a-z
-      (= n 95)))               ; _
-
-(define valid-id? (id)
-  (if (empty? id) false
-      (special? id) false
-      (getop id) false
-    (let (i 0)
-      (while (< i (length id))
-        (let (n (code id i)
-              valid? (valid-char? n))
-          (if (or (not valid?)
-                  (and (= i 0) (numeric? n)))
-              (return false)))
-        (inc i))
-      true)))
-
-(define-local compile-id (id)
-  (let (id1 "" i 0)
-    (while (< i (length id))
-      (let (c (char id i)
-            n (code c)
-            c1 (if (= c "-") "_"
-                   (valid-char? n) c
-                   (= i 0) (cat "_" n)
-                 n))
-        (cat! id1 c1))
-      (inc i))
-    id1))
-
 (define-local compile-args (args)
   (let (str "(")
     (across (args arg i)
@@ -76,7 +39,7 @@
       (= x "nil") "undefined"
       (id-literal? x) (inner x)
       (string-literal? x) x
-      (string? x) (compile-id x)
+      (string? x) (to-id x)
       (boolean? x) (if x "true" "false")
       (number? x) (cat x "")
     (error "Unrecognized atom")))

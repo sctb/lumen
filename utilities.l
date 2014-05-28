@@ -21,6 +21,8 @@
            macroexpand
            indentation
            with-indent
+           valid-id?
+           to-id
            module-key
            quote-environment
            quote-modules
@@ -249,6 +251,55 @@
          (let (,result ,form)
            (dec indent-level)
            ,result))))
+
+(define-local reserved
+  (set-of "=" "==" "+" "-" "%" "*" "/" "<" ">" "<=" ">="
+          ;; js
+          "break" "case" "catch" "continue" "debugger"
+          "default" "delete" "do" "else" "finally" "for"
+          "function" "if" "in" "instanceof" "new" "return"
+          "switch" "this" "throw" "try" "typeof" "var"
+          "void" "with"
+          ;; lua
+          "and" "end" "in" "repeat" "while" "break" "false"
+          "local" "return" "do" "for" "nil" "then" "else"
+          "function" "not" "true" "elseif" "if" "or" "until"))
+
+(define-local numeric? (n)
+  (and (> n 47) (< n 58)))
+
+(define-local valid-char? (n)
+  (or (numeric? n)             ; 0-9
+      (and (> n 64) (< n 91))  ; A-Z
+      (and (> n 96) (< n 123)) ; a-z
+      (= n 95)))               ; _
+
+(define valid-id? (id)
+  (if (empty? id) false
+      (special? id) false
+      (get reserved id) false
+    (let (i 0)
+      (while (< i (length id))
+        (let (n (code id i)
+              valid? (valid-char? n))
+          (if (or (not valid?)
+                  (and (= i 0) (numeric? n)))
+              (return false)))
+        (inc i))
+      true)))
+
+(define to-id (id)
+  (let (id1 "" i 0)
+    (while (< i (length id))
+      (let (c (char id i)
+            n (code c)
+            c1 (if (= c "-") "_"
+                   (valid-char? n) c
+                   (= i 0) (cat "_" n)
+                 n))
+        (cat! id1 c1))
+      (inc i))
+    id1))
 
 (define module-key (spec)
   (if (atom? spec)
