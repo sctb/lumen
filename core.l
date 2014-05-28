@@ -14,6 +14,7 @@
            define-global
            define-local
            define
+           with-bindings
            let-macro
            let-symbol
            fn
