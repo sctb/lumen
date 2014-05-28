@@ -203,14 +203,16 @@
   (let (toplevel (hd environment)
         m (make-id)
         k (module-key current-module)
-        form `(do (define ,m (table))
-                  (set (get exports ',k) ,m)))
-    (each (toplevel k v)
-      (if (and v.variable
-               v.export
-               (= v.module current-module))
-          (add form `(set (get ,m ',k) ,k))))
-    form))
+        exports ())
+    (each (toplevel n b)
+      (if (and b.variable
+               b.export
+               (= b.module current-module))
+          (add exports `(set (get ,m ',n) ,n))))
+    (if (not (empty? exports))
+        `(do (define ,m (table))
+             (set (get exports ',k) ,m)
+             ,@exports))))
 
 (define-local encapsulate (body)
   (let (body (macroexpand body)
