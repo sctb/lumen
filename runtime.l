@@ -214,11 +214,11 @@
     o))
 
 (define keys? (t)
-  (let (k? false)
-    (each (t k v)
-      (set k? true)
+  (let (k nil)
+    (each (t k1 v)
+      (set k k1)
       (break))
-    k?))
+    k))
 
 (define extend (t rest: xs)
   (join t xs))

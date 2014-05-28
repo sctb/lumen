@@ -41,28 +41,29 @@
         (set x.module current-module)
         (set (get frame k) x))))
 
-(define getenv (k)
+(define getenv (k rest: keys)
   (if (string? k)
-      (find (fn (e) (get e k))
-            (reverse environment))))
+      (let (b (find (fn (e)
+                      (get e k))
+                    (reverse environment)))
+        (if (table? b)
+            (let (k (keys? keys))
+              (if k (get b k) b))))))
 
 (define macro-function (k)
-  (let (b (getenv k))
-    (and b b.macro)))
+  (getenv k :macro))
 
 (define macro? (k)
   (is? (macro-function k)))
 
 (define special? (k)
-  (let (b (getenv k))
-    (and b (is? b.special))))
+  (is? (getenv k :special)))
 
 (define special-form? (form)
   (and (list? form) (special? (hd form))))
 
 (define symbol-expansion (k)
-  (let (b (getenv k))
-    (and b b.symbol)))
+  (getenv k :symbol))
 
 (define symbol? (k)
   (is? (symbol-expansion k)))
@@ -72,8 +73,7 @@
     (and b (is? b.variable))))
 
 (define global? (k)
-  (let (b (getenv k))
-    (and b b.global)))
+  (getenv k :global))
 
 (define bound? (x)
   (or (macro? x)
