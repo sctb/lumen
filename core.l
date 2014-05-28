@@ -91,7 +91,7 @@
   nil)
 
 (define-macro define-global (name x rest: body)
-  (setenv name :variable)
+  (setenv name :global :export)
   (if (not (empty? body))
       (let ((args body) (bind* x body))
         `(%global-function ,name ,args ,@body))
@@ -106,7 +106,10 @@
 
 (define-macro define (name x rest: body)
   (setenv name :variable)
-  `(define-global ,name ,x ,@body))
+  (if (not (empty? body))
+      (let ((args body) (bind* x body))
+        `(%global-function ,name ,args ,@body))
+    `(set ,name ,x)))
 
 (define-macro with-frame body
   (let (x (make-id))
@@ -165,6 +168,7 @@
       (set (get l e) true))
     `(table ,@l)))
 
+(define-global target (language))
 (define-macro language () `',target)
 
 (define-macro target clauses

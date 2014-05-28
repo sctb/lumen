@@ -71,11 +71,16 @@
   (let (b (get (last environment) k))
     (and b (is? b.variable))))
 
+(define global? (k)
+  (let (b (getenv k))
+    (and b b.global)))
+
 (define bound? (x)
   (or (macro? x)
       (special? x)
       (symbol? x)
-      (variable? x)))
+      (variable? x)
+      (global? x)))
 
 ;; expansion
 
@@ -231,8 +236,6 @@
       (quasiexpand (at form 1) 1)
     (map* (fn (x) (quasiexpand x depth)) form)))
 
-(define-global target (language))
-
 ;; compiler
 
 (define-global indent-level 0)
@@ -262,7 +265,8 @@
       (exclude (extend b macro: b.form) :form)
       (and b.special b.form)
       (exclude (extend b special: b.form) :form)
-      (is? b.variable) b))
+      (is? b.variable) b
+      (is? b.global) b))
 
 (define-local quote-frame (t)
   `(%object
