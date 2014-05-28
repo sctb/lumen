@@ -95,6 +95,8 @@
   (if (not (empty? body))
       (let ((args body) (bind* x body))
         `(%global-function ,name ,args ,@body))
+      (= target 'js)
+      `(set (get global ',(to-id name)) ,x)
     `(set ,name ,x)))
 
 (define-macro define-local (name x rest: body)

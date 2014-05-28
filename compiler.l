@@ -189,8 +189,9 @@
     (cat (compile form) ";\n")))
 
 (define-macro define-module (spec rest: body)
-  (let ((import: imp export: exp) body)
-    (map load-module imp)
+  (let (imports () (import: imp export: exp) body)
+    (across ((or imp ()) k)
+      (load-module k))
     (set (get modules (module-key spec))
          (table import: imp export: (table)))
     (across ((or exp ()) k)

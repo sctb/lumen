@@ -30,9 +30,7 @@
 
 ;; environment
 
-(target
- lua: (define-global exports (table))
- js: (define global.exports (table)))
+(define-global exports (table))
 
 (define setenv (k rest: keys)
   (if (string? k)
