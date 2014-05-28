@@ -69,8 +69,10 @@
   (is? (symbol-expansion k)))
 
 (define variable? (k)
-  (let (b (get (last environment) k))
-    (and b (is? b.variable))))
+  (let (b (find (fn (frame)
+                  (or (get frame k) frame._scope))
+                (reverse environment)))
+    (and (table? b) (is? b.variable))))
 
 (define global? (k)
   (getenv k :global))

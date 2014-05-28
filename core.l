@@ -114,16 +114,16 @@
         `(%global-function ,name ,args ,@body))
     `(set ,name ,x)))
 
-(define-macro with-frame body
+(define-macro with-frame (rest: body :scope)
   (let (x (make-id))
-    `(do (add environment (table))
+    `(do (add environment (table _scope: ,scope))
          (let (,x (do ,@body))
            (drop environment)
            ,x))))
 
 (define-macro with-bindings ((names) rest: body)
   (let (x (make-id))
-   `(with-frame
+   `(with-frame :scope
       (across (,names ,x)
         (setenv ,x :variable))
       ,@body)))
