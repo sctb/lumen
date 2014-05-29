@@ -4,6 +4,7 @@
   import: (special core)
   export: (length
            empty?
+           some?
            substring
            sublist
            sub
@@ -66,6 +67,9 @@
 
 (define empty? (x)
   (= (length x) 0))
+
+(define some? (x)
+  (> (length x) 0))
 
 (define substring (str from upto)
   (target js: (str.substring from upto)

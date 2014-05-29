@@ -172,7 +172,7 @@
                b.export
                (= b.module current-module))
           (add exports `(set (get ,m ',n) ,n))))
-    (if (not (empty? exports))
+    (if (some? exports)
         `(do (define ,m (table))
              (set (get exports ',k) ,m)
              ,@exports))))
