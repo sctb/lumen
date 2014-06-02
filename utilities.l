@@ -24,13 +24,15 @@
            valid-id?
            to-id
            module-key
+           imported
+           exported
            quote-environment
            quote-modules
            initial-environment))
 
 ;; environment
 
-(define-global exports (table))
+(define-global nexus (table))
 
 (define setenv (k rest: keys)
   (if (string? k)
@@ -304,6 +306,30 @@
   (if (atom? spec)
       (to-string spec)
     (error "Unsupported module specification")))
+
+(define exported ()
+  (let (toplevel (hd environment)
+        m (make-id)
+        k (module-key current-module)
+        exports ())
+    (each (toplevel n b)
+      (if (and b.variable
+               b.export
+               (= b.module current-module))
+          (add exports `(set (get ,m ',n) ,n))))
+    (if (some? exports)
+        `(do (define ,m (table))
+             (set (get nexus ',k) ,m)
+             ,@exports))))
+
+(define imported (k)
+  (let (imports () x (get nexus k))
+    (if (and x (keys? x))
+        (let (m (make-id))
+          (add imports `(%local ,m (get nexus ',k)))
+          (each (x b _)
+            (add imports `(%local ,b (get ,m ',b))))))
+    imports))
 
 ;; bootstrap
 

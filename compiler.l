@@ -162,21 +162,6 @@
 (define-local module-path (spec)
   (cat (module-key spec) ".l"))
 
-(define-local exported ()
-  (let (toplevel (hd environment)
-        m (make-id)
-        k (module-key current-module)
-        exports ())
-    (each (toplevel n b)
-      (if (and b.variable
-               b.export
-               (= b.module current-module))
-          (add exports `(set (get ,m ',n) ,n))))
-    (if (some? exports)
-        `(do (define ,m (table))
-             (set (get exports ',k) ,m)
-             ,@exports))))
-
 (define-local encapsulate (body)
   (let (body (macroexpand body)
         epilog (macroexpand (exported)))
@@ -191,11 +176,13 @@
 (define-macro define-module (spec rest: body)
   (let (imports () (import: imp export: exp) body)
     (across ((or imp ()) k)
-      (load-module k))
+      (load-module k)
+      (join! imports (imported k)))
     (set (get modules (module-key spec))
          (table import: imp export: (table)))
     (across ((or exp ()) k)
-      (setenv k :export))))
+      (setenv k :export))
+    `(do ,@imports)))
 
 (define-local compiler-output nil)
 (define-local compilation-level nil)

@@ -3,10 +3,10 @@
 (define-module main
   import: (utilities
            runtime
-           special
-           core
            reader
            compiler
+           special
+           core
            boot))
 
 (define-local rep (str)
