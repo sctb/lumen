@@ -12,7 +12,7 @@
 (define-local delimiters (set-of "(" ")" ";" "\n"))
 (define-local whitespace (set-of " " "\t" "\n"))
 
-(define make-stream (str)
+(define-local make-stream (str)
   (table pos: 0 string: str len: (length str)))
 
 (define-local peek-char (s)
@@ -33,8 +33,28 @@
               (skip-non-code s))
         (break)))))
 
-(define read-table (table))
+(define-local read-table (table))
 (define-local eof (table))
+
+(define-local read (s)
+  (skip-non-code s)
+  (let (c (peek-char s))
+    (if (is? c)
+	((or (get read-table c)
+	     (get read-table ""))
+	 s)
+      eof)))
+
+(define-local read-all (s)
+  (let (l ())
+    (while true
+      (let (form (read s))
+        (if (= form eof) (break))
+        (add l form)))
+    l))
+
+(define-local read-from-string (str)
+  (read (make-stream str)))
 
 (define-local key? (atom)
   (and (string? atom)
@@ -128,23 +148,3 @@
       (do (read-char s)
 	  (list 'unquote-splicing (read s)))
     (list 'unquote (read s))))
-
-(define read (s)
-  (skip-non-code s)
-  (let (c (peek-char s))
-    (if (is? c)
-	((or (get read-table c)
-	     (get read-table ""))
-	 s)
-      eof)))
-
-(define read-all (s)
-  (let (l ())
-    (while true
-      (let (form (read s))
-        (if (= form eof) (break))
-        (add l form)))
-    l))
-
-(define read-from-string (str)
-  (read (make-stream str)))
