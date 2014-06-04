@@ -326,8 +326,8 @@
         (let (m (make-id))
           (add imports `(%local ,m (get nexus ',k)))
           (each (x b _)
-            (add imports `(%local ,b (get ,m ',b))))))
-    imports))
+            (add imports `(%local ,b (get ,m ',b))))
+          `(do ,@imports)))))
 
 ;; bootstrap
 
