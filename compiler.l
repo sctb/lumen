@@ -1,7 +1,7 @@
 ;; -*- mode: lisp -*-
 
 (define-module compiler
-  import: (utilities runtime special core reader)
+  import: (runtime utilities special core reader)
   export: (compile-body
            compile-call
            compile-branch

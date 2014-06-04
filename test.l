@@ -2,7 +2,7 @@
 
 (define-module test
   export: (run-tests)
-  import: (utilities special core reader))
+  import: (runtime utilities special core reader))
 
 ;; infrastructure
 
