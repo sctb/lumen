@@ -1,7 +1,8 @@
 ;; -*- mode: lisp -*-
 
 (define-module main
-  import: (utilities
+  import: (system
+           utilities
            runtime
            reader
            compiler

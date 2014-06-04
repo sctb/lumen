@@ -32,8 +32,6 @@
 
 ;; environment
 
-(define-global nexus (table))
-
 (define setenv (k rest: keys)
   (if (string? k)
       (let (frame (last environment)
