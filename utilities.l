@@ -207,15 +207,13 @@
             (add xs x)
             (add xs '(list)))
 	(add (last xs) (quasiexpand x depth))))
-    (if (= (length xs) 1) (hd xs)
-      (reduce (fn (a b)
-                (list 'join a b))
-	      ;; remove empty lists
-	      (keep (fn (x)
-                      (or (> (length x) 1)
-                          (not (= (hd x) 'list))
-                          (keys? x)))
-                    xs)))))
+    (let (pruned
+          (keep (fn (x)
+                  (or (> (length x) 1)
+                      (not (= (hd x) 'list))
+                      (keys? x)))
+                xs))
+      `(join* ,@pruned))))
 
 (define quasiexpand (form depth)
   (if (quasiquoting? depth)

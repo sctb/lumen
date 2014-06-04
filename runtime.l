@@ -120,8 +120,12 @@
     l1))
 
 (define join (l1 l2)
-  (if (nil? l1) l2
-      (nil? l2) l1
+  (if (and (nil? l2) (nil? l1)) ()
+      (nil? l1) (join () l2)
+      (nil? l2) (join l1 ())
+      (and (atom? l1) (atom? l2)) (list l1 l2)
+      (atom? l1) (join (list l1) l2)
+      (atom? l2) (join l1 (list l2))
     (let (l () skip? false)
       (target js:
         (if (and (list? l1)
