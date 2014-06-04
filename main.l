@@ -2,8 +2,8 @@
 
 (define-module main
   import: (system
-           utilities
            runtime
+           utilities
            reader
            compiler
            special
