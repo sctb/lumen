@@ -1,7 +1,7 @@
 ;; -*- mode: lisp -*-
 
 (define-module test
-  export: (run-tests)
+  export: (run)
   import: (runtime utilities special core reader))
 
 ;; infrastructure
@@ -28,7 +28,7 @@
 (define-macro define-test (name _ rest: body)
   `(add tests (list ',name (fn () ,@body))))
 
-(define-local run-tests ()
+(define-local run ()
   (pr (cat (language) ":"))
   (across (tests test)
     (let (name (at test 0)

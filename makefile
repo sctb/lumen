@@ -14,8 +14,8 @@ cross: all
 	@./lumen main -o $(JSBOOT) -t js
 
 test: all
-	@./lumen test -e "(run-tests)"
-	@LUMEN_HOST=node ./lumen test -e "(run-tests)"
+	@./lumen test -e "(run)"
+	@LUMEN_HOST=node ./lumen test -e "(run)"
 
 clean:
 	@git checkout boot
