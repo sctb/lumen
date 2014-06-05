@@ -506,7 +506,10 @@
 
 (define-test map-splice ()
   (test= '(1 a 2 a) (map (fn (x) (splice (list x 'a))) '(1 2)))
-  (test= '(1 2) (map (fn (x) (splice x)) '(1 2))))
+  (let (f (fn (x) (splice x)))
+    (test= '(1 2) (map f '(1 2)))
+    (test= '(1 2) (map f '((1) (2))))
+    (test= '(1 2) (map f '((1) () 2)))))
 
 (define-test sub ()
   (test= () (sub ()))

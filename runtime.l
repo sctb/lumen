@@ -191,8 +191,7 @@
     (across (l x)
       (let (x1 (f x)
             s (splice? x1))
-        (if (list? s) (join! l1 s)
-            (is? s) (add l1 s)
+        (if (is? s) (join! l1 s)
             (is? x1) (add l1 x1))))
     l1))
 
