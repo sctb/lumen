@@ -327,7 +327,7 @@
           (add imports `(%local ,m (get nexus ',k)))
           (each (x b _)
             (add imports `(%local ,b (get ,m ',b))))
-          `(do ,@imports)))))
+          imports))))
 
 ;; bootstrap
 

@@ -177,7 +177,7 @@
   (let (imports () (import: imp export: exp) body)
     (across ((or imp ()) k)
       (load-module k)
-      (add imports (imported k)))
+      (join! imports (imported k)))
     (set (get modules (module-key spec))
          (table import: imp export: (table)))
     (across ((or exp ()) k)
