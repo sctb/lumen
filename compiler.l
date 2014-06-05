@@ -133,25 +133,6 @@
                  (compile-call form)))
       (cat ind form tr))))
 
-;; eval
-
-(target js: (define-local run eval))
-
-(target lua:
- (do (define-global %result nil)
-     (define-local run (x)
-       (let (f (load (cat (compile '%result) '= x)))
-         (if f (do (f) %result)
-           (let (|f,e| (load x))
-             (if f (f) (error (cat e " in " x)))))))))
-
-(define eval (form)
-  (let (previous target)
-    (set target (language))
-    (let (str (compile (macroexpand form)))
-      (set target previous)
-      (run str))))
-
 ;; modules
 
 (define-global current-module nil)
@@ -183,6 +164,16 @@
     (across ((or exp ()) k)
       (setenv k :export))
     `(do ,@imports)))
+
+(target js: (define-local run eval))
+
+(target lua:
+ (do (define-global %result nil)
+     (define-local run (x)
+       (let (f (load (cat (compile '%result) '= x)))
+         (if f (do (f) %result)
+           (let (|f,e| (load x))
+             (if f (f) (error (cat e " in " x)))))))))
 
 (define-local compiler-output nil)
 (define-local compilation-level nil)
@@ -232,3 +223,21 @@
   (load-module spec)
   (let (m (module spec))
     (map open-module m.import)))
+
+;; eval
+
+(define-local prologue (spec)
+  (if spec
+      (let (m (module spec))
+        (join (imported spec)
+              (map (fn (x)
+                     (splice (imported x)))
+                   m.import)))))
+
+(define eval (form spec)
+  (let (previous target)
+    (set target (language))
+    (let (form1 `(do ,@(prologue spec) ,form)
+          x (compile (macroexpand form1)))
+      (set target previous)
+      (run x))))

@@ -10,12 +10,12 @@
            core
            boot))
 
-(define-local rep (str)
-  (let ((_ x) (guard (eval (read-from-string str))))
+(define-local rep (str spec)
+  (let ((_ x) (guard (eval (read-from-string str) spec)))
     (if (is? x) (pr x))))
 
-(define-local repl ()
-  (let (step (fn (str) (rep str) (write "> ")))
+(define-local repl (spec)
+  (let (step (fn (str) (rep str spec) (write "> ")))
     (write "> ")
     (target
      js: (do (process.stdin.setEncoding 'utf8)
@@ -58,6 +58,6 @@
               (write-file output (compile-module spec)))
         (let (spec (or spec 'main))
           (in-module spec)
-          (if expr (rep expr) (repl)))))))
+          (if expr (rep expr spec) (repl spec)))))))
 
 (main)
