@@ -482,6 +482,7 @@
   (test= () (join nil ()))
   (test= () (join))
   (test= () (join ()))
+  (test= '(1) (join '(1) nil))
   (test= '(a) (join 'a ()))
   (test= '(a) (join nil 'a))
   (test= '(a) (join 'a))
@@ -509,7 +510,8 @@
   (let (f (fn (x) (splice x)))
     (test= '(1 2) (map f '(1 2)))
     (test= '(1 2) (map f '((1) (2))))
-    (test= '(1 2) (map f '((1) () 2)))))
+    (test= '(1 2) (map f '((1) () 2)))
+    (test= '(1 2) (map f (list nil '(1) nil () 2)))))
 
 (define-test sub ()
   (test= () (sub ()))

@@ -181,17 +181,17 @@
     l))
 
 (define splice (x)
-  (table _splice: x))
+  (table _splice: true value: x))
 
 (define-local splice? (x)
-  (if (table? x) x._splice))
+  (and (table? x) x._splice))
 
 (define map (f l)
   (let (l1 ())
     (across (l x)
-      (let (x1 (f x)
-            s (splice? x1))
-        (if (is? s) (join! l1 s)
+      (let (x1 (f x))
+        (if (splice? x1)
+            (join! l1 x1.value)
             (is? x1) (add l1 x1))))
     l1))
 
