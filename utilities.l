@@ -13,7 +13,6 @@
            bound?
            quoted
            stash*
-           make-id
            bind
            bind*
            quasiexpand
@@ -29,7 +28,7 @@
            quote-modules
            initial-environment))
 
-(define getenv (k rest: keys)
+(define-local getenv (k rest: keys)
   (if (string? k)
       (let (b (find (fn (e)
                       (get e k))
@@ -38,34 +37,34 @@
             (let (k (keys? keys))
               (if k (get b k) b))))))
 
-(define macro-function (k)
+(define-local macro-function (k)
   (getenv k :macro))
 
-(define macro? (k)
+(define-local macro? (k)
   (is? (macro-function k)))
 
-(define special? (k)
+(define-local special? (k)
   (is? (getenv k :special)))
 
-(define special-form? (form)
+(define-local special-form? (form)
   (and (list? form) (special? (hd form))))
 
-(define symbol-expansion (k)
+(define-local symbol-expansion (k)
   (getenv k :symbol))
 
-(define symbol? (k)
+(define-local symbol? (k)
   (is? (symbol-expansion k)))
 
-(define variable? (k)
+(define-local variable? (k)
   (let (b (find (fn (frame)
                   (or (get frame k) frame._scope))
                 (reverse environment)))
     (and (table? b) (is? b.variable))))
 
-(define global? (k)
+(define-local global? (k)
   (getenv k :global))
 
-(define bound? (x)
+(define-local bound? (x)
   (or (macro? x)
       (special? x)
       (symbol? x)
@@ -86,12 +85,12 @@
       (inc i))
     (cat str1 "\"")))
 
-(define quoted (form)
+(define-local quoted (form)
   (if (string? form) (escape form)
       (atom? form) form
     `(list ,@(map* quoted form))))
 
-(define stash* (args)
+(define-local stash* (args)
   (if (keys? args)
       (let (l '(%object _stash true))
         (each (args k v)
@@ -100,12 +99,7 @@
         (join args (list l)))
     args))
 
-(let (id-count 0) 
-  (define make-id ()
-    (inc id-count)
-    (cat "_g" id-count)))
-
-(define bind (lh rh)
+(define-local bind (lh rh)
   (if (and (composite? lh) (list? rh))
       (let (id (make-id))
 	`((,id ,rh) ,@(bind lh id)))
@@ -120,7 +114,7 @@
             (join! bs (bind v `(get ,rh ',k)))))
       bs)))
 
-(define bind* (args body)
+(define-local bind* (args body)
   (let (args1 ())
     (define-local rest ()
       (if (= target 'js)
@@ -153,7 +147,7 @@
        (can-unquote? depth)
        (= (hd x) 'unquote-splicing)))
 
-(define macroexpand (form)
+(define-local macroexpand (form)
   (if (symbol? form)
       (macroexpand (symbol-expansion form))
       (atom? form) form
@@ -178,56 +172,61 @@
            (apply (macro-function x) (tl form)))
         (map* macroexpand form)))))
 
-(define-local quasiquote-list (form depth)
-  (let (xs (list '(list)))
-    (each (form k v)
-      (let (v (if (quasisplice? v depth)
-                  ;; don't splice, just expand
-                  (quasiexpand (at v 1))
-                (quasiexpand v depth)))
-        (set (get (last xs) k) v)))
-    ;; collect sibling lists
-    (across (form x)
-      (if (quasisplice? x depth)
-	  (let (x (quasiexpand (at x 1)))
-            (add xs x)
-            (add xs '(list)))
-	(add (last xs) (quasiexpand x depth))))
-    (let (pruned
-          (keep (fn (x)
-                  (or (> (length x) 1)
-                      (not (= (hd x) 'list))
-                      (keys? x)))
-                xs))
-      `(join* ,@pruned))))
+(define-local quasiexpand)
+(define-local quasiquote-list)
 
-(define quasiexpand (form depth)
-  (if (quasiquoting? depth)
-      (if (atom? form) (list 'quote form)
-	  ;; unquote
-	  (and (can-unquote? depth)
-	       (= (hd form) 'unquote))
-	  (quasiexpand (at form 1))
-	  ;; decrease quasiquoting depth
-	  (or (= (hd form) 'unquote)
-	      (= (hd form) 'unquote-splicing))
-	  (quasiquote-list form (- depth 1))
-	  ;; increase quasiquoting depth
-	  (= (hd form) 'quasiquote)
-	  (quasiquote-list form (+ depth 1))
-	(quasiquote-list form depth))
-      (atom? form) form
-      (= (hd form) 'quote) form
-      (= (hd form) 'quasiquote)
-      ;; start quasiquoting
-      (quasiexpand (at form 1) 1)
-    (map* (fn (x) (quasiexpand x depth)) form)))
+(set quasiquote-list
+  (fn (form depth)
+    (let (xs (list '(list)))
+      (each (form k v)
+        (let (v (if (quasisplice? v depth)
+                    ;; don't splice, just expand
+                    (quasiexpand (at v 1))
+                  (quasiexpand v depth)))
+          (set (get (last xs) k) v)))
+      ;; collect sibling lists
+      (across (form x)
+        (if (quasisplice? x depth)
+            (let (x (quasiexpand (at x 1)))
+              (add xs x)
+              (add xs '(list)))
+          (add (last xs) (quasiexpand x depth))))
+      (let (pruned
+            (keep (fn (x)
+                    (or (> (length x) 1)
+                        (not (= (hd x) 'list))
+                        (keys? x)))
+                  xs))
+        `(join* ,@pruned)))))
+
+(set quasiexpand
+  (fn (form depth)
+    (if (quasiquoting? depth)
+        (if (atom? form) (list 'quote form)
+            ;; unquote
+            (and (can-unquote? depth)
+                 (= (hd form) 'unquote))
+            (quasiexpand (at form 1))
+            ;; decrease quasiquoting depth
+            (or (= (hd form) 'unquote)
+                (= (hd form) 'unquote-splicing))
+            (quasiquote-list form (- depth 1))
+            ;; increase quasiquoting depth
+            (= (hd form) 'quasiquote)
+            (quasiquote-list form (+ depth 1))
+            (quasiquote-list form depth))
+        (atom? form) form
+        (= (hd form) 'quote) form
+        (= (hd form) 'quasiquote)
+        ;; start quasiquoting
+        (quasiexpand (at form 1) 1)
+      (map* (fn (x) (quasiexpand x depth)) form))))
 
 ;; compiler
 
 (define-global indent-level 0)
 
-(define indentation ()
+(define-local indentation ()
   (apply cat (replicate indent-level "  ")))
 
 (define-macro with-indent (form)
@@ -259,7 +258,7 @@
       (and (> n 96) (< n 123)) ; a-z
       (= n 95)))               ; _
 
-(define valid-id? (id)
+(define-local valid-id? (id)
   (if (empty? id) false
       (special? id) false
       (get reserved id) false
@@ -273,7 +272,7 @@
         (inc i))
       true)))
 
-(define to-id (id)
+(define-local to-id (id)
   (let (id1 "" i 0)
     (while (< i (length id))
       (let (c (char id i)
@@ -286,12 +285,12 @@
       (inc i))
     id1))
 
-(define module-key (spec)
+(define-local module-key (spec)
   (if (atom? spec)
       (to-string spec)
     (error "Unsupported module specification")))
 
-(define exported ()
+(define-local exported ()
   (let (toplevel (hd environment)
         m (make-id)
         k (module-key current-module)
@@ -302,11 +301,11 @@
                (= b.module current-module))
           (add exports `(set (get ,m ',n) ,n))))
     (if (some? exports)
-        `(do (define ,m (table))
+        `(do (define-local ,m (table))
              (set (get nexus ',k) ,m)
              ,@exports))))
 
-(define imported (spec)
+(define-local imported (spec)
   (let (k (module-key spec)
         x (get nexus k))
     (if (and x (keys? x))
@@ -336,15 +335,15 @@
               `(table ,@(quote-binding b)))
             t)))
 
-(define quote-environment (env)
+(define-local quote-environment (env)
   `(list ,@(map quote-frame env)))
 
 (define-local quote-module (m)
   `(table import: ,(quoted m.import)
           export: ,(quote-frame m.export)))
 
-(define quote-modules ()
+(define-local quote-modules ()
   `(table ,@(map* quote-module modules)))
 
-(define initial-environment ()
+(define-local initial-environment ()
   (list (table define-module: (getenv 'define-module))))

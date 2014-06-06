@@ -42,9 +42,9 @@
            mapt
            mapo
            keys?
-           setenv
            stash
            unstash
+           setenv
            extend
            exclude
            search
@@ -60,6 +60,7 @@
            parse-number
            to-string
            apply
+           make-id
            %message-handler))
 
 (define-local nil? (x) (= x nil))
@@ -388,6 +389,12 @@
 (define-local apply (f args)
   (let (args (stash args))
     (target js: (f.apply f args) lua: (f (unpack args)))))
+
+(define-local id-count 0)
+
+(define-local make-id ()
+  (inc id-count)
+  (cat "_g" id-count))
 
 (define-local %message-handler (msg)
   (let (i (search msg ": "))

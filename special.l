@@ -94,10 +94,11 @@
 
 (define-special %local ((name value)) :stmt
   (let (id (compile name)
-        value (compile value)
+        value1 (compile value)
+        rh (if (is? value) (cat " = " value1) "")
 	keyword (if (= target 'js) "var " "local ")
         ind (indentation))
-    (cat ind keyword id " = " value)))
+    (cat ind keyword id rh)))
 
 (define-special set ((lh rh)) :stmt
   (if (nil? rh)

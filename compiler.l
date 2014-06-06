@@ -175,8 +175,8 @@
            (let (|f,e| (load x))
              (if f (f) (error (cat e " in " x)))))))))
 
-(define-local compiler-output nil)
-(define-local compilation-level nil)
+(define-local compiler-output)
+(define-local compilation-level)
 
 (define compile-module (spec)
   (set compilation-level 0)
