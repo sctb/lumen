@@ -42,6 +42,7 @@
            mapt
            mapo
            keys?
+           setenv
            stash
            unstash
            extend
@@ -271,6 +272,15 @@
                   (set (get args1 k) v)))
             args1)
         args))))
+
+(define-local setenv (k rest: keys)
+  (if (string? k)
+      (let (frame (last environment)
+            x (or (get frame k) (table)))
+        (each (keys k1 v)
+          (set (get x k1) v))
+        (set x.module current-module)
+        (set (get frame k) x))))
 
 (define-local extend (t rest: xs)
   (join t xs))

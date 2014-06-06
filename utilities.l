@@ -2,8 +2,7 @@
 
 (define-module utilities
   import: (runtime special core)
-  export: (setenv
-           getenv
+  export: (getenv
            macro-function
            macro?
            special?
@@ -29,17 +28,6 @@
            quote-environment
            quote-modules
            initial-environment))
-
-;; environment
-
-(define setenv (k rest: keys)
-  (if (string? k)
-      (let (frame (last environment)
-            x (or (get frame k) (table)))
-        (each (keys k1 v)
-          (set (get x k1) v))
-        (set x.module current-module)
-        (set (get frame k) x))))
 
 (define getenv (k rest: keys)
   (if (string? k)
