@@ -7,8 +7,6 @@
            length
            empty?
            some?
-           substring
-           sublist
            hd
            string?
            number?
@@ -18,6 +16,8 @@
            atom?
            table?
            list?
+           substring
+           sublist
            sub
            inner
            tl
@@ -73,6 +73,19 @@
 (define-local some? (x)
   (> (length x) 0))
 
+(define-local hd (l) (at l 0))
+
+(target js: (define-local type (x) (typeof x)))
+
+(define-local string? (x) (= (type x) 'string))
+(define-local number? (x) (= (type x) 'number))
+(define-local boolean? (x) (= (type x) 'boolean))
+(define-local function? (x) (= (type x) 'function))
+(define-local composite? (x) (= (type x) (target js: 'object lua: 'table)))
+(define-local atom? (x) (not (composite? x)))
+(define-local table? (x) (and (composite? x) (nil? (hd x))))
+(define-local list? (x) (and (composite? x) (is? (hd x))))
+
 (define-local substring (str from upto)
   (target js: (str.substring from upto)
           lua: (string.sub str (+ from 1) upto)))
@@ -88,19 +101,6 @@
             (inc i)
             (inc j))
           l2)))
-
-(define-local hd (l) (at l 0))
-
-(target js: (define-local type (x) (typeof x)))
-
-(define-local string? (x) (= (type x) 'string))
-(define-local number? (x) (= (type x) 'number))
-(define-local boolean? (x) (= (type x) 'boolean))
-(define-local function? (x) (= (type x) 'function))
-(define-local composite? (x) (= (type x) (target js: 'object lua: 'table)))
-(define-local atom? (x) (not (composite? x)))
-(define-local table? (x) (and (composite? x) (nil? (hd x))))
-(define-local list? (x) (and (composite? x) (is? (hd x))))
 
 (define-local sub (x from upto)
   (let (from (or from 0))
