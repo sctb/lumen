@@ -1,7 +1,7 @@
 ;; -*- mode: lisp -*-
 
 (define-module core
-  import: (runtime utilities special core)
+  import: (runtime utilities special core compiler)
   export: (quote
            quasiquote
            at

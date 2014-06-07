@@ -2,7 +2,12 @@
 
 (define-module test
   export: (run)
-  import: (runtime utilities special core reader))
+  import: (runtime
+           utilities
+           special
+           core
+           reader
+           compiler))
 
 ;; infrastructure
 
