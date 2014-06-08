@@ -139,7 +139,7 @@
 
 ;; modules
 
-(define-global current-module nil)
+(define* current-module nil)
 
 (define module (spec)
   (get modules (module-key spec)))
@@ -172,7 +172,7 @@
 (target js: (define run global.eval))
 
 (target lua:
- (do (define-global %result nil)
+ (do (define* %result nil)
      (define run (x)
        (let (f (load (cat (compile '%result) '= x)))
          (if f (do (f) %result)

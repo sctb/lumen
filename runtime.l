@@ -353,7 +353,7 @@
     lua: (let (f (io.open path 'w))
            (f.write f data))))
 
-(target js: (define-global print (x) (console.log x)))
+(target js: (define* print (x) (console.log x)))
 (target js: (define type (x) (typeof x)))
 
 (define write (x)

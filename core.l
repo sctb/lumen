@@ -11,8 +11,8 @@
            define-macro
            define-special
            define-symbol
-           define-global
            define
+           define*
            with-bindings
            let-macro
            let-symbol
@@ -90,7 +90,7 @@
   (setenv name symbol: expansion)
   nil)
 
-(define-macro define-global (name x rest: body)
+(define-macro define* (name x rest: body)
   (setenv name :global :export)
   (if (not (empty? body))
       (let ((args body) (bind* x body))
@@ -163,7 +163,7 @@
       (set (get l e) true))
     `(table ,@l)))
 
-(define-global target (language))
+(define* target (language))
 (define-macro language () `',target)
 
 (define-macro target clauses

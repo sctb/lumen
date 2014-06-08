@@ -3,4 +3,4 @@
 (define-module system
   import: (special core))
 
-(define-global nexus (table))
+(define* nexus (table))

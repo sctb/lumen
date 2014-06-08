@@ -224,7 +224,7 @@
 
 ;; compiler
 
-(define-global indent-level 0)
+(define* indent-level 0)
 
 (define indentation ()
   (apply cat (replicate indent-level "  ")))
