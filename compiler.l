@@ -220,7 +220,8 @@
 (define-local in-module (spec)
   (load-module spec)
   (let (m (module spec))
-    (map open-module m.import)))
+    (map open-module m.import))
+  (set current-module spec))
 
 (define-local compile-module (spec)
   (set compilation-level 0)
@@ -228,18 +229,18 @@
   (load-module spec)
   compiler-output)
 
-(define-local prologue (spec)
-  (if spec
-      (let (m (module spec))
-        (join (imported spec)
+(define-local prologue ()
+  (if current-module
+      (let (m (module current-module))
+        (join (imported current-module)
               (map (fn (x)
                      (splice (imported x)))
                    m.import)))))
 
-(define-local eval (form spec)
+(define-local eval (form)
   (let (previous target)
     (set target (language))
-    (let (form1 `(do ,@(prologue spec) ,form)
+    (let (form1 `(do ,@(prologue) ,form)
           x (compile (macroexpand form1)))
       (set target previous)
       (run x))))

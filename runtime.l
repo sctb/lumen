@@ -54,7 +54,6 @@
            > < = >= <=
            read-file
            write-file
-           print
            write
            exit
            parse-number
@@ -354,15 +353,14 @@
     lua: (let (f (io.open path 'w))
            (f.write f data))))
 
-(target js: (define-local print (x) (console.log x)))
+(target js: (define-global print (x) (console.log x)))
+(target js: (define-local type (x) (typeof x)))
 
 (define-local write (x)
   (target js: (process.stdout.write x) lua: (io.write x)))
 
 (define-local exit (code)
   (target js: (process.exit code) lua: (os.exit code)))
-
-(target js: (define-local type (x) (typeof x)))
 
 (define-local parse-number (str)
   (target

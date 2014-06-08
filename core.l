@@ -77,16 +77,14 @@
     `(do ,@locals (let-symbol ,renames ,@body))))
 
 (define-macro define-macro (name args rest: body)
-  (let (form `(fn ,args ,@body)
-        set `(setenv ',name macro: ,form form: ',form))
-    (eval set current-module))
+  (let (form `(fn ,args ,@body))
+    (eval `(setenv ',name macro: ,form form: ',form)))
   nil)
 
 (define-macro define-special (name args rest: body)
   (let (form `(fn ,args ,@body)
-        keys (sub body (length body))
-        set `(setenv ',name special: ,form form: ',form ,@keys))
-    (eval set current-module))
+        keys (sub body (length body)))
+    (eval `(setenv ',name special: ,form form: ',form ,@keys)))
   nil)
 
 (define-macro define-symbol (name expansion)
