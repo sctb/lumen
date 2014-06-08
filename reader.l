@@ -9,20 +9,20 @@
            read-all
            read-from-string))
 
-(define-local delimiters (set-of "(" ")" ";" "\n"))
-(define-local whitespace (set-of " " "\t" "\n"))
+(define delimiters (set-of "(" ")" ";" "\n"))
+(define whitespace (set-of " " "\t" "\n"))
 
-(define-local make-stream (str)
+(define make-stream (str)
   (table pos: 0 string: str len: (length str)))
 
-(define-local peek-char (s)
+(define peek-char (s)
   (if (< s.pos s.len) (char s.string s.pos)))
 
-(define-local read-char (s)
+(define read-char (s)
   (let (c (peek-char s))
     (if c (do (inc s.pos) c))))
 
-(define-local skip-non-code (s)
+(define skip-non-code (s)
   (while true
     (let (c (peek-char s))
       (if (nil? c) (break)
@@ -33,10 +33,10 @@
               (skip-non-code s))
         (break)))))
 
-(define-local read-table (table))
-(define-local eof (table))
+(define read-table (table))
+(define eof (table))
 
-(define-local read (s)
+(define read (s)
   (skip-non-code s)
   (let (c (peek-char s))
     (if (is? c)
@@ -45,7 +45,7 @@
 	 s)
       eof)))
 
-(define-local read-all (s)
+(define read-all (s)
   (let (l ())
     (while true
       (let (form (read s))
@@ -53,15 +53,15 @@
         (add l form)))
     l))
 
-(define-local read-from-string (str)
+(define read-from-string (str)
   (read (make-stream str)))
 
-(define-local key? (atom)
+(define key? (atom)
   (and (string? atom)
        (> (length atom) 1)
        (= (char atom (- (length atom) 1)) ":")))
 
-(define-local flag? (atom)
+(define flag? (atom)
   (and (string? atom)
        (> (length atom) 1)
        (= (char atom 0) ":")))

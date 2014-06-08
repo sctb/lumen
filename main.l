@@ -10,11 +10,11 @@
            core
            boot))
 
-(define-local rep (str)
+(define rep (str)
   (let ((_ x) (guard (eval (read-from-string str))))
     (if (is? x) (pr x))))
 
-(define-local repl ()
+(define repl ()
   (let (step (fn (str) (rep str) (write "> ")))
     (write "> ")
     (target
@@ -24,7 +24,7 @@
             (let (str (io.read))
               (if str (step str) (break)))))))
 
-(define-local usage ()
+(define usage ()
   (pr "usage: lumen [options] <module>")
   (pr "options:")
   (pr "  -o <output>\tOutput file")
@@ -32,7 +32,7 @@
   (pr "  -e <expr>\tExpression to evaluate")
   (exit))
 
-(define-local main ()
+(define main ()
   (let (args (target js: (sub process.argv 2) lua: arg))
     (if (or (= (hd args) "-h")
             (= (hd args) "--help"))

@@ -11,9 +11,9 @@
 
 ;; infrastructure
 
-(define-local passed 0)
-(define-local failed 0)
-(define-local tests ())
+(define passed 0)
+(define failed 0)
+(define tests ())
 
 (define-macro test (x msg)
   `(if (not ,x)
@@ -21,7 +21,7 @@
 	   (return ,msg))
      (inc passed)))
 
-(define-local equal? (a b)
+(define equal? (a b)
   (if (atom? a)
       (= a b)
     (= (to-string a) (to-string b))))
@@ -33,7 +33,7 @@
 (define-macro define-test (name _ rest: body)
   `(add tests (list ',name (fn () ,@body))))
 
-(define-local run ()
+(define run ()
   (pr (cat (language) ":"))
   (across (tests test)
     (let (name (at test 0)

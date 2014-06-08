@@ -28,7 +28,7 @@
            quote-modules
            initial-environment))
 
-(define-local getenv (k rest: keys)
+(define getenv (k rest: keys)
   (if (string? k)
       (let (b (find (fn (e)
                       (get e k))
@@ -37,34 +37,34 @@
             (let (k (keys? keys))
               (if k (get b k) b))))))
 
-(define-local macro-function (k)
+(define macro-function (k)
   (getenv k :macro))
 
-(define-local macro? (k)
+(define macro? (k)
   (is? (macro-function k)))
 
-(define-local special? (k)
+(define special? (k)
   (is? (getenv k :special)))
 
-(define-local special-form? (form)
+(define special-form? (form)
   (and (list? form) (special? (hd form))))
 
-(define-local symbol-expansion (k)
+(define symbol-expansion (k)
   (getenv k :symbol))
 
-(define-local symbol? (k)
+(define symbol? (k)
   (is? (symbol-expansion k)))
 
-(define-local variable? (k)
+(define variable? (k)
   (let (b (find (fn (frame)
                   (or (get frame k) frame._scope))
                 (reverse environment)))
     (and (table? b) (is? b.variable))))
 
-(define-local global? (k)
+(define global? (k)
   (getenv k :global))
 
-(define-local bound? (x)
+(define bound? (x)
   (or (macro? x)
       (special? x)
       (symbol? x)
@@ -73,7 +73,7 @@
 
 ;; expansion
 
-(define-local escape (str)
+(define escape (str)
   (let (str1 "\"" i 0)
     (while (< i (length str))
       (let (c (char str i)
@@ -85,12 +85,12 @@
       (inc i))
     (cat str1 "\"")))
 
-(define-local quoted (form)
+(define quoted (form)
   (if (string? form) (escape form)
       (atom? form) form
     `(list ,@(map* quoted form))))
 
-(define-local stash* (args)
+(define stash* (args)
   (if (keys? args)
       (let (l '(%object _stash true))
         (each (args k v)
@@ -99,7 +99,7 @@
         (join args (list l)))
     args))
 
-(define-local bind (lh rh)
+(define bind (lh rh)
   (if (and (composite? lh) (list? rh))
       (let (id (make-id))
 	`((,id ,rh) ,@(bind lh id)))
@@ -114,9 +114,9 @@
             (join! bs (bind v `(get ,rh ',k)))))
       bs)))
 
-(define-local bind* (args body)
+(define bind* (args body)
   (let (args1 ())
-    (define-local rest ()
+    (define rest ()
       (if (= target 'js)
           `(unstash (sublist arguments ,(length args1)))
         (do (add args1 '|...|)
@@ -138,16 +138,16 @@
             (list args1 body)
           (list args1 `((let ,bs ,@body))))))))
 
-(define-local quoting? (depth) (number? depth))
-(define-local quasiquoting? (depth) (and (quoting? depth) (> depth 0)))
-(define-local can-unquote? (depth) (and (quoting? depth) (= depth 1)))
+(define quoting? (depth) (number? depth))
+(define quasiquoting? (depth) (and (quoting? depth) (> depth 0)))
+(define can-unquote? (depth) (and (quoting? depth) (= depth 1)))
 
-(define-local quasisplice? (x depth)
+(define quasisplice? (x depth)
   (and (list? x)
        (can-unquote? depth)
        (= (hd x) 'unquote-splicing)))
 
-(define-local macroexpand (form)
+(define macroexpand (form)
   (if (symbol? form)
       (macroexpand (symbol-expansion form))
       (atom? form) form
@@ -172,8 +172,8 @@
            (apply (macro-function x) (tl form)))
         (map* macroexpand form)))))
 
-(define-local quasiexpand)
-(define-local quasiquote-list)
+(define quasiexpand)
+(define quasiquote-list)
 
 (set quasiquote-list
   (fn (form depth)
@@ -226,7 +226,7 @@
 
 (define-global indent-level 0)
 
-(define-local indentation ()
+(define indentation ()
   (apply cat (replicate indent-level "  ")))
 
 (define-macro with-indent (form)
@@ -236,7 +236,7 @@
            (dec indent-level)
            ,result))))
 
-(define-local reserved
+(define reserved
   (set-of "=" "==" "+" "-" "%" "*" "/" "<" ">" "<=" ">="
           ;; js
           "break" "case" "catch" "continue" "debugger"
@@ -249,16 +249,16 @@
           "local" "return" "do" "for" "nil" "then" "else"
           "function" "not" "true" "elseif" "if" "or" "until"))
 
-(define-local numeric? (n)
+(define numeric? (n)
   (and (> n 47) (< n 58)))
 
-(define-local valid-char? (n)
+(define valid-char? (n)
   (or (numeric? n)             ; 0-9
       (and (> n 64) (< n 91))  ; A-Z
       (and (> n 96) (< n 123)) ; a-z
       (= n 95)))               ; _
 
-(define-local valid-id? (id)
+(define valid-id? (id)
   (if (empty? id) false
       (special? id) false
       (get reserved id) false
@@ -272,7 +272,7 @@
         (inc i))
       true)))
 
-(define-local to-id (id)
+(define to-id (id)
   (let (id1 "" i 0)
     (while (< i (length id))
       (let (c (char id i)
@@ -285,12 +285,12 @@
       (inc i))
     id1))
 
-(define-local module-key (spec)
+(define module-key (spec)
   (if (atom? spec)
       (to-string spec)
     (error "Unsupported module specification")))
 
-(define-local exported ()
+(define exported ()
   (let (toplevel (hd environment)
         m (make-id)
         k (module-key current-module)
@@ -301,11 +301,11 @@
                (= b.module current-module))
           (add exports `(set (get ,m ',n) ,n))))
     (if (some? exports)
-        `(do (define-local ,m (table))
+        `(do (define ,m (table))
              (set (get nexus ',k) ,m)
              ,@exports))))
 
-(define-local imported (spec)
+(define imported (spec)
   (let (k (module-key spec)
         x (get nexus k))
     (if (and x (keys? x))
@@ -318,7 +318,7 @@
 
 ;; bootstrap
 
-(define-local quote-binding (b)
+(define quote-binding (b)
   (set b (extend b module: `',b.module))
   (if (is? b.symbol)
       (extend b symbol: `',b.symbol)
@@ -329,21 +329,21 @@
       (is? b.variable) b
       (is? b.global) b))
 
-(define-local quote-frame (t)
+(define quote-frame (t)
   `(%object
     ,@(mapo (fn (_ b)
               `(table ,@(quote-binding b)))
             t)))
 
-(define-local quote-environment (env)
+(define quote-environment (env)
   `(list ,@(map quote-frame env)))
 
-(define-local quote-module (m)
+(define quote-module (m)
   `(table import: ,(quoted m.import)
           export: ,(quote-frame m.export)))
 
-(define-local quote-modules ()
+(define quote-modules ()
   `(table ,@(map* quote-module modules)))
 
-(define-local initial-environment ()
+(define initial-environment ()
   (list (table define-module: (getenv 'define-module))))

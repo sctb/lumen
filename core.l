@@ -12,7 +12,6 @@
            define-special
            define-symbol
            define-global
-           define-local
            define
            with-bindings
            let-macro
@@ -100,19 +99,12 @@
       `(set (get global ',(to-id name)) ,x)
     `(set ,name ,x)))
 
-(define-macro define-local (name x rest: body)
+(define-macro define (name x rest: body)
   (setenv name :variable)
   (if (not (empty? body))
       (let ((args body) (bind* x body))
         `(%local-function ,name ,args ,@body))
     `(%local ,name ,x)))
-
-(define-macro define (name x rest: body)
-  (setenv name :variable)
-  (if (not (empty? body))
-      (let ((args body) (bind* x body))
-        `(%global-function ,name ,args ,@body))
-    `(set ,name ,x)))
 
 (define-macro with-frame (rest: body :scope)
   (let (x (make-id))

@@ -15,29 +15,29 @@
            compile-module
            eval))
 
-(define-local infix
+(define infix
   (table common: (table :+ :- :% :* :/ :< :> :<= :>=)
 	 js: (table =: "===" ~=: "!=" and: "&&" or: "||" cat: "+")
 	 lua: (table =: "==" cat: ".." :~= :and :or)))
 
-(define-local getop (op)
+(define getop (op)
   (let (op1 (or (get infix.common op)
                 (get (get infix target) op)))
     (if (= op1 true) op op1)))
 
-(define-local infix? (form)
+(define infix? (form)
   (and (list? form) (is? (getop (hd form)))))
 
-(define-local compile)
+(define compile)
 
-(define-local compile-args (args)
+(define compile-args (args)
   (let (str "(")
     (across (args arg i)
       (cat! str (compile arg))
       (if (< i (- (length args) 1)) (cat! str ", ")))
     (cat str ")")))
 
-(define-local compile-atom (x)
+(define compile-atom (x)
   (if (and (= x "nil") (= target 'lua)) x
       (= x "nil") "undefined"
       (id-literal? x) (inner x)
@@ -47,26 +47,26 @@
       (number? x) (cat x "")
     (error "Unrecognized atom")))
 
-(define-local compile-body (forms :tail?)
+(define compile-body (forms :tail?)
   (let (str "")
     (across (forms x i)
       (let (t? (and tail? (= i (- (length forms) 1))))
 	(cat! str (compile x :stmt? tail?: t?))))
     str))
 
-(define-local terminator (stmt?)
+(define terminator (stmt?)
   (if (not stmt?) ""
       (= target 'js) ";\n"
     "\n"))
 
-(define-local compile-special (form stmt? tail?)
+(define compile-special (form stmt? tail?)
   (let ((:special :stmt tr: self-tr?) (getenv (hd form)))
     (if (and (not stmt?) stmt)
         (compile `((%function () ,form)) tail?: tail?)
       (let (tr (terminator (and stmt? (not self-tr?))))
         (cat (special (tl form) tail?) tr)))))
 
-(define-local compile-call (form)
+(define compile-call (form)
   (if (empty? form)
       (compile-special '(%array))       ; ()
     (let (f (hd form)
@@ -76,7 +76,7 @@
           (string? f) (cat f1 args)
         (error "Invalid function call")))))
 
-(define-local compile-infix ((op rest: args))
+(define compile-infix ((op rest: args))
   (let (str "("
         op (getop op))
     (across (args arg i)
@@ -87,7 +87,7 @@
                 (cat! str " " op " ")))))
     (cat str ")")))
 
-(define-local compile-branch (condition body first? last? tail?)
+(define compile-branch (condition body first? last? tail?)
   (let (cond1 (compile condition)
         body (with-indent (compile body :stmt? tail?: tail?))
         ind (indentation)
@@ -107,7 +107,7 @@
         (cat " else if (" cond1 ") {\n" body ind "}" tr)
       (cat ind "elseif " cond1 " then\n" body tr))))
 
-(define-local compile-function (args body :name :prefix)
+(define compile-function (args body :name :prefix)
   (let (id (if name (compile name) "")
         prefix (or prefix "")
         args (compile-args args)
@@ -119,7 +119,7 @@
         (cat "function " id args " {\n" body ind "}" tr)
       (cat prefix "function " id args "\n" body ind tr))))
 
-(define-local can-return? (form)
+(define can-return? (form)
   (or (not (special-form? form))
       (not (get (getenv (hd form)) 'stmt))))
 
@@ -141,18 +141,18 @@
 
 (define-global current-module nil)
 
-(define-local module (spec)
+(define module (spec)
   (get modules (module-key spec)))
 
-(define-local module-path (spec)
+(define module-path (spec)
   (cat (module-key spec) ".l"))
 
-(define-local encapsulate (body)
+(define encapsulate (body)
   (let (body (macroexpand body)
         epilog (macroexpand (exported)))
     `((%function () ,@body ,epilog))))
 
-(define-local compile-file (file)
+(define compile-file (file)
   (let (str (read-file file)
         body (read-all (make-stream str))
         form (encapsulate body))
@@ -169,20 +169,20 @@
       (setenv k :export))
     `(do ,@imports)))
 
-(target js: (define-local run global.eval))
+(target js: (define run global.eval))
 
 (target lua:
  (do (define-global %result nil)
-     (define-local run (x)
+     (define run (x)
        (let (f (load (cat (compile '%result) '= x)))
          (if f (do (f) %result)
            (let (|f,e| (load x))
              (if f (f) (error (cat e " in " x)))))))))
 
-(define-local compiler-output)
-(define-local compilation-level)
+(define compiler-output)
+(define compilation-level)
 
-(define-local %compile-module (spec)
+(define %compile-module (spec)
   (let (path (module-path spec)
         mod0 current-module
         env0 environment
@@ -205,31 +205,31 @@
               (cat! compiler-output compiled))
         (run compiled)))))
 
-(define-local open-module (spec)
+(define open-module (spec)
   (let (m (module spec)
         frame (last environment))
     (each (m.export k v)
       (set (get frame k) v))))
 
-(define-local load-module (spec)
+(define load-module (spec)
   (if (or (nil? (module spec))
           (= compilation-level 1))
       (%compile-module spec))
   (open-module spec))
 
-(define-local in-module (spec)
+(define in-module (spec)
   (load-module spec)
   (let (m (module spec))
     (map open-module m.import))
   (set current-module spec))
 
-(define-local compile-module (spec)
+(define compile-module (spec)
   (set compilation-level 0)
   (set compiler-output "")
   (load-module spec)
   compiler-output)
 
-(define-local prologue ()
+(define prologue ()
   (if current-module
       (let (m (module current-module))
         (join (imported current-module)
@@ -237,7 +237,7 @@
                      (splice (imported x)))
                    m.import)))))
 
-(define-local eval (form)
+(define eval (form)
   (let (previous target)
     (set target (language))
     (let (form1 `(do ,@(prologue) ,form)
