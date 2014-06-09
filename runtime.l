@@ -39,7 +39,6 @@
            splice
            map
            map*
-           mapt
            mapo
            keys?
            stash
@@ -228,14 +227,6 @@
         (if (is? x)
             (set (get l k) x))))
     l))
-
-(define mapt (f t)
-  (let (t1 (table))
-    (each (t k v)
-      (let (x (f k v))
-        (if (is? x)
-            (set (get t1 k) x))))
-    t1))
 
 (define mapo (f t)
   (let (o ())
