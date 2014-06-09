@@ -32,7 +32,7 @@
 
 (define compile-args (args)
   (let (str "(")
-    (across (args arg i)
+    (each (arg :i) args
       (cat! str (compile arg))
       (if (< i (- (length args) 1)) (cat! str ", ")))
     (cat str ")")))
@@ -49,7 +49,7 @@
 
 (define compile-body (forms :tail?)
   (let (str "")
-    (across (forms x i)
+    (each (x :i) forms
       (let (t? (and tail? (= i (- (length forms) 1))))
 	(cat! str (compile x :stmt? tail?: t?))))
     str))
@@ -79,7 +79,7 @@
 (define compile-infix ((op rest: args))
   (let (str "("
         op (getop op))
-    (across (args arg i)
+    (each (arg :i) args
       (if (and (= op '-) (= (length args) 1))
           (cat! str op (compile arg))
         (do (cat! str (compile arg))
@@ -160,12 +160,12 @@
 
 (define-macro define-module (spec rest: body)
   (let (imports () (import: imp export: exp) body)
-    (across ((or imp ()) k)
+    (each (k) (or imp ())
       (load-module k)
       (join! imports (imported k)))
     (set (get modules (module-key spec))
          (table import: imp export: (table)))
-    (across ((or exp ()) k)
+    (each (k) (or exp ())
       (setenv k :export))
     `(do ,@imports)))
 
@@ -196,7 +196,7 @@
           toplevel (hd environment))
       (set current-module mod0)
       (set environment env0)
-      (each (toplevel name binding)
+      (each (name binding) toplevel
         (if (and binding.export
                  (= binding.module k))
             (set (get m.export name) binding)))
@@ -208,7 +208,7 @@
 (define open-module (spec)
   (let (m (module spec)
         frame (last environment))
-    (each (m.export k v)
+    (each (k v) m.export
       (set (get frame k) v))))
 
 (define load-module (spec)

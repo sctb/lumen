@@ -25,7 +25,7 @@
 
 (define-special if (form tail?) :stmt :tr
   (let (str "")
-    (across (form condition i)
+    (each (condition :i) form
       (let (last? (>= i (- (length form) 2))
 	    else? (= i (- (length form) 1))
 	    first? (= i 0)
@@ -125,7 +125,7 @@
   (let (open (if (= target 'lua) "{" "[")
 	close (if (= target 'lua) "}" "]")
 	str "")
-    (across (forms x i)
+    (each (x :i) forms
       (cat! str (compile x))
       (if (< i (- (length forms) 1)) (cat! str ", ")))
     (cat open str close)))
@@ -134,7 +134,7 @@
   (let (str "{"
         sep (if (= target 'lua) " = " ": ")
         pairs (pairwise forms))
-    (across (pairs (k v) i)
+    (each ((k v) :i) pairs
       (if (not (string? k))
           (error (cat "Illegal key: " (to-string k))))
       (let (v (compile v)

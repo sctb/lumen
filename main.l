@@ -41,7 +41,7 @@
           output nil
           target1 nil
           expr nil)
-      (across (args arg i)
+      (each (arg :i) args
         (if (or (= arg "-o") (= arg "-t") (= arg "-e"))
             (if (= i (- (length args) 1))
                 (pr "missing argument for" arg)

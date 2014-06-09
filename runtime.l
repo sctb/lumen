@@ -105,7 +105,7 @@
     (if (string? x)
         (substring x from upto)
       (let (l (sublist x from upto))
-        (each (x k v)
+        (each (k v) x
           (set (get l k) v))
         l))))
 
@@ -163,9 +163,9 @@
             (while (< i (+ len (length l2)))
               (set (at l i) (at l2 (- i len)))
               (inc i))))
-      (each (l1 k v)
+      (each (k v) l1
         (set (get l k) v))
-      (each (l2 k v)
+      (each (k v) l2
         (set (get l k) v))
       l)))
 
@@ -176,11 +176,11 @@
 
 (define keep (f l)
   (let (l1 ())
-    (across (l x) (if (f x) (add l1 x)))
+    (each (x) l (if (f x) (add l1 x)))
     l1))
 
 (define find (f l)
-  (across (l x)
+  (each (x) l
     (let (x (f x))
       (if x (return x)))))
 
@@ -211,7 +211,7 @@
 
 (define mapl (f l)
   (let (l1 ())
-    (across (l x)
+    (each (x) l
       (let (x (f x))
         (if (splice? x)
             (join! l1 x.value)
@@ -220,7 +220,7 @@
 
 (define map (f t)
   (let (l (mapl f t))
-    (each (t k v)
+    (each (k v) t
       (let (x (f v))
         (if (splice? x)
             (set (get l k) x.value)
@@ -230,7 +230,7 @@
 
 (define keys? (t)
   (let (k nil)
-    (each (t k1 v)
+    (each (k1 v) t
       (set k k1)
       (break))
     k))
@@ -238,7 +238,7 @@
 (define stash (args)
   (if (keys? args)
       (let (p (%object _stash true))
-        (each (args k v)
+        (each (k v) args
           (set (get p k) v))
         (join args (list p)))
     args))
@@ -249,7 +249,7 @@
     (let (l (last args))
       (if (and (table? l) l._stash)
           (let (args1 (sub args 0 (- (length args) 1)))
-            (each (l k v)
+            (each (k v) l
               (if (~= k '_stash)
                   (set (get args1 k) v)))
             args1)
@@ -259,7 +259,7 @@
   (if (string? k)
       (let (frame (last environment)
             x (or (get frame k) (table)))
-        (each (keys k1 v)
+        (each (k1 v) keys
           (set (get x k1) v))
         (set x.module current-module)
         (set (get frame k) x))))
@@ -269,7 +269,7 @@
 
 (define exclude (t rest: keys)
   (let (t1 (sublist t))
-    (each (t k v)
+    (each (k v) t
       (if (not (get keys k))
           (set (get t1 k) v)))
     t1))
@@ -357,10 +357,10 @@
       (atom? x) (cat x "")
     (let (str "("
           x1 (sub x))
-      (each (x k v)
+      (each (k v) x
         (add x1 (cat k ":"))
         (add x1 v))
-      (across (x1 y i)
+      (each (y :i) x1
         (cat! str (to-string y))
         (if (< i (- (length x1) 1))
             (cat! str " ")))

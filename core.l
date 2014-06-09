@@ -18,14 +18,13 @@
            let-symbol
            fn
            guard
-           across
+           each
            set-of
            language
            target
            join*
            join!
            list*
-           each
            cat!
            inc
            dec
@@ -50,7 +49,7 @@
         l
       (let (id (make-id)
             init ())
-        (each (body k v)
+        (each (k v) body
           (add init `(set (get ,id ',k) ,v)))
         `(let (,id ,l)
            ,@init
@@ -64,7 +63,7 @@
 	renames ()
 	locals ())
     (map (fn ((lh rh))
-           (across ((bind lh rh) (id val))
+           (each ((id val)) (bind lh rh)
              (if (bound? id)
                  (let (rename (make-id))
                    (add renames id)
@@ -116,7 +115,7 @@
 (define-macro with-bindings ((names) rest: body)
   (let (x (make-id))
    `(with-frame :scope
-      (across (,names ,x)
+      (each (,x) ,names
         (setenv ,x :variable))
       ,@body)))
 
@@ -147,19 +146,27 @@
       `(let (,ex (xpcall (fn () ,expr) %message-handler))
          (list ,e ,x)))))
 
-(define-macro across ((l v i start) rest: body)
-  (let (l1 (make-id))
-    (set i (or i (make-id)))
-    (set start (or start 0))
-    `(let (,i ,start ,l1 ,l)
-       (while (< ,i (length ,l1))
-	 (let (,v (at ,l1 ,i))
-	   ,@body
-	   (inc ,i))))))
+(define-macro each (b t rest: body)
+  (let ((k v) b t1 (make-id))
+    `(let (,t1 ,t)
+       ,(if (nil? v)
+            (let (i (if b.i 'i (make-id)))
+              `(let (,i 0)
+                 (while (< ,i (length ,t1))
+                   (let (,k (at ,t1 ,i))
+                     ,@body)
+                   (inc ,i))))
+          `(let (,k nil)
+             (%for (,t1 ,k)
+               (if (target
+                     js: (isNaN (parseInt ,k))
+                     lua: (not (number? ,k)))
+                   (let (,v (get ,t1 ,k))
+                     ,@body))))))))
 
 (define-macro set-of elements
   (let (l ())
-    (across (elements e)
+    (each (e) elements
       (set (get l e) true))
     `(table ,@l)))
 
@@ -181,21 +188,11 @@
   (if (empty? xs)
       ()
     (let (l ())
-      (across (xs x i)
+      (each (x :i) xs
 	(if (= i (- (length xs) 1))
 	    (set l (list 'join (join '(list) l) x))
 	  (add l x)))
       l)))
-
-(define-macro each ((t k v) rest: body)
-  (let (t1 (make-id))
-    `(let (,k nil ,t1 ,t)
-       (%for (,t1 ,k)
-         (if (target
-              js: (isNaN (parseInt ,k))
-              lua: (not (number? ,k)))
-             (let (,v (get ,t1 ,k))
-               ,@body))))))
 
 (define-macro cat! (a rest: bs)
   `(set ,a (cat ,a ,@bs)))

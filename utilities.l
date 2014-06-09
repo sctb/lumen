@@ -94,7 +94,7 @@
 (define stash* (args)
   (if (keys? args)
       (let (l '(%object _stash true))
-        (each (args k v)
+        (each (k v) args
           (add l k)
           (add l v))
         (join args (list l)))
@@ -106,10 +106,10 @@
 	`((,id ,rh) ,@(bind lh id)))
       (atom? lh) `((,lh ,rh))
     (let (bs () r lh.rest)
-      (across (lh x i)
+      (each (x :i) lh
         (join! bs (bind x `(at ,rh ,i))))
       (if r (join! bs (bind r `(sub ,rh ,(length lh)))))
-      (each (lh k v)
+      (each (k v) lh
         (if (= v true) (set v k))
         (if (~= k 'rest)
             (join! bs (bind v `(get ,rh ',k)))))
@@ -126,7 +126,7 @@
         (list args1 `((let ,(list args (rest)) ,@body)))
       (let (bs ()
             r (or args.rest (and (keys? args) (make-id))))
-        (across (args arg)
+        (each (arg) args
           (if (atom? arg) (add args1 arg)
               (or (list? arg) (keys? arg))
               (let (v (make-id))
@@ -179,14 +179,14 @@
 (set quasiquote-list
   (fn (form depth)
     (let (xs (list '(list)))
-      (each (form k v)
+      (each (k v) form
         (let (v (if (quasisplice? v depth)
                     ;; don't splice, just expand
                     (quasiexpand (at v 1))
                   (quasiexpand v depth)))
           (set (get (last xs) k) v)))
       ;; collect sibling lists
-      (across (form x)
+      (each (x) form
         (if (quasisplice? x depth)
             (let (x (quasiexpand (at x 1)))
               (add xs x)
@@ -296,7 +296,7 @@
         m (make-id)
         k (module-key current-module)
         exports ())
-    (each (toplevel n b)
+    (each (n b) toplevel
       (if (and b.variable
                b.export
                (= b.module current-module))
@@ -313,7 +313,7 @@
         (let (m (make-id)
               imports ())
           (add imports `(%local ,m (get nexus ',k)))
-          (each (x b _)
+          (each (b _) x
             (add imports `(%local ,b (get ,m ',b))))
           imports))))
 
@@ -332,7 +332,7 @@
 
 (define mapo (f t)
   (let (o ())
-    (each (t k v)
+    (each (k v) t
       (let (x (f k v))
         (if (is? x)
             (do (add o k)

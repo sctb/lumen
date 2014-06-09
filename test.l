@@ -35,7 +35,7 @@
 
 (define run ()
   (pr (cat (language) ":"))
-  (across (tests test)
+  (each (test) tests
     (let (name (at test 0)
 	  f (at test 1)
 	  result (f))
@@ -212,7 +212,7 @@
     (test= 42 ((fn (x) (+ x 2)) 40))
     (let (a (table :foo :bar)
           b ())
-      (each (a k v)
+      (each (k v) a
         (add b k))
       (test= 2 (length b)))))
 
@@ -263,13 +263,13 @@
   (let (a ""
         b 0
         t (table a: 10 b: 20 c: 30))
-    (each (t k v)
+    (each (k v) t
       (cat! a k)
       (set b (+ b v)))
     (test= 3 (length a))
     (test= 60 b)
     ((fn (k)
-       (each ((table :a :b) k v))
+       (each (k v) (table :a :b))
        (test= 10 k))
      10)))
 
@@ -456,7 +456,7 @@
 
 (define-test each-expr ()
   (let (i 0 t (table a: 10 b: 20))
-    (test= 2 (do (each (t _ _) (set i (+ i 1))) i))))
+    (test= 2 (do (each (_ _) t (set i (+ i 1))) i))))
 
 ;; library
 
