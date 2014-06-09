@@ -292,17 +292,16 @@
     (error "Unsupported module specification")))
 
 (define exported ()
-  (let (toplevel (hd environment)
-        m (make-id)
+  (let (m (make-id)
         k (module-key current-module)
         exports ())
-    (each (n b) toplevel
+    (each (n b) (hd environment)
       (if (and b.variable
                b.export
                (= b.module current-module))
           (add exports `(set (get ,m ',n) ,n))))
     (if (some? exports)
-        `(do (define ,m (table))
+        `(do (%local ,m (table))
              (set (get nexus ',k) ,m)
              ,@exports))))
 
