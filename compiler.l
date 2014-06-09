@@ -197,28 +197,28 @@
       (set current-module mod0)
       (set environment env0)
       (each (name binding) toplevel
-        (if (and binding.export
-                 (= binding.module k))
+        (if (= binding.module k)
             (set (get m.export name) binding)))
       (if (number? compilation-level)
           (do (dec compilation-level)
               (cat! compiler-output compiled))
         (run compiled)))))
 
-(define open-module (spec)
+(define open-module (spec :all)
   (let (m (module spec)
         frame (last environment))
     (each (k v) m.export
-      (set (get frame k) v))))
+      (if (or v.export all)
+          (set (get frame k) v)))))
 
-(define load-module (spec)
+(define load-module (spec :all)
   (if (or (nil? (module spec))
           (= compilation-level 1))
       (%compile-module spec))
-  (open-module spec))
+  (open-module spec all: all))
 
 (define in-module (spec)
-  (load-module spec)
+  (load-module spec :all)
   (let (m (module spec))
     (map open-module m.import))
   (set current-module spec))
