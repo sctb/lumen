@@ -24,6 +24,7 @@
            module-key
            imported
            exported
+           mapo
            quote-environment
            quote-modules
            initial-environment))
@@ -328,6 +329,15 @@
       (exclude (extend b special: b.form) :form)
       (is? b.variable) b
       (is? b.global) b))
+
+(define mapo (f t)
+  (let (o ())
+    (each (t k v)
+      (let (x (f k v))
+        (if (is? x)
+            (do (add o k)
+                (add o x)))))
+    o))
 
 (define quote-frame (t)
   `(%object
