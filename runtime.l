@@ -38,7 +38,6 @@
            replicate
            splice
            map
-           map*
            keys?
            stash
            unstash
@@ -210,7 +209,7 @@
 (define splice? (x)
   (and (table? x) x._splice))
 
-(define map (f l)
+(define map1 (f l)
   (let (l1 ())
     (across (l x)
       (let (x1 (f x))
@@ -219,8 +218,8 @@
             (is? x1) (add l1 x1))))
     l1))
 
-(define map* (f t)
-  (let (l (map f t))
+(define map (f t)
+  (let (l (map1 f t))
     (each (t k v)
       (let (x (f v))
         (if (is? x)

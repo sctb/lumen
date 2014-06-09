@@ -89,7 +89,7 @@
 (define quoted (form)
   (if (string? form) (escape form)
       (atom? form) form
-    `(list ,@(map* quoted form))))
+    `(list ,@(map quoted form))))
 
 (define stash* (args)
   (if (keys? args)
@@ -160,18 +160,18 @@
           (= x '%function)
           (let ((_ args rest: body) form)
             (with-bindings (args)
-              `(%function ,(map* macroexpand args)
+              `(%function ,(map macroexpand args)
                  ,@(macroexpand body))))
           (or (= x '%local-function)
               (= x '%global-function))
           (let ((_ name args rest: body) form)
             (with-bindings (args)
-              `(,x ,name ,(map* macroexpand args)
+              `(,x ,name ,(map macroexpand args)
                  ,@(macroexpand body))))
 	  (macro? x)
           (macroexpand
            (apply (macro-function x) (tl form)))
-        (map* macroexpand form)))))
+        (map macroexpand form)))))
 
 (define quasiexpand)
 (define quasiquote-list)
@@ -221,7 +221,7 @@
         (= (hd form) 'quasiquote)
         ;; start quasiquoting
         (quasiexpand (at form 1) 1)
-      (map* (fn (x) (quasiexpand x depth)) form))))
+      (map (fn (x) (quasiexpand x depth)) form))))
 
 ;; compiler
 
@@ -353,7 +353,7 @@
           export: ,(quote-frame m.export)))
 
 (define quote-modules ()
-  `(table ,@(map* quote-module modules)))
+  `(table ,@(map quote-module modules)))
 
 (define initial-environment ()
   (list (table define-module: (getenv 'define-module))))

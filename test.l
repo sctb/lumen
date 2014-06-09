@@ -496,10 +496,8 @@
 
 (define-test map ()
   (test= '(1) (map (fn (x) x) '(1)))
-  (test= '(2 3 4) (map (fn (x) (+ x 1)) '(1 2 3))))
-
-(define-test map* ()
-  (test= '(2 3 4 a: 5) (map* (fn (x) (+ x 1)) (list 1 2 3 a: 4))))
+  (test= '(2 3 4) (map (fn (x) (+ x 1)) '(1 2 3)))
+  (test= '(2 3 4 a: 5) (map (fn (x) (+ x 1)) (list 1 2 3 a: 4))))
 
 (define-test extend ()
   (test= 2 (get (extend '(a: 1) b: 2) 'b))
