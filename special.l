@@ -21,7 +21,7 @@
            %object))
 
 (define-special do (forms tail?) :stmt :tr
-  (compile-body forms tail?: tail?))
+  (compile-body forms tail: tail?))
 
 (define-special if (form tail?) :stmt :tr
   (let (str "")
@@ -55,10 +55,10 @@
 
 (define-special %try (forms) :stmt :tr
   (let (ind (indentation)
-        body (with-indent (compile-body forms :tail?))
+        body (with-indent (compile-body forms :tail))
         e (make-id)
         handler `(return (%array false ,e))
-        h (with-indent (compile handler :stmt?)))
+        h (with-indent (compile handler :stmt)))
     (cat ind "try {\n" body ind "}\n"
          ind "catch (" e ") {\n" h ind "}\n")))
 
@@ -73,7 +73,7 @@
   (if (= target 'lua)
       (let (x (compile-function args body name: name))
         (cat (indentation) x))
-    (compile `(set ,name (%function ,args ,@body)) :stmt?)))
+    (compile `(set ,name (%function ,args ,@body)) :stmt)))
 
 (define-special %local-function
     ((name args rest: body)) :stmt :tr

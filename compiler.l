@@ -47,11 +47,11 @@
       (number? x) (cat x "")
     (error "Unrecognized atom")))
 
-(define compile-body (forms :tail?)
+(define compile-body (forms :tail)
   (let (str "")
     (each (x :i) forms
-      (let (t? (and tail? (= i (- (length forms) 1))))
-	(cat! str (compile x :stmt? tail?: t?))))
+      (let (t? (and tail (= i (- (length forms) 1))))
+	(cat! str (compile x :stmt tail: t?))))
     str))
 
 (define terminator (stmt?)
@@ -62,7 +62,7 @@
 (define compile-special (form stmt? tail?)
   (let ((:special :stmt tr: self-tr?) (getenv (hd form)))
     (if (and (not stmt?) stmt)
-        (compile `((%function () ,form)) tail?: tail?)
+        (compile `((%function () ,form)) tail: tail?)
       (let (tr (terminator (and stmt? (not self-tr?))))
         (cat (special (tl form) tail?) tr)))))
 
@@ -89,7 +89,7 @@
 
 (define compile-branch (condition body first? last? tail?)
   (let (cond1 (compile condition)
-        body (with-indent (compile body :stmt? tail?: tail?))
+        body (with-indent (compile body :stmt tail: tail?))
         ind (indentation)
         tr (if (and last? (= target 'lua))
                (cat ind "end\n")
@@ -111,7 +111,7 @@
   (let (id (if name (compile name) "")
         prefix (or prefix "")
         args (compile-args args)
-        body (with-indent (compile-body body :tail?))
+        body (with-indent (compile-body body :tail :tail?))
         ind (indentation)
         tr (if (= target 'js) "" "end"))
     (if name (cat! tr "\n"))
@@ -124,14 +124,14 @@
       (not (get (getenv (hd form)) 'stmt))))
 
 (set compile
-  (fn (form :stmt? :tail?)
-    (if (and tail? (can-return? form))
+  (fn (form :stmt :tail)
+    (if (and tail (can-return? form))
         (set form `(return ,form)))
     (if (nil? form) ""
         (special-form? form)
-        (compile-special form stmt? tail?)
-      (let (tr (terminator stmt?)
-            ind (if stmt? (indentation) "")
+        (compile-special form stmt tail)
+      (let (tr (terminator stmt)
+            ind (if stmt (indentation) "")
             form (if (atom? form) (compile-atom form)
                      (infix? form) (compile-infix form)
                    (compile-call form)))
