@@ -11,6 +11,7 @@
            symbol?
            variable?
            bound?
+           toplevel?
            quoted
            stash*
            bind
@@ -71,6 +72,9 @@
       (symbol? x)
       (variable? x)
       (global? x)))
+
+(define toplevel? ()
+  (= (length environment) 1))
 
 ;; expansion
 
