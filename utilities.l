@@ -23,6 +23,7 @@
            valid-id?
            to-id
            module-key
+           module
            imported
            exported
            mapo
@@ -294,6 +295,9 @@
   (if (atom? spec)
       (to-string spec)
     (error "Unsupported module specification")))
+
+(define module (spec)
+  (get modules (module-key spec)))
 
 (define exported ()
   (let (m (make-id)

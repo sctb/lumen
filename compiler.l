@@ -141,9 +141,6 @@
 
 (define* current-module nil)
 
-(define module (spec)
-  (get modules (module-key spec)))
-
 (define module-path (spec)
   (cat (module-key spec) ".l"))
 
