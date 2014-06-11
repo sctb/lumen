@@ -317,11 +317,10 @@
   (let (k (module-key spec)
         x (get nexus k))
     (if (and x (keys? x))
-        (let (m (make-id)
-              imports ())
-          (add imports `(%local ,m (get nexus ',k)))
-          (each (b _) x
-            (add imports `(%local ,b (get ,m ',b))))
+        (let (imports () id (make-id))
+          (add imports `(%local ,id (get nexus ',k)))
+          (each (k _) x
+            (add imports `(%local ,k (get ,id ',k))))
           imports))))
 
 ;; bootstrap
