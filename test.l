@@ -1,7 +1,6 @@
 ;; -*- mode: lisp -*-
 
 (define-module test
-  export: (run)
   import: (runtime
            utilities
            special
