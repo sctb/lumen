@@ -305,7 +305,6 @@
         exports ())
     (each (n b) (hd environment)
       (if (and b.variable
-               b.export
                (= b.module current-module))
           (add exports `(set (get ,m ',n) ,n))))
     (if (some? exports)
@@ -313,13 +312,13 @@
              (set (get nexus ',k) ,m)
              ,@exports))))
 
-(define imported (spec)
+(define imported (spec :all)
   (let (m (make-id)
         k (module-key spec)
         imports ())
     (each (n b) (get (module spec) 'export)
       (if (and b.variable
-               b.export)
+               (or all b.export))
           (add imports `(%local ,n (get ,m ',n)))))
     (if (some? imports)
         `((%local ,m (get nexus ',k))

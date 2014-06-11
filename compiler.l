@@ -216,8 +216,8 @@
 
 (define prologue ()
   (if current-module
-      (let (m (module current-module))
-        (join (imported current-module)
+      (join (imported current-module :all)
+            (let (m (module current-module))
               (map (fn (x)
                      (splice (imported x)))
                    m.import)))))
