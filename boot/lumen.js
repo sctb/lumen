@@ -1019,13 +1019,15 @@
     var m = make_id();
     var k = module_key(spec);
     var imports = [];
-    var _g77 = module(spec).export;
-    var n = undefined;
-    for (n in _g77) {
-      if (isNaN(parseInt(n))) {
-        var b = _g77[n];
-        if ((b.variable && (all || b.export))) {
-          add(imports, join(["%local", n, join(["get", m, join(["quote", n])])]));
+    if (nexus[k]) {
+      var _g77 = module(spec).export;
+      var n = undefined;
+      for (n in _g77) {
+        if (isNaN(parseInt(n))) {
+          var b = _g77[n];
+          if ((b.variable && (all || b.export))) {
+            add(imports, join(["%local", n, join(["get", m, join(["quote", n])])]));
+          }
         }
       }
     }
@@ -2857,10 +2859,10 @@
     }
   }
   function repl() {
-    var step = function (str) {
+    function step(str) {
       rep(str);
       return(write("> "));
-    };
+    }
     write("> ");
     (process.stdin.setEncoding)("utf8");
     return((process.stdin.on)("data", step));

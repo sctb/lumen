@@ -15,14 +15,16 @@
     (if (is? x) (pr x))))
 
 (define repl ()
-  (let (step (fn (str) (rep str) (write "> ")))
-    (write "> ")
-    (target
-     js: (do (process.stdin.setEncoding 'utf8)
-             (process.stdin.on 'data step))
-     lua: (while true
-            (let (str (io.read))
-              (if str (step str) (break)))))))
+  (define step (str)
+    (rep str)
+    (write "> "))
+  (write "> ")
+  (target
+   js: (do (process.stdin.setEncoding 'utf8)
+           (process.stdin.on 'data step))
+   lua: (while true
+          (let (str (io.read))
+            (if str (step str) (break))))))
 
 (define usage ()
   (pr "usage: lumen [options] <module>")

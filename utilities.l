@@ -316,10 +316,11 @@
   (let (m (make-id)
         k (module-key spec)
         imports ())
-    (each (n b) (get (module spec) 'export)
-      (if (and b.variable
-               (or all b.export))
-          (add imports `(%local ,n (get ,m ',n)))))
+    (if (get nexus k)
+        (each (n b) (get (module spec) 'export)
+          (if (and b.variable
+                   (or all b.export))
+              (add imports `(%local ,n (get ,m ',n))))))
     (if (some? imports)
         `((%local ,m (get nexus ',k))
           ,@imports))))
