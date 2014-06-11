@@ -314,14 +314,16 @@
              ,@exports))))
 
 (define imported (spec)
-  (let (k (module-key spec)
-        x (get nexus k))
-    (if (and x (keys? x))
-        (let (imports () id (make-id))
-          (add imports `(%local ,id (get nexus ',k)))
-          (each (k _) x
-            (add imports `(%local ,k (get ,id ',k))))
-          imports))))
+  (let (m (make-id)
+        k (module-key spec)
+        imports ())
+    (each (n b) (get (module spec) 'export)
+      (if (and b.variable
+               b.export)
+          (add imports `(%local ,n (get ,m ',n)))))
+    (if (some? imports)
+        `((%local ,m (get nexus ',k))
+          ,@imports))))
 
 ;; bootstrap
 
