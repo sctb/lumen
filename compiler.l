@@ -8,7 +8,6 @@
            compile-function
            compile-special
            compile
-           define-module
            open-module
            load-module
            in-module
@@ -154,17 +153,6 @@
         body (read-all (make-stream str))
         form (encapsulate body))
     (cat (compile form) ";\n")))
-
-(define-macro define-module (spec rest: body)
-  (let (imports () (import: imp export: exp) body)
-    (each (k) (or imp ())
-      (load-module k)
-      (join! imports (imported k)))
-    (set (get modules (module-key spec))
-         (table import: imp export: (table)))
-    (each (k) (or exp ())
-      (setenv k :export))
-    `(do ,@imports)))
 
 (target js: (define run global.eval))
 

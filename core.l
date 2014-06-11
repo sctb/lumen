@@ -8,6 +8,7 @@
            list
            table
            let
+           define-module
            define-macro
            define-special
            define-symbol
@@ -74,6 +75,17 @@
              (add locals `(%local ,id ,val))))
          (pairwise bindings))
     `(do ,@locals (let-symbol ,renames ,@body))))
+
+(define-macro define-module (spec rest: body)
+  (let (imports () (import: imp export: exp) body)
+    (each (k) (or imp ())
+      (load-module k)
+      (join! imports (imported k)))
+    (set (get modules (module-key spec))
+         (table import: imp export: (table)))
+    (each (k) (or exp ())
+      (setenv k :export))
+    `(do ,@imports)))
 
 (define-macro define-macro (name args rest: body)
   (let (form `(fn ,args ,@body))
