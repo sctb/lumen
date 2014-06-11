@@ -12,6 +12,7 @@
            load-module
            in-module
            compile-module
+           compile-only
            eval))
 
 (define infix
@@ -165,7 +166,7 @@
              (if f (f) (error (cat e " in " x)))))))))
 
 (define compiler-output)
-(define compilation-level)
+(define* compilation-level nil)
 
 (define %compile-module (spec)
   (let (path (module-path spec)
@@ -213,6 +214,10 @@
   (set compiler-output "")
   (load-module spec)
   compiler-output)
+
+(define-macro compile-only (rest: body)
+  (if (number? compilation-level)
+      `(do ,@body)))
 
 (define prologue ()
   (if current-module

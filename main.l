@@ -20,7 +20,8 @@
     (write "> "))
   (write "> ")
   (target
-   js: (process.stdin.on 'data step)
+   js: (do (process.stdin.setEncoding 'utf8)
+           (process.stdin.on 'data step))
    lua: (while true
           (let (str (io.read))
             (if str (step str) (break))))))
@@ -60,4 +61,4 @@
         (do (in-module (or spec 'main))
             (if expr (rep expr) (repl)))))))
 
-(main)
+(compile-only (main))
