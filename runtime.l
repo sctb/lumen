@@ -354,7 +354,7 @@
 (define to-string (x)
   (if (nil? x) "nil"
       (boolean? x) (if x "true" "false")
-      (function? x) "<function>"
+      (function? x) "#<function>"
       (atom? x) (cat x "")
     (let (str "("
           x1 (sub x))
