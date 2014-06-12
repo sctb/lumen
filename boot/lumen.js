@@ -989,7 +989,7 @@
     if (atom63(spec)) {
       return(to_string(spec));
     } else {
-      throw "Unsupported module specification";
+      throw new Error("Unsupported module specification");
     }
   }
   function module(spec) {
@@ -1314,13 +1314,13 @@
         read_char(s);
         break;
       } else {
-        throw ("Expected ) at " + s.pos);
+        throw new Error(("Expected ) at " + s.pos));
       }
     }
     return(l);
   };
   read_table[")"] = function (s) {
-    throw ("Unexpected ) at " + s.pos);
+    throw new Error(("Unexpected ) at " + s.pos));
   };
   read_table["\""] = function (s) {
     read_char(s);
@@ -1336,7 +1336,7 @@
         read_char(s);
         break;
       } else {
-        throw ("Expected \" at " + s.pos);
+        throw new Error(("Expected \" at " + s.pos));
       }
     }
     return((str + "\""));
@@ -1352,7 +1352,7 @@
         read_char(s);
         break;
       } else {
-        throw ("Expected | at " + s.pos);
+        throw new Error(("Expected | at " + s.pos));
       }
     }
     return((str + "|"));
@@ -1537,7 +1537,7 @@
     } else if (number63(x)) {
       return((x + ""));
     } else {
-      throw "Unrecognized atom";
+      throw new Error("Unrecognized atom");
     }
   }
   function compile_body(forms) {
@@ -1587,7 +1587,7 @@
       } else if (string63(f)) {
         return((f1 + args));
       } else {
-        throw "Invalid function call";
+        throw new Error("Invalid function call");
       }
     }
   }
@@ -2598,7 +2598,7 @@
     var lh = _g683[0];
     var rh = _g683[1];
     if (nil63(rh)) {
-      throw "Missing right-hand side in assignment";
+      throw new Error("Missing right-hand side in assignment");
     }
     return((indentation() + compile(lh) + " = " + compile(rh)));
   }}, "%try": {module: "special", special: function (forms) {
@@ -2610,7 +2610,7 @@
       return(_g684);
     })();
     var e = make_id();
-    var handler = join(["return", join(["%array", false, e])]);
+    var handler = join(["return", join(["%array", false, join(["get", e, "\"message\""])])]);
     var h = (function () {
       indent_level = (indent_level + 1);
       var _g685 = compile(handler, {_stash: true, stmt: true});
@@ -2645,7 +2645,7 @@
       var k = _g688[0];
       var v = _g688[1];
       if (!(string63(k))) {
-        throw ("Illegal key: " + to_string(k));
+        throw new Error(("Illegal key: " + to_string(k)));
       }
       var _g689 = compile(v);
       var _g690 = (function () {
@@ -2674,7 +2674,7 @@
     var x = _g691[0];
     var e = (function () {
       if ((target === "js")) {
-        return(("throw " + compile(x)));
+        return(("throw new " + compile(join(["Error", x]))));
       } else {
         return(compile_call(join(["error", x])));
       }
@@ -2854,7 +2854,7 @@
         return([true, eval(read_from_string(str))]);
       }
       catch (_g708) {
-        return([false, _g708]);
+        return([false, _g708.message]);
       }
     })();
     var _g1 = _g705[0];

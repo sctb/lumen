@@ -57,7 +57,7 @@
   (let (ind (indentation)
         body (with-indent (compile-body forms :tail))
         e (make-id)
-        handler `(return (%array false ,e))
+        handler `(return (%array false (get ,e "message")))
         h (with-indent (compile handler :stmt)))
     (cat ind "try {\n" body ind "}\n"
          ind "catch (" e ") {\n" h ind "}\n")))
@@ -88,7 +88,7 @@
 
 (define-special error ((x)) :stmt
   (let (e (if (= target 'js)
-              (cat "throw " (compile x))
+              (cat "throw new " (compile `(Error ,x)))
             (compile-call `(error ,x))))
     (cat (indentation) e)))
 
