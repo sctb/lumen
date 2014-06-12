@@ -1,14 +1,24 @@
 ;; -*- mode: lisp -*-
 
 (define-module main
-  import: (system
-           runtime
-           utilities
-           reader
-           compiler
+  import: (runtime
            special
            core
-           boot))
+           reader
+           compiler))
+
+(define-macro save (rest: specs)
+  (map compile-module specs)
+  nil)
+
+(save system
+      runtime
+      utilities
+      reader
+      compiler
+      special
+      core
+      boot)
 
 (define rep (str)
   (let ((_ x) (guard (eval (read-from-string str))))
@@ -61,4 +71,4 @@
         (do (in-module (or spec 'main))
             (if expr (rep expr) (repl)))))))
 
-(compile-only (main))
+(main)

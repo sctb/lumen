@@ -321,6 +321,7 @@
 (define >= (a b) (>= a b))
 (define <= (a b) (<= a b))
 
+(target js: (define* require require))
 (target js: (define fs (require 'fs)))
 
 (define read-file (path)

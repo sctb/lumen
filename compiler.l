@@ -12,7 +12,6 @@
            load-module
            in-module
            compile-module
-           compile-only
            eval))
 
 (define infix
@@ -165,17 +164,14 @@
            (let (|f,e| (load x))
              (if f (f) (error (cat e " in " x)))))))))
 
-(define compiler-output)
-(define* compiling? false)
-(define* compilation-level nil)
+(define compiling? false)
+(define compiler-output "")
 
 (define %compile-module (spec)
   (let (path (module-path spec)
         mod0 current-module
         env0 environment
         k (module-key spec))
-    (if (number? compilation-level)
-        (inc compilation-level))
     (set current-module spec)
     (set environment (initial-environment))
     (let (compiled (compile-file path)
@@ -186,9 +182,8 @@
       (each (name binding) toplevel
         (if (= binding.module k)
             (set (get m.export name) binding)))
-      (if (number? compilation-level)
-          (do (dec compilation-level)
-              (cat! compiler-output compiled))
+      (if compiling?
+          (cat! compiler-output compiled)
         (run compiled)))))
 
 (define open-module (spec :all)
@@ -199,8 +194,7 @@
           (set (get frame k) v)))))
 
 (define load-module (spec :all)
-  (if (or (nil? (module spec))
-          (= compilation-level 1))
+  (if (nil? (module spec))
       (%compile-module spec))
   (open-module spec all: all))
 
@@ -212,13 +206,8 @@
 
 (define compile-module (spec)
   (set compiling? true)
-  (set compilation-level 0)
-  (set compiler-output "")
-  (load-module spec)
+  (%compile-module spec)
   compiler-output)
-
-(define-macro compile-only (rest: body)
-  (if compiling? `(do ,@body)))
 
 (define prologue ()
   (if current-module
