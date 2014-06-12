@@ -166,6 +166,7 @@
              (if f (f) (error (cat e " in " x)))))))))
 
 (define compiler-output)
+(define* compiling? false)
 (define* compilation-level nil)
 
 (define %compile-module (spec)
@@ -210,14 +211,14 @@
   (set current-module spec))
 
 (define compile-module (spec)
+  (set compiling? true)
   (set compilation-level 0)
   (set compiler-output "")
   (load-module spec)
   compiler-output)
 
 (define-macro compile-only (rest: body)
-  (if (number? compilation-level)
-      `(do ,@body)))
+  (if compiling? `(do ,@body)))
 
 (define prologue ()
   (if current-module
