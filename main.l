@@ -15,6 +15,7 @@
       runtime
       utilities
       reader
+      optimizer
       compiler
       special
       core
