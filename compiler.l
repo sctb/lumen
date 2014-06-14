@@ -110,7 +110,7 @@
   (let (id (if name (compile name) "")
         prefix (or prefix "")
         args (compile-args args)
-        body (with-indent (compile-body body :tail :tail?))
+        body (with-indent (compile-body body :tail))
         ind (indentation)
         tr (if (= target 'js) "" "end"))
     (if name (cat! tr "\n"))
