@@ -1,7 +1,7 @@
 ;; -*- mode: lisp -*-
 
 (define-module compiler
-  import: (runtime utilities special core reader optimizer)
+  import: (runtime utilities special core reader)
   export: (compile-body
            compile-call
            compile-branch
@@ -136,8 +136,8 @@
                    (compile-call form)))
         (cat ind form tr)))))
 
-(define process (form)
-  (optimize (macroexpand form)))
+(define lower (form)
+  (macroexpand form))
 
 ;; modules
 
@@ -147,8 +147,8 @@
   (cat (module-key spec) ".l"))
 
 (define encapsulate (body)
-  (let (body (process body)
-        epilog (process (exported)))
+  (let (body (lower body)
+        epilog (lower (exported)))
     `((%function () ,@body ,epilog))))
 
 (define compile-file (file)
@@ -224,6 +224,6 @@
   (let (previous target)
     (set target (language))
     (let (form1 `(do ,@(prologue) ,form)
-          x (compile (process form1)))
+          x (compile (lower form1)))
       (set target previous)
       (run x))))
