@@ -7,6 +7,7 @@
            macro?
            special?
            special-form?
+           statement?
            symbol-expansion
            symbol?
            variable?
@@ -51,6 +52,9 @@
 
 (define special-form? (form)
   (and (list? form) (special? (hd form))))
+
+(define statement? (k)
+  (and (special? k) (getenv k :stmt)))
 
 (define symbol-expansion (k)
   (getenv k :symbol))

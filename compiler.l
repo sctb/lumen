@@ -115,8 +115,88 @@
                    (compile-call form)))
         (cat ind form tr)))))
 
-(define lower (form)
-  (macroexpand form))
+(define lower)
+
+(define lower-statement (form)
+  (let (hoist ()
+        e (lower form hoist true))
+    (if (and (some? hoist) (is? e))
+        `(do ,@hoist ,e)
+        (is? e) e
+        (> (length hoist) 1) `(do ,@hoist)
+      (hd hoist))))
+
+(define lower-do (args hoist stmt?)
+  (each (x) (sub args 0 (- (length args) 1))
+    (add hoist (lower x hoist stmt?)))
+  (lower (last args) hoist stmt?))
+
+(define lower-if (args hoist stmt?)
+  (let ((cond then else) args)
+    (if stmt?
+        (add hoist
+             `(%if ,(lower cond hoist)
+                   ,(lower then)
+                   ,@(if else (list (lower else)))))
+      (let (e (make-id))
+        (add hoist `(%local ,e))
+        (add hoist
+             `(%if ,(lower cond hoist)
+                   ,(lower `(set ,e ,then))
+                   ,@(if else
+                         (list (lower `(set ,e ,else))))))
+        e))))
+
+(define lower-while (args hoist)
+  (let ((c rest: body) args)
+    (add hoist
+         `(while ,(lower c hoist)
+            ,(lower `(do ,@body))))))
+
+(define lower-for (args hoist)
+  (let ((t k rest: body) args)
+    (add hoist
+         `(%for ,(lower t hoist) ,k
+            ,(lower `(do ,@body))))))
+
+(define lower-function (args)
+  (let ((a rest: body) args)
+    `(%function ,a ,(lower `(do ,@body)))))
+
+(define lower-definition (kind args hoist)
+  (let ((name args rest: body) args)
+    (add hoist `(,kind ,name ,args ,(lower `(do ,@body))))))
+
+(define lower-call (form hoist)
+  (let (form (map (fn (x) (lower x hoist)) form))
+    (if (some? form) form)))
+
+(define lower-special (form hoist)
+  (let (e (lower-call form hoist))
+    (if e (add hoist e))))
+
+(set lower
+  (fn (form hoist stmt?)
+    (if (atom? form) form
+        (empty? form) '(%array)
+        (nil? hoist) (lower-statement form)
+       (let ((x rest: args) form)
+         (if (= x 'do) (lower-do args hoist stmt?)
+             (= x '%if) (lower-if args hoist stmt?)
+             (= x 'while) (lower-while args hoist)
+             (= x '%for) (lower-for args hoist)
+             (= x '%try) `(%try ,(lower `(do ,@args)))
+             (= x '%function) (lower-function args)
+             (or (= x '%local-function)
+                 (= x '%global-function))
+             (lower-definition x args hoist)
+             (statement? x) (lower-special form hoist)
+           (lower-call form hoist))))))
+
+(define* lower lower)
+
+(define process (form)
+  (lower (macroexpand form)))
 
 ;; modules
 
@@ -126,8 +206,8 @@
   (cat (module-key spec) ".l"))
 
 (define encapsulate (body)
-  (let (body (map lower body)
-        epilog (map lower (exported)))
+  (let (body (map process body)
+        epilog (map process (exported)))
     `((%function () ,@body ,@epilog))))
 
 (define compile-file (file)
@@ -195,7 +275,7 @@
 (define eval (form)
   (let (previous target)
     (set target (language))
-    (let (form (lower `(do ,@(prologue) ,form)))
+    (let (form (process `(do ,@(prologue) ,form)))
       (let (compiled (compile form))
         (set target previous)
         (run compiled)))))

@@ -23,15 +23,15 @@
 (define-special do (forms tail?) :stmt :tr
   (compile-body forms tail: tail?))
 
-(define-special %if ((x then else) tail?) :stmt :tr
-  (let (x (compile x)
+(define-special %if ((cond then else) tail?) :stmt :tr
+  (let (cond (compile cond)
         then (with-indent (compile then :stmt tail: tail?))
         else (if else (with-indent (compile else :stmt tail: tail?)))
         ind (indentation)
         str "")
     (if (= target 'js)
-        (cat! str ind "if (" x ") {\n" then ind "}")
-      (cat! str ind "if " x " then\n" then))
+        (cat! str ind "if (" cond ") {\n" then ind "}")
+      (cat! str ind "if " cond " then\n" then))
     (if (and else (= target 'js))
         (cat! str " else {\n" else ind "}")
         else (cat! str ind "else\n" else))
