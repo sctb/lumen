@@ -20,6 +20,7 @@
            macroexpand
            indentation
            with-indent
+           reserved?
            valid-id?
            to-id
            module-key
@@ -255,6 +256,9 @@
           "local" "return" "do" "for" "nil" "then" "else"
           "function" "not" "true" "elseif" "if" "or" "until"))
 
+(define reserved? (x)
+  (get reserved x))
+
 (define numeric? (n)
   (and (> n 47) (< n 58)))
 
@@ -267,7 +271,7 @@
 (define valid-id? (id)
   (if (empty? id) false
       (special? id) false
-      (get reserved id) false
+      (reserved? id) false
     (let (i 0)
       (while (< i (length id))
         (let (n (code id i)

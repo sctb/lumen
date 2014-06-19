@@ -66,6 +66,7 @@
     (map (fn ((lh rh))
            (each ((id val)) (bind lh rh)
              (if (or (bound? id)
+                     (reserved? id)
                      (toplevel?))
                  (let (rename (make-id))
                    (add renames id)
