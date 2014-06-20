@@ -41,7 +41,6 @@
            keys?
            stash
            unstash
-           setenv
            extend
            exclude
            search
@@ -57,7 +56,11 @@
            to-string
            apply
            make-id
-           %message-handler))
+           %message-handler
+           toplevel?
+           module-key
+           module
+           setenv))
 
 (define nil? (x) (= x nil))
 (define is? (x) (not (nil? x)))
@@ -252,15 +255,6 @@
             args1)
         args))))
 
-(define setenv (k rest: keys)
-  (if (string? k)
-      (let (frame (last environment)
-            x (or (get frame k) (table)))
-        (each (k1 v) keys
-          (set (get x k1) v))
-        (set x.module current-module)
-        (set (get frame k) x))))
-
 (define extend (t rest: xs)
   (join t xs))
 
@@ -377,3 +371,25 @@
 (define %message-handler (msg)
   (let (i (search msg ": "))
     (sub msg (+ i 2))))
+
+(define toplevel? ()
+  (= (length environment) 1))
+
+(define module-key (spec)
+  (if (atom? spec)
+      (to-string spec)
+    (error "Unsupported module specification")))
+
+(define module (spec)
+  (get modules (module-key spec)))
+
+(define setenv (k rest: keys)
+  (if (string? k)
+      (let (frame (last environment)
+            x (or (get frame k) (table)))
+        (each (k1 v) keys
+          (set (get x k1) v))
+        (if (toplevel?)
+            (let (m (module current-module))
+              (set (get m.export k) x)))
+        (set (get frame k) x))))

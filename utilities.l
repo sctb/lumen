@@ -23,8 +23,6 @@
            reserved?
            valid-id?
            to-id
-           module-key
-           module
            imported
            exported
            mapo
@@ -74,9 +72,6 @@
       (symbol? x)
       (variable? x)
       (global? x)))
-
-(define toplevel? ()
-  (= (length environment) 1))
 
 ;; expansion
 
@@ -295,21 +290,12 @@
       (inc i))
     id1))
 
-(define module-key (spec)
-  (if (atom? spec)
-      (to-string spec)
-    (error "Unsupported module specification")))
-
-(define module (spec)
-  (get modules (module-key spec)))
-
 (define exported ()
   (let (m (make-id)
         k (module-key current-module)
         exports ())
-    (each (n b) (hd environment)
-      (if (and b.variable
-               (= b.module current-module))
+    (each (n b) (get (module current-module) 'export)
+      (if b.variable
           (add exports `(set (get ,m ',n) ,n))))
     (if (some? exports)
         `(do (%local ,m (table))
@@ -332,7 +318,6 @@
 ;; bootstrap
 
 (define quote-binding (b)
-  (set b (extend b module: `',b.module))
   (if (is? b.symbol)
       (extend b symbol: `',b.symbol)
       (and b.macro b.form)

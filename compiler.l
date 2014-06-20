@@ -152,18 +152,12 @@
 (define %compile-module (spec)
   (let (path (module-path spec)
         mod0 current-module
-        env0 environment
-        k (module-key spec))
+        env0 environment)
     (set current-module spec)
     (set environment (initial-environment))
-    (let (compiled (compile-file path)
-          m (module spec)
-          toplevel (hd environment))
+    (let (compiled (compile-file path))
       (set current-module mod0)
       (set environment env0)
-      (each (name binding) toplevel
-        (if (= binding.module k)
-            (set (get m.export name) binding)))
       (if compiling?
           (cat! compiler-output compiled)
         (run compiled)))))
