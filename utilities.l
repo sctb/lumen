@@ -154,11 +154,7 @@
       (macroexpand (symbol-expansion form))
       (atom? form) form
     (let (x (hd form))
-      (if (= x '%for)
-          (let ((_ (t k) rest: body) form)
-            `(%for (,(macroexpand t) ,(macroexpand k))
-               ,@(macroexpand body)))
-          (= x '%function)
+      (if (= x '%function)
           (let ((_ args rest: body) form)
             (with-bindings (args)
               `(%function ,(map macroexpand args)

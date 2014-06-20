@@ -47,7 +47,7 @@
 	(cat ind "while (" condition ") {\n" body ind "}\n")
       (cat ind "while " condition " do\n" body ind "end\n"))))
 
-(define-special %for (((t k) rest: body)) :stmt :tr
+(define-special %for ((t k rest: body)) :stmt :tr
   (let (t (compile t)
         ind (indentation)
         body (with-indent (compile-body body)))
