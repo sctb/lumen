@@ -1867,14 +1867,12 @@
     return(compiler_output);
   }
   function prologue() {
-    if (current_module) {
-      return(join(imported(current_module, {_stash: true, all: true}), (function () {
-        var m = module(current_module);
-        return(map(function (x) {
-          return(splice(imported(x)));
-        }, m.import));
-      })()));
-    }
+    return(join(imported(current_module, {_stash: true, all: true}), (function () {
+      var m = module(current_module);
+      return(map(function (x) {
+        return(splice(imported(x)));
+      }, m.import));
+    })()));
   }
   function eval(form) {
     var previous = target;

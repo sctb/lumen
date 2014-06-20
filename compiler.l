@@ -186,12 +186,11 @@
   compiler-output)
 
 (define prologue ()
-  (if current-module
-      (join (imported current-module :all)
-            (let (m (module current-module))
-              (map (fn (x)
-                     (splice (imported x)))
-                   m.import)))))
+  (join (imported current-module :all)
+        (let (m (module current-module))
+          (map (fn (x)
+                 (splice (imported x)))
+               m.import))))
 
 (define eval (form)
   (let (previous target)
