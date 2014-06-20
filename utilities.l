@@ -298,9 +298,10 @@
       (if b.variable
           (add exports `(set (get ,m ',n) ,n))))
     (if (some? exports)
-        `(do (%local ,m (table))
-             (set (get nexus ',k) ,m)
-             ,@exports))))
+        `((%local ,m (table))
+          (set (get nexus ',k) ,m)
+          ,@exports)
+      ())))
 
 (define imported (spec :all)
   (let (m (make-id)

@@ -127,8 +127,8 @@
 
 (define encapsulate (body)
   (let (body (lower body)
-        epilog (lower (exported)))
-    `((%function () ,@body ,epilog))))
+        epilog (map lower (exported)))
+    `((%function () ,@body ,@epilog))))
 
 (define compile-file (file)
   (let (str (read-file file)
@@ -195,7 +195,7 @@
 (define eval (form)
   (let (previous target)
     (set target (language))
-    (let (form1 `(do ,@(prologue) ,form)
-          x (compile (lower form1)))
-      (set target previous)
-      (run x))))
+    (let (form (lower `(do ,@(prologue) ,form)))
+      (let (compiled (compile form))
+        (set target previous)
+        (run compiled)))))
