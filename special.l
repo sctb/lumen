@@ -3,7 +3,7 @@
 (define-module special
   import: (runtime utilities special core compiler)
   export: (do
-           if
+           %if
            while
            %for
            %try
@@ -23,19 +23,21 @@
 (define-special do (forms tail?) :stmt :tr
   (compile-body forms tail: tail?))
 
-(define-special if (form tail?) :stmt :tr
-  (let (str "")
-    (each (condition :i) form
-      (let (last? (>= i (- (length form) 2))
-	    else? (= i (- (length form) 1))
-	    first? (= i 0)
-	    body (at form (+ i 1)))
-	(if else?
-	    (do (set body condition)
-		(set condition nil)))
-	(cat! str (compile-branch condition body first? last? tail?)))
-      (inc i))
-    str))
+(define-special %if ((x then else) tail?) :stmt :tr
+  (let (x (compile x)
+        then (with-indent (compile then :stmt tail: tail?))
+        else (if else (with-indent (compile else :stmt tail: tail?)))
+        ind (indentation)
+        str "")
+    (if (= target 'js)
+        (cat! str ind "if (" x ") {\n" then ind "}")
+      (cat! str ind "if " x " then\n" then))
+    (if (and else (= target 'js))
+        (cat! str " else {\n" else ind "}")
+        else (cat! str ind "else\n" else))
+    (if (= target 'lua) 
+        (cat str ind "end\n")
+      (cat str "\n"))))
 
 (define-special while ((condition rest: body)) :stmt :tr
   (let (condition (compile condition)

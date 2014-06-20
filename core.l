@@ -6,6 +6,7 @@
            quasiquote
            at
            list
+           if
            table
            let
            define-module
@@ -55,6 +56,12 @@
         `(let (,id ,l)
            ,@init
            ,id)))))
+
+(define-macro if branches
+  (define step ((a b rest: c))
+    (if (is? b) `((%if ,a ,b ,@(step c)))
+        (is? a) (list a)))
+  (hd (step branches)))
 
 (define-macro table body
   `(%object ,@(mapo (fn (_ x) x) body)))

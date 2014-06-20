@@ -222,8 +222,6 @@
     (test= 10 |a|)
     (test= 20 |b.x|)))
 
-;; special forms
-
 (define-test set ()
   (let (a 42)
     (set a 'bar)
@@ -237,7 +235,18 @@
 (define-test if ()
   (if true
       (test= true true)
-    (test= true false)))
+    (test= true false))
+  (if false (test= true false)
+      false (test= false true)
+    (test= true true))
+  (if false (test= true false)
+      false (test= false true)
+      false (test= false true)
+    (test= true true))
+  (if false (test= true false)
+      true (test= true true)
+      false (test= false true)
+    (test= true true)))
 
 (define-test while ()
   (let (i 0)
@@ -438,7 +447,8 @@
 ;; expressions
 
 (define-test if-expr ()
-  (test= 10 (if true 10 20)))
+  (test= 10 (if true 10 20))
+  (test= 10 (if (if true true) (if true 10) 20)))
 
 (define-test set-expr ()
   (let (a 5)

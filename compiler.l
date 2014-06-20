@@ -4,7 +4,6 @@
   import: (runtime utilities special core reader)
   export: (compile-body
            compile-call
-           compile-branch
            compile-function
            compile-special
            compile
@@ -85,26 +84,6 @@
             (if (< i (- (length args) 1))
                 (cat! str " " op " ")))))
     (cat str ")")))
-
-(define compile-branch (condition body first? last? tail?)
-  (let (cond1 (compile condition)
-        body (with-indent (compile body :stmt tail: tail?))
-        ind (indentation)
-        tr (if (and last? (= target 'lua))
-               (cat ind "end\n")
-               last? "\n"
-             ""))
-    (if (and first? (= target 'js))
-        (cat ind "if (" cond1 ") {\n" body ind "}" tr)
-        first?
-        (cat ind "if " cond1 " then\n" body tr)
-        (and (nil? condition) (= target 'js))
-        (cat " else {\n" body ind "}\n")
-        (nil? condition)
-        (cat ind "else\n" body tr)
-        (= target 'js)
-        (cat " else if (" cond1 ") {\n" body ind "}" tr)
-      (cat ind "elseif " cond1 " then\n" body tr))))
 
 (define compile-function (args body :name :prefix)
   (let (id (if name (compile name) "")
