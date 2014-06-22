@@ -126,7 +126,7 @@
   (cat (module-key spec) ".l"))
 
 (define encapsulate (body)
-  (let (body (lower body)
+  (let (body (map lower body)
         epilog (map lower (exported)))
     `((%function () ,@body ,@epilog))))
 
