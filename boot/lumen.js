@@ -9,7 +9,7 @@
     return(!(nil63(x)));
   }
   function length(x) {
-    return(x.length);
+    return((x.length || 0));
   }
   function none63(x) {
     return((length(x) === 0));
@@ -269,6 +269,9 @@
       }
     }
     return(k);
+  }
+  function empty63(t) {
+    return((none63(t) && !(keys63(t))));
   }
   function stash(args) {
     if (keys63(args)) {
@@ -556,6 +559,7 @@
   _g51.splice = splice;
   _g51.map = map;
   _g51["keys?"] = keys63;
+  _g51["empty?"] = empty63;
   _g51.stash = stash;
   _g51.unstash = unstash;
   _g51.extend = extend;
@@ -631,6 +635,7 @@
   var splice = _g55.splice;
   var map = _g55.map;
   var keys63 = _g55["keys?"];
+  var empty63 = _g55["empty?"];
   var stash = _g55.stash;
   var unstash = _g55.unstash;
   var extend = _g55.extend;
@@ -1226,6 +1231,7 @@
   var splice = _g90.splice;
   var map = _g90.map;
   var keys63 = _g90["keys?"];
+  var empty63 = _g90["empty?"];
   var stash = _g90.stash;
   var unstash = _g90.unstash;
   var extend = _g90.extend;
@@ -1509,6 +1515,7 @@
   var splice = _g102.splice;
   var map = _g102.map;
   var keys63 = _g102["keys?"];
+  var empty63 = _g102["empty?"];
   var stash = _g102.stash;
   var unstash = _g102.unstash;
   var extend = _g102.extend;
@@ -1941,6 +1948,7 @@
   var splice = _g128.splice;
   var map = _g128.map;
   var keys63 = _g128["keys?"];
+  var empty63 = _g128["empty?"];
   var stash = _g128.stash;
   var unstash = _g128.unstash;
   var extend = _g128.extend;
@@ -2049,6 +2057,7 @@
   var splice = _g326.splice;
   var map = _g326.map;
   var keys63 = _g326["keys?"];
+  var empty63 = _g326["empty?"];
   var stash = _g326.stash;
   var unstash = _g326.unstash;
   var extend = _g326.extend;
@@ -2158,6 +2167,7 @@
   var splice = _g606.splice;
   var map = _g606.map;
   var keys63 = _g606["keys?"];
+  var empty63 = _g606["empty?"];
   var stash = _g606.stash;
   var unstash = _g606.unstash;
   var extend = _g606.extend;
@@ -2230,7 +2240,7 @@
     return(quote_environment(initial_environment()));
   }}, "%initial-modules": {macro: function () {
     return(quote_modules());
-  }}, modules: {global: true, export: true}}}, runtime: {import: ["special", "core"], export: {"nil?": {export: true, variable: true}, "is?": {export: true, variable: true}, length: {export: true, variable: true}, "none?": {export: true, variable: true}, "some?": {export: true, variable: true}, hd: {export: true, variable: true}, "string?": {export: true, variable: true}, "number?": {export: true, variable: true}, "boolean?": {export: true, variable: true}, "function?": {export: true, variable: true}, "composite?": {export: true, variable: true}, "atom?": {export: true, variable: true}, "table?": {export: true, variable: true}, "list?": {export: true, variable: true}, substring: {export: true, variable: true}, sublist: {export: true, variable: true}, sub: {export: true, variable: true}, inner: {export: true, variable: true}, tl: {export: true, variable: true}, char: {export: true, variable: true}, code: {export: true, variable: true}, "string-literal?": {export: true, variable: true}, "id-literal?": {export: true, variable: true}, add: {export: true, variable: true}, drop: {export: true, variable: true}, last: {export: true, variable: true}, reverse: {export: true, variable: true}, join: {export: true, variable: true}, reduce: {export: true, variable: true}, keep: {export: true, variable: true}, find: {export: true, variable: true}, pairwise: {export: true, variable: true}, iterate: {export: true, variable: true}, replicate: {export: true, variable: true}, splice: {export: true, variable: true}, map: {export: true, variable: true}, "keys?": {export: true, variable: true}, stash: {export: true, variable: true}, unstash: {export: true, variable: true}, extend: {export: true, variable: true}, exclude: {export: true, variable: true}, search: {export: true, variable: true}, split: {export: true, variable: true}, cat: {export: true, variable: true}, "+": {export: true, variable: true}, "-": {export: true, variable: true}, "*": {export: true, variable: true}, "/": {export: true, variable: true}, "%": {export: true, variable: true}, ">": {export: true, variable: true}, "<": {export: true, variable: true}, "=": {export: true, variable: true}, ">=": {export: true, variable: true}, "<=": {export: true, variable: true}, "read-file": {export: true, variable: true}, "write-file": {export: true, variable: true}, write: {export: true, variable: true}, exit: {export: true, variable: true}, "parse-number": {export: true, variable: true}, "to-string": {export: true, variable: true}, apply: {export: true, variable: true}, "make-id": {export: true, variable: true}, "%message-handler": {export: true, variable: true}, "toplevel?": {export: true, variable: true}, "module-key": {export: true, variable: true}, module: {export: true, variable: true}, setenv: {export: true, variable: true}, type: {variable: true}, "splice?": {variable: true}, mapl: {variable: true}, require: {global: true, export: true}, fs: {variable: true}, print: {global: true, export: true}, "id-count": {variable: true}}}, optimizer: {import: ["runtime", "special", "core"], export: {"define-optimization": {}, optimize: {export: true, variable: true}, optimizations: {variable: true}}}, main: {import: ["runtime", "special", "core", "reader", "compiler"], export: {save: {macro: function () {
+  }}, modules: {global: true, export: true}}}, runtime: {import: ["special", "core"], export: {"nil?": {export: true, variable: true}, "is?": {export: true, variable: true}, length: {export: true, variable: true}, "none?": {export: true, variable: true}, "some?": {export: true, variable: true}, hd: {export: true, variable: true}, "string?": {export: true, variable: true}, "number?": {export: true, variable: true}, "boolean?": {export: true, variable: true}, "function?": {export: true, variable: true}, "composite?": {export: true, variable: true}, "atom?": {export: true, variable: true}, "table?": {export: true, variable: true}, "list?": {export: true, variable: true}, substring: {export: true, variable: true}, sublist: {export: true, variable: true}, sub: {export: true, variable: true}, inner: {export: true, variable: true}, tl: {export: true, variable: true}, char: {export: true, variable: true}, code: {export: true, variable: true}, "string-literal?": {export: true, variable: true}, "id-literal?": {export: true, variable: true}, add: {export: true, variable: true}, drop: {export: true, variable: true}, last: {export: true, variable: true}, reverse: {export: true, variable: true}, join: {export: true, variable: true}, reduce: {export: true, variable: true}, keep: {export: true, variable: true}, find: {export: true, variable: true}, pairwise: {export: true, variable: true}, iterate: {export: true, variable: true}, replicate: {export: true, variable: true}, splice: {export: true, variable: true}, map: {export: true, variable: true}, "keys?": {export: true, variable: true}, "empty?": {export: true, variable: true}, stash: {export: true, variable: true}, unstash: {export: true, variable: true}, extend: {export: true, variable: true}, exclude: {export: true, variable: true}, search: {export: true, variable: true}, split: {export: true, variable: true}, cat: {export: true, variable: true}, "+": {export: true, variable: true}, "-": {export: true, variable: true}, "*": {export: true, variable: true}, "/": {export: true, variable: true}, "%": {export: true, variable: true}, ">": {export: true, variable: true}, "<": {export: true, variable: true}, "=": {export: true, variable: true}, ">=": {export: true, variable: true}, "<=": {export: true, variable: true}, "read-file": {export: true, variable: true}, "write-file": {export: true, variable: true}, write: {export: true, variable: true}, exit: {export: true, variable: true}, "parse-number": {export: true, variable: true}, "to-string": {export: true, variable: true}, apply: {export: true, variable: true}, "make-id": {export: true, variable: true}, "%message-handler": {export: true, variable: true}, "toplevel?": {export: true, variable: true}, "module-key": {export: true, variable: true}, module: {export: true, variable: true}, setenv: {export: true, variable: true}, type: {variable: true}, "splice?": {variable: true}, mapl: {variable: true}, require: {global: true, export: true}, fs: {variable: true}, print: {global: true, export: true}, "id-count": {variable: true}}}, optimizer: {import: ["runtime", "special", "core"], export: {"define-optimization": {}, optimize: {export: true, variable: true}, optimizations: {variable: true}}}, main: {import: ["runtime", "special", "core", "reader", "compiler"], export: {save: {macro: function () {
     var specs = unstash(sublist(arguments, 0));
     var _g623 = sub(specs, 0);
     map(compile_module, _g623);
@@ -2815,90 +2825,91 @@
 })();
 (function () {
   var _g2 = nexus.runtime;
-  var _60 = _g2["<"];
-  var list63 = _g2["list?"];
-  var sublist = _g2.sublist;
-  var make_id = _g2["make-id"];
-  var _62 = _g2[">"];
-  var sub = _g2.sub;
-  var _ = _g2["-"];
-  var _42 = _g2["*"];
-  var _43 = _g2["+"];
-  var _47 = _g2["/"];
-  var _37 = _g2["%"];
-  var apply = _g2.apply;
-  var substring = _g2.substring;
-  var read_file = _g2["read-file"];
-  var tl = _g2.tl;
-  var _6261 = _g2[">="];
-  var _6061 = _g2["<="];
-  var composite63 = _g2["composite?"];
-  var split = _g2.split;
-  var to_string = _g2["to-string"];
   var nil63 = _g2["nil?"];
-  var some63 = _g2["some?"];
-  var char = _g2.char;
-  var setenv = _g2.setenv;
-  var last = _g2.last;
-  var find = _g2.find;
-  var add = _g2.add;
   var is63 = _g2["is?"];
-  var write_file = _g2["write-file"];
   var length = _g2.length;
-  var splice = _g2.splice;
-  var map = _g2.map;
-  var reduce = _g2.reduce;
+  var none63 = _g2["none?"];
+  var some63 = _g2["some?"];
+  var hd = _g2.hd;
   var string63 = _g2["string?"];
-  var reverse = _g2.reverse;
-  var code = _g2.code;
-  var unstash = _g2.unstash;
-  var exclude = _g2.exclude;
-  var exit = _g2.exit;
-  var write = _g2.write;
+  var number63 = _g2["number?"];
+  var boolean63 = _g2["boolean?"];
+  var function63 = _g2["function?"];
+  var composite63 = _g2["composite?"];
   var atom63 = _g2["atom?"];
   var table63 = _g2["table?"];
+  var list63 = _g2["list?"];
+  var substring = _g2.substring;
+  var sublist = _g2.sublist;
+  var sub = _g2.sub;
   var inner = _g2.inner;
-  var extend = _g2.extend;
-  var module_key = _g2["module-key"];
-  var id_literal63 = _g2["id-literal?"];
-  var iterate = _g2.iterate;
-  var toplevel63 = _g2["toplevel?"];
-  var _37message_handler = _g2["%message-handler"];
-  var number63 = _g2["number?"];
-  var join = _g2.join;
-  var pairwise = _g2.pairwise;
-  var cat = _g2.cat;
+  var tl = _g2.tl;
+  var char = _g2.char;
+  var code = _g2.code;
   var string_literal63 = _g2["string-literal?"];
-  var parse_number = _g2["parse-number"];
+  var id_literal63 = _g2["id-literal?"];
+  var add = _g2.add;
   var drop = _g2.drop;
-  var empty63 = _g2["empty?"];
-  var search = _g2.search;
-  var replicate = _g2.replicate;
+  var last = _g2.last;
+  var reverse = _g2.reverse;
+  var join = _g2.join;
+  var reduce = _g2.reduce;
   var keep = _g2.keep;
-  var _61 = _g2["="];
-  var boolean63 = _g2["boolean?"];
-  var module = _g2.module;
-  var stash = _g2.stash;
+  var find = _g2.find;
+  var pairwise = _g2.pairwise;
+  var iterate = _g2.iterate;
+  var replicate = _g2.replicate;
+  var splice = _g2.splice;
+  var map = _g2.map;
   var keys63 = _g2["keys?"];
-  var function63 = _g2["function?"];
-  var hd = _g2.hd;
+  var empty63 = _g2["empty?"];
+  var stash = _g2.stash;
+  var unstash = _g2.unstash;
+  var extend = _g2.extend;
+  var exclude = _g2.exclude;
+  var search = _g2.search;
+  var split = _g2.split;
+  var cat = _g2.cat;
+  var _43 = _g2["+"];
+  var _ = _g2["-"];
+  var _42 = _g2["*"];
+  var _47 = _g2["/"];
+  var _37 = _g2["%"];
+  var _62 = _g2[">"];
+  var _60 = _g2["<"];
+  var _61 = _g2["="];
+  var _6261 = _g2[">="];
+  var _6061 = _g2["<="];
+  var read_file = _g2["read-file"];
+  var write_file = _g2["write-file"];
+  var write = _g2.write;
+  var exit = _g2.exit;
+  var parse_number = _g2["parse-number"];
+  var to_string = _g2["to-string"];
+  var apply = _g2.apply;
+  var make_id = _g2["make-id"];
+  var _37message_handler = _g2["%message-handler"];
+  var toplevel63 = _g2["toplevel?"];
+  var module_key = _g2["module-key"];
+  var module = _g2.module;
+  var setenv = _g2.setenv;
   var _g5 = nexus.reader;
-  var read_table = _g5["read-table"];
-  var read_all = _g5["read-all"];
   var make_stream = _g5["make-stream"];
+  var read_table = _g5["read-table"];
   var read = _g5.read;
+  var read_all = _g5["read-all"];
   var read_from_string = _g5["read-from-string"];
   var _g6 = nexus.compiler;
   var compile_body = _g6["compile-body"];
-  var compile_special = _g6["compile-special"];
-  var load_module = _g6["load-module"];
-  var compile_module = _g6["compile-module"];
-  var in_module = _g6["in-module"];
   var compile_call = _g6["compile-call"];
   var compile_function = _g6["compile-function"];
-  var eval = _g6.eval;
-  var open_module = _g6["open-module"];
+  var compile_special = _g6["compile-special"];
   var compile = _g6.compile;
+  var open_module = _g6["open-module"];
+  var load_module = _g6["load-module"];
+  var in_module = _g6["in-module"];
+  var compile_module = _g6["compile-module"];
+  var eval = _g6.eval;
   function rep(str) {
     var _g711 = (function () {
       try {

@@ -287,6 +287,13 @@
   (test= 10 (get (table a: 10) 'a))
   (test= true (get (table :a) 'a)))
 
+(define-test empty ()
+  (test= true (empty? ()))
+  (test= true (empty? (table)))
+  (test= false (empty? '(1)))
+  (test= false (empty? '(:a)))
+  (test= false (empty? (table :a))))
+
 (define-test get-set ()
   (let (t (table))
     (set (get t 'foo) 'bar)

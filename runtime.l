@@ -39,6 +39,7 @@
            splice
            map
            keys?
+           empty?
            stash
            unstash
            extend
@@ -66,7 +67,7 @@
 (define is? (x) (not (nil? x)))
 
 (define length (x)
-  (target js: x.length lua: |#x|))
+  (target js: (or x.length 0) lua: |#x|))
 
 (define none? (x)
   (= (length x) 0))
@@ -234,6 +235,9 @@
       (set k k1)
       (break))
     k))
+
+(define empty? (t)
+  (and (none? t) (not (keys? t))))
 
 (define stash (args)
   (if (keys? args)
