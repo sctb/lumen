@@ -298,21 +298,21 @@
     (each (x) t
       (inc i)
       (test= true (number? x)))
-    (test= i 3)
+    (test= 3 i)
     (each (k v) t
       (inc i)
       (test= true (string? k))
       (test= true (boolean? v)))
-    (test= i 5)
+    (test= 5 i)
     (each (x) t
       (if (= x 2) (break) (inc i)))
-    (test= i 6)
+    (test= 6 i)
     (let (a (each (_) t (inc i)))
       (test= a nil)
-      (test= i 9))
+      (test= 9 i))
     (let (b (each (_ _) t (inc i)))
       (test= b nil)
-      (test= i 11))))
+      (test= 11 i))))
 
 (define-test fn ()
   (let (f (fn (n) (+ n 10)))
