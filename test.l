@@ -292,7 +292,8 @@
   (test= true (empty? (table)))
   (test= false (empty? '(1)))
   (test= false (empty? '(:a)))
-  (test= false (empty? (table :a))))
+  (test= false (empty? (table :a)))
+  (test= false (empty? '(b: false))))
 
 (define-test get-set ()
   (let (t (table))

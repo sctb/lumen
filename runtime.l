@@ -230,11 +230,11 @@
     l))
 
 (define keys? (t)
-  (let (k nil)
-    (each (k1 v) t
-      (set k k1)
+  (let (k? false)
+    (each (k v) t
+      (set k? true)
       (break))
-    k))
+    k?))
 
 (define empty? (t)
   (and (none? t) (not (keys? t))))

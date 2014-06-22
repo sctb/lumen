@@ -36,7 +36,8 @@
                       (get e k))
                     (reverse environment)))
         (if (table? b)
-            (let (k (keys? keys))
+            (let (k nil)
+              (each (x _) keys (set k x))
               (if k (get b k) b))))))
 
 (define macro-function (k)
