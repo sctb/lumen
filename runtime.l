@@ -5,7 +5,7 @@
   export: (nil?
            is?
            length
-           empty?
+           none?
            some?
            hd
            string?
@@ -68,7 +68,7 @@
 (define length (x)
   (target js: x.length lua: |#x|))
 
-(define empty? (x)
+(define none? (x)
   (= (length x) 0))
 
 (define some? (x)
@@ -170,7 +170,7 @@
       l)))
 
 (define reduce (f x)
-  (if (empty? x) x
+  (if (none? x) x
       (= (length x) 1) (hd x)
     (f (hd x) (reduce f (tl x)))))
 
@@ -244,7 +244,7 @@
     args))
 
 (define unstash (args)
-  (if (empty? args)
+  (if (none? args)
       ()
     (let (l (last args))
       (if (and (table? l) l._stash)
@@ -288,7 +288,7 @@
             strs))))
 
 (define cat (rest: xs)
-  (if (empty? xs) ""
+  (if (none? xs) ""
     (reduce (fn (a b) (cat a b)) xs)))
 
 (define + (rest: xs)

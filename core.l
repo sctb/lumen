@@ -111,7 +111,7 @@
 
 (define-macro define* (name x rest: body)
   (setenv name :global :export)
-  (if (not (empty? body))
+  (if (some? body)
       (let ((args body) (bind* x body))
         `(%global-function ,name ,args ,@body))
       (= target 'js)
@@ -120,7 +120,7 @@
 
 (define-macro define (name x rest: body)
   (setenv name :variable)
-  (if (not (empty? body))
+  (if (some? body)
       (let ((args body) (bind* x body))
         `(%local-function ,name ,args ,@body))
     `(%local ,name ,x)))

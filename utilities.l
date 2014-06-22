@@ -136,7 +136,7 @@
         (if r (join! bs (list r (rest))))
         (if (keys? args)
             (join! bs (list (sub args (length args)) r)))
-        (if (empty? bs)
+        (if (none? bs)
             (list args1 body)
           (list args1 `((let ,bs ,@body))))))))
 
@@ -260,7 +260,7 @@
       (= n 95)))               ; _
 
 (define valid-id? (id)
-  (if (empty? id) false
+  (if (none? id) false
       (special? id) false
       (reserved? id) false
     (let (i 0)

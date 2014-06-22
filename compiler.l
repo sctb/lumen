@@ -65,7 +65,7 @@
         (cat (special (tl form) tail?) tr)))))
 
 (define compile-call (form)
-  (if (empty? form)
+  (if (none? form)
       (compile-special '(%array))       ; ()
     (let (f (hd form)
           f1 (compile f)
