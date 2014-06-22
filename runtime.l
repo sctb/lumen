@@ -138,7 +138,7 @@
   (at l (- (length l) 1)))
 
 (define reverse (l)
-  (let (l1 ()
+  (let (l1 (sub l (length l))
         i (- (length l) 1))
     (while (>= i 0)
       (add l1 (at l i))

@@ -26,7 +26,6 @@
            target
            join*
            join!
-           list*
            cat!
            inc
            dec
@@ -198,22 +197,10 @@
   (get clauses target))
 
 (define-macro join* xs
-  (if (= (length xs) 1)
-      `(join ,@xs)
-    (reduce (fn (a b) (list 'join a b)) xs)))
+  (reduce (fn (a b) (list 'join a b)) xs))
 
 (define-macro join! (a rest: bs)
   `(set ,a (join* ,a ,@bs)))
-
-(define-macro list* xs
-  (if (empty? xs)
-      ()
-    (let (l ())
-      (each (x :i) xs
-	(if (= i (- (length xs) 1))
-	    (set l (list 'join (join '(list) l) x))
-	  (add l x)))
-      l)))
 
 (define-macro cat! (a rest: bs)
   `(set ,a (cat ,a ,@bs)))
