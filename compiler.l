@@ -86,8 +86,8 @@
       (cat prefix "function " id args "\n" body ind tr))))
 
 (define can-return? (form)
-  (or (not (special-form? form))
-      (not (get (getenv (hd form)) 'stmt))))
+  (or (atom? form)
+      (not (statement? (hd form)))))
 
 (set compile
   (fn (form :stmt :tail)
