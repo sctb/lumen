@@ -1701,12 +1701,8 @@ end)();
     local special = _g123.special
     local stmt = _g123.stmt
     local self_tr63 = _g123.tr
-    if ((not stmt63) and stmt) then
-      return(compile({{"%function", {}, form}}, {_stash = true, tail = tail63}))
-    else
-      local tr = terminator((stmt63 and (not self_tr63)))
-      return((special(tl(form), tail63) .. tr))
-    end
+    local tr = terminator((stmt63 and (not self_tr63)))
+    return((special(tl(form), tail63) .. tr))
   end
   local function compile_call(form)
     if none63(form) then
@@ -2052,7 +2048,7 @@ end)();
     local previous = target
     target = "lua"
     local _g151 = process(join({"do"}, join(prologue(), {form})))
-    local compiled = compile(_g151)
+    local compiled = compile({{"%function", {}, _g151}})
     target = previous
     return(run(compiled))
   end
@@ -2429,14 +2425,18 @@ end)();
   local compile_module = _g654["compile-module"]
   local eval = _g654.eval
   local lower = _g654.lower
-  modules = {optimizer = {import = {"runtime", "special", "core"}, export = {optimizations = {variable = true}, optimize = {variable = true, export = true}, ["define-optimization"] = {}}}, main = {import = {"runtime", "special", "core", "reader", "compiler"}, export = {save = {macro = function (...)
+  modules = {main = {import = {"runtime", "special", "core", "reader", "compiler"}, export = {save = {macro = function (...)
     local specs = unstash({...})
     local _g667 = sub(specs, 0)
     map(compile_module, _g667)
     return(nil)
-  end}}}, lib = {import = {"core", "special"}, export = {}}, runtime = {import = {"special", "core"}, export = {["nil?"] = {export = true, variable = true}, ["is?"] = {export = true, variable = true}, length = {export = true, variable = true}, ["none?"] = {export = true, variable = true}, ["some?"] = {export = true, variable = true}, hd = {export = true, variable = true}, ["string?"] = {export = true, variable = true}, ["number?"] = {export = true, variable = true}, ["boolean?"] = {export = true, variable = true}, ["function?"] = {export = true, variable = true}, ["composite?"] = {export = true, variable = true}, ["atom?"] = {export = true, variable = true}, ["table?"] = {export = true, variable = true}, ["list?"] = {export = true, variable = true}, substring = {export = true, variable = true}, sublist = {export = true, variable = true}, sub = {export = true, variable = true}, inner = {export = true, variable = true}, tl = {export = true, variable = true}, char = {export = true, variable = true}, code = {export = true, variable = true}, ["string-literal?"] = {export = true, variable = true}, ["id-literal?"] = {export = true, variable = true}, add = {export = true, variable = true}, drop = {export = true, variable = true}, last = {export = true, variable = true}, reverse = {export = true, variable = true}, join = {export = true, variable = true}, reduce = {export = true, variable = true}, keep = {export = true, variable = true}, find = {export = true, variable = true}, pairwise = {export = true, variable = true}, iterate = {export = true, variable = true}, replicate = {export = true, variable = true}, splice = {export = true, variable = true}, map = {export = true, variable = true}, ["keys?"] = {export = true, variable = true}, ["empty?"] = {export = true, variable = true}, stash = {export = true, variable = true}, unstash = {export = true, variable = true}, extend = {export = true, variable = true}, exclude = {export = true, variable = true}, search = {export = true, variable = true}, split = {export = true, variable = true}, cat = {export = true, variable = true}, ["+"] = {export = true, variable = true}, ["-"] = {export = true, variable = true}, ["*"] = {export = true, variable = true}, ["/"] = {export = true, variable = true}, ["%"] = {export = true, variable = true}, [">"] = {export = true, variable = true}, ["<"] = {export = true, variable = true}, ["="] = {export = true, variable = true}, [">="] = {export = true, variable = true}, ["<="] = {export = true, variable = true}, ["read-file"] = {export = true, variable = true}, ["write-file"] = {export = true, variable = true}, write = {export = true, variable = true}, exit = {export = true, variable = true}, ["parse-number"] = {export = true, variable = true}, ["to-string"] = {export = true, variable = true}, apply = {export = true, variable = true}, ["make-id"] = {export = true, variable = true}, ["%message-handler"] = {export = true, variable = true}, ["toplevel?"] = {export = true, variable = true}, ["module-key"] = {export = true, variable = true}, module = {export = true, variable = true}, setenv = {export = true, variable = true}, ["splice?"] = {variable = true}, mapl = {variable = true}, ["id-count"] = {variable = true}}}, special = {import = {"runtime", "utilities", "special", "core", "compiler"}, export = {["do"] = {stmt = true, special = function (forms, tail63)
+  end}}}, system = {import = {"special", "core"}, export = {nexus = {global = true, export = true}}}, boot = {import = {"runtime", "utilities", "special", "core", "compiler"}, export = {["%initial-environment"] = {macro = function ()
+    return(quote_environment(initial_environment()))
+  end}, ["%initial-modules"] = {macro = function ()
+    return(quote_modules())
+  end}, modules = {global = true, export = true}}}, special = {import = {"runtime", "utilities", "special", "core", "compiler"}, export = {["do"] = {special = function (forms, tail63)
     return(compile_body(forms, {_stash = true, tail = tail63}))
-  end, tr = true, export = true}, ["%if"] = {stmt = true, special = function (_g668, tail63)
+  end, tr = true, stmt = true, export = true}, ["%if"] = {special = function (_g668, tail63)
     local cond = _g668[1]
     local _g669 = _g668[2]
     local _g670 = _g668[3]
@@ -2472,7 +2472,7 @@ end)();
     else
       return((str .. "\n"))
     end
-  end, tr = true, export = true}, ["while"] = {stmt = true, special = function (_g676)
+  end, tr = true, stmt = true, export = true}, ["while"] = {special = function (_g676)
     local condition = _g676[1]
     local body = sub(_g676, 1)
     local _g677 = compile(condition)
@@ -2486,7 +2486,7 @@ end)();
     else
       return((ind .. "while " .. _g677 .. " do\n" .. _g678 .. ind .. "end\n"))
     end
-  end, tr = true, export = true}, ["%for"] = {stmt = true, special = function (_g680)
+  end, tr = true, stmt = true, export = true}, ["%for"] = {special = function (_g680)
     local t = _g680[1]
     local k = _g680[2]
     local body = sub(_g680, 2)
@@ -2501,7 +2501,7 @@ end)();
     else
       return((ind .. "for (" .. k .. " in " .. _g681 .. ") {\n" .. _g682 .. ind .. "}\n"))
     end
-  end, tr = true, export = true}, ["%try"] = {stmt = true, special = function (forms)
+  end, tr = true, stmt = true, export = true}, ["%try"] = {special = function (forms)
     local ind = indentation()
     indent_level = (indent_level + 1)
     local _g684 = compile_body(forms, {_stash = true, tail = true})
@@ -2514,13 +2514,13 @@ end)();
     indent_level = (indent_level - 1)
     local h = _g685
     return((ind .. "try {\n" .. body .. ind .. "}\n" .. ind .. "catch (" .. e .. ") {\n" .. h .. ind .. "}\n"))
-  end, tr = true, export = true}, ["break"] = {special = function (_g153)
+  end, tr = true, stmt = true, export = true}, ["break"] = {special = function (_g153)
     return((indentation() .. "break"))
-  end, stmt = true, export = true}, ["%function"] = {export = true, special = function (_g686)
+  end, stmt = true, export = true}, ["%function"] = {special = function (_g686)
     local args = _g686[1]
     local body = sub(_g686, 1)
     return(compile_function(args, body))
-  end}, ["%global-function"] = {stmt = true, special = function (_g687)
+  end, export = true}, ["%global-function"] = {special = function (_g687)
     local name = _g687[1]
     local args = _g687[2]
     local body = sub(_g687, 2)
@@ -2530,13 +2530,13 @@ end)();
     else
       return(compile({"set", name, join({"%function", args}, body)}, {_stash = true, stmt = true}))
     end
-  end, tr = true, export = true}, ["%local-function"] = {stmt = true, special = function (_g688)
+  end, tr = true, stmt = true, export = true}, ["%local-function"] = {special = function (_g688)
     local name = _g688[1]
     local args = _g688[2]
     local body = sub(_g688, 2)
     local x = compile_function(args, body, {_stash = true, name = name, prefix = "local "})
     return((indentation() .. x))
-  end, tr = true, export = true}, ["return"] = {special = function (_g689)
+  end, tr = true, stmt = true, export = true}, ["return"] = {special = function (_g689)
     local x = _g689[1]
     local _g752
     if nil63(x) then
@@ -2589,7 +2589,7 @@ end)();
     end
     local _g695 = compile(_g756)
     return((indentation() .. _g694 .. " = " .. _g695))
-  end, stmt = true, export = true}, ["get"] = {export = true, special = function (_g696)
+  end, stmt = true, export = true}, ["get"] = {special = function (_g696)
     local t = _g696[1]
     local k = _g696[2]
     local _g697 = compile(t)
@@ -2602,7 +2602,7 @@ end)();
     else
       return((_g697 .. "[" .. k1 .. "]"))
     end
-  end}, ["not"] = {export = true, special = function (_g698)
+  end, export = true}, ["not"] = {special = function (_g698)
     local x = _g698[1]
     local _g699 = compile(x)
     local _g757
@@ -2613,7 +2613,7 @@ end)();
     end
     local open = _g757
     return((open .. _g699 .. ")"))
-  end}, ["%array"] = {export = true, special = function (forms)
+  end, export = true}, ["%array"] = {special = function (forms)
     local _g758
     if (target == "lua") then
       _g758 = "{"
@@ -2640,7 +2640,7 @@ end)();
       i = (i + 1)
     end
     return((open .. str .. close))
-  end}, ["%object"] = {export = true, special = function (forms)
+  end, export = true}, ["%object"] = {special = function (forms)
     local str = "{"
     local _g760
     if (target == "lua") then
@@ -2692,24 +2692,14 @@ end)();
       i = (i + 1)
     end
     return((str .. "}"))
-  end}}}, boot = {import = {"runtime", "utilities", "special", "core", "compiler"}, export = {["%initial-environment"] = {macro = function ()
-    return(quote_environment(initial_environment()))
-  end}, ["%initial-modules"] = {macro = function ()
-    return(quote_modules())
-  end}, modules = {global = true, export = true}}}, reader = {import = {"runtime", "special", "core"}, export = {["make-stream"] = {export = true, variable = true}, ["read-table"] = {export = true, variable = true}, ["define-reader"] = {export = true, macro = function (_g705, ...)
-    local char = _g705[1]
-    local stream = _g705[2]
-    local body = unstash({...})
-    local _g706 = sub(body, 0)
-    return({"set", {"get", "read-table", char}, join({"fn", {stream}}, _g706)})
-  end}, read = {export = true, variable = true}, ["read-all"] = {export = true, variable = true}, ["read-from-string"] = {export = true, variable = true}, delimiters = {variable = true}, whitespace = {variable = true}, ["peek-char"] = {variable = true}, ["read-char"] = {variable = true}, ["skip-non-code"] = {variable = true}, eof = {variable = true}, ["key?"] = {variable = true}, ["flag?"] = {variable = true}}}, utilities = {import = {"runtime", "special", "core"}, export = {getenv = {export = true, variable = true}, ["macro-function"] = {export = true, variable = true}, ["macro?"] = {export = true, variable = true}, ["special?"] = {export = true, variable = true}, ["special-form?"] = {export = true, variable = true}, ["statement?"] = {export = true, variable = true}, ["symbol-expansion"] = {export = true, variable = true}, ["symbol?"] = {export = true, variable = true}, ["variable?"] = {export = true, variable = true}, ["bound?"] = {export = true, variable = true}, ["toplevel?"] = {export = true, variable = true}, quoted = {export = true, variable = true}, ["stash*"] = {export = true, variable = true}, bind = {export = true, variable = true}, ["bind*"] = {export = true, variable = true}, quasiexpand = {export = true, variable = true}, macroexpand = {export = true, variable = true}, indentation = {export = true, variable = true}, ["with-indent"] = {export = true, macro = function (form)
+  end, export = true}}}, runtime = {import = {"special", "core"}, export = {["nil?"] = {export = true, variable = true}, ["is?"] = {export = true, variable = true}, length = {export = true, variable = true}, ["none?"] = {export = true, variable = true}, ["some?"] = {export = true, variable = true}, hd = {export = true, variable = true}, ["string?"] = {export = true, variable = true}, ["number?"] = {export = true, variable = true}, ["boolean?"] = {export = true, variable = true}, ["function?"] = {export = true, variable = true}, ["composite?"] = {export = true, variable = true}, ["atom?"] = {export = true, variable = true}, ["table?"] = {export = true, variable = true}, ["list?"] = {export = true, variable = true}, substring = {export = true, variable = true}, sublist = {export = true, variable = true}, sub = {export = true, variable = true}, inner = {export = true, variable = true}, tl = {export = true, variable = true}, char = {export = true, variable = true}, code = {export = true, variable = true}, ["string-literal?"] = {export = true, variable = true}, ["id-literal?"] = {export = true, variable = true}, add = {export = true, variable = true}, drop = {export = true, variable = true}, last = {export = true, variable = true}, reverse = {export = true, variable = true}, join = {export = true, variable = true}, reduce = {export = true, variable = true}, keep = {export = true, variable = true}, find = {export = true, variable = true}, pairwise = {export = true, variable = true}, iterate = {export = true, variable = true}, replicate = {export = true, variable = true}, splice = {export = true, variable = true}, map = {export = true, variable = true}, ["keys?"] = {export = true, variable = true}, ["empty?"] = {export = true, variable = true}, stash = {export = true, variable = true}, unstash = {export = true, variable = true}, extend = {export = true, variable = true}, exclude = {export = true, variable = true}, search = {export = true, variable = true}, split = {export = true, variable = true}, cat = {export = true, variable = true}, ["+"] = {export = true, variable = true}, ["-"] = {export = true, variable = true}, ["*"] = {export = true, variable = true}, ["/"] = {export = true, variable = true}, ["%"] = {export = true, variable = true}, [">"] = {export = true, variable = true}, ["<"] = {export = true, variable = true}, ["="] = {export = true, variable = true}, [">="] = {export = true, variable = true}, ["<="] = {export = true, variable = true}, ["read-file"] = {export = true, variable = true}, ["write-file"] = {export = true, variable = true}, write = {export = true, variable = true}, exit = {export = true, variable = true}, ["parse-number"] = {export = true, variable = true}, ["to-string"] = {export = true, variable = true}, apply = {export = true, variable = true}, ["make-id"] = {export = true, variable = true}, ["%message-handler"] = {export = true, variable = true}, ["toplevel?"] = {export = true, variable = true}, ["module-key"] = {export = true, variable = true}, module = {export = true, variable = true}, setenv = {export = true, variable = true}, ["splice?"] = {variable = true}, mapl = {variable = true}, ["id-count"] = {variable = true}}}, lib = {import = {"core", "special"}, export = {}}, utilities = {import = {"runtime", "special", "core"}, export = {getenv = {export = true, variable = true}, ["macro-function"] = {export = true, variable = true}, ["macro?"] = {export = true, variable = true}, ["special?"] = {export = true, variable = true}, ["special-form?"] = {export = true, variable = true}, ["statement?"] = {export = true, variable = true}, ["symbol-expansion"] = {export = true, variable = true}, ["symbol?"] = {export = true, variable = true}, ["variable?"] = {export = true, variable = true}, ["bound?"] = {export = true, variable = true}, ["toplevel?"] = {export = true, variable = true}, quoted = {export = true, variable = true}, ["stash*"] = {export = true, variable = true}, bind = {export = true, variable = true}, ["bind*"] = {export = true, variable = true}, quasiexpand = {export = true, variable = true}, macroexpand = {export = true, variable = true}, indentation = {export = true, variable = true}, ["with-indent"] = {export = true, macro = function (form)
     local result = make_id()
     return({"do", {"inc", "indent-level"}, {"let", {result, form}, {"dec", "indent-level"}, result}})
-  end}, ["reserved?"] = {export = true, variable = true}, ["valid-id?"] = {export = true, variable = true}, ["to-id"] = {export = true, variable = true}, imported = {export = true, variable = true}, exported = {export = true, variable = true}, mapo = {export = true, variable = true}, ["quote-environment"] = {export = true, variable = true}, ["quote-modules"] = {export = true, variable = true}, ["initial-environment"] = {export = true, variable = true}, ["global?"] = {variable = true}, escape = {variable = true}, ["quoting?"] = {variable = true}, ["quasiquoting?"] = {variable = true}, ["can-unquote?"] = {variable = true}, ["quasisplice?"] = {variable = true}, ["quasiquote-list"] = {variable = true}, ["indent-level"] = {global = true, export = true}, reserved = {variable = true}, ["numeric?"] = {variable = true}, ["valid-char?"] = {variable = true}, ["quote-binding"] = {variable = true}, ["quote-frame"] = {variable = true}, ["quote-module"] = {variable = true}}}, core = {import = {"runtime", "utilities", "special", "core", "compiler"}, export = {quote = {export = true, macro = function (form)
+  end}, ["reserved?"] = {export = true, variable = true}, ["valid-id?"] = {export = true, variable = true}, ["to-id"] = {export = true, variable = true}, imported = {export = true, variable = true}, exported = {export = true, variable = true}, mapo = {export = true, variable = true}, ["quote-environment"] = {export = true, variable = true}, ["quote-modules"] = {export = true, variable = true}, ["initial-environment"] = {export = true, variable = true}, ["global?"] = {variable = true}, escape = {variable = true}, ["quoting?"] = {variable = true}, ["quasiquoting?"] = {variable = true}, ["can-unquote?"] = {variable = true}, ["quasisplice?"] = {variable = true}, ["quasiquote-list"] = {variable = true}, ["indent-level"] = {global = true, export = true}, reserved = {variable = true}, ["numeric?"] = {variable = true}, ["valid-char?"] = {variable = true}, ["quote-binding"] = {variable = true}, ["quote-frame"] = {variable = true}, ["quote-module"] = {variable = true}}}, core = {import = {"runtime", "utilities", "special", "core", "compiler"}, export = {quote = {macro = function (form)
     return(quoted(form))
-  end}, quasiquote = {export = true, macro = function (form)
+  end, export = true}, quasiquote = {macro = function (form)
     return(quasiexpand(form, 1))
-  end}, at = {export = true, macro = function (l, i)
+  end, export = true}, at = {macro = function (l, i)
     if ((target == "lua") and number63(i)) then
       i = (i + 1)
     else
@@ -2718,7 +2708,7 @@ end)();
       end
     end
     return({"get", l, i})
-  end}, list = {export = true, macro = function (...)
+  end, export = true}, list = {macro = function (...)
     local body = unstash({...})
     local l = join({"%array"}, body)
     if (not keys63(body)) then
@@ -2726,22 +2716,22 @@ end)();
     else
       local id = make_id()
       local init = {}
-      local _g707 = body
+      local _g705 = body
       local k = nil
-      for k in next, _g707 do
+      for k in next, _g705 do
         if (not number63(k)) then
-          local v = _g707[k]
+          local v = _g705[k]
           add(init, {"set", {"get", id, {"quote", k}}, v})
         end
       end
       return(join({"let", {id, l}}, join(init, {id})))
     end
-  end}, ["if"] = {export = true, macro = function (...)
+  end, export = true}, ["if"] = {macro = function (...)
     local branches = unstash({...})
-    local function step(_g708)
-      local a = _g708[1]
-      local b = _g708[2]
-      local c = sub(_g708, 2)
+    local function step(_g706)
+      local a = _g706[1]
+      local b = _g706[2]
+      local c = sub(_g706, 2)
       if is63(b) then
         return({join({"%if", a, b}, step(c))})
       else
@@ -2751,26 +2741,26 @@ end)();
       end
     end
     return(hd(step(branches)))
-  end}, table = {export = true, macro = function (...)
+  end, export = true}, table = {macro = function (...)
     local body = unstash({...})
     return(join({"%object"}, mapo(function (_g367, x)
       return(x)
     end, body)))
-  end}, let = {export = true, macro = function (bindings, ...)
+  end, export = true}, let = {macro = function (bindings, ...)
     local body = unstash({...})
-    local _g709 = sub(body, 0)
+    local _g707 = sub(body, 0)
     local i = 0
     local renames = {}
     local locals = {}
-    map(function (_g710)
-      local lh = _g710[1]
-      local rh = _g710[2]
-      local _g711 = bind(lh, rh)
-      local _g712 = 0
-      while (_g712 < length(_g711)) do
-        local _g713 = _g711[(_g712 + 1)]
-        local id = _g713[1]
-        local val = _g713[2]
+    map(function (_g708)
+      local lh = _g708[1]
+      local rh = _g708[2]
+      local _g709 = bind(lh, rh)
+      local _g710 = 0
+      while (_g710 < length(_g709)) do
+        local _g711 = _g709[(_g710 + 1)]
+        local id = _g711[1]
+        local val = _g711[2]
         if (bound63(id) or reserved63(id) or toplevel63()) then
           local rename = make_id()
           add(renames, id)
@@ -2780,76 +2770,76 @@ end)();
           setenv(id, {_stash = true, variable = true})
         end
         add(locals, {"%local", id, val})
-        _g712 = (_g712 + 1)
+        _g710 = (_g710 + 1)
       end
     end, pairwise(bindings))
-    return(join({"do"}, join(locals, {join({"let-symbol", renames}, _g709)})))
-  end}, ["define-module"] = {export = true, macro = function (spec, ...)
+    return(join({"do"}, join(locals, {join({"let-symbol", renames}, _g707)})))
+  end, export = true}, ["define-module"] = {macro = function (spec, ...)
     local body = unstash({...})
-    local _g714 = sub(body, 0)
+    local _g712 = sub(body, 0)
     local imports = {}
-    local imp = _g714.import
-    local exp = _g714.export
-    local _g715 = (imp or {})
+    local imp = _g712.import
+    local exp = _g712.export
+    local _g713 = (imp or {})
+    local _g714 = 0
+    while (_g714 < length(_g713)) do
+      local k = _g713[(_g714 + 1)]
+      load_module(k)
+      imports = join(imports, imported(k))
+      _g714 = (_g714 + 1)
+    end
+    modules[module_key(spec)] = {import = imp, export = {}}
+    local _g715 = (exp or {})
     local _g716 = 0
     while (_g716 < length(_g715)) do
       local k = _g715[(_g716 + 1)]
-      load_module(k)
-      imports = join(imports, imported(k))
+      setenv(k, {_stash = true, export = true})
       _g716 = (_g716 + 1)
     end
-    modules[module_key(spec)] = {import = imp, export = {}}
-    local _g717 = (exp or {})
-    local _g718 = 0
-    while (_g718 < length(_g717)) do
-      local k = _g717[(_g718 + 1)]
-      setenv(k, {_stash = true, export = true})
-      _g718 = (_g718 + 1)
-    end
     return(join({"do"}, imports))
-  end}, ["define-macro"] = {export = true, macro = function (name, args, ...)
+  end, export = true}, ["define-macro"] = {macro = function (name, args, ...)
+    local body = unstash({...})
+    local _g717 = sub(body, 0)
+    local form = join({"fn", args}, _g717)
+    local _g718 = {"setenv", {"quote", name}}
+    _g718.macro = form
+    _g718.form = {"quote", form}
+    eval(_g718)
+    return(nil)
+  end, export = true}, ["define-special"] = {macro = function (name, args, ...)
     local body = unstash({...})
     local _g719 = sub(body, 0)
     local form = join({"fn", args}, _g719)
+    local keys = sub(_g719, length(_g719))
     local _g720 = {"setenv", {"quote", name}}
-    _g720.macro = form
+    _g720.special = form
     _g720.form = {"quote", form}
-    eval(_g720)
+    eval(join(_g720, keys))
     return(nil)
-  end}, ["define-special"] = {export = true, macro = function (name, args, ...)
-    local body = unstash({...})
-    local _g721 = sub(body, 0)
-    local form = join({"fn", args}, _g721)
-    local keys = sub(_g721, length(_g721))
-    local _g722 = {"setenv", {"quote", name}}
-    _g722.special = form
-    _g722.form = {"quote", form}
-    eval(join(_g722, keys))
-    return(nil)
-  end}, ["define-symbol"] = {export = true, macro = function (name, expansion)
+  end, export = true}, ["define-symbol"] = {macro = function (name, expansion)
     setenv(name, {_stash = true, symbol = expansion})
     return(nil)
-  end}, define = {export = true, macro = function (name, x, ...)
+  end, export = true}, define = {macro = function (name, x, ...)
     local body = unstash({...})
-    local _g723 = sub(body, 0)
+    local _g721 = sub(body, 0)
     setenv(name, {_stash = true, variable = true})
-    if some63(_g723) then
-      local _g724 = bind42(x, _g723)
-      local args = _g724[1]
-      local _g725 = _g724[2]
-      return(join({"%local-function", name, args}, _g725))
+    if some63(_g721) then
+      local _g722 = bind42(x, _g721)
+      local args = _g722[1]
+      local _g723 = _g722[2]
+      return(join({"%local-function", name, args}, _g723))
     else
       return({"%local", name, x})
     end
-  end}, ["define*"] = {export = true, macro = function (name, x, ...)
+  end, export = true}, ["define*"] = {macro = function (name, x, ...)
     local body = unstash({...})
-    local _g726 = sub(body, 0)
+    local _g724 = sub(body, 0)
     setenv(name, {_stash = true, global = true, export = true})
-    if some63(_g726) then
-      local _g727 = bind42(x, _g726)
-      local args = _g727[1]
-      local _g728 = _g727[2]
-      return(join({"%global-function", name, args}, _g728))
+    if some63(_g724) then
+      local _g725 = bind42(x, _g724)
+      local args = _g725[1]
+      local _g726 = _g725[2]
+      return(join({"%global-function", name, args}, _g726))
     else
       if (target == "js") then
         return({"set", {"get", "global", {"quote", to_id(name)}}, x})
@@ -2857,46 +2847,46 @@ end)();
         return({"set", name, x})
       end
     end
-  end}, ["with-bindings"] = {export = true, macro = function (_g729, ...)
-    local names = _g729[1]
+  end, export = true}, ["with-bindings"] = {macro = function (_g727, ...)
+    local names = _g727[1]
     local body = unstash({...})
-    local _g730 = sub(body, 0)
+    local _g728 = sub(body, 0)
     local x = make_id()
-    local _g732 = {"setenv", x}
-    _g732.variable = true
-    local _g731 = {"with-frame", {"each", {x}, names, _g732}}
-    _g731.scope = true
-    return(join(_g731, _g730))
-  end}, ["let-macro"] = {export = true, macro = function (definitions, ...)
+    local _g730 = {"setenv", x}
+    _g730.variable = true
+    local _g729 = {"with-frame", {"each", {x}, names, _g730}}
+    _g729.scope = true
+    return(join(_g729, _g728))
+  end, export = true}, ["let-macro"] = {macro = function (definitions, ...)
     local body = unstash({...})
-    local _g733 = sub(body, 0)
+    local _g731 = sub(body, 0)
     add(environment, {})
     map(function (m)
       return(macroexpand(join({"define-macro"}, m)))
     end, definitions)
+    local _g732 = join({"do"}, macroexpand(_g731))
+    drop(environment)
+    return(_g732)
+  end, export = true}, ["let-symbol"] = {macro = function (expansions, ...)
+    local body = unstash({...})
+    local _g733 = sub(body, 0)
+    add(environment, {})
+    map(function (_g735)
+      local name = _g735[1]
+      local exp = _g735[2]
+      return(macroexpand({"define-symbol", name, exp}))
+    end, pairwise(expansions))
     local _g734 = join({"do"}, macroexpand(_g733))
     drop(environment)
     return(_g734)
-  end}, ["let-symbol"] = {export = true, macro = function (expansions, ...)
+  end, export = true}, fn = {macro = function (args, ...)
     local body = unstash({...})
-    local _g735 = sub(body, 0)
-    add(environment, {})
-    map(function (_g737)
-      local name = _g737[1]
-      local exp = _g737[2]
-      return(macroexpand({"define-symbol", name, exp}))
-    end, pairwise(expansions))
-    local _g736 = join({"do"}, macroexpand(_g735))
-    drop(environment)
-    return(_g736)
-  end}, fn = {export = true, macro = function (args, ...)
-    local body = unstash({...})
-    local _g738 = sub(body, 0)
-    local _g739 = bind42(args, _g738)
-    local _g740 = _g739[1]
-    local _g741 = _g739[2]
-    return(join({"%function", _g740}, _g741))
-  end}, guard = {export = true, macro = function (expr)
+    local _g736 = sub(body, 0)
+    local _g737 = bind42(args, _g736)
+    local _g738 = _g737[1]
+    local _g739 = _g737[2]
+    return(join({"%function", _g738}, _g739))
+  end, export = true}, guard = {macro = function (expr)
     if (target == "js") then
       return({{"fn", {}, {"%try", {"list", true, expr}}}})
     else
@@ -2905,9 +2895,9 @@ end)();
       local ex = ("|" .. e .. "," .. x .. "|")
       return({"let", {ex, {"xpcall", {"fn", {}, expr}, "%message-handler"}}, {"list", e, x}})
     end
-  end}, each = {export = true, macro = function (b, t, ...)
+  end, export = true}, each = {macro = function (b, t, ...)
     local body = unstash({...})
-    local _g742 = sub(body, 0)
+    local _g740 = sub(body, 0)
     local k = b[1]
     local v = b[2]
     local t1 = make_id()
@@ -2920,63 +2910,69 @@ end)();
         _g766 = make_id()
       end
       local i = _g766
-      _g765 = {"let", {i, 0}, {"while", {"<", i, {"length", t1}}, join({"let", {k, {"at", t1, i}}}, _g742), {"inc", i}}}
+      _g765 = {"let", {i, 0}, {"while", {"<", i, {"length", t1}}, join({"let", {k, {"at", t1, i}}}, _g740), {"inc", i}}}
     else
-      local _g743 = {"target"}
-      _g743.js = {"isNaN", {"parseInt", k}}
-      _g743.lua = {"not", {"number?", k}}
-      _g765 = {"let", {k, "nil"}, {"%for", t1, k, {"if", _g743, join({"let", {v, {"get", t1, k}}}, _g742)}}}
+      local _g741 = {"target"}
+      _g741.js = {"isNaN", {"parseInt", k}}
+      _g741.lua = {"not", {"number?", k}}
+      _g765 = {"let", {k, "nil"}, {"%for", t1, k, {"if", _g741, join({"let", {v, {"get", t1, k}}}, _g740)}}}
     end
     return({"let", {t1, t}, _g765})
-  end}, ["set-of"] = {export = true, macro = function (...)
+  end, export = true}, ["set-of"] = {macro = function (...)
     local elements = unstash({...})
     local l = {}
-    local _g744 = elements
-    local _g745 = 0
-    while (_g745 < length(_g744)) do
-      local e = _g744[(_g745 + 1)]
+    local _g742 = elements
+    local _g743 = 0
+    while (_g743 < length(_g742)) do
+      local e = _g742[(_g743 + 1)]
       l[e] = true
-      _g745 = (_g745 + 1)
+      _g743 = (_g743 + 1)
     end
     return(join({"table"}, l))
-  end}, language = {export = true, macro = function ()
+  end, export = true}, language = {macro = function ()
     return({"quote", target})
-  end}, target = {macro = function (...)
+  end, export = true}, target = {global = true, macro = function (...)
     local clauses = unstash({...})
     return(clauses[target])
-  end, export = true, global = true}, ["join*"] = {export = true, macro = function (...)
+  end, export = true}, ["join*"] = {macro = function (...)
     local xs = unstash({...})
     return(reduce(function (a, b)
       return({"join", a, b})
     end, xs))
-  end}, ["join!"] = {export = true, macro = function (a, ...)
+  end, export = true}, ["join!"] = {macro = function (a, ...)
     local bs = unstash({...})
-    local _g746 = sub(bs, 0)
-    return({"set", a, join({"join*", a}, _g746)})
-  end}, ["cat!"] = {export = true, macro = function (a, ...)
+    local _g744 = sub(bs, 0)
+    return({"set", a, join({"join*", a}, _g744)})
+  end, export = true}, ["cat!"] = {macro = function (a, ...)
     local bs = unstash({...})
-    local _g747 = sub(bs, 0)
-    return({"set", a, join({"cat", a}, _g747)})
-  end}, inc = {export = true, macro = function (n, by)
+    local _g745 = sub(bs, 0)
+    return({"set", a, join({"cat", a}, _g745)})
+  end, export = true}, inc = {macro = function (n, by)
     return({"set", n, {"+", n, (by or 1)}})
-  end}, dec = {export = true, macro = function (n, by)
+  end, export = true}, dec = {macro = function (n, by)
     return({"set", n, {"-", n, (by or 1)}})
-  end}, pr = {export = true, macro = function (...)
+  end, export = true}, pr = {macro = function (...)
     local xs = unstash({...})
-    local _g748 = map(function (x)
+    local _g746 = map(function (x)
       return(splice({{"to-string", x}, "\" \""}))
     end, xs)
-    return({"print", join({"cat"}, _g748)})
-  end}, ["with-frame"] = {export = true, macro = function (...)
+    return({"print", join({"cat"}, _g746)})
+  end, export = true}, ["with-frame"] = {macro = function (...)
     local body = unstash({...})
-    local _g749 = sub(body, 0)
+    local _g747 = sub(body, 0)
     local scope = body.scope
     local x = make_id()
-    local _g750 = {"table"}
-    _g750._scope = scope
-    return({"do", {"add", "environment", _g750}, {"let", {x, join({"do"}, _g749)}, {"drop", "environment"}, x}})
-  end}}}, compiler = {import = {"runtime", "utilities", "special", "core", "reader"}, export = {["compile-body"] = {export = true, variable = true}, ["compile-call"] = {export = true, variable = true}, ["compile-function"] = {export = true, variable = true}, ["compile-special"] = {export = true, variable = true}, compile = {export = true, variable = true}, ["open-module"] = {export = true, variable = true}, ["load-module"] = {export = true, variable = true}, ["in-module"] = {export = true, variable = true}, ["compile-module"] = {export = true, variable = true}, eval = {export = true, variable = true}, infix = {variable = true}, getop = {variable = true}, ["infix?"] = {variable = true}, ["compile-args"] = {variable = true}, ["compile-atom"] = {variable = true}, terminator = {variable = true}, ["compile-infix"] = {variable = true}, ["can-return?"] = {variable = true}, lower = {variable = true, global = true, export = true}, ["lower-statement"] = {variable = true}, ["lower-do"] = {variable = true}, ["lower-if"] = {variable = true}, ["lower-while"] = {variable = true}, ["lower-for"] = {variable = true}, ["lower-function"] = {variable = true}, ["lower-definition"] = {variable = true}, ["lower-call"] = {variable = true}, ["lower-special"] = {variable = true}, process = {variable = true}, ["current-module"] = {global = true, export = true}, ["module-path"] = {variable = true}, encapsulate = {variable = true}, ["compile-file"] = {variable = true}, ["%result"] = {global = true, export = true}, run = {variable = true}, ["compiling?"] = {variable = true}, ["compiler-output"] = {variable = true}, ["%compile-module"] = {variable = true}, prologue = {variable = true}}}, system = {import = {"special", "core"}, export = {nexus = {global = true, export = true}}}}
-  environment = {{["define-module"] = {export = true, macro = function (spec, ...)
+    local _g748 = {"table"}
+    _g748._scope = scope
+    return({"do", {"add", "environment", _g748}, {"let", {x, join({"do"}, _g747)}, {"drop", "environment"}, x}})
+  end, export = true}}}, optimizer = {import = {"runtime", "special", "core"}, export = {optimize = {export = true, variable = true}, optimizations = {variable = true}, ["define-optimization"] = {}}}, compiler = {import = {"runtime", "utilities", "special", "core", "reader"}, export = {["compile-body"] = {export = true, variable = true}, ["compile-call"] = {export = true, variable = true}, ["compile-function"] = {export = true, variable = true}, ["compile-special"] = {export = true, variable = true}, compile = {export = true, variable = true}, ["open-module"] = {export = true, variable = true}, ["load-module"] = {export = true, variable = true}, ["in-module"] = {export = true, variable = true}, ["compile-module"] = {export = true, variable = true}, eval = {export = true, variable = true}, infix = {variable = true}, getop = {variable = true}, ["infix?"] = {variable = true}, ["compile-args"] = {variable = true}, ["compile-atom"] = {variable = true}, terminator = {variable = true}, ["compile-infix"] = {variable = true}, ["can-return?"] = {variable = true}, lower = {variable = true, global = true, export = true}, ["lower-statement"] = {variable = true}, ["lower-do"] = {variable = true}, ["lower-if"] = {variable = true}, ["lower-while"] = {variable = true}, ["lower-for"] = {variable = true}, ["lower-function"] = {variable = true}, ["lower-definition"] = {variable = true}, ["lower-call"] = {variable = true}, ["lower-special"] = {variable = true}, process = {variable = true}, ["current-module"] = {global = true, export = true}, ["module-path"] = {variable = true}, encapsulate = {variable = true}, ["compile-file"] = {variable = true}, ["%result"] = {global = true, export = true}, run = {variable = true}, ["compiling?"] = {variable = true}, ["compiler-output"] = {variable = true}, ["%compile-module"] = {variable = true}, prologue = {variable = true}}}, reader = {import = {"runtime", "special", "core"}, export = {["make-stream"] = {export = true, variable = true}, ["read-table"] = {export = true, variable = true}, ["define-reader"] = {export = true, macro = function (_g749, ...)
+    local char = _g749[1]
+    local stream = _g749[2]
+    local body = unstash({...})
+    local _g750 = sub(body, 0)
+    return({"set", {"get", "read-table", char}, join({"fn", {stream}}, _g750)})
+  end}, read = {export = true, variable = true}, ["read-all"] = {export = true, variable = true}, ["read-from-string"] = {export = true, variable = true}, delimiters = {variable = true}, whitespace = {variable = true}, ["peek-char"] = {variable = true}, ["read-char"] = {variable = true}, ["skip-non-code"] = {variable = true}, eof = {variable = true}, ["key?"] = {variable = true}, ["flag?"] = {variable = true}}}}
+  environment = {{["define-module"] = {macro = function (spec, ...)
     local body = unstash({...})
     local _g767 = sub(body, 0)
     local imports = {}
@@ -2999,7 +2995,7 @@ end)();
       _g771 = (_g771 + 1)
     end
     return(join({"do"}, imports))
-  end}}}
+  end, export = true}}}
 end)();
 (function ()
   local _g2 = nexus.runtime

@@ -58,11 +58,9 @@
     "\n"))
 
 (define compile-special (form stmt? tail?)
-  (let ((:special :stmt tr: self-tr?) (getenv (hd form)))
-    (if (and (not stmt?) stmt)
-        (compile `((%function () ,form)) tail: tail?)
-      (let (tr (terminator (and stmt? (not self-tr?))))
-        (cat (special (tl form) tail?) tr)))))
+  (let ((:special :stmt tr: self-tr?) (getenv (hd form))
+        tr (terminator (and stmt? (not self-tr?))))
+    (cat (special (tl form) tail?) tr)))
 
 (define compile-call (form)
   (if (none? form)
@@ -276,6 +274,6 @@
   (let (previous target)
     (set target (language))
     (let (form (process `(do ,@(prologue) ,form)))
-      (let (compiled (compile form))
+      (let (compiled (compile `((%function () ,form))))
         (set target previous)
         (run compiled)))))
