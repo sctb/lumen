@@ -39,25 +39,25 @@
         (cat str ind "end\n")
       (cat str "\n"))))
 
-(define-special while ((condition rest: body)) :stmt :tr
+(define-special while ((condition form)) :stmt :tr
   (let (condition (compile condition)
-        body (with-indent (compile-body body))
+        body (with-indent (compile form :stmt))
         ind (indentation))
     (if (= target 'js)
 	(cat ind "while (" condition ") {\n" body ind "}\n")
       (cat ind "while " condition " do\n" body ind "end\n"))))
 
-(define-special %for ((t k rest: body)) :stmt :tr
+(define-special %for ((t k form)) :stmt :tr
   (let (t (compile t)
         ind (indentation)
-        body (with-indent (compile-body body)))
+        body (with-indent (compile form :stmt)))
     (if (= target 'lua)
 	(cat ind "for " k " in next, " t " do\n" body ind "end\n")
       (cat ind "for (" k " in " t ") {\n" body ind "}\n"))))
 
-(define-special %try (forms) :stmt :tr
+(define-special %try ((form)) :stmt :tr
   (let (ind (indentation)
-        body (with-indent (compile-body forms :tail))
+        body (with-indent (compile form :stmt :tail))
         e (make-id)
         handler `(return (%array false (get ,e "message")))
         h (with-indent (compile handler :stmt)))
@@ -67,18 +67,16 @@
 (define-special break (_) :stmt
   (cat (indentation) "break"))
 
-(define-special %function ((args rest: body))
+(define-special %function ((args body))
   (compile-function args body))
 
-(define-special %global-function
-    ((name args rest: body)) :stmt :tr
+(define-special %global-function ((name args body)) :stmt :tr
   (if (= target 'lua)
       (let (x (compile-function args body name: name))
         (cat (indentation) x))
-    (compile `(set ,name (%function ,args ,@body)) :stmt)))
+    (compile `(set ,name (%function ,args ,body)) :stmt)))
 
-(define-special %local-function
-    ((name args rest: body)) :stmt :tr
+(define-special %local-function ((name args body)) :stmt :tr
   (let (x (compile-function args body name: name prefix: "local "))
     (cat (indentation) x)))
 

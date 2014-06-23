@@ -87,7 +87,7 @@
   (let (id (if name (compile name) "")
         prefix (or prefix "")
         args (compile-args args)
-        body (with-indent (compile-body body :tail))
+        body (with-indent (compile body :stmt :tail))
         ind (indentation)
         tr (if (= target 'js) "" "end"))
     (if name (cat! tr "\n"))
@@ -206,7 +206,7 @@
 (define encapsulate (body)
   (let (body (map process body)
         epilog (map process (exported)))
-    `((%function () ,@body ,@epilog))))
+    `((%function () (do ,@body ,@epilog)))))
 
 (define compile-file (file)
   (let (str (read-file file)
