@@ -87,13 +87,13 @@
 (define-special return ((x)) :stmt
   (let (x (if (nil? x)
               "return"
-            (compile-call `(return ,x))))
+            (cat "return(" (compile x) ")")))
     (cat (indentation) x)))
 
 (define-special error ((x)) :stmt
   (let (e (if (= target 'js)
               (cat "throw new " (compile `(Error ,x)))
-            (compile-call `(error ,x))))
+            (cat "error(" (compile x) ")")))
     (cat (indentation) e)))
 
 (define-special %local ((name value)) :stmt

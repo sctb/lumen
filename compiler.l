@@ -2,9 +2,7 @@
 
 (define-module compiler
   import: (runtime utilities special core reader)
-  export: (compile-call
-           compile-function
-           compile-special
+  export: (compile-function
            compile
            open-module
            load-module
