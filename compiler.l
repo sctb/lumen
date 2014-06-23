@@ -2,8 +2,7 @@
 
 (define-module compiler
   import: (runtime utilities special core reader)
-  export: (compile-body
-           compile-call
+  export: (compile-call
            compile-function
            compile-special
            compile
@@ -44,13 +43,6 @@
       (boolean? x) (if x "true" "false")
       (number? x) (cat x "")
     (error "Unrecognized atom")))
-
-(define compile-body (forms :tail)
-  (let (str "")
-    (each (x :i) forms
-      (let (t? (and tail (= i (- (length forms) 1))))
-	(cat! str (compile x :stmt tail: t?))))
-    str))
 
 (define terminator (stmt?)
   (if (not stmt?) ""

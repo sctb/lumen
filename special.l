@@ -21,7 +21,11 @@
            %object))
 
 (define-special do (forms tail?) :stmt :tr
-  (compile-body forms tail: tail?))
+  (let (str "")
+    (each (x :i) forms
+      (let (t? (and tail? (= i (- (length forms) 1))))
+	(cat! str (compile x :stmt tail: t?))))
+    str))
 
 (define-special %if ((cond then else) tail?) :stmt :tr
   (let (cond (compile cond)
