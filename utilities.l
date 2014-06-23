@@ -32,14 +32,14 @@
            initial-environment))
 
 (define getenv (k rest: keys)
-  (if (string? k)
-      (let (b (find (fn (e)
-                      (get e k))
-                    (reverse environment)))
-        (if (table? b)
-            (let (k nil)
-              (each (x _) keys (set k x))
-              (if k (get b k) b))))))
+  (when (string? k)
+    (let (b (find (fn (e)
+                    (get e k))
+                  (reverse environment)))
+      (when (table? b)
+        (let (k nil)
+          (each (x _) keys (set k x))
+          (if k (get b k) b))))))
 
 (define macro-function (k)
   (getenv k :macro))
@@ -117,8 +117,8 @@
       (if r (join! bs (bind r `(sub ,rh ,(length lh)))))
       (each (k v) lh
         (if (= v true) (set v k))
-        (if (~= k 'rest)
-            (join! bs (bind v `(get ,rh ',k)))))
+        (unless (= k 'rest)
+          (join! bs (bind v `(get ,rh ',k)))))
       bs)))
 
 (define bind* (args body)
@@ -139,8 +139,8 @@
                 (add args1 v)
                 (join! bs (list arg v)))))
         (if r (join! bs (list r (rest))))
-        (if (keys? args)
-            (join! bs (list (sub args (length args)) r)))
+        (when (keys? args)
+          (join! bs (list (sub args (length args)) r)))
         (if (none? bs)
             (list args1 body)
           (list args1 `((let ,bs ,@body))))))))
@@ -296,8 +296,8 @@
         k (module-key current-module)
         exports ())
     (each (n b) (get (module current-module) 'export)
-      (if b.variable
-          (add exports `(set (get ,m ',n) ,n))))
+      (when b.variable
+        (add exports `(set (get ,m ',n) ,n))))
     (if (some? exports)
         `((%local ,m (table))
           (set (get nexus ',k) ,m)
@@ -308,14 +308,14 @@
   (let (m (make-id)
         k (module-key spec)
         imports ())
-    (if (get nexus k)
-        (each (n b) (get (module spec) 'export)
-          (if (and b.variable
+    (when (get nexus k)
+      (each (n b) (get (module spec) 'export)
+        (when (and b.variable
                    (or all b.export))
-              (add imports `(%local ,n (get ,m ',n))))))
-    (if (some? imports)
-        `((%local ,m (get nexus ',k))
-          ,@imports))))
+          (add imports `(%local ,n (get ,m ',n))))))
+    (when (some? imports)
+      `((%local ,m (get nexus ',k))
+        ,@imports))))
 
 ;; bootstrap
 
@@ -333,9 +333,9 @@
   (let (o ())
     (each (k v) t
       (let (x (f k v))
-        (if (is? x)
-            (do (add o k)
-                (add o x)))))
+        (when (is? x)
+          (add o k)
+          (add o x))))
     o))
 
 (define quote-frame (t)

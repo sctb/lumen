@@ -69,8 +69,8 @@
       (if (and (= op '-) (= (length args) 1))
           (cat! str op (compile arg))
         (do (cat! str (compile arg))
-            (if (< i (- (length args) 1))
-                (cat! str " " op " ")))))
+            (when (< i (- (length args) 1))
+              (cat! str " " op " ")))))
     (cat str ")")))
 
 (define compile-function (args body :name :prefix)
@@ -234,12 +234,12 @@
   (let (m (module spec)
         frame (last environment))
     (each (k v) m.export
-      (if (or v.export all)
-          (set (get frame k) v)))))
+      (when (or v.export all)
+        (set (get frame k) v)))))
 
 (define load-module (spec :all)
-  (if (nil? (module spec))
-      (%compile-module spec))
+  (unless (module spec)
+    (%compile-module spec))
   (open-module spec all: all))
 
 (define in-module (spec)

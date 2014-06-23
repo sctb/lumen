@@ -186,11 +186,11 @@
                    (inc ,i))))
           `(let (,k nil)
              (%for ,t1 ,k
-               (if (target
-                     js: (isNaN (parseInt ,k))
-                     lua: (not (number? ,k)))
-                   (let (,v (get ,t1 ,k))
-                     ,@body))))))))
+               (when (target
+                       js: (isNaN (parseInt ,k))
+                       lua: (not (number? ,k)))
+                 (let (,v (get ,t1 ,k))
+                   ,@body))))))))
 
 (define-macro set-of elements
   (let (l ())

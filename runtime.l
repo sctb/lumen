@@ -152,18 +152,17 @@
       (nil? l2) (join l1 ())
     (let (l () skip? false)
       (target js:
-        (if (and (list? l1)
-                 (list? l2))
-            (do (set l (l1.concat l2))
-                (set skip? true))))
-      (if (not skip?)
-          (let (i 0 len (length l1))
-            (while (< i len)
-              (set (at l i) (at l1 i))
-              (inc i))
-            (while (< i (+ len (length l2)))
-              (set (at l i) (at l2 (- i len)))
-              (inc i))))
+        (when (and (list? l1) (list? l2))
+          (set l (l1.concat l2))
+          (set skip? true)))
+      (unless skip?
+        (let (i 0 len (length l1))
+          (while (< i len)
+            (set (at l i) (at l1 i))
+            (inc i))
+          (while (< i (+ len (length l2)))
+            (set (at l i) (at l2 (- i len)))
+            (inc i))))
       (each (k v) l1
         (set (get l k) v))
       (each (k v) l2
@@ -254,8 +253,8 @@
       (if (and (table? l) l._stash)
           (let (args1 (sub args 0 (- (length args) 1)))
             (each (k v) l
-              (if (~= k '_stash)
-                  (set (get args1 k) v)))
+              (unless (= k '_stash)
+                (set (get args1 k) v)))
             args1)
         args))))
 
@@ -265,8 +264,8 @@
 (define exclude (t rest: keys)
   (let (t1 (sublist t))
     (each (k v) t
-      (if (not (get keys k))
-          (set (get t1 k) v)))
+      (unless (get keys k)
+        (set (get t1 k) v)))
     t1))
 
 (define search (str pattern start)
@@ -343,7 +342,7 @@
 (define parse-number (str)
   (target
    js: (let (n (parseFloat str))
-         (if (not (isNaN n)) n))
+         (unless (isNaN n) n))
    lua: (tonumber str)))
 
 (define to-string (x)
@@ -358,8 +357,8 @@
         (add x1 v))
       (each (y :i) x1
         (cat! str (to-string y))
-        (if (< i (- (length x1) 1))
-            (cat! str " ")))
+        (when (< i (- (length x1) 1))
+          (cat! str " ")))
       (cat str  ")"))))
 
 (define apply (f args)
@@ -388,12 +387,12 @@
   (get modules (module-key spec)))
 
 (define setenv (k rest: keys)
-  (if (string? k)
-      (let (frame (last environment)
-            x (or (get frame k) (table)))
-        (each (k1 v) keys
-          (set (get x k1) v))
-        (if (toplevel?)
-            (let (m (module current-module))
-              (set (get m.export k) x)))
-        (set (get frame k) x))))
+  (when (string? k)
+    (let (frame (last environment)
+          x (or (get frame k) (table)))
+      (each (k1 v) keys
+        (set (get x k1) v))
+      (when (toplevel?)
+        (let (m (module current-module))
+          (set (get m.export k) x)))
+      (set (get frame k) x))))

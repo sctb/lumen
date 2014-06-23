@@ -112,9 +112,9 @@
 (define-special get ((t k))
   (let (t (compile t)
 	k1 (compile k))
-    (if (and (= target 'lua)
-	     (= (char t 0) "{"))
-	(set t (cat "(" t ")")))
+    (when (and (= target 'lua)
+               (= (char t 0) "{"))
+      (set t (cat "(" t ")")))
     (if (and (string-literal? k)
              (valid-id? (inner k)))
         (cat t "." (inner k))
@@ -139,8 +139,8 @@
         sep (if (= target 'lua) " = " ": ")
         pairs (pairwise forms))
     (each ((k v) :i) pairs
-      (if (not (string? k))
-          (error (cat "Illegal key: " (to-string k))))
+      (unless (string? k)
+        (error (cat "Illegal key: " (to-string k))))
       (let (v (compile v)
             k (if (valid-id? k) k
                   (and (= target 'js) (string-literal? k)) k

@@ -46,9 +46,9 @@
 
 (define main ()
   (let (args (target js: (sub process.argv 2) lua: arg))
-    (if (or (= (hd args) "-h")
-            (= (hd args) "--help"))
-        (usage))
+    (when (or (= (hd args) "-h")
+              (= (hd args) "--help"))
+      (usage))
     (let (spec nil
           output nil
           target1 nil
