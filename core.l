@@ -7,6 +7,8 @@
            at
            list
            if
+           when
+           unless
            table
            let
            define-module
@@ -61,6 +63,12 @@
     (if (is? b) `((%if ,a ,b ,@(step c)))
         (is? a) (list a)))
   (hd (step branches)))
+
+(define-macro when (cond rest: body)
+  `(if ,cond (do ,@body)))
+
+(define-macro unless (cond rest: body)
+  `(if (not ,cond) (do ,@body)))
 
 (define-macro table body
   `(%object ,@(mapo (fn (_ x) x) body)))
