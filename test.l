@@ -222,7 +222,11 @@
     (test= 'bar a)
     (let (x (set a 10))
       (test= x nil)
-      (test= a 10))))
+      (test= a 10))
+    (set a false)
+    (test= a false)
+    (set a)
+    (test= a nil)))
 
 (define-test do ()
   (let (a 17)

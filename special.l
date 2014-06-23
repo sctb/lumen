@@ -103,9 +103,9 @@
     (cat ind keyword id rh)))
 
 (define-special set ((lh rh)) :stmt
-  (if (nil? rh)
-      (error "Missing right-hand side in assignment"))
-  (cat (indentation) (compile lh) " = " (compile rh)))
+  (let (lh (compile lh)
+        rh (compile (if (nil? rh) 'nil rh)))
+    (cat (indentation) lh " = " rh)))
 
 (define-special get ((t k))
   (let (t (compile t)
