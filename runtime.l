@@ -130,7 +130,7 @@
 (define id-literal? (x) (and (string? x) (= (char x 0) "|")))
 
 (define add (l x)
-  (target js: (l.push x) lua: (table.insert l x)))
+  (target js: (do (l.push x) nil) lua: (table.insert l x)))
 
 (define drop (l)
   (target js: (l.pop) lua: (table.remove l)))

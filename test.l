@@ -494,7 +494,8 @@
     (add l 'a)
     (add l 'b)
     (add l 'c)
-    (test= '(a b c) l)))
+    (test= '(a b c) l)
+    (test= nil (add () 'a))))
 
 (define-test drop ()
   (let (l '(a b c))
