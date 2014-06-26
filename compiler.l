@@ -47,10 +47,10 @@
       (= target 'js) ";\n"
     "\n"))
 
-(define compile-special (form stmt? tail?)
+(define compile-special (form stmt?)
   (let ((:special :stmt tr: self-tr?) (getenv (hd form))
         tr (terminator (and stmt? (not self-tr?))))
-    (cat (special (tl form) tail?) tr)))
+    (cat (special (tl form)) tr)))
 
 (define compile-call (form)
   (if (none? form)
@@ -77,7 +77,7 @@
   (let (id (if name (compile name) "")
         prefix (or prefix "")
         args (compile-args args)
-        body (with-indent (compile body :stmt :tail))
+        body (with-indent (compile body :stmt))
         ind (indentation)
         tr (if (= target 'js) "" "end"))
     (if name (cat! tr "\n"))
@@ -92,10 +92,10 @@
                 (not (statement? (hd form)))))))
 
 (set compile
-  (fn (form :stmt :tail)
+  (fn (form :stmt)
     (if (nil? form) ""
         (special-form? form)
-        (compile-special form stmt tail)
+        (compile-special form stmt)
       (let (tr (terminator stmt)
             ind (if stmt (indentation) "")
             form (if (atom? form) (compile-atom form)
@@ -189,8 +189,6 @@
              (lower-definition x args hoist)
              (statement? x) (lower-special form hoist)
            (lower-call form hoist))))))
-
-(define* lower lower)
 
 (define process (form)
   (lower (macroexpand form)))

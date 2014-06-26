@@ -20,17 +20,16 @@
            %array
            %object))
 
-(define-special do (forms tail?) :stmt :tr
+(define-special do (forms) :stmt :tr
   (let (str "")
-    (each (x :i) forms
-      (let (t? (and tail? (= i (- (length forms) 1))))
-	(cat! str (compile x :stmt tail: t?))))
+    (each (x) forms
+      (cat! str (compile x :stmt)))
     str))
 
-(define-special %if ((cond then else) tail?) :stmt :tr
+(define-special %if ((cond then else)) :stmt :tr
   (let (cond (compile cond)
-        then (with-indent (compile then :stmt tail: tail?))
-        else (if else (with-indent (compile else :stmt tail: tail?)))
+        then (with-indent (compile then :stmt))
+        else (if else (with-indent (compile else :stmt)))
         ind (indentation)
         str "")
     (if (= target 'js)
@@ -61,7 +60,7 @@
 
 (define-special %try ((form)) :stmt :tr
   (let (ind (indentation)
-        body (with-indent (compile form :stmt :tail))
+        body (with-indent (compile form :stmt))
         e (make-id)
         handler `(return (%array false (get ,e "message")))
         h (with-indent (compile handler :stmt)))
