@@ -86,13 +86,13 @@
       (cat prefix "function " id args "\n" body ind tr))))
 
 (define can-return? (form)
-  (or (atom? form)
-      (not (statement? (hd form)))))
+  (and (is? form)
+       (or (atom? form)
+           (and (not (= (hd form) 'return))
+                (not (statement? (hd form)))))))
 
 (set compile
   (fn (form :stmt :tail)
-    (if (and tail (can-return? form))
-        (set form `(return ,form)))
     (if (nil? form) ""
         (special-form? form)
         (compile-special form stmt tail)
@@ -105,27 +105,33 @@
 
 (define lower)
 
-(define lower-statement (form)
+(define lower-statement (form tail?)
   (let (hoist ()
-        e (lower form hoist true))
+        e (lower form hoist true tail?))
     (if (and (some? hoist) (is? e))
         `(do ,@hoist ,e)
         (is? e) e
         (> (length hoist) 1) `(do ,@hoist)
       (hd hoist))))
 
-(define lower-do (args hoist stmt?)
+(define lower-body (body tail?)
+  (lower-statement `(do ,@body) tail?))
+
+(define lower-do (args hoist stmt? tail?)
   (each (x) (sub args 0 (- (length args) 1))
     (add hoist (lower x hoist stmt?)))
-  (lower (last args) hoist stmt?))
+  (let (e (lower (last args) hoist stmt? tail?))
+    (if (and tail? (can-return? e))
+        `(return ,e)
+      e)))
 
-(define lower-if (args hoist stmt?)
+(define lower-if (args hoist stmt? tail?)
   (let ((cond then else) args)
-    (if stmt?
+    (if (or stmt? tail?)
         (add hoist
              `(%if ,(lower cond hoist)
-                   ,(lower then)
-                   ,@(if else (list (lower else)))))
+                   ,(lower-body (list then) tail?)
+                   ,@(if else (list (lower-body (list else) tail?)))))
       (let (e (make-id))
         (add hoist `(%local ,e))
         (add hoist
@@ -135,25 +141,28 @@
                          (list (lower `(set ,e ,else))))))
         e))))
 
+(define lower-try (args hoist tail?)
+  (add hoist `(%try ,(lower-body args tail?))))
+
 (define lower-while (args hoist)
   (let ((c rest: body) args)
     (add hoist
          `(while ,(lower c hoist)
-            ,(lower `(do ,@body))))))
+            ,(lower-body body)))))
 
 (define lower-for (args hoist)
   (let ((t k rest: body) args)
     (add hoist
          `(%for ,(lower t hoist) ,k
-            ,(lower `(do ,@body))))))
+            ,(lower-body body)))))
 
 (define lower-function (args)
   (let ((a rest: body) args)
-    `(%function ,a ,(lower `(do ,@body)))))
+    `(%function ,a ,(lower-body body true))))
 
 (define lower-definition (kind args hoist)
   (let ((name args rest: body) args)
-    (add hoist `(,kind ,name ,args ,(lower `(do ,@body))))))
+    (add hoist `(,kind ,name ,args ,(lower-body body true)))))
 
 (define lower-call (form hoist)
   (let (form (map (fn (x) (lower x hoist)) form))
@@ -164,16 +173,16 @@
     (if e (add hoist e))))
 
 (set lower
-  (fn (form hoist stmt?)
+  (fn (form hoist stmt? tail?)
     (if (atom? form) form
         (empty? form) '(%array)
         (nil? hoist) (lower-statement form)
        (let ((x rest: args) form)
-         (if (= x 'do) (lower-do args hoist stmt?)
-             (= x '%if) (lower-if args hoist stmt?)
+         (if (= x 'do) (lower-do args hoist stmt? tail?)
+             (= x '%if) (lower-if args hoist stmt? tail?)
+             (= x '%try) (lower-try args hoist tail?)
              (= x 'while) (lower-while args hoist)
              (= x '%for) (lower-for args hoist)
-             (= x '%try) `(%try ,(lower `(do ,@args)))
              (= x '%function) (lower-function args)
              (or (= x '%local-function)
                  (= x '%global-function))
@@ -263,7 +272,7 @@
 (define eval (form)
   (let (previous target)
     (set target (language))
-    (let (form (process `(do ,@(prologue) ,form)))
-      (let (compiled (compile `((%function () ,form))))
+    (let (form `((%function () ,@(prologue) ,form)))
+      (let (compiled (compile (process form)))
         (set target previous)
         (run compiled)))))

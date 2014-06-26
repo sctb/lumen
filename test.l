@@ -336,6 +336,18 @@
     (test= 40 ((fn (n) (+ n 10)) 30))
     (test= '(2 3 4) (map (fn (x) (+ x 1)) '(1 2 3)))))
 
+(define-test return ()
+  (let (a ((fn () 17)))
+    (test= 17 a))
+  (let (a ((fn () (if true 10 20))))
+    (test= 10 a))
+  (let (a ((fn () (while false (blah)))))
+    (test= nil a))
+  (let (a 11)
+    (let (b ((fn () (inc a))))
+      (test= nil b)
+      (test= 12 a))))
+
 (define-test guard ()
   (test= '(true 42) (guard 42))
   (test= '(false foo) (guard (error "foo")))
