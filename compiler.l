@@ -33,6 +33,9 @@
 (define infix? (x)
   (is? (getop x)))
 
+(define unary? (op args)
+  (and (= (length args) 1) (in? op '(not -))))
+
 (define compile)
 
 (define compile-args (args)
@@ -75,8 +78,7 @@
 
 (define compile-infix ((op rest: args))
   (let ((a b) args op1 (getop op))
-    (if (and (= (length args) 1)
-             (or (= op '-) (= op 'not)))
+    (if (unary? op args)
         (cat op1 "(" (compile a) ")")
       (cat "(" (compile a) " " op1 " " (compile b) ")"))))
 

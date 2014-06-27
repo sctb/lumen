@@ -7,6 +7,7 @@
            length
            none?
            some?
+           in?
            hd
            string?
            number?
@@ -74,6 +75,10 @@
 
 (define some? (x)
   (> (length x) 0))
+
+(define in? (x l)
+  (each (y) l
+    (if (= x y) (return true))))
 
 (define hd (l) (at l 0))
 
