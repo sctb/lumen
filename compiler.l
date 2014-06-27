@@ -137,6 +137,19 @@
                          (list (lower `(set ,e ,else))))))
         e))))
 
+(define lower-short (x args hoist)
+  (let ((a b) args
+        hoist1 ()
+        b1 (lower b hoist1))
+    (if (some? hoist1)
+        (let (id (make-id))
+          (lower `(do (%local ,id ,a)
+                      ,(if (= x 'and)
+                           `(%if ,id ,b ,id)
+                         `(%if ,id ,id ,b)))
+                 hoist))
+      `(,x ,(lower a hoist) ,b1))))
+
 (define lower-try (args hoist tail?)
   (add hoist `(%try ,(lower-body args tail?))))
 
@@ -191,6 +204,8 @@
              (or (= x '%local-function)
                  (= x '%global-function))
              (lower-definition x args hoist)
+             (or (= x 'and) (= x 'or))
+             (lower-short x args hoist)
              (statement? x) (lower-special form hoist)
            (lower-call form hoist))))))
 
