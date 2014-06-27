@@ -22,8 +22,8 @@
 
 (define infix
   (table common: (table :+ :- :% :* :/ :< :> :<= :>=)
-	 js: (table =: "===" ~=: "!=" and: "&&" or: "||" cat: "+")
-	 lua: (table =: "==" cat: ".." :~= :and :or)))
+	 js: (table =: "===" not: "!" ~=: "!=" and: "&&" or: "||" cat: "+")
+	 lua: (table =: "==" cat: ".." :~= :and :or :not)))
 
 (define getop (op)
   (let (op1 (or (get infix.common op)
@@ -74,10 +74,11 @@
         (error "Invalid function call")))))
 
 (define compile-infix ((op rest: args))
-  (if (and (= op '-) (= (length args) 1))
-      (cat op (compile (hd args)))
-    (let (op (getop op) (a b) args)
-      (cat "(" (compile a) " " op " " (compile b) ")"))))
+  (let ((a b) args op1 (getop op))
+    (if (and (= (length args) 1)
+             (or (= op '-) (= op 'not)))
+        (cat op1 "(" (compile a) ")")
+      (cat "(" (compile a) " " op1 " " (compile b) ")"))))
 
 (define compile-function (args body :name :prefix)
   (let (id (if name (compile name) "")

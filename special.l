@@ -119,11 +119,6 @@
         (cat t "." (inner k))
       (cat t "[" k1 "]"))))
 
-(define-special not (x)
-  (let (x (compile x)
-	open (if (= target 'js) "!(" "(not "))
-    (cat open x ")")))
-
 (define-special %array forms
   (let (open (if (= target 'lua) "{" "[")
 	close (if (= target 'lua) "}" "]")
