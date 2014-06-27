@@ -1606,8 +1606,8 @@
       return(op1);
     }
   }
-  function infix63(form) {
-    return((list63(form) && is63(getop(hd(form)))));
+  function infix63(x) {
+    return(is63(getop(x)));
   }
   var compile;
   function compile_args(args) {
@@ -1778,7 +1778,7 @@
           _g129 = compile_atom(form);
         } else {
           var _g130;
-          if (infix63(form)) {
+          if (infix63(hd(form))) {
             _g130 = compile_infix(form);
           } else {
             _g130 = compile_call(form);

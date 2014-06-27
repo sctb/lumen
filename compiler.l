@@ -20,8 +20,8 @@
                 (get (get infix target) op)))
     (if (= op1 true) op op1)))
 
-(define infix? (form)
-  (and (list? form) (is? (getop (hd form)))))
+(define infix? (x)
+  (is? (getop x)))
 
 (define compile)
 
@@ -100,7 +100,7 @@
       (let (tr (terminator stmt)
             ind (if stmt (indentation) "")
             form (if (atom? form) (compile-atom form)
-                     (infix? form) (compile-infix form)
+                     (infix? (hd form)) (compile-infix form)
                    (compile-call form)))
         (cat ind form tr)))))
 
