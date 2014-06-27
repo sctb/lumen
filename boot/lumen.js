@@ -1880,6 +1880,16 @@
       return(_g138);
     }
   }
+  function lower_infix63(form) {
+    return((infix63(hd(form)) && (length(form) > 3)));
+  }
+  function lower_infix(form, hoist) {
+    var x = form[0];
+    var args = sub(form, 1);
+    return(lower(reduce(function (a, b) {
+      return([x, a, b]);
+    }, args), hoist));
+  }
   function lower_special(form, hoist) {
     var e = lower_call(form, hoist);
     if (e) {
@@ -1896,33 +1906,37 @@
         if (nil63(hoist)) {
           return(lower_statement(form));
         } else {
-          var x = form[0];
-          var args = sub(form, 1);
-          if ((x === "do")) {
-            return(lower_do(args, hoist, stmt63, tail63));
+          if (lower_infix63(form)) {
+            return(lower_infix(form, hoist));
           } else {
-            if ((x === "%if")) {
-              return(lower_if(args, hoist, stmt63, tail63));
+            var x = form[0];
+            var args = sub(form, 1);
+            if ((x === "do")) {
+              return(lower_do(args, hoist, stmt63, tail63));
             } else {
-              if ((x === "%try")) {
-                return(lower_try(args, hoist, tail63));
+              if ((x === "%if")) {
+                return(lower_if(args, hoist, stmt63, tail63));
               } else {
-                if ((x === "while")) {
-                  return(lower_while(args, hoist));
+                if ((x === "%try")) {
+                  return(lower_try(args, hoist, tail63));
                 } else {
-                  if ((x === "%for")) {
-                    return(lower_for(args, hoist));
+                  if ((x === "while")) {
+                    return(lower_while(args, hoist));
                   } else {
-                    if ((x === "%function")) {
-                      return(lower_function(args));
+                    if ((x === "%for")) {
+                      return(lower_for(args, hoist));
                     } else {
-                      if (((x === "%local-function") || (x === "%global-function"))) {
-                        return(lower_definition(x, args, hoist));
+                      if ((x === "%function")) {
+                        return(lower_function(args));
                       } else {
-                        if (statement63(x)) {
-                          return(lower_special(form, hoist));
+                        if (((x === "%local-function") || (x === "%global-function"))) {
+                          return(lower_definition(x, args, hoist));
                         } else {
-                          return(lower_call(form, hoist));
+                          if (statement63(x)) {
+                            return(lower_special(form, hoist));
+                          } else {
+                            return(lower_call(form, hoist));
+                          }
                         }
                       }
                     }
@@ -1935,6 +1949,7 @@
       }
     }
   };
+  global.lower = lower;
   function process(form) {
     return(lower(macroexpand(form)));
   }
@@ -2050,6 +2065,8 @@
   _g144["lower-function"] = lower_function;
   _g144["lower-definition"] = lower_definition;
   _g144["lower-call"] = lower_call;
+  _g144["lower-infix?"] = lower_infix63;
+  _g144["lower-infix"] = lower_infix;
   _g144["lower-special"] = lower_special;
   _g144.process = process;
   _g144["module-path"] = module_path;
@@ -2167,6 +2184,7 @@
   var in_module = _g149["in-module"];
   var compile_module = _g149["compile-module"];
   var eval = _g149.eval;
+  var lower = _g149.lower;
 })();
 (function () {
   var _g315 = nexus.runtime;
@@ -2274,6 +2292,7 @@
   var in_module = _g319["in-module"];
   var compile_module = _g319["compile-module"];
   var eval = _g319.eval;
+  var lower = _g319.lower;
   global.target = "js";
 })();
 (function () {
@@ -2382,6 +2401,7 @@
   var in_module = _g589["in-module"];
   var compile_module = _g589["compile-module"];
   var eval = _g589.eval;
+  var lower = _g589.lower;
   global.modules = {main: {import: ["runtime", "special", "core", "reader", "compiler"], export: {save: {macro: function () {
     var specs = unstash(sublist(arguments, 0));
     var _g602 = sub(specs, 0);
@@ -2640,7 +2660,7 @@
     var body = unstash(sublist(arguments, 1));
     var _g627 = sub(body, 0);
     return(["set", ["get", "read-table", char], join(["fn", [stream]], _g627)]);
-  }}, read: {export: true, variable: true}, "read-all": {export: true, variable: true}, "read-from-string": {export: true, variable: true}, delimiters: {variable: true}, whitespace: {variable: true}, "peek-char": {variable: true}, "read-char": {variable: true}, "skip-non-code": {variable: true}, eof: {variable: true}, "key?": {variable: true}, "flag?": {variable: true}}}, compiler: {import: ["runtime", "utilities", "special", "core", "reader"], export: {"compile-function": {export: true, variable: true}, compile: {export: true, variable: true}, "open-module": {export: true, variable: true}, "load-module": {export: true, variable: true}, "in-module": {export: true, variable: true}, "compile-module": {export: true, variable: true}, eval: {export: true, variable: true}, infix: {variable: true}, getop: {variable: true}, "infix?": {variable: true}, "compile-args": {variable: true}, "compile-atom": {variable: true}, terminator: {variable: true}, "compile-special": {variable: true}, "compile-call": {variable: true}, "compile-infix": {variable: true}, "can-return?": {variable: true}, lower: {variable: true}, "lower-statement": {variable: true}, "lower-body": {variable: true}, "lower-do": {variable: true}, "lower-if": {variable: true}, "lower-try": {variable: true}, "lower-while": {variable: true}, "lower-for": {variable: true}, "lower-function": {variable: true}, "lower-definition": {variable: true}, "lower-call": {variable: true}, "lower-special": {variable: true}, process: {variable: true}, "current-module": {global: true, export: true}, "module-path": {variable: true}, encapsulate: {variable: true}, "compile-file": {variable: true}, run: {variable: true}, "compiling?": {variable: true}, "compiler-output": {variable: true}, "%compile-module": {variable: true}, prologue: {variable: true}}}, boot: {import: ["runtime", "utilities", "special", "core", "compiler"], export: {"%initial-environment": {macro: function () {
+  }}, read: {export: true, variable: true}, "read-all": {export: true, variable: true}, "read-from-string": {export: true, variable: true}, delimiters: {variable: true}, whitespace: {variable: true}, "peek-char": {variable: true}, "read-char": {variable: true}, "skip-non-code": {variable: true}, eof: {variable: true}, "key?": {variable: true}, "flag?": {variable: true}}}, compiler: {import: ["runtime", "utilities", "special", "core", "reader"], export: {"compile-function": {export: true, variable: true}, compile: {export: true, variable: true}, "open-module": {export: true, variable: true}, "load-module": {export: true, variable: true}, "in-module": {export: true, variable: true}, "compile-module": {export: true, variable: true}, eval: {export: true, variable: true}, infix: {variable: true}, getop: {variable: true}, "infix?": {variable: true}, "compile-args": {variable: true}, "compile-atom": {variable: true}, terminator: {variable: true}, "compile-special": {variable: true}, "compile-call": {variable: true}, "compile-infix": {variable: true}, "can-return?": {variable: true}, lower: {variable: true, global: true, export: true}, "lower-statement": {variable: true}, "lower-body": {variable: true}, "lower-do": {variable: true}, "lower-if": {variable: true}, "lower-try": {variable: true}, "lower-while": {variable: true}, "lower-for": {variable: true}, "lower-function": {variable: true}, "lower-definition": {variable: true}, "lower-call": {variable: true}, "lower-infix?": {variable: true}, "lower-infix": {variable: true}, "lower-special": {variable: true}, process: {variable: true}, "current-module": {global: true, export: true}, "module-path": {variable: true}, encapsulate: {variable: true}, "compile-file": {variable: true}, run: {variable: true}, "compiling?": {variable: true}, "compiler-output": {variable: true}, "%compile-module": {variable: true}, prologue: {variable: true}}}, boot: {import: ["runtime", "utilities", "special", "core", "compiler"], export: {"%initial-environment": {macro: function () {
     return(quote_environment(initial_environment()));
   }}, "%initial-modules": {macro: function () {
     return(quote_modules());

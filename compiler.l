@@ -169,6 +169,13 @@
   (let (form (map (fn (x) (lower x hoist)) form))
     (if (some? form) form)))
 
+(define lower-infix? (form)
+  (and (infix? (hd form)) (> (length form) 3)))
+
+(define lower-infix (form hoist)
+  (let ((x rest: args) form)
+    (lower (reduce (fn (a b) (list x a b)) args) hoist)))
+
 (define lower-special (form hoist)
   (let (e (lower-call form hoist))
     (if e (add hoist e))))
@@ -178,6 +185,7 @@
     (if (atom? form) form
         (empty? form) '(%array)
         (nil? hoist) (lower-statement form)
+        (lower-infix? form) (lower-infix form hoist)
        (let ((x rest: args) form)
          (if (= x 'do) (lower-do args hoist stmt? tail?)
              (= x '%if) (lower-if args hoist stmt? tail?)
@@ -190,6 +198,8 @@
              (lower-definition x args hoist)
              (statement? x) (lower-special form hoist)
            (lower-call form hoist))))))
+
+(define* lower lower)
 
 (define process (form)
   (lower (macroexpand form)))
