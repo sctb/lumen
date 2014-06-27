@@ -64,15 +64,10 @@
         (error "Invalid function call")))))
 
 (define compile-infix ((op rest: args))
-  (let (str "("
-        op (getop op))
-    (each (arg :i) args
-      (if (and (= op '-) (= (length args) 1))
-          (cat! str op (compile arg))
-        (do (cat! str (compile arg))
-            (when (< i (- (length args) 1))
-              (cat! str " " op " ")))))
-    (cat str ")")))
+  (if (and (= op '-) (= (length args) 1))
+      (cat op (compile (hd args)))
+    (let (op (getop op) (a b) args)
+      (cat "(" (compile a) " " op " " (compile b) ")"))))
 
 (define compile-function (args body :name :prefix)
   (let (id (if name (compile name) "")
