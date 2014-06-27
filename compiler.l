@@ -10,6 +10,16 @@
            compile-module
            eval))
 
+;; precedence
+;;  1 not -
+;;  2 * / %
+;;  3 + -
+;;  4 cat
+;;  5 < > <= >=
+;;  6 ~= =
+;;  7 and
+;;  8 or
+
 (define infix
   (table common: (table :+ :- :% :* :/ :< :> :<= :>=)
 	 js: (table =: "===" ~=: "!=" and: "&&" or: "||" cat: "+")
