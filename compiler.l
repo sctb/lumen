@@ -48,9 +48,10 @@
     "\n"))
 
 (define compile-special (form stmt?)
-  (let ((:special :stmt tr: self-tr?) (getenv (hd form))
+  (let ((x rest: args) form
+        (:special :stmt tr: self-tr?) (getenv x)
         tr (terminator (and stmt? (not self-tr?))))
-    (cat (special (tl form)) tr)))
+    (cat (apply special args) tr)))
 
 (define compile-call (form)
   (if (none? form)
