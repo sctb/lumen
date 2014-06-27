@@ -1956,10 +1956,10 @@
                       if ((x === "%function")) {
                         return(lower_function(args));
                       } else {
-                        if (((x === "%local-function") || (x === "%global-function"))) {
+                        if (in63(x, ["%local-function", "%global-function"])) {
                           return(lower_definition(x, args, hoist));
                         } else {
-                          if (((x === "and") || (x === "or"))) {
+                          if (in63(x, ["and", "or"])) {
                             return(lower_short(x, args, hoist));
                           } else {
                             if (statement63(x)) {
@@ -3001,6 +3001,7 @@
   var length = _g2.length;
   var none63 = _g2["none?"];
   var some63 = _g2["some?"];
+  var in63 = _g2["in?"];
   var hd = _g2.hd;
   var string63 = _g2["string?"];
   var number63 = _g2["number?"];
