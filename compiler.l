@@ -10,31 +10,34 @@
            compile-module
            eval))
 
-;; precedence
-;;  1 not -
-;;  2 * / %
-;;  3 + -
-;;  4 cat
-;;  5 < > <= >=
-;;  6 ~= =
-;;  7 and
-;;  8 or
-
 (define infix
-  (table common: (table :+ :- :% :* :/ :< :> :<= :>=)
-	 js: (table =: "===" not: "!" ~=: "!=" and: "&&" or: "||" cat: "+")
-	 lua: (table =: "==" cat: ".." :~= :and :or :not)))
-
-(define getop (op)
-  (let (op1 (or (get infix.common op)
-                (get (get infix target) op)))
-    (if (= op1 true) op op1)))
-
-(define infix? (x)
-  (is? (getop x)))
+  `((not: (js: ! lua: ,"not "))
+    (:* :/ :%)
+    (:+ :-)
+    (cat: (js: + lua: ,".."))
+    (:< :> :<= :>=)
+    (=: (js: === lua: ==) ~=: (js: != lua: ~=))
+    (and: (js: && lua: and))
+    (or: (js: ,"||" lua: or))))
 
 (define unary? (op args)
   (and (= (length args) 1) (in? op '(not -))))
+
+(define precedence (op args)
+  (when (not (unary? op args))
+    (each (level :i) infix
+      (if (get level op) (return i))))
+  0)
+
+(define getop (op)
+  (find (fn (level)
+          (let (x (get level op))
+            (if (= x true) op
+                (is? x) (get x target))))
+        infix))
+
+(define infix? (x)
+  (is? (getop x)))
 
 (define compile)
 
