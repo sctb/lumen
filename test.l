@@ -101,9 +101,13 @@
   (test= true (< 2e-3 0.0021))
   (test= false (< 2 2))
   (test= true (<= 2 2))
-  (test= -7 (- 7))
-  (let (n 8)
-    (test= -8 (- n))))
+  (test= -7 (- 7)))
+
+(define-test precedence ()
+  (test= -3 (- (+ 1 2)))
+  (test= 10 (- 12 (+ 1 1)))
+  (test= 11 (- 12 (* 1 1)))
+  (test= 10 (+ (/ 4 2) 8)))
 
 (define-test string ()
   (test= 3 (length "foo"))

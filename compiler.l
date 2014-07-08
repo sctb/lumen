@@ -20,13 +20,14 @@
     (and: (js: && lua: and))
     (or: (js: ,"||" lua: or))))
 
-(define unary? (op args)
-  (and (= (length args) 1) (in? op '(not -))))
+(define unary? (form)
+  (let ((op rest: args) form)
+    (and (= (length args) 1) (in? op '(not -)))))
 
-(define precedence (op args)
-  (when (not (unary? op args))
+(define precedence (form)
+  (when (and (list? form) (not (unary? form)))
     (each (level :i) infix
-      (if (get level op) (return i))))
+      (if (get level (hd form)) (return i))))
   0)
 
 (define getop (op)
@@ -79,11 +80,22 @@
           (string? f) (cat f1 args)
         (error "Invalid function call")))))
 
-(define compile-infix ((op rest: args))
-  (let ((a b) args op1 (getop op))
-    (if (unary? op args)
-        (cat op1 "(" (compile a) ")")
-      (cat "(" (compile a) " " op1 " " (compile b) ")"))))
+(define op-delims (parent p)
+  (if (> p (precedence parent))
+      (list "(" ")")
+    (list "" "")))
+
+(define compile-infix (form)
+  (let ((op rest: (a b)) form
+        (ao ac) (op-delims form (precedence a))
+        ;; left-associativity for binary operators
+        (bo bc) (op-delims form (+ (precedence b) 1))
+        a (compile a)
+        b (compile b)
+        op (getop op))
+    (if (unary? form)
+        (cat op ao a ac)
+      (cat ao a ac " " op " " bo b bc))))
 
 (define compile-function (args body :name :prefix)
   (let (id (if name (compile name) "")
