@@ -70,24 +70,30 @@
         tr (terminator (and stmt? (not self-tr?))))
     (cat (apply special args) tr)))
 
+(define parenthesize-call? (x)
+  (and (list? x)
+       (or (= (hd x) '%function)
+           (> (precedence x) 0))))
+
 (define compile-call (form)
   (let (f (hd form)
         f1 (compile f)
         args (compile-args (stash* (tl form))))
-    (if (list? f) (cat "(" f1 ")" args)
-        (string? f) (cat f1 args)
-      (error "Invalid function call"))))
+    (if (parenthesize-call? f)
+        (cat "(" f1 ")" args)
+      (cat f1 args))))
 
-(define op-delims (parent p)
-  (if (> p (precedence parent))
+(define op-delims (parent child :right)
+  (if ((if right >= >)
+       (precedence child)
+       (precedence parent))
       (list "(" ")")
     (list "" "")))
 
 (define compile-infix (form)
   (let ((op rest: (a b)) form
-        (ao ac) (op-delims form (precedence a))
-        ;; left-associativity for binary operators
-        (bo bc) (op-delims form (+ (precedence b) 1))
+        (ao ac) (op-delims form a)
+        (bo bc) (op-delims form b :right)
         a (compile a)
         b (compile b)
         op (getop op))
