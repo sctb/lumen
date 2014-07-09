@@ -1,15 +1,15 @@
 #!/bin/sh
 
 HOST=${LUMEN_HOST:-lua}
-BOOT=boot/lumen.lua
+FILE=lumen.lua
 
 if [ "$HOST" = "node" ]
 then
-    BOOT=boot/lumen.js
+    FILE=lumen.js
 fi
 
 pushd `dirname $0` > /dev/null
 DIR=`pwd`
 popd > /dev/null
 
-$HOST $DIR/$BOOT "$@"
+$HOST $DIR/$FILE "$@"

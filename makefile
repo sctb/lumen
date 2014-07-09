@@ -1,21 +1,22 @@
 .PHONY: all test check clean
 
-LUABOOT := boot/lumen.lua
-JSBOOT := boot/lumen.js
+LUA := bin/lumen.lua
+JS := bin/lumen.js
+LUMEN := bin/lumen
 
-$(LUABOOT) $(JSBOOT): *.l
-	@./lumen main -o $(LUABOOT)
-	@LUMEN_HOST=node ./lumen main -o $(JSBOOT)
+$(LUA) $(JS): *.l
+	@$(LUMEN) main -o $(LUA)
+	@LUMEN_HOST=node $(LUMEN) main -o $(JS)
 
-all: $(JSBOOT) $(LUABOOT)
+all: $(JS) $(LUA)
 
 cross: all
-	@LUMEN_HOST=node ./lumen main -o $(LUABOOT) -t lua
-	@./lumen main -o $(JSBOOT) -t js
+	@LUMEN_HOST=node $(LUMEN) main -o $(LUA) -t lua
+	@$(LUMEN) main -o $(JS) -t js
 
 test: all
-	@./lumen test -e "(run)"
-	@LUMEN_HOST=node ./lumen test -e "(run)"
+	@$(LUMEN) test -e "(run)"
+	@LUMEN_HOST=node $(LUMEN) test -e "(run)"
 
 clean:
 	@git checkout boot
