@@ -505,7 +505,9 @@
     if (atom63(spec)) {
       return(to_string(spec));
     } else {
-      throw new Error("Unsupported module specification");
+      return(reduce(function (a, b) {
+        return(module_key(a) + "/" + module_key(b));
+      }, spec));
     }
   }
   function module(spec) {

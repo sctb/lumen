@@ -386,7 +386,9 @@
 (define module-key (spec)
   (if (atom? spec)
       (to-string spec)
-    (error "Unsupported module specification")))
+    (reduce (fn (a b)
+              (cat (module-key a) "/" (module-key b)))
+            spec)))
 
 (define module (spec)
   (get modules (module-key spec)))

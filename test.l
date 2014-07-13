@@ -714,3 +714,8 @@
   (test= 42 ((fn ((:foo)) foo) (list foo: 42)))
   (let (f (fn (a bar: b (:foo)) (list a b foo)))
     (test= '(10 20 42) (f 10 bar: 20 (list foo: 42)))))
+
+(define-test module ()
+  (test= "foo" (module-key 'foo))
+  (test= "foo/bar" (module-key '(foo bar)))
+  (test= "foo/bar/baz" (module-key '(foo (bar baz)))))
