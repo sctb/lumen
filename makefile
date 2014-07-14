@@ -19,4 +19,4 @@ test: all
 	@LUMEN_HOST=node $(LUMEN) test -e "(run)"
 
 clean:
-	@git checkout boot
+	@git checkout bin/lumen.*
