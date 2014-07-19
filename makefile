@@ -1,22 +1,16 @@
-.PHONY: all test check clean
+.PHONY: all cross test clean
 
-LUA := bin/lumen.lua
-JS := bin/lumen.js
 LUMEN := bin/lumen
+LIBDIR := lib
 
-$(LUA) $(JS): *.l
-	@$(LUMEN) main -o $(LUA)
-	@LUMEN_HOST=node $(LUMEN) main -o $(JS)
+all:
+	@$(MAKE) -C $(LIBDIR) all
 
-all: $(JS) $(LUA)
+cross:
+	@$(MAKE) -C $(LIBDIR) cross
 
-cross: all
-	@LUMEN_HOST=node $(LUMEN) main -o $(LUA) -t lua
-	@$(LUMEN) main -o $(JS) -t js
-
-test: all
-	@$(LUMEN) test -e "(run)"
-	@LUMEN_HOST=node $(LUMEN) test -e "(run)"
+test:
+	@$(MAKE) -C $(LIBDIR) test
 
 clean:
 	@git checkout bin/lumen.*
