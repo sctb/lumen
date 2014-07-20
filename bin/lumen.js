@@ -1111,7 +1111,7 @@
       }
     }
   }
-  function to_id(id) {
+  function id(id) {
     var id1 = "";
     var i = 0;
     while (i < length(id)) {
@@ -1262,7 +1262,7 @@
   _g99.indentation = indentation;
   _g99["reserved?"] = reserved63;
   _g99["valid-id?"] = valid_id63;
-  _g99["to-id"] = to_id;
+  _g99.id = id;
   _g99.imported = imported;
   _g99.exported = exported;
   _g99.mapo = mapo;
@@ -1698,7 +1698,7 @@
   var indentation = _g112.indentation;
   var reserved63 = _g112["reserved?"];
   var valid_id63 = _g112["valid-id?"];
-  var to_id = _g112["to-id"];
+  var id = _g112.id;
   var imported = _g112.imported;
   var exported = _g112.exported;
   var mapo = _g112.mapo;
@@ -1834,7 +1834,7 @@
             return(x);
           } else {
             if (string63(x)) {
-              return(to_id(x));
+              return(id(x));
             } else {
               if (boolean63(x)) {
                 if (x) {
@@ -1846,7 +1846,7 @@
                 if (number63(x)) {
                   return(x + "");
                 } else {
-                  throw new Error("Unrecognized atom");
+                  throw new Error("Cannot compile atom: " + string(x));
                 }
               }
             }
@@ -2421,7 +2421,7 @@
   var indentation = _g189.indentation;
   var reserved63 = _g189["reserved?"];
   var valid_id63 = _g189["valid-id?"];
-  var to_id = _g189["to-id"];
+  var id = _g189.id;
   var imported = _g189.imported;
   var exported = _g189.exported;
   var mapo = _g189.mapo;
@@ -2549,7 +2549,7 @@
   var indentation = _g351.indentation;
   var reserved63 = _g351["reserved?"];
   var valid_id63 = _g351["valid-id?"];
-  var to_id = _g351["to-id"];
+  var id = _g351.id;
   var imported = _g351.imported;
   var exported = _g351.exported;
   var mapo = _g351.mapo;
@@ -2678,7 +2678,7 @@
   var indentation = _g621.indentation;
   var reserved63 = _g621["reserved?"];
   var valid_id63 = _g621["valid-id?"];
-  var to_id = _g621["to-id"];
+  var id = _g621.id;
   var imported = _g621.imported;
   var exported = _g621.exported;
   var mapo = _g621.mapo;
@@ -2860,7 +2860,7 @@
       return(join(["%global-function", name, args], _g663));
     } else {
       if (target === "js") {
-        return(["set", ["get", "global", ["quote", to_id(name)]], x]);
+        return(["set", ["get", "global", ["quote", id(name)]], x]);
       } else {
         return(["set", name, x]);
       }
@@ -3224,7 +3224,7 @@
   }, export: true}}}, lib: {import: ["core", "special"], export: {}}, compiler: {import: ["runtime", "utilities", "special", "core", "reader"], export: {"compile-function": {export: true, variable: true}, compile: {export: true, variable: true}, "open-module": {export: true, variable: true}, "load-module": {export: true, variable: true}, "in-module": {export: true, variable: true}, "compile-module": {export: true, variable: true}, eval: {export: true, variable: true}, infix: {variable: true}, "unary?": {variable: true}, precedence: {variable: true}, getop: {variable: true}, "infix?": {variable: true}, "compile-args": {variable: true}, "compile-atom": {variable: true}, terminator: {variable: true}, "compile-special": {variable: true}, "parenthesize-call?": {variable: true}, "compile-call": {variable: true}, "op-delims": {variable: true}, "compile-infix": {variable: true}, "can-return?": {variable: true}, lower: {variable: true, global: true, export: true}, "lower-statement": {variable: true}, "lower-body": {variable: true}, "lower-do": {variable: true}, "lower-if": {variable: true}, "lower-short": {variable: true}, "lower-try": {variable: true}, "lower-while": {variable: true}, "lower-for": {variable: true}, "lower-function": {variable: true}, "lower-definition": {variable: true}, "lower-call": {variable: true}, "lower-infix?": {variable: true}, "lower-infix": {variable: true}, "lower-special": {variable: true}, process: {variable: true}, "current-module": {global: true, export: true}, "module-path": {variable: true}, encapsulate: {variable: true}, "compile-file": {variable: true}, run: {variable: true}, "compiling?": {variable: true}, "compiler-output": {variable: true}, "%compile-module": {variable: true}, prologue: {variable: true}}}, utilities: {import: ["runtime", "special", "core"], export: {getenv: {export: true, variable: true}, "macro-function": {export: true, variable: true}, "macro?": {export: true, variable: true}, "special?": {export: true, variable: true}, "special-form?": {export: true, variable: true}, "statement?": {export: true, variable: true}, "symbol-expansion": {export: true, variable: true}, "symbol?": {export: true, variable: true}, "variable?": {export: true, variable: true}, "bound?": {export: true, variable: true}, "toplevel?": {export: true, variable: true}, quoted: {export: true, variable: true}, "stash*": {export: true, variable: true}, bind: {export: true, variable: true}, "bind*": {export: true, variable: true}, quasiexpand: {export: true, variable: true}, macroexpand: {export: true, variable: true}, indentation: {export: true, variable: true}, "with-indent": {export: true, macro: function (form) {
     var result = make_id();
     return(["do", ["inc", "indent-level"], ["let", [result, form], ["dec", "indent-level"], result]]);
-  }}, "reserved?": {export: true, variable: true}, "valid-id?": {export: true, variable: true}, "to-id": {export: true, variable: true}, imported: {export: true, variable: true}, exported: {export: true, variable: true}, mapo: {export: true, variable: true}, "quote-environment": {export: true, variable: true}, "quote-modules": {export: true, variable: true}, "initial-environment": {export: true, variable: true}, "global?": {variable: true}, escape: {variable: true}, "quoting?": {variable: true}, "quasiquoting?": {variable: true}, "can-unquote?": {variable: true}, "quasisplice?": {variable: true}, "quasiquote-list": {variable: true}, "indent-level": {global: true, export: true}, reserved: {variable: true}, "numeric?": {variable: true}, "valid-char?": {variable: true}, "quote-binding": {variable: true}, "quote-frame": {variable: true}, "quote-module": {variable: true}}}, system: {import: ["special", "core"], export: {nexus: {global: true, export: true}}}};
+  }}, "reserved?": {export: true, variable: true}, "valid-id?": {export: true, variable: true}, id: {export: true, variable: true}, imported: {export: true, variable: true}, exported: {export: true, variable: true}, mapo: {export: true, variable: true}, "quote-environment": {export: true, variable: true}, "quote-modules": {export: true, variable: true}, "initial-environment": {export: true, variable: true}, "global?": {variable: true}, escape: {variable: true}, "quoting?": {variable: true}, "quasiquoting?": {variable: true}, "can-unquote?": {variable: true}, "quasisplice?": {variable: true}, "quasiquote-list": {variable: true}, "indent-level": {global: true, export: true}, reserved: {variable: true}, "numeric?": {variable: true}, "valid-char?": {variable: true}, "quote-binding": {variable: true}, "quote-frame": {variable: true}, "quote-module": {variable: true}}}, system: {import: ["special", "core"], export: {nexus: {global: true, export: true}}}};
   global.environment = [{"define-module": {macro: function (spec) {
     var body = unstash(Array.prototype.slice.call(arguments, 1));
     var _g723 = sub(body, 0);
@@ -3331,7 +3331,6 @@
   var write_file = _g2["write-file"];
   var write = _g2.write;
   var exit = _g2.exit;
-  var parse_number = _g2["parse-number"];
   var number = _g2.number;
   var string = _g2.string;
   var apply = _g2.apply;

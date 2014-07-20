@@ -23,7 +23,7 @@
            with-indent
            reserved?
            valid-id?
-           to-id
+           id
            imported
            exported
            mapo
@@ -278,7 +278,7 @@
         (inc i))
       true)))
 
-(define to-id (id)
+(define id (id)
   (let (id1 "" i 0)
     (while (< i (length id))
       (let (c (char id i)

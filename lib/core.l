@@ -123,7 +123,7 @@
       (let ((args body) (bind* x body))
         `(%global-function ,name ,args ,@body))
       (= target 'js)
-      `(set (get global ',(to-id name)) ,x)
+      `(set (get global ',(id name)) ,x)
     `(set ,name ,x)))
 
 (define-macro define (name x rest: body)

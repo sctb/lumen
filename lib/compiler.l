@@ -54,7 +54,7 @@
       (= x "nil") "undefined"
       (id-literal? x) (inner x)
       (string-literal? x) x
-      (string? x) (to-id x)
+      (string? x) (id x)
       (boolean? x) (if x "true" "false")
       (number? x) (cat x "")
     (error (cat "Cannot compile atom: " (string x)))))
