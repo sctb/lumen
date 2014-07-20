@@ -25,7 +25,6 @@
            valid-id?
            id
            sortk
-           sortp
            imported
            exported
            mapo
