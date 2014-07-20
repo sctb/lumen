@@ -295,9 +295,6 @@
 (define sortk (l k)
   (sort l (fn (a b) (< (k a) (k b)))))
 
-(define sortp (l)
-  (flat1 (sortk (pairwise l) hd)))
-
 (define imported (spec :all)
   (let (m (make-id)
         k (module-key spec)
@@ -343,7 +340,7 @@
         (when (is? x)
           (add o k)
           (add o x))))
-    (sortp o)))
+    o))
 
 (define quote-frame (t)
   `(%object ,@(mapo (fn (b) `(table ,@(quote-binding b))) t)))
