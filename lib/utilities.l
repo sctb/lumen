@@ -336,7 +336,10 @@
         (when (is? x)
           (add o k)
           (add o x))))
-    o))
+    (flat1
+     (sort (pairwise o)
+           (fn (a b)
+             (< (hd a) (hd b)))))))
 
 (define quote-frame (t)
   `(%object

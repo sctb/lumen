@@ -657,6 +657,16 @@
   (test= 7 (find (fn (x) x) '(7)))
   (test= true (find (fn (x) (= x 7)) '(2 4 7))))
 
+(define-test flat ()
+  (test= 7 (flat 7))
+  (test= 7 (flat1 7))
+  (test= '(a b) (flat '(a b)))
+  (test= '(a b) (flat1 '(a b)))
+  (test= '(a b) (flat '(a (b))))
+  (test= '(a b) (flat1 '(a (b))))
+  (test= '(a b c) (flat '(a ((b) c))))
+  (test= '(a (b) c) (flat1 '(a ((b) c)))))
+
 (define-test sort ()
   (test= '(a b c) (sort '(c a b)))
   (test= '(3 2 1) (sort '(1 2 3) >)))
@@ -726,3 +736,7 @@
   (test= "foo" (module-key 'foo))
   (test= "foo/bar" (module-key '(foo bar)))
   (test= "foo/bar/baz" (module-key '(foo (bar baz)))))
+
+(define-test utilities ()
+  (test= '(a 3 b 2 c 1)
+         (mapo (fn (_ x) x) '(table b: 2 c: 1 a: 3))))

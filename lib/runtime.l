@@ -61,6 +61,8 @@
            replicate
            splice
            map
+           flat
+           flat1
            keys?
            empty?
            stash
@@ -281,6 +283,14 @@
             (is? x)
             (set (get l k) x))))
     l))
+
+(define flat (x)
+  (if (atom? x) x
+    (map (fn (a) (if (list? a) (splice (flat a)) a)) x)))
+
+(define flat1 (x)
+  (if (atom? x) x
+    (map (fn (a) (if (list? a) (splice a) a)) x)))
 
 (define keys? (t)
   (let (k? false)
