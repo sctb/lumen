@@ -221,6 +221,6 @@
 
 (define-macro pr xs
   (let (xs (map (fn (x)
-                  (splice `((to-string ,x) " ")))
+                  (splice `((string ,x) " ")))
                 xs))
     `(print (cat ,@xs))))

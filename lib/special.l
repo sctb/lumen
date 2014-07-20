@@ -134,7 +134,7 @@
         pairs (pairwise forms))
     (each ((k v) :i) pairs
       (unless (string? k)
-        (error (cat "Illegal key: " (to-string k))))
+        (error (cat "Illegal key: " (string k))))
       (let (v (compile v)
             k (if (valid-id? k) k
                   (and (= target 'js) (string-literal? k)) k

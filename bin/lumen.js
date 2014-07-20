@@ -455,13 +455,13 @@
   function exit(code) {
     return(process.exit(code));
   }
-  function parse_number(str) {
+  function number(str) {
     var n = parseFloat(str);
     if (!isNaN(n)) {
       return(n);
     }
   }
-  function to_string(x) {
+  function string(x) {
     if (nil63(x)) {
       return("nil");
     } else {
@@ -493,7 +493,7 @@
             var i = 0;
             while (i < length(_g48)) {
               var y = _g48[i];
-              str = str + to_string(y);
+              str = str + string(y);
               if (i < length(x1) - 1) {
                 str = str + " ";
               }
@@ -523,7 +523,7 @@
   }
   function module_key(spec) {
     if (atom63(spec)) {
-      return(to_string(spec));
+      return(string(spec));
     } else {
       return(reduce(function (a, b) {
         return(module_key(a) + "/" + module_key(b));
@@ -635,8 +635,8 @@
   _g52["write-file"] = write_file;
   _g52.write = write;
   _g52.exit = exit;
-  _g52["parse-number"] = parse_number;
-  _g52["to-string"] = to_string;
+  _g52.number = number;
+  _g52.string = string;
   _g52.apply = apply;
   _g52["make-id"] = make_id;
   _g52["%message-handler"] = _37message_handler;
@@ -732,8 +732,8 @@
   var write_file = _g57["write-file"];
   var write = _g57.write;
   var exit = _g57.exit;
-  var parse_number = _g57["parse-number"];
-  var to_string = _g57["to-string"];
+  var number = _g57.number;
+  var string = _g57.string;
   var apply = _g57.apply;
   var make_id = _g57["make-id"];
   var _37message_handler = _g57["%message-handler"];
@@ -1364,8 +1364,8 @@
   var write_file = _g100["write-file"];
   var write = _g100.write;
   var exit = _g100.exit;
-  var parse_number = _g100["parse-number"];
-  var to_string = _g100["to-string"];
+  var number = _g100.number;
+  var string = _g100.string;
   var apply = _g100.apply;
   var make_id = _g100["make-id"];
   var _37message_handler = _g100["%message-handler"];
@@ -1457,7 +1457,7 @@
         break;
       }
     }
-    var n = parse_number(str);
+    var n = number(str);
     if (is63(n)) {
       return(n);
     } else {
@@ -1668,8 +1668,8 @@
   var write_file = _g111["write-file"];
   var write = _g111.write;
   var exit = _g111.exit;
-  var parse_number = _g111["parse-number"];
-  var to_string = _g111["to-string"];
+  var number = _g111.number;
+  var string = _g111.string;
   var apply = _g111.apply;
   var make_id = _g111["make-id"];
   var _37message_handler = _g111["%message-handler"];
@@ -2391,8 +2391,8 @@
   var write_file = _g188["write-file"];
   var write = _g188.write;
   var exit = _g188.exit;
-  var parse_number = _g188["parse-number"];
-  var to_string = _g188["to-string"];
+  var number = _g188.number;
+  var string = _g188.string;
   var apply = _g188.apply;
   var make_id = _g188["make-id"];
   var _37message_handler = _g188["%message-handler"];
@@ -2519,8 +2519,8 @@
   var write_file = _g350["write-file"];
   var write = _g350.write;
   var exit = _g350.exit;
-  var parse_number = _g350["parse-number"];
-  var to_string = _g350["to-string"];
+  var number = _g350.number;
+  var string = _g350.string;
   var apply = _g350.apply;
   var make_id = _g350["make-id"];
   var _37message_handler = _g350["%message-handler"];
@@ -2648,8 +2648,8 @@
   var write_file = _g620["write-file"];
   var write = _g620.write;
   var exit = _g620.exit;
-  var parse_number = _g620["parse-number"];
-  var to_string = _g620["to-string"];
+  var number = _g620.number;
+  var string = _g620.string;
   var apply = _g620.apply;
   var make_id = _g620["make-id"];
   var _37message_handler = _g620["%message-handler"];
@@ -2699,7 +2699,7 @@
     var _g637 = sub(specs, 0);
     map(compile_module, _g637);
     return(undefined);
-  }}}}, optimizer: {import: ["runtime", "special", "core"], export: {optimizations: {variable: true}, "define-optimization": {}, optimize: {variable: true, export: true}}}, runtime: {import: ["special", "core"], export: {"nil?": {export: true, variable: true}, "is?": {export: true, variable: true}, max: {export: true, variable: true}, min: {export: true, variable: true}, abs: {export: true, variable: true}, acos: {export: true, variable: true}, asin: {export: true, variable: true}, atan: {export: true, variable: true}, atan2: {export: true, variable: true}, ceil: {export: true, variable: true}, cos: {export: true, variable: true}, floor: {export: true, variable: true}, log: {export: true, variable: true}, log10: {export: true, variable: true}, pow: {export: true, variable: true}, random: {export: true, variable: true}, sin: {export: true, variable: true}, sinh: {export: true, variable: true}, sqrt: {export: true, variable: true}, tan: {export: true, variable: true}, tanh: {export: true, variable: true}, length: {export: true, variable: true}, "none?": {export: true, variable: true}, "some?": {export: true, variable: true}, "in?": {export: true, variable: true}, hd: {export: true, variable: true}, "string?": {export: true, variable: true}, "number?": {export: true, variable: true}, "boolean?": {export: true, variable: true}, "function?": {export: true, variable: true}, "composite?": {export: true, variable: true}, "atom?": {export: true, variable: true}, "table?": {export: true, variable: true}, "list?": {export: true, variable: true}, substring: {export: true, variable: true}, sublist: {export: true, variable: true}, sub: {export: true, variable: true}, inner: {export: true, variable: true}, tl: {export: true, variable: true}, char: {export: true, variable: true}, code: {export: true, variable: true}, "string-literal?": {export: true, variable: true}, "id-literal?": {export: true, variable: true}, add: {export: true, variable: true}, drop: {export: true, variable: true}, last: {export: true, variable: true}, reverse: {export: true, variable: true}, join: {export: true, variable: true}, reduce: {export: true, variable: true}, keep: {export: true, variable: true}, find: {export: true, variable: true}, pairwise: {export: true, variable: true}, iterate: {export: true, variable: true}, replicate: {export: true, variable: true}, splice: {export: true, variable: true}, map: {export: true, variable: true}, "keys?": {export: true, variable: true}, "empty?": {export: true, variable: true}, stash: {export: true, variable: true}, unstash: {export: true, variable: true}, extend: {export: true, variable: true}, exclude: {export: true, variable: true}, search: {export: true, variable: true}, split: {export: true, variable: true}, cat: {export: true, variable: true}, "+": {export: true, variable: true}, "-": {export: true, variable: true}, "*": {export: true, variable: true}, "/": {export: true, variable: true}, "%": {export: true, variable: true}, ">": {export: true, variable: true}, "<": {export: true, variable: true}, "=": {export: true, variable: true}, ">=": {export: true, variable: true}, "<=": {export: true, variable: true}, "read-file": {export: true, variable: true}, "write-file": {export: true, variable: true}, write: {export: true, variable: true}, exit: {export: true, variable: true}, "parse-number": {export: true, variable: true}, "to-string": {export: true, variable: true}, apply: {export: true, variable: true}, "make-id": {export: true, variable: true}, "%message-handler": {export: true, variable: true}, "toplevel?": {export: true, variable: true}, "module-key": {export: true, variable: true}, module: {export: true, variable: true}, setenv: {export: true, variable: true}, math: {variable: true}, type: {variable: true}, "splice?": {variable: true}, mapl: {variable: true}, require: {global: true, export: true}, fs: {variable: true}, print: {global: true, export: true}, "id-count": {variable: true}}}, reader: {import: ["runtime", "special", "core"], export: {"make-stream": {export: true, variable: true}, "read-table": {export: true, variable: true}, "define-reader": {export: true, macro: function (_g638) {
+  }}}}, optimizer: {import: ["runtime", "special", "core"], export: {optimizations: {variable: true}, "define-optimization": {}, optimize: {variable: true, export: true}}}, runtime: {import: ["special", "core"], export: {"nil?": {export: true, variable: true}, "is?": {export: true, variable: true}, max: {export: true, variable: true}, min: {export: true, variable: true}, abs: {export: true, variable: true}, acos: {export: true, variable: true}, asin: {export: true, variable: true}, atan: {export: true, variable: true}, atan2: {export: true, variable: true}, ceil: {export: true, variable: true}, cos: {export: true, variable: true}, floor: {export: true, variable: true}, log: {export: true, variable: true}, log10: {export: true, variable: true}, pow: {export: true, variable: true}, random: {export: true, variable: true}, sin: {export: true, variable: true}, sinh: {export: true, variable: true}, sqrt: {export: true, variable: true}, tan: {export: true, variable: true}, tanh: {export: true, variable: true}, length: {export: true, variable: true}, "none?": {export: true, variable: true}, "some?": {export: true, variable: true}, "in?": {export: true, variable: true}, hd: {export: true, variable: true}, "string?": {export: true, variable: true}, "number?": {export: true, variable: true}, "boolean?": {export: true, variable: true}, "function?": {export: true, variable: true}, "composite?": {export: true, variable: true}, "atom?": {export: true, variable: true}, "table?": {export: true, variable: true}, "list?": {export: true, variable: true}, substring: {export: true, variable: true}, sublist: {export: true, variable: true}, sub: {export: true, variable: true}, inner: {export: true, variable: true}, tl: {export: true, variable: true}, char: {export: true, variable: true}, code: {export: true, variable: true}, "string-literal?": {export: true, variable: true}, "id-literal?": {export: true, variable: true}, add: {export: true, variable: true}, drop: {export: true, variable: true}, last: {export: true, variable: true}, reverse: {export: true, variable: true}, join: {export: true, variable: true}, reduce: {export: true, variable: true}, keep: {export: true, variable: true}, find: {export: true, variable: true}, pairwise: {export: true, variable: true}, iterate: {export: true, variable: true}, replicate: {export: true, variable: true}, splice: {export: true, variable: true}, map: {export: true, variable: true}, "keys?": {export: true, variable: true}, "empty?": {export: true, variable: true}, stash: {export: true, variable: true}, unstash: {export: true, variable: true}, extend: {export: true, variable: true}, exclude: {export: true, variable: true}, search: {export: true, variable: true}, split: {export: true, variable: true}, cat: {export: true, variable: true}, "+": {export: true, variable: true}, "-": {export: true, variable: true}, "*": {export: true, variable: true}, "/": {export: true, variable: true}, "%": {export: true, variable: true}, ">": {export: true, variable: true}, "<": {export: true, variable: true}, "=": {export: true, variable: true}, ">=": {export: true, variable: true}, "<=": {export: true, variable: true}, "read-file": {export: true, variable: true}, "write-file": {export: true, variable: true}, write: {export: true, variable: true}, exit: {export: true, variable: true}, number: {export: true, variable: true}, string: {export: true, variable: true}, apply: {export: true, variable: true}, "make-id": {export: true, variable: true}, "%message-handler": {export: true, variable: true}, "toplevel?": {export: true, variable: true}, "module-key": {export: true, variable: true}, module: {export: true, variable: true}, setenv: {export: true, variable: true}, math: {variable: true}, type: {variable: true}, "splice?": {variable: true}, mapl: {variable: true}, require: {global: true, export: true}, fs: {variable: true}, print: {global: true, export: true}, "id-count": {variable: true}}}, reader: {import: ["runtime", "special", "core"], export: {"make-stream": {export: true, variable: true}, "read-table": {export: true, variable: true}, "define-reader": {export: true, macro: function (_g638) {
     var char = _g638[0];
     var stream = _g638[1];
     var body = unstash(Array.prototype.slice.call(arguments, 1));
@@ -2972,7 +2972,7 @@
   }, export: true}, pr: {macro: function () {
     var xs = unstash(Array.prototype.slice.call(arguments, 0));
     var _g683 = map(function (x) {
-      return(splice([["to-string", x], "\" \""]));
+      return(splice([["string", x], "\" \""]));
     }, xs);
     return(["print", join(["cat"], _g683)]);
   }, export: true}, "with-frame": {macro: function () {
@@ -3186,7 +3186,7 @@
       var k = _g705[0];
       var v = _g705[1];
       if (!string63(k)) {
-        throw new Error("Illegal key: " + to_string(k));
+        throw new Error("Illegal key: " + string(k));
       }
       var _g706 = compile(v);
       var _g719;
@@ -3332,7 +3332,8 @@
   var write = _g2.write;
   var exit = _g2.exit;
   var parse_number = _g2["parse-number"];
-  var to_string = _g2["to-string"];
+  var number = _g2.number;
+  var string = _g2.string;
   var apply = _g2.apply;
   var make_id = _g2["make-id"];
   var _37message_handler = _g2["%message-handler"];
@@ -3367,7 +3368,7 @@
     var _g1 = _g729[0];
     var x = _g729[1];
     if (is63(x)) {
-      return(print(to_string(x) + " "));
+      return(print(string(x) + " "));
     }
   }
   function repl() {
@@ -3380,11 +3381,11 @@
     return(process.stdin.on("data", step));
   }
   function usage() {
-    print(to_string("usage: lumen [options] <module>") + " ");
-    print(to_string("options:") + " ");
-    print(to_string("  -o <output>\tOutput file") + " ");
-    print(to_string("  -t <target>\tTarget language (default: lua)") + " ");
-    print(to_string("  -e <expr>\tExpression to evaluate") + " ");
+    print(string("usage: lumen [options] <module>") + " ");
+    print(string("options:") + " ");
+    print(string("  -o <output>\tOutput file") + " ");
+    print(string("  -t <target>\tTarget language (default: lua)") + " ");
+    print(string("  -e <expr>\tExpression to evaluate") + " ");
     return(exit());
   }
   function main() {
@@ -3402,7 +3403,7 @@
       var arg = _g730[i];
       if (arg === "-o" || arg === "-t" || arg === "-e") {
         if (i === length(args) - 1) {
-          print(to_string("missing argument for") + " " + to_string(arg) + " ");
+          print(string("missing argument for") + " " + string(arg) + " ");
         } else {
           i = i + 1;
           var val = args[i];

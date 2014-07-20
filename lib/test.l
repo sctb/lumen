@@ -21,16 +21,12 @@
      (inc passed)))
 
 (define equal? (a b)
-  (if (atom? a)
-      (= a b)
-    (= (to-string a) (to-string b))))
+  (if (atom? a) (= a b)
+    (= (string a) (string b))))
 
 (define-macro test= (a b)
   `(test (equal? ,a ,b)
-	 (cat "failed: expected "
-              (to-string ,a)
-              ", was "
-              (to-string ,b))))
+	 (cat "failed: expected " (string ,a) ", was " (string ,b))))
 
 (define-macro define-test (name _ rest: body)
   `(add tests (list ',name (fn () ,@body))))

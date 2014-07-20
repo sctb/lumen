@@ -75,8 +75,8 @@
            write-file
            write
            exit
-           parse-number
-           to-string
+           number
+           string
            apply
            make-id
            %message-handler
@@ -387,13 +387,13 @@
 (define exit (code)
   (target js: (process.exit code) lua: (os.exit code)))
 
-(define parse-number (str)
+(define number (str)
   (target
    js: (let (n (parseFloat str))
          (unless (isNaN n) n))
    lua: (tonumber str)))
 
-(define to-string (x)
+(define string (x)
   (if (nil? x) "nil"
       (boolean? x) (if x "true" "false")
       (function? x) "#<function>"
@@ -404,7 +404,7 @@
         (add x1 (cat k ":"))
         (add x1 v))
       (each (y :i) x1
-        (cat! str (to-string y))
+        (cat! str (string y))
         (when (< i (- (length x1) 1))
           (cat! str " ")))
       (cat str  ")"))))
@@ -428,7 +428,7 @@
 
 (define module-key (spec)
   (if (atom? spec)
-      (to-string spec)
+      (string spec)
     (reduce (fn (a b)
               (cat (module-key a) "/" (module-key b)))
             spec)))

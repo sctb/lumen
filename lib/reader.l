@@ -79,7 +79,7 @@
                 (cat! str c)
 		(read-char s))
 	  (break))))
-    (let (n (parse-number str))
+    (let (n (number str))
       (if (is? n) n
 	  (= str "true") true
 	  (= str "false") false
