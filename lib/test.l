@@ -106,6 +106,13 @@
   (test= true (<= 2 2))
   (test= -7 (- 7)))
 
+(define-test math ()
+  (test= 3 (max 1 3))
+  (test= 2 (min 2 7))
+  (let (n (random))
+    (test= true (and (> n 0) (< n 1))))
+  (test= 4 (floor 4.78)))
+
 (define-test precedence ()
   (test= -3 (- (+ 1 2)))
   (test= 10 (- 12 (+ 1 1)))

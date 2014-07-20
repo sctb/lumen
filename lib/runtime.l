@@ -4,6 +4,27 @@
   import: (special core)
   export: (nil?
            is?
+           max
+           min
+           abs
+           acos
+           asin
+           atan
+           atan2
+           ceil
+           cos
+           floor
+           log
+           log10
+           max
+           min
+           pow
+           random
+           sin
+           sinh
+           sqrt
+           tan
+           tanh
            length
            none?
            some?
@@ -66,6 +87,28 @@
 
 (define nil? (x) (= x nil))
 (define is? (x) (not (nil? x)))
+
+(define math (target js: Math lua: math))
+
+(define abs math.abs)
+(define acos math.acos)
+(define asin math.asin)
+(define atan math.atan)
+(define atan2 math.atan2)
+(define ceil math.ceil)
+(define cos math.cos)
+(define floor math.floor)
+(define log math.log)
+(define log10 math.log10)
+(define max math.max)
+(define min math.min)
+(define pow math.pow)
+(define random math.random)
+(define sin math.sin)
+(define sinh math.sinh)
+(define sqrt math.sqrt)
+(define tan math.tan)
+(define tanh math.tanh)
 
 (define length (x)
   (target js: (or x.length 0) lua: |#x|))
