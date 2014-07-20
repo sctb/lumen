@@ -57,7 +57,7 @@
       (string? x) (to-id x)
       (boolean? x) (if x "true" "false")
       (number? x) (cat x "")
-    (error "Unrecognized atom")))
+    (error (cat "Cannot compile atom: " (string x)))))
 
 (define terminator (stmt?)
   (if (not stmt?) ""
