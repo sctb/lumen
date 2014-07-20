@@ -342,17 +342,14 @@
 (define mapo (f t)
   (let (o ())
     (each (k v) t
-      (let (x (f k v))
+      (let (x (f v))
         (when (is? x)
           (add o k)
           (add o x))))
     (sortp o)))
 
 (define quote-frame (t)
-  `(%object
-    ,@(mapo (fn (_ b)
-              `(table ,@(quote-binding b)))
-            t)))
+  `(%object ,@(mapo (fn (b) `(table ,@(quote-binding b))) t)))
 
 (define quote-environment (env)
   `(list ,@(map quote-frame env)))

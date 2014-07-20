@@ -71,7 +71,7 @@
   `(if (not ,cond) (do ,@body)))
 
 (define-macro table body
-  `(%object ,@(mapo (fn (_ x) x) body)))
+  `(%object ,@(mapo (fn (x) x) body)))
 
 (define-macro let (bindings rest: body)
   (let (i 0

@@ -736,7 +736,3 @@
   (test= "foo" (module-key 'foo))
   (test= "foo/bar" (module-key '(foo bar)))
   (test= "foo/bar/baz" (module-key '(foo (bar baz)))))
-
-(define-test utilities ()
-  (test= '(a 3 b 2 c 1)
-         (mapo (fn (_ x) x) '(table b: 2 c: 1 a: 3))))
