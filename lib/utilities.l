@@ -28,8 +28,6 @@
            sortp
            imported
            exported
-           sortk
-           sortp
            mapo
            quote-environment
            quote-modules
