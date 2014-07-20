@@ -243,8 +243,6 @@
              (statement? x) (lower-special form hoist)
            (lower-call form hoist))))))
 
-(define* lower lower)
-
 (define process (form)
   (lower (macroexpand form)))
 
