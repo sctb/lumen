@@ -56,6 +56,7 @@
            keep
            find
            pairwise
+           sort
            iterate
            replicate
            splice
@@ -239,6 +240,11 @@
       (add l1 (list (at l i) (at l (+ i 1))))
       (inc i 2))
     l1))
+
+(define sort (l f)
+  (target
+    lua: (do (table.sort l f) l)
+    js: (l.sort (when f (fn (a b) (if (f a b) -1 1))))))
 
 (define iterate (f count)
   (let (i 0)

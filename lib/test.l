@@ -657,6 +657,10 @@
   (test= 7 (find (fn (x) x) '(7)))
   (test= true (find (fn (x) (= x 7)) '(2 4 7))))
 
+(define-test sort ()
+  (test= '(a b c) (sort '(c a b)))
+  (test= '(3 2 1) (sort '(1 2 3) >)))
+
 (define-test type ()
   (test= true (string? "abc"))
   (test= false (string? 17))
