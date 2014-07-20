@@ -31,6 +31,7 @@
            in?
            hd
            sd
+           td
            string?
            number?
            boolean?
@@ -129,6 +130,7 @@
 
 (define hd (l) (at l 0))
 (define sd (l) (at l 1))
+(define td (l) (at l 2))
 
 (target js: (define type (x) (typeof x)))
 

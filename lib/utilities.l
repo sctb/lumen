@@ -312,7 +312,7 @@
           (add imports `(%local ,n (get ,m ',n))))))
     (when (some? imports)
       `((%local ,m (get nexus ',k))
-        ,@imports))))
+        ,@(sortk imports sd)))))
 
 (define exported ()
   (let (m (make-id)
@@ -324,7 +324,7 @@
     (if (some? exports)
         `((%local ,m (table))
           (set (get nexus ',k) ,m)
-          ,@exports)
+          ,@(sortk exports td))
       ())))
 
 ;; bootstrap
