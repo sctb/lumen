@@ -125,7 +125,7 @@
   (let (args1 ())
     (define rest ()
       (if (= target 'js)
-          `(unstash (sublist arguments ,(length args1)))
+          `(unstash (Array.prototype.slice.call arguments ,(length args1)))
         (do (add args1 '|...|)
             '(unstash (list |...|)))))
     (if (atom? args)
