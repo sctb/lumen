@@ -53,9 +53,9 @@
       (let (id (make-id)
             init ())
         (each (k v) body
-          (add init `(set (get ,id ',k) ,v)))
+          (add init (list k `(set (get ,id ',k) ,v))))
         `(let (,id ,l)
-           ,@init
+           ,@(map sd (sortk init hd))
            ,id)))))
 
 (define-macro if branches

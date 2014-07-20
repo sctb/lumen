@@ -51,6 +51,9 @@ end)();
   local function hd(l)
     return(l[1])
   end
+  local function sd(l)
+    return(l[2])
+  end
   local function string63(x)
     return(type(x) == "string")
   end
@@ -626,6 +629,7 @@ end)();
   _g56["some?"] = some63
   _g56["in?"] = in63
   _g56.hd = hd
+  _g56.sd = sd
   _g56["string?"] = string63
   _g56["number?"] = number63
   _g56["boolean?"] = boolean63
@@ -724,6 +728,7 @@ end)();
   local some63 = _g61["some?"]
   local in63 = _g61["in?"]
   local hd = _g61.hd
+  local sd = _g61.sd
   local string63 = _g61["string?"]
   local number63 = _g61["number?"]
   local boolean63 = _g61["boolean?"]
@@ -1189,15 +1194,45 @@ end)();
     end
     return(id1)
   end
+  local function sortk(l, k)
+    return(sort(l, function (a, b)
+      return(k(a) < k(b))
+    end))
+  end
+  local function sortp(l)
+    return(flat1(sortk(pairwise(l), hd)))
+  end
+  local function imported(spec, ...)
+    local _g98 = unstash({...})
+    local all = _g98.all
+    local m = make_id()
+    local k = module_key(spec)
+    local imports = {}
+    if nexus[k] then
+      local _g99 = module(spec).export
+      local n = nil
+      for n in next, _g99 do
+        if not number63(n) then
+          local b = _g99[n]
+          if b.variable and (all or b.export) then
+            add(imports, {"%local", n, {"get", m, {"quote", n}}})
+          end
+        end
+      end
+    end
+    if some63(imports) then
+      return(join({{"%local", m, {"get", "nexus", {"quote", k}}}}, imports))
+    end
+  end
   local function exported()
     local m = make_id()
     local k = module_key(current_module)
     local exports = {}
-    local _g98 = module(current_module).export
+    local _g100 = module(current_module).export
     local n = nil
-    for n in next, _g98 do
+    for n in next, _g100 do
       if not number63(n) then
-        local b = _g98[n]
+        local b = _g100[n]
         if b.variable then
           add(exports, {"set", {"get", m, {"quote", n}}, n})
         end
@@ -1207,28 +1242,6 @@ end)();
       return(join({{"%local", m, {"table"}}, {"set", {"get", "nexus", {"quote", k}}, m}}, exports))
     else
       return({})
-    end
-  end
-  local function imported(spec, ...)
-    local _g99 = unstash({...})
-    local all = _g99.all
-    local m = make_id()
-    local k = module_key(spec)
-    local imports = {}
-    if nexus[k] then
-      local _g100 = module(spec).export
-      local n = nil
-      for n in next, _g100 do
-        if not number63(n) then
-          local b = _g100[n]
-          if b.variable and (all or b.export) then
-            add(imports, {"%local", n, {"get", m, {"quote", n}}})
-          end
-        end
-      end
-    end
-    if some63(imports) then
-      return(join({{"%local", m, {"get", "nexus", {"quote", k}}}}, imports))
     end
   end
   local function quote_binding(b)
@@ -1266,9 +1279,7 @@ end)();
         end
       end
     end
-    return(flat1(sort(pairwise(o), function (a, b)
-      return(hd(a) < hd(b))
-    end)))
+    return(sortp(o))
   end
   local function quote_frame(t)
     return(join({"%object"}, mapo(function (_g60, b)
@@ -1280,8 +1291,8 @@ end)();
   end
   local function quote_module(m)
     local _g102 = {"table"}
-    _g102.import = quoted(m.import)
     _g102.export = quote_frame(m.export)
+    _g102.import = quoted(m.import)
     return(_g102)
   end
   local function quote_modules()
@@ -1313,6 +1324,8 @@ end)();
   _g103["reserved?"] = reserved63
   _g103["valid-id?"] = valid_id63
   _g103.id = id
+  _g103.sortk = sortk
+  _g103.sortp = sortp
   _g103.imported = imported
   _g103.exported = exported
   _g103.mapo = mapo
@@ -1361,6 +1374,7 @@ end)();
   local some63 = _g104["some?"]
   local in63 = _g104["in?"]
   local hd = _g104.hd
+  local sd = _g104.sd
   local string63 = _g104["string?"]
   local number63 = _g104["number?"]
   local boolean63 = _g104["boolean?"]
@@ -1668,6 +1682,7 @@ end)();
   local some63 = _g115["some?"]
   local in63 = _g115["in?"]
   local hd = _g115.hd
+  local sd = _g115.sd
   local string63 = _g115["string?"]
   local number63 = _g115["number?"]
   local boolean63 = _g115["boolean?"]
@@ -1755,6 +1770,8 @@ end)();
   local reserved63 = _g116["reserved?"]
   local valid_id63 = _g116["valid-id?"]
   local id = _g116.id
+  local sortk = _g116.sortk
+  local sortp = _g116.sortp
   local imported = _g116.imported
   local exported = _g116.exported
   local mapo = _g116.mapo
@@ -1776,9 +1793,9 @@ end)();
   _g124.lua = "not "
   _g121["not"] = _g124
   local _g126 = {}
+  _g126["%"] = true
   _g126["*"] = true
   _g126["/"] = true
-  _g126["%"] = true
   local _g128 = {}
   _g128["+"] = true
   _g128["-"] = true
@@ -1792,8 +1809,8 @@ end)();
   _g130.cat = _g133
   local _g135 = {}
   _g135["<"] = true
-  _g135[">"] = true
   _g135["<="] = true
+  _g135[">"] = true
   _g135[">="] = true
   local _g139 = {}
   _g139.js = "==="
@@ -2407,6 +2424,7 @@ end)();
   local some63 = _g192["some?"]
   local in63 = _g192["in?"]
   local hd = _g192.hd
+  local sd = _g192.sd
   local string63 = _g192["string?"]
   local number63 = _g192["number?"]
   local boolean63 = _g192["boolean?"]
@@ -2494,6 +2512,8 @@ end)();
   local reserved63 = _g193["reserved?"]
   local valid_id63 = _g193["valid-id?"]
   local id = _g193.id
+  local sortk = _g193.sortk
+  local sortp = _g193.sortp
   local imported = _g193.imported
   local exported = _g193.exported
   local mapo = _g193.mapo
@@ -2537,6 +2557,7 @@ end)();
   local some63 = _g354["some?"]
   local in63 = _g354["in?"]
   local hd = _g354.hd
+  local sd = _g354.sd
   local string63 = _g354["string?"]
   local number63 = _g354["number?"]
   local boolean63 = _g354["boolean?"]
@@ -2624,6 +2645,8 @@ end)();
   local reserved63 = _g355["reserved?"]
   local valid_id63 = _g355["valid-id?"]
   local id = _g355.id
+  local sortk = _g355.sortk
+  local sortp = _g355.sortp
   local imported = _g355.imported
   local exported = _g355.exported
   local mapo = _g355.mapo
@@ -2668,6 +2691,7 @@ end)();
   local some63 = _g624["some?"]
   local in63 = _g624["in?"]
   local hd = _g624.hd
+  local sd = _g624.sd
   local string63 = _g624["string?"]
   local number63 = _g624["number?"]
   local boolean63 = _g624["boolean?"]
@@ -2755,6 +2779,8 @@ end)();
   local reserved63 = _g625["reserved?"]
   local valid_id63 = _g625["valid-id?"]
   local id = _g625.id
+  local sortk = _g625.sortk
+  local sortp = _g625.sortp
   local imported = _g625.imported
   local exported = _g625.exported
   local mapo = _g625.mapo
@@ -2803,7 +2829,7 @@ end)();
   end}, ["define*"] = {export = true, macro = function (name, x, ...)
     local body = unstash({...})
     local _g645 = sub(body, 0)
-    setenv(name, {_stash = true, global = true, export = true})
+    setenv(name, {_stash = true, export = true, global = true})
     if some63(_g645) then
       local _g646 = bind42(x, _g645)
       local args = _g646[1]
@@ -2821,16 +2847,16 @@ end)();
     local _g648 = sub(body, 0)
     local form = join({"fn", args}, _g648)
     local _g649 = {"setenv", {"quote", name}}
-    _g649.macro = form
     _g649.form = {"quote", form}
+    _g649.macro = form
     eval(_g649)
     return(nil)
   end}, ["define-module"] = {export = true, macro = function (spec, ...)
     local body = unstash({...})
     local _g650 = sub(body, 0)
     local imports = {}
-    local imp = _g650.import
     local exp = _g650.export
+    local imp = _g650.import
     local _g651 = imp or {}
     local _g652 = 0
     while _g652 < length(_g651) do
@@ -2854,8 +2880,8 @@ end)();
     local form = join({"fn", args}, _g655)
     local keys = sub(_g655, length(_g655))
     local _g656 = {"setenv", {"quote", name}}
-    _g656.special = form
     _g656.form = {"quote", form}
+    _g656.special = form
     eval(join(_g656, keys))
     return(nil)
   end}, ["define-symbol"] = {export = true, macro = function (name, expansion)
@@ -2991,10 +3017,10 @@ end)();
       for k in next, _g675 do
         if not number63(k) then
           local v = _g675[k]
-          add(init, {"set", {"get", id, {"quote", k}}, v})
+          add(init, {k, {"set", {"get", id, {"quote", k}}, v}})
         end
       end
-      return(join({"let", {id, l}}, join(init, {id})))
+      return(join({"let", {id, l}}, join(map(sd, sortk(init, hd)), {id})))
     end
   end}, pr = {export = true, macro = function (...)
     local xs = unstash({...})
@@ -3062,7 +3088,7 @@ end)();
     local body = unstash({...})
     local _g689 = sub(body, 0)
     return({"set", {"get", "read-table", char}, join({"fn", {stream}}, _g689)})
-  end}, delimiters = {variable = true}, eof = {variable = true}, ["flag?"] = {variable = true}, ["key?"] = {variable = true}, ["make-stream"] = {export = true, variable = true}, ["peek-char"] = {variable = true}, read = {export = true, variable = true}, ["read-all"] = {export = true, variable = true}, ["read-char"] = {variable = true}, ["read-from-string"] = {export = true, variable = true}, ["read-table"] = {export = true, variable = true}, ["skip-non-code"] = {variable = true}, whitespace = {variable = true}}, import = {"runtime", "special", "core"}}, runtime = {export = {["%"] = {export = true, variable = true}, ["%message-handler"] = {export = true, variable = true}, ["*"] = {export = true, variable = true}, ["+"] = {export = true, variable = true}, ["-"] = {export = true, variable = true}, ["/"] = {export = true, variable = true}, ["<"] = {export = true, variable = true}, ["<="] = {export = true, variable = true}, ["="] = {export = true, variable = true}, [">"] = {export = true, variable = true}, [">="] = {export = true, variable = true}, abs = {export = true, variable = true}, acos = {export = true, variable = true}, add = {export = true, variable = true}, apply = {export = true, variable = true}, asin = {export = true, variable = true}, atan = {export = true, variable = true}, atan2 = {export = true, variable = true}, ["atom?"] = {export = true, variable = true}, ["boolean?"] = {export = true, variable = true}, cat = {export = true, variable = true}, ceil = {export = true, variable = true}, char = {export = true, variable = true}, code = {export = true, variable = true}, ["composite?"] = {export = true, variable = true}, cos = {export = true, variable = true}, drop = {export = true, variable = true}, ["empty?"] = {export = true, variable = true}, exclude = {export = true, variable = true}, exit = {export = true, variable = true}, extend = {export = true, variable = true}, find = {export = true, variable = true}, flat = {export = true, variable = true}, flat1 = {export = true, variable = true}, floor = {export = true, variable = true}, ["function?"] = {export = true, variable = true}, hd = {export = true, variable = true}, ["id-count"] = {variable = true}, ["id-literal?"] = {export = true, variable = true}, ["in?"] = {export = true, variable = true}, inner = {export = true, variable = true}, ["is?"] = {export = true, variable = true}, iterate = {export = true, variable = true}, join = {export = true, variable = true}, keep = {export = true, variable = true}, ["keys?"] = {export = true, variable = true}, last = {export = true, variable = true}, length = {export = true, variable = true}, ["list?"] = {export = true, variable = true}, log = {export = true, variable = true}, log10 = {export = true, variable = true}, ["make-id"] = {export = true, variable = true}, map = {export = true, variable = true}, mapl = {variable = true}, math = {variable = true}, max = {export = true, variable = true}, min = {export = true, variable = true}, module = {export = true, variable = true}, ["module-key"] = {export = true, variable = true}, ["nil?"] = {export = true, variable = true}, ["none?"] = {export = true, variable = true}, number = {export = true, variable = true}, ["number?"] = {export = true, variable = true}, pairwise = {export = true, variable = true}, pow = {export = true, variable = true}, random = {export = true, variable = true}, ["read-file"] = {export = true, variable = true}, reduce = {export = true, variable = true}, replicate = {export = true, variable = true}, reverse = {export = true, variable = true}, search = {export = true, variable = true}, setenv = {export = true, variable = true}, sin = {export = true, variable = true}, sinh = {export = true, variable = true}, ["some?"] = {export = true, variable = true}, sort = {export = true, variable = true}, splice = {export = true, variable = true}, ["splice?"] = {variable = true}, split = {export = true, variable = true}, sqrt = {export = true, variable = true}, stash = {export = true, variable = true}, string = {export = true, variable = true}, ["string-literal?"] = {export = true, variable = true}, ["string?"] = {export = true, variable = true}, sub = {export = true, variable = true}, sublist = {export = true, variable = true}, substring = {export = true, variable = true}, ["table?"] = {export = true, variable = true}, tan = {export = true, variable = true}, tanh = {export = true, variable = true}, tl = {export = true, variable = true}, ["toplevel?"] = {export = true, variable = true}, unstash = {export = true, variable = true}, write = {export = true, variable = true}, ["write-file"] = {export = true, variable = true}}, import = {"special", "core"}}, special = {export = {["%array"] = {export = true, foo = true, special = function (...)
+  end}, delimiters = {variable = true}, eof = {variable = true}, ["flag?"] = {variable = true}, ["key?"] = {variable = true}, ["make-stream"] = {export = true, variable = true}, ["peek-char"] = {variable = true}, read = {export = true, variable = true}, ["read-all"] = {export = true, variable = true}, ["read-char"] = {variable = true}, ["read-from-string"] = {export = true, variable = true}, ["read-table"] = {export = true, variable = true}, ["skip-non-code"] = {variable = true}, whitespace = {variable = true}}, import = {"runtime", "special", "core"}}, runtime = {export = {["%"] = {export = true, variable = true}, ["%message-handler"] = {export = true, variable = true}, ["*"] = {export = true, variable = true}, ["+"] = {export = true, variable = true}, ["-"] = {export = true, variable = true}, ["/"] = {export = true, variable = true}, ["<"] = {export = true, variable = true}, ["<="] = {export = true, variable = true}, ["="] = {export = true, variable = true}, [">"] = {export = true, variable = true}, [">="] = {export = true, variable = true}, abs = {export = true, variable = true}, acos = {export = true, variable = true}, add = {export = true, variable = true}, apply = {export = true, variable = true}, asin = {export = true, variable = true}, atan = {export = true, variable = true}, atan2 = {export = true, variable = true}, ["atom?"] = {export = true, variable = true}, ["boolean?"] = {export = true, variable = true}, cat = {export = true, variable = true}, ceil = {export = true, variable = true}, char = {export = true, variable = true}, code = {export = true, variable = true}, ["composite?"] = {export = true, variable = true}, cos = {export = true, variable = true}, drop = {export = true, variable = true}, ["empty?"] = {export = true, variable = true}, exclude = {export = true, variable = true}, exit = {export = true, variable = true}, extend = {export = true, variable = true}, find = {export = true, variable = true}, flat = {export = true, variable = true}, flat1 = {export = true, variable = true}, floor = {export = true, variable = true}, ["function?"] = {export = true, variable = true}, hd = {export = true, variable = true}, ["id-count"] = {variable = true}, ["id-literal?"] = {export = true, variable = true}, ["in?"] = {export = true, variable = true}, inner = {export = true, variable = true}, ["is?"] = {export = true, variable = true}, iterate = {export = true, variable = true}, join = {export = true, variable = true}, keep = {export = true, variable = true}, ["keys?"] = {export = true, variable = true}, last = {export = true, variable = true}, length = {export = true, variable = true}, ["list?"] = {export = true, variable = true}, log = {export = true, variable = true}, log10 = {export = true, variable = true}, ["make-id"] = {export = true, variable = true}, map = {export = true, variable = true}, mapl = {variable = true}, math = {variable = true}, max = {export = true, variable = true}, min = {export = true, variable = true}, module = {export = true, variable = true}, ["module-key"] = {export = true, variable = true}, ["nil?"] = {export = true, variable = true}, ["none?"] = {export = true, variable = true}, number = {export = true, variable = true}, ["number?"] = {export = true, variable = true}, pairwise = {export = true, variable = true}, pow = {export = true, variable = true}, random = {export = true, variable = true}, ["read-file"] = {export = true, variable = true}, reduce = {export = true, variable = true}, replicate = {export = true, variable = true}, reverse = {export = true, variable = true}, sd = {export = true, variable = true}, search = {export = true, variable = true}, setenv = {export = true, variable = true}, sin = {export = true, variable = true}, sinh = {export = true, variable = true}, ["some?"] = {export = true, variable = true}, sort = {export = true, variable = true}, splice = {export = true, variable = true}, ["splice?"] = {variable = true}, split = {export = true, variable = true}, sqrt = {export = true, variable = true}, stash = {export = true, variable = true}, string = {export = true, variable = true}, ["string-literal?"] = {export = true, variable = true}, ["string?"] = {export = true, variable = true}, sub = {export = true, variable = true}, sublist = {export = true, variable = true}, substring = {export = true, variable = true}, ["table?"] = {export = true, variable = true}, tan = {export = true, variable = true}, tanh = {export = true, variable = true}, tl = {export = true, variable = true}, ["toplevel?"] = {export = true, variable = true}, unstash = {export = true, variable = true}, write = {export = true, variable = true}, ["write-file"] = {export = true, variable = true}}, import = {"special", "core"}}, special = {export = {["%array"] = {export = true, foo = true, special = function (...)
     local forms = unstash({...})
     local _g714
     if target == "lua" then
@@ -3296,7 +3322,7 @@ end)();
     else
       return(ind .. "while " .. _g710 .. " do\n" .. body .. ind .. "end\n")
     end
-  end, stmt = true, tr = true}}, import = {"runtime", "utilities", "special", "core", "compiler"}}, system = {export = {nexus = {export = true, global = true}}, import = {"special", "core"}}, utilities = {export = {bind = {export = true, variable = true}, ["bind*"] = {export = true, variable = true}, ["bound?"] = {export = true, variable = true}, ["can-unquote?"] = {variable = true}, escape = {variable = true}, exported = {export = true, variable = true}, getenv = {export = true, variable = true}, ["global?"] = {variable = true}, id = {export = true, variable = true}, imported = {export = true, variable = true}, ["indent-level"] = {export = true, global = true}, indentation = {export = true, variable = true}, ["initial-environment"] = {export = true, variable = true}, ["macro-function"] = {export = true, variable = true}, ["macro?"] = {export = true, variable = true}, macroexpand = {export = true, variable = true}, mapo = {export = true, variable = true}, ["numeric?"] = {variable = true}, quasiexpand = {export = true, variable = true}, ["quasiquote-list"] = {variable = true}, ["quasiquoting?"] = {variable = true}, ["quasisplice?"] = {variable = true}, ["quote-binding"] = {variable = true}, ["quote-environment"] = {export = true, variable = true}, ["quote-frame"] = {variable = true}, ["quote-module"] = {variable = true}, ["quote-modules"] = {export = true, variable = true}, quoted = {export = true, variable = true}, ["quoting?"] = {variable = true}, reserved = {variable = true}, ["reserved?"] = {export = true, variable = true}, ["special-form?"] = {export = true, variable = true}, ["special?"] = {export = true, variable = true}, ["stash*"] = {export = true, variable = true}, ["statement?"] = {export = true, variable = true}, ["symbol-expansion"] = {export = true, variable = true}, ["symbol?"] = {export = true, variable = true}, ["toplevel?"] = {export = true, variable = true}, ["valid-char?"] = {variable = true}, ["valid-id?"] = {export = true, variable = true}, ["variable?"] = {export = true, variable = true}, ["with-indent"] = {export = true, macro = function (form)
+  end, stmt = true, tr = true}}, import = {"runtime", "utilities", "special", "core", "compiler"}}, system = {export = {nexus = {export = true, global = true}}, import = {"special", "core"}}, utilities = {export = {bind = {export = true, variable = true}, ["bind*"] = {export = true, variable = true}, ["bound?"] = {export = true, variable = true}, ["can-unquote?"] = {variable = true}, escape = {variable = true}, exported = {export = true, variable = true}, getenv = {export = true, variable = true}, ["global?"] = {variable = true}, id = {export = true, variable = true}, imported = {export = true, variable = true}, ["indent-level"] = {export = true, global = true}, indentation = {export = true, variable = true}, ["initial-environment"] = {export = true, variable = true}, ["macro-function"] = {export = true, variable = true}, ["macro?"] = {export = true, variable = true}, macroexpand = {export = true, variable = true}, mapo = {export = true, variable = true}, ["numeric?"] = {variable = true}, quasiexpand = {export = true, variable = true}, ["quasiquote-list"] = {variable = true}, ["quasiquoting?"] = {variable = true}, ["quasisplice?"] = {variable = true}, ["quote-binding"] = {variable = true}, ["quote-environment"] = {export = true, variable = true}, ["quote-frame"] = {variable = true}, ["quote-module"] = {variable = true}, ["quote-modules"] = {export = true, variable = true}, quoted = {export = true, variable = true}, ["quoting?"] = {variable = true}, reserved = {variable = true}, ["reserved?"] = {export = true, variable = true}, sortk = {export = true, variable = true}, sortp = {export = true, variable = true}, ["special-form?"] = {export = true, variable = true}, ["special?"] = {export = true, variable = true}, ["stash*"] = {export = true, variable = true}, ["statement?"] = {export = true, variable = true}, ["symbol-expansion"] = {export = true, variable = true}, ["symbol?"] = {export = true, variable = true}, ["toplevel?"] = {export = true, variable = true}, ["valid-char?"] = {variable = true}, ["valid-id?"] = {export = true, variable = true}, ["variable?"] = {export = true, variable = true}, ["with-indent"] = {export = true, macro = function (form)
     local result = make_id()
     return({"do", {"inc", "indent-level"}, {"let", {result, form}, {"dec", "indent-level"}, result}})
   end}}, import = {"runtime", "special", "core"}}}
@@ -3304,8 +3330,8 @@ end)();
     local body = unstash({...})
     local _g727 = sub(body, 0)
     local imports = {}
-    local imp = _g727.import
     local exp = _g727.export
+    local imp = _g727.import
     local _g728 = imp or {}
     local _g729 = 0
     while _g729 < length(_g728) do
@@ -3327,111 +3353,112 @@ end)();
 end)();
 (function ()
   local _g2 = nexus.runtime
-  local nil63 = _g2["nil?"]
-  local is63 = _g2["is?"]
-  local max = _g2.max
-  local min = _g2.min
+  local _37 = _g2["%"]
+  local _37message_handler = _g2["%message-handler"]
+  local _42 = _g2["*"]
+  local _43 = _g2["+"]
+  local _ = _g2["-"]
+  local _47 = _g2["/"]
+  local _60 = _g2["<"]
+  local _6061 = _g2["<="]
+  local _61 = _g2["="]
+  local _62 = _g2[">"]
+  local _6261 = _g2[">="]
   local abs = _g2.abs
   local acos = _g2.acos
+  local add = _g2.add
+  local apply = _g2.apply
   local asin = _g2.asin
   local atan = _g2.atan
   local atan2 = _g2.atan2
-  local ceil = _g2.ceil
-  local cos = _g2.cos
-  local floor = _g2.floor
-  local log = _g2.log
-  local log10 = _g2.log10
-  local pow = _g2.pow
-  local random = _g2.random
-  local sin = _g2.sin
-  local sinh = _g2.sinh
-  local sqrt = _g2.sqrt
-  local tan = _g2.tan
-  local tanh = _g2.tanh
-  local length = _g2.length
-  local none63 = _g2["none?"]
-  local some63 = _g2["some?"]
-  local in63 = _g2["in?"]
-  local hd = _g2.hd
-  local string63 = _g2["string?"]
-  local number63 = _g2["number?"]
-  local boolean63 = _g2["boolean?"]
-  local function63 = _g2["function?"]
-  local composite63 = _g2["composite?"]
   local atom63 = _g2["atom?"]
-  local table63 = _g2["table?"]
-  local list63 = _g2["list?"]
-  local substring = _g2.substring
-  local sublist = _g2.sublist
-  local sub = _g2.sub
-  local inner = _g2.inner
-  local tl = _g2.tl
+  local boolean63 = _g2["boolean?"]
+  local cat = _g2.cat
+  local ceil = _g2.ceil
   local char = _g2.char
   local code = _g2.code
-  local string_literal63 = _g2["string-literal?"]
-  local id_literal63 = _g2["id-literal?"]
-  local add = _g2.add
+  local composite63 = _g2["composite?"]
+  local cos = _g2.cos
   local drop = _g2.drop
-  local last = _g2.last
-  local reverse = _g2.reverse
-  local join = _g2.join
-  local reduce = _g2.reduce
-  local keep = _g2.keep
+  local empty63 = _g2["empty?"]
+  local exclude = _g2.exclude
+  local exit = _g2.exit
+  local extend = _g2.extend
   local find = _g2.find
-  local pairwise = _g2.pairwise
-  local sort = _g2.sort
-  local iterate = _g2.iterate
-  local replicate = _g2.replicate
-  local splice = _g2.splice
-  local map = _g2.map
   local flat = _g2.flat
   local flat1 = _g2.flat1
+  local floor = _g2.floor
+  local function63 = _g2["function?"]
+  local hd = _g2.hd
+  local id_literal63 = _g2["id-literal?"]
+  local in63 = _g2["in?"]
+  local inner = _g2.inner
+  local is63 = _g2["is?"]
+  local iterate = _g2.iterate
+  local join = _g2.join
+  local keep = _g2.keep
   local keys63 = _g2["keys?"]
-  local empty63 = _g2["empty?"]
-  local stash = _g2.stash
-  local unstash = _g2.unstash
-  local extend = _g2.extend
-  local exclude = _g2.exclude
-  local search = _g2.search
-  local split = _g2.split
-  local cat = _g2.cat
-  local _43 = _g2["+"]
-  local _ = _g2["-"]
-  local _42 = _g2["*"]
-  local _47 = _g2["/"]
-  local _37 = _g2["%"]
-  local _62 = _g2[">"]
-  local _60 = _g2["<"]
-  local _61 = _g2["="]
-  local _6261 = _g2[">="]
-  local _6061 = _g2["<="]
-  local read_file = _g2["read-file"]
-  local write_file = _g2["write-file"]
-  local write = _g2.write
-  local exit = _g2.exit
-  local number = _g2.number
-  local string = _g2.string
-  local apply = _g2.apply
+  local last = _g2.last
+  local length = _g2.length
+  local list63 = _g2["list?"]
+  local log = _g2.log
+  local log10 = _g2.log10
   local make_id = _g2["make-id"]
-  local _37message_handler = _g2["%message-handler"]
-  local toplevel63 = _g2["toplevel?"]
-  local module_key = _g2["module-key"]
+  local map = _g2.map
+  local max = _g2.max
+  local min = _g2.min
   local module = _g2.module
+  local module_key = _g2["module-key"]
+  local nil63 = _g2["nil?"]
+  local none63 = _g2["none?"]
+  local number = _g2.number
+  local number63 = _g2["number?"]
+  local pairwise = _g2.pairwise
+  local pow = _g2.pow
+  local random = _g2.random
+  local read_file = _g2["read-file"]
+  local reduce = _g2.reduce
+  local replicate = _g2.replicate
+  local reverse = _g2.reverse
+  local sd = _g2.sd
+  local search = _g2.search
   local setenv = _g2.setenv
+  local sin = _g2.sin
+  local sinh = _g2.sinh
+  local some63 = _g2["some?"]
+  local sort = _g2.sort
+  local splice = _g2.splice
+  local split = _g2.split
+  local sqrt = _g2.sqrt
+  local stash = _g2.stash
+  local string = _g2.string
+  local string_literal63 = _g2["string-literal?"]
+  local string63 = _g2["string?"]
+  local sub = _g2.sub
+  local sublist = _g2.sublist
+  local substring = _g2.substring
+  local table63 = _g2["table?"]
+  local tan = _g2.tan
+  local tanh = _g2.tanh
+  local tl = _g2.tl
+  local toplevel63 = _g2["toplevel?"]
+  local unstash = _g2.unstash
+  local write = _g2.write
+  local write_file = _g2["write-file"]
   local _g5 = nexus.reader
   local make_stream = _g5["make-stream"]
-  local read_table = _g5["read-table"]
   local read = _g5.read
   local read_all = _g5["read-all"]
   local read_from_string = _g5["read-from-string"]
+  local read_table = _g5["read-table"]
   local _g6 = nexus.compiler
-  local compile_function = _g6["compile-function"]
   local compile = _g6.compile
-  local open_module = _g6["open-module"]
-  local load_module = _g6["load-module"]
-  local in_module = _g6["in-module"]
+  local compile_function = _g6["compile-function"]
   local compile_module = _g6["compile-module"]
   local eval = _g6.eval
+  local in_module = _g6["in-module"]
+  local load_module = _g6["load-module"]
+  local open_module = _g6["open-module"]
   local function rep(str)
     local _g734,_g735 = xpcall(function ()
       return(eval(read_from_string(str)))

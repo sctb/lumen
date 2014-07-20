@@ -30,6 +30,7 @@
            some?
            in?
            hd
+           sd
            string?
            number?
            boolean?
@@ -127,6 +128,7 @@
     (if (= x y) (return true))))
 
 (define hd (l) (at l 0))
+(define sd (l) (at l 1))
 
 (target js: (define type (x) (typeof x)))
 

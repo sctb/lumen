@@ -24,8 +24,12 @@
            reserved?
            valid-id?
            id
+           sortk
+           sortp
            imported
            exported
+           sortk
+           sortp
            mapo
            quote-environment
            quote-modules
@@ -291,18 +295,11 @@
       (inc i))
     id1))
 
-(define exported ()
-  (let (m (make-id)
-        k (module-key current-module)
-        exports ())
-    (each (n b) (get (module current-module) 'export)
-      (when b.variable
-        (add exports `(set (get ,m ',n) ,n))))
-    (if (some? exports)
-        `((%local ,m (table))
-          (set (get nexus ',k) ,m)
-          ,@exports)
-      ())))
+(define sortk (l k)
+  (sort l (fn (a b) (< (k a) (k b)))))
+
+(define sortp (l)
+  (flat1 (sortk (pairwise l) hd)))
 
 (define imported (spec :all)
   (let (m (make-id)
@@ -316,6 +313,19 @@
     (when (some? imports)
       `((%local ,m (get nexus ',k))
         ,@imports))))
+
+(define exported ()
+  (let (m (make-id)
+        k (module-key current-module)
+        exports ())
+    (each (n b) (get (module current-module) 'export)
+      (when b.variable
+        (add exports `(set (get ,m ',n) ,n))))
+    (if (some? exports)
+        `((%local ,m (table))
+          (set (get nexus ',k) ,m)
+          ,@exports)
+      ())))
 
 ;; bootstrap
 
@@ -336,10 +346,7 @@
         (when (is? x)
           (add o k)
           (add o x))))
-    (flat1
-     (sort (pairwise o)
-           (fn (a b)
-             (< (hd a) (hd b)))))))
+    (sortp o)))
 
 (define quote-frame (t)
   `(%object
