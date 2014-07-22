@@ -600,7 +600,7 @@
     }
   }
   var _g53 = {};
-  nexus.runtime = _g53;
+  nexus["lumen/runtime"] = _g53;
   _g53["%"] = _37;
   _g53["%message-handler"] = _37message_handler;
   _g53["*"] = _42;
@@ -702,7 +702,7 @@
   _g53["write-file"] = write_file;
 })();
 (function () {
-  var _g57 = nexus.runtime;
+  var _g57 = nexus["lumen/runtime"];
   var _37 = _g57["%"];
   var _37message_handler = _g57["%message-handler"];
   var _42 = _g57["*"];
@@ -1301,7 +1301,7 @@
     return([{"define-module": getenv("define-module")}]);
   }
   var _g99 = {};
-  nexus.utilities = _g99;
+  nexus["lumen/utilities"] = _g99;
   _g99.bind = bind;
   _g99["bind*"] = bind42;
   _g99["bound?"] = bound63;
@@ -1345,7 +1345,7 @@
   _g99["variable?"] = variable63;
 })();
 (function () {
-  var _g100 = nexus.runtime;
+  var _g100 = nexus["lumen/runtime"];
   var _37 = _g100["%"];
   var _37message_handler = _g100["%message-handler"];
   var _42 = _g100["*"];
@@ -1638,7 +1638,7 @@
     }
   };
   var _g110 = {};
-  nexus.reader = _g110;
+  nexus["lumen/reader"] = _g110;
   _g110.delimiters = delimiters;
   _g110.eof = eof;
   _g110["flag?"] = flag63;
@@ -1654,7 +1654,7 @@
   _g110.whitespace = whitespace;
 })();
 (function () {
-  var _g111 = nexus.runtime;
+  var _g111 = nexus["lumen/runtime"];
   var _37 = _g111["%"];
   var _37message_handler = _g111["%message-handler"];
   var _42 = _g111["*"];
@@ -1748,7 +1748,7 @@
   var unstash = _g111.unstash;
   var write = _g111.write;
   var write_file = _g111["write-file"];
-  var _g112 = nexus.utilities;
+  var _g112 = nexus["lumen/utilities"];
   var bind = _g112.bind;
   var bind42 = _g112["bind*"];
   var bound63 = _g112["bound?"];
@@ -1777,7 +1777,7 @@
   var toplevel63 = _g112["toplevel?"];
   var valid_id63 = _g112["valid-id?"];
   var variable63 = _g112["variable?"];
-  var _g115 = nexus.reader;
+  var _g115 = nexus["lumen/reader"];
   var make_stream = _g115["make-stream"];
   var read = _g115.read;
   var read_all = _g115["read-all"];
@@ -2334,7 +2334,7 @@
     return(run(compiled));
   }
   var _g187 = {};
-  nexus.compiler = _g187;
+  nexus["lumen/compiler"] = _g187;
   _g187["%compile-module"] = _37compile_module;
   _g187["can-return?"] = can_return63;
   _g187.compile = compile;
@@ -2382,7 +2382,7 @@
   _g187["unary?"] = unary63;
 })();
 (function () {
-  var _g188 = nexus.runtime;
+  var _g188 = nexus["lumen/runtime"];
   var _37 = _g188["%"];
   var _37message_handler = _g188["%message-handler"];
   var _42 = _g188["*"];
@@ -2476,7 +2476,7 @@
   var unstash = _g188.unstash;
   var write = _g188.write;
   var write_file = _g188["write-file"];
-  var _g189 = nexus.utilities;
+  var _g189 = nexus["lumen/utilities"];
   var bind = _g189.bind;
   var bind42 = _g189["bind*"];
   var bound63 = _g189["bound?"];
@@ -2505,7 +2505,7 @@
   var toplevel63 = _g189["toplevel?"];
   var valid_id63 = _g189["valid-id?"];
   var variable63 = _g189["variable?"];
-  var _g192 = nexus.compiler;
+  var _g192 = nexus["lumen/compiler"];
   var compile = _g192.compile;
   var compile_function = _g192["compile-function"];
   var compile_module = _g192["compile-module"];
@@ -2515,7 +2515,7 @@
   var open_module = _g192["open-module"];
 })();
 (function () {
-  var _g349 = nexus.runtime;
+  var _g349 = nexus["lumen/runtime"];
   var _37 = _g349["%"];
   var _37message_handler = _g349["%message-handler"];
   var _42 = _g349["*"];
@@ -2609,7 +2609,7 @@
   var unstash = _g349.unstash;
   var write = _g349.write;
   var write_file = _g349["write-file"];
-  var _g350 = nexus.utilities;
+  var _g350 = nexus["lumen/utilities"];
   var bind = _g350.bind;
   var bind42 = _g350["bind*"];
   var bound63 = _g350["bound?"];
@@ -2638,7 +2638,7 @@
   var toplevel63 = _g350["toplevel?"];
   var valid_id63 = _g350["valid-id?"];
   var variable63 = _g350["variable?"];
-  var _g353 = nexus.compiler;
+  var _g353 = nexus["lumen/compiler"];
   var compile = _g353.compile;
   var compile_function = _g353["compile-function"];
   var compile_module = _g353["compile-module"];
@@ -2649,7 +2649,7 @@
   global.target = "js";
 })();
 (function () {
-  var _g619 = nexus.runtime;
+  var _g619 = nexus["lumen/runtime"];
   var _37 = _g619["%"];
   var _37message_handler = _g619["%message-handler"];
   var _42 = _g619["*"];
@@ -2743,7 +2743,7 @@
   var unstash = _g619.unstash;
   var write = _g619.write;
   var write_file = _g619["write-file"];
-  var _g620 = nexus.utilities;
+  var _g620 = nexus["lumen/utilities"];
   var bind = _g620.bind;
   var bind42 = _g620["bind*"];
   var bound63 = _g620["bound?"];
@@ -2772,7 +2772,7 @@
   var toplevel63 = _g620["toplevel?"];
   var valid_id63 = _g620["valid-id?"];
   var variable63 = _g620["variable?"];
-  var _g623 = nexus.compiler;
+  var _g623 = nexus["lumen/compiler"];
   var compile = _g623.compile;
   var compile_function = _g623["compile-function"];
   var compile_module = _g623["compile-module"];
@@ -3337,7 +3337,7 @@
   }}}];
 })();
 (function () {
-  var _g2 = nexus.runtime;
+  var _g2 = nexus["lumen/runtime"];
   var _37 = _g2["%"];
   var _37message_handler = _g2["%message-handler"];
   var _42 = _g2["*"];
@@ -3431,13 +3431,13 @@
   var unstash = _g2.unstash;
   var write = _g2.write;
   var write_file = _g2["write-file"];
-  var _g5 = nexus.reader;
+  var _g5 = nexus["lumen/reader"];
   var make_stream = _g5["make-stream"];
   var read = _g5.read;
   var read_all = _g5["read-all"];
   var read_from_string = _g5["read-from-string"];
   var read_table = _g5["read-table"];
-  var _g6 = nexus.compiler;
+  var _g6 = nexus["lumen/compiler"];
   var compile = _g6.compile;
   var compile_function = _g6["compile-function"];
   var compile_module = _g6["compile-module"];
@@ -3531,7 +3531,7 @@
   }
   main();
   var _g730 = {};
-  nexus.main = _g730;
+  nexus["lumen/main"] = _g730;
   _g730.main = main;
   _g730.rep = rep;
   _g730.repl = repl;

@@ -605,7 +605,7 @@ end)();
     end
   end
   local _g56 = {}
-  nexus.runtime = _g56
+  nexus["lumen/runtime"] = _g56
   _g56["%"] = _37
   _g56["%message-handler"] = _37message_handler
   _g56["*"] = _42
@@ -705,7 +705,7 @@ end)();
   _g56["write-file"] = write_file
 end)();
 (function ()
-  local _g60 = nexus.runtime
+  local _g60 = nexus["lumen/runtime"]
   local _37 = _g60["%"]
   local _37message_handler = _g60["%message-handler"]
   local _42 = _g60["*"]
@@ -1304,7 +1304,7 @@ end)();
     return({{["define-module"] = getenv("define-module")}})
   end
   local _g102 = {}
-  nexus.utilities = _g102
+  nexus["lumen/utilities"] = _g102
   _g102.bind = bind
   _g102["bind*"] = bind42
   _g102["bound?"] = bound63
@@ -1348,7 +1348,7 @@ end)();
   _g102["variable?"] = variable63
 end)();
 (function ()
-  local _g103 = nexus.runtime
+  local _g103 = nexus["lumen/runtime"]
   local _37 = _g103["%"]
   local _37message_handler = _g103["%message-handler"]
   local _42 = _g103["*"]
@@ -1641,7 +1641,7 @@ end)();
     end
   end
   local _g113 = {}
-  nexus.reader = _g113
+  nexus["lumen/reader"] = _g113
   _g113.delimiters = delimiters
   _g113.eof = eof
   _g113["flag?"] = flag63
@@ -1657,7 +1657,7 @@ end)();
   _g113.whitespace = whitespace
 end)();
 (function ()
-  local _g114 = nexus.runtime
+  local _g114 = nexus["lumen/runtime"]
   local _37 = _g114["%"]
   local _37message_handler = _g114["%message-handler"]
   local _42 = _g114["*"]
@@ -1751,7 +1751,7 @@ end)();
   local unstash = _g114.unstash
   local write = _g114.write
   local write_file = _g114["write-file"]
-  local _g115 = nexus.utilities
+  local _g115 = nexus["lumen/utilities"]
   local bind = _g115.bind
   local bind42 = _g115["bind*"]
   local bound63 = _g115["bound?"]
@@ -1780,7 +1780,7 @@ end)();
   local toplevel63 = _g115["toplevel?"]
   local valid_id63 = _g115["valid-id?"]
   local variable63 = _g115["variable?"]
-  local _g118 = nexus.reader
+  local _g118 = nexus["lumen/reader"]
   local make_stream = _g118["make-stream"]
   local read = _g118.read
   local read_all = _g118["read-all"]
@@ -2351,7 +2351,7 @@ end)();
     return(run(compiled))
   end
   local _g190 = {}
-  nexus.compiler = _g190
+  nexus["lumen/compiler"] = _g190
   _g190["%compile-module"] = _37compile_module
   _g190["can-return?"] = can_return63
   _g190.compile = compile
@@ -2399,7 +2399,7 @@ end)();
   _g190["unary?"] = unary63
 end)();
 (function ()
-  local _g191 = nexus.runtime
+  local _g191 = nexus["lumen/runtime"]
   local _37 = _g191["%"]
   local _37message_handler = _g191["%message-handler"]
   local _42 = _g191["*"]
@@ -2493,7 +2493,7 @@ end)();
   local unstash = _g191.unstash
   local write = _g191.write
   local write_file = _g191["write-file"]
-  local _g192 = nexus.utilities
+  local _g192 = nexus["lumen/utilities"]
   local bind = _g192.bind
   local bind42 = _g192["bind*"]
   local bound63 = _g192["bound?"]
@@ -2522,7 +2522,7 @@ end)();
   local toplevel63 = _g192["toplevel?"]
   local valid_id63 = _g192["valid-id?"]
   local variable63 = _g192["variable?"]
-  local _g195 = nexus.compiler
+  local _g195 = nexus["lumen/compiler"]
   local compile = _g195.compile
   local compile_function = _g195["compile-function"]
   local compile_module = _g195["compile-module"]
@@ -2532,7 +2532,7 @@ end)();
   local open_module = _g195["open-module"]
 end)();
 (function ()
-  local _g352 = nexus.runtime
+  local _g352 = nexus["lumen/runtime"]
   local _37 = _g352["%"]
   local _37message_handler = _g352["%message-handler"]
   local _42 = _g352["*"]
@@ -2626,7 +2626,7 @@ end)();
   local unstash = _g352.unstash
   local write = _g352.write
   local write_file = _g352["write-file"]
-  local _g353 = nexus.utilities
+  local _g353 = nexus["lumen/utilities"]
   local bind = _g353.bind
   local bind42 = _g353["bind*"]
   local bound63 = _g353["bound?"]
@@ -2655,7 +2655,7 @@ end)();
   local toplevel63 = _g353["toplevel?"]
   local valid_id63 = _g353["valid-id?"]
   local variable63 = _g353["variable?"]
-  local _g356 = nexus.compiler
+  local _g356 = nexus["lumen/compiler"]
   local compile = _g356.compile
   local compile_function = _g356["compile-function"]
   local compile_module = _g356["compile-module"]
@@ -2666,7 +2666,7 @@ end)();
   target = "lua"
 end)();
 (function ()
-  local _g622 = nexus.runtime
+  local _g622 = nexus["lumen/runtime"]
   local _37 = _g622["%"]
   local _37message_handler = _g622["%message-handler"]
   local _42 = _g622["*"]
@@ -2760,7 +2760,7 @@ end)();
   local unstash = _g622.unstash
   local write = _g622.write
   local write_file = _g622["write-file"]
-  local _g623 = nexus.utilities
+  local _g623 = nexus["lumen/utilities"]
   local bind = _g623.bind
   local bind42 = _g623["bind*"]
   local bound63 = _g623["bound?"]
@@ -2789,7 +2789,7 @@ end)();
   local toplevel63 = _g623["toplevel?"]
   local valid_id63 = _g623["valid-id?"]
   local variable63 = _g623["variable?"]
-  local _g626 = nexus.compiler
+  local _g626 = nexus["lumen/compiler"]
   local compile = _g626.compile
   local compile_function = _g626["compile-function"]
   local compile_module = _g626["compile-module"]
@@ -3354,7 +3354,7 @@ end)();
   end}}}
 end)();
 (function ()
-  local _g2 = nexus.runtime
+  local _g2 = nexus["lumen/runtime"]
   local _37 = _g2["%"]
   local _37message_handler = _g2["%message-handler"]
   local _42 = _g2["*"]
@@ -3448,13 +3448,13 @@ end)();
   local unstash = _g2.unstash
   local write = _g2.write
   local write_file = _g2["write-file"]
-  local _g5 = nexus.reader
+  local _g5 = nexus["lumen/reader"]
   local make_stream = _g5["make-stream"]
   local read = _g5.read
   local read_all = _g5["read-all"]
   local read_from_string = _g5["read-from-string"]
   local read_table = _g5["read-table"]
-  local _g6 = nexus.compiler
+  local _g6 = nexus["lumen/compiler"]
   local compile = _g6.compile
   local compile_function = _g6["compile-function"]
   local compile_module = _g6["compile-module"]
@@ -3550,7 +3550,7 @@ end)();
   end
   main()
   local _g735 = {}
-  nexus.main = _g735
+  nexus["lumen/main"] = _g735
   _g735.main = main
   _g735.rep = rep
   _g735.repl = repl
