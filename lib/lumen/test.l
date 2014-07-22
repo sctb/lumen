@@ -1,12 +1,12 @@
 ;; -*- mode: lisp -*-
 
-(define-module test
-  import: (runtime
-           utilities
-           special
-           core
-           reader
-           compiler))
+(define-module (lumen test)
+  import: ((lumen runtime)
+           (lumen utilities)
+           (lumen special)
+           (lumen core)
+           (lumen reader)
+           (lumen compiler)))
 
 ;; infrastructure
 

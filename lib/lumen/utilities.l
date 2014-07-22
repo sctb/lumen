@@ -1,7 +1,7 @@
 ;; -*- mode: lisp -*-
 
-(define-module utilities
-  import: (runtime special core)
+(define-module (lumen utilities)
+  import: ((lumen runtime) (lumen special) (lumen core))
   export: (getenv
            macro-function
            macro?

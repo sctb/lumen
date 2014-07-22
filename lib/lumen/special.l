@@ -1,7 +1,11 @@
 ;; -*- mode: lisp -*-
 
-(define-module special
-  import: (runtime utilities special core compiler)
+(define-module (lumen special)
+  import: ((lumen runtime)
+           (lumen utilities)
+           (lumen special)
+           (lumen core)
+           (lumen compiler))
   export: (do
            %if
            while

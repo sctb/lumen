@@ -1,7 +1,11 @@
 ;; -*- mode: lisp -*-
 
-(define-module compiler
-  import: (runtime utilities special core reader)
+(define-module (lumen compiler)
+  import: ((lumen runtime)
+           (lumen utilities)
+           (lumen special)
+           (lumen core)
+           (lumen reader))
   export: (compile-function
            compile
            open-module

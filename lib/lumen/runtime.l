@@ -1,7 +1,7 @@
 ;; -*- mode: lisp -*-
 
-(define-module runtime
-  import: (special core)
+(define-module (lumen runtime)
+  import: ((lumen special) (lumen core))
   export: (nil?
            is?
            max

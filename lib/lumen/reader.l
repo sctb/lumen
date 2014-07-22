@@ -1,7 +1,7 @@
 ;; -*- mode: lisp -*-
 
-(define-module reader
-  import: (runtime special core)
+(define-module (lumen reader)
+  import: ((lumen runtime) (lumen special) (lumen core))
   export: (make-stream
            read-table
            define-reader

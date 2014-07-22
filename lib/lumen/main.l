@@ -1,24 +1,24 @@
 ;; -*- mode: lisp -*-
 
-(define-module main
-  import: (runtime
-           special
-           core
-           reader
-           compiler))
+(define-module (lumen main)
+  import: ((lumen runtime)
+           (lumen special)
+           (lumen core)
+           (lumen reader)
+           (lumen compiler)))
 
 (define-macro save (rest: specs)
   (map compile-module specs)
   nil)
 
-(save system
-      runtime
-      utilities
-      reader
-      compiler
-      special
-      core
-      boot)
+(save (lumen system)
+      (lumen runtime)
+      (lumen utilities)
+      (lumen reader)
+      (lumen compiler)
+      (lumen special)
+      (lumen core)
+      (lumen boot))
 
 (define rep (str)
   (let ((_ x) (guard (eval (read-from-string str))))

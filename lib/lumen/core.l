@@ -1,7 +1,11 @@
 ;; -*- mode: lisp -*-
 
-(define-module core
-  import: (runtime utilities special core compiler)
+(define-module (lumen core)
+  import: ((lumen runtime)
+           (lumen utilities)
+           (lumen special)
+           (lumen core)
+           (lumen compiler))
   export: (quote
            quasiquote
            at
