@@ -1,7 +1,7 @@
 ;; -*- mode: lisp -*-
 
 (define-module (lumen utilities)
-  import: ((lumen runtime) (lumen special) (lumen core))
+  import: (lumen)
   export: (getenv
            macro-function
            macro?
@@ -350,6 +350,7 @@
 
 (define quote-module (m)
   `(table import: ,(quoted m.import)
+          alias: ,(quoted m.alias)
           export: ,(quote-frame m.export)))
 
 (define quote-modules ()

@@ -1,9 +1,7 @@
 ;; -*- mode: lisp -*-
 
 (define-module (lumen main)
-  import: ((lumen runtime)
-           (lumen special)
-           (lumen core)
+  import: ((lumen)
            (lumen reader)
            (lumen compiler)))
 

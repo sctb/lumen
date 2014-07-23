@@ -1,10 +1,8 @@
 ;; -*- mode: lisp -*-
 
 (define-module (lumen boot)
-  import: ((lumen runtime)
+  import: ((lumen)
            (lumen utilities)
-           (lumen special)
-           (lumen core)
            (lumen compiler)))
 
 (define-macro %initial-environment ()

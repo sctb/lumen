@@ -1,10 +1,8 @@
 ;; -*- mode: lisp -*-
 
 (define-module (lumen core)
-  import: ((lumen runtime)
+  import: ((lumen)
            (lumen utilities)
-           (lumen special)
-           (lumen core)
            (lumen compiler))
   export: (quote
            quasiquote
@@ -96,12 +94,15 @@
     `(do ,@locals (let-symbol ,renames ,@body))))
 
 (define-macro define-module (spec rest: body)
-  (let (imports () (import: imp export: exp) body)
+  (let (imports () aliased ()
+        (import: imp export: exp :alias) body)
     (each (k) (or imp ())
       (load-module k)
+      (each (a) (or (get (module k) 'alias) ())
+        (add imp a))
       (join! imports (imported k)))
     (set (get modules (module-key spec))
-         (table import: imp export: (table)))
+         (table import: imp export: (table) alias: alias))
     (each (k) (or exp ())
       (setenv k :export))
     `(do ,@imports)))
