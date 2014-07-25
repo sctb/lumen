@@ -27,6 +27,7 @@
            sortk
            imported
            exported
+           link
            mapo
            quote-environment
            quote-modules
@@ -318,6 +319,12 @@
     (if (some? exports)
         `((%local ,m (get nexus ',k)) ,@(sortk exports td))
       ())))
+
+(define link (name form)
+  (if (toplevel?)
+      (let (k (module-key current-module))
+        `(do ,form (set (get (get nexus ',k) ',name) ,name)))
+    form))
 
 ;; bootstrap
 

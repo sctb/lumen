@@ -136,8 +136,8 @@
   (setenv name :variable)
   (if (some? body)
       (let ((args body) (bind* x body))
-        `(%local-function ,name ,args ,@body))
-    `(%local ,name ,x)))
+        (link name `(%local-function ,name ,args ,@body)))
+    (link name `(%local ,name ,x))))
 
 (define-macro with-frame (rest: body :scope)
   (let (x (make-id))
