@@ -3,7 +3,8 @@
 (define-module (lumen main)
   import: ((lumen)
            (lumen reader)
-           (lumen compiler)))
+           (lumen compiler)
+           (user)))
 
 (let-macro ((init ()
               (declare '(define* nexus (table)))))
@@ -69,7 +70,7 @@
       (if output
           (do (if target1 (set target target1))
               (write-file output (compile-module spec)))
-        (do (in-module (or spec '(lumen main)))
+        (do (in-module (or spec 'user))
             (if expr (rep expr) (repl)))))))
 
 (main)
