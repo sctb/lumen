@@ -5,12 +5,15 @@
            (lumen reader)
            (lumen compiler)))
 
+(let-macro ((init ()
+              (declare '(define* nexus (table)))))
+  (init))
+
 (let-macro
     ((save (rest: specs)
        (map compile-module specs)
        nil))
-  (save (lumen system)
-        (lumen runtime)
+  (save (lumen runtime)
         (lumen utilities)
         (lumen reader)
         (lumen compiler)

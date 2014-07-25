@@ -10,6 +10,7 @@
            load-module
            in-module
            compile-module
+           declare
            eval))
 
 (define infix
@@ -275,6 +276,11 @@
 (define compiling? false)
 (define compiler-output "")
 
+(define conclude (code)
+  (if compiling?
+      (cat! compiler-output code)
+    (run code)))
+
 (define %compile-module (spec)
   (let (path (module-path spec)
         mod0 current-module
@@ -284,9 +290,7 @@
     (let (compiled (compile-file path))
       (set current-module mod0)
       (set environment env0)
-      (if compiling?
-          (cat! compiler-output compiled)
-        (run compiled)))))
+      (conclude compiled))))
 
 (define open-module (spec :all)
   (let (m (module spec)
@@ -310,6 +314,9 @@
   (set compiling? true)
   (%compile-module spec)
   compiler-output)
+
+(define declare (form)
+  (conclude (compile (process form) :stmt)))
 
 (define reimported ()
   (join (imported current-module :all)
