@@ -66,7 +66,7 @@
       (if output
           (do (if target1 (set target target1))
               (write-file output (compile-module spec)))
-        (do (in-module (or spec 'main))
+        (do (in-module (or spec '(lumen main)))
             (if expr (rep expr) (repl)))))))
 
 (main)
