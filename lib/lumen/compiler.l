@@ -257,8 +257,8 @@
 
 (define encapsulate (body)
   (let (body (map process body)
-        epilog (map process (exported)))
-    `((%function () (do ,@body ,@epilog)))))
+        epilogue (map process (exported)))
+    `((%function () (do ,@body ,@epilogue)))))
 
 (define compile-file (file)
   (let (str (read-file file)
@@ -266,15 +266,11 @@
         form (encapsulate body))
     (cat (compile form) ";\n")))
 
-(target js: (define run global.eval))
-
-(target lua:
- (do (define* %result)
-     (define run (x)
-       (let (f (load (cat (compile '%result) '= x)))
-         (if f (do (f) %result)
-           (let (|f,e| (load x))
-             (if f (f) (error (cat e " in " x)))))))))
+(define run (code)
+  (target
+    js: (global.eval code)
+    lua: (let (|f,e| (load code))
+           (if f (f) (error (cat e " in " code))))))
 
 (define compiling? false)
 (define compiler-output "")
@@ -315,17 +311,21 @@
   (%compile-module spec)
   compiler-output)
 
-(define prologue ()
+(define reimported ()
   (join (imported current-module :all)
         (let (m (module current-module))
           (map (fn (x)
                  (splice (imported x)))
                m.import))))
 
+(define* %result)
+
 (define eval (form)
   (let (previous target)
     (set target (language))
-    (let (form `((%function () ,@(prologue) ,form)))
-      (let (compiled (compile (process form)))
+    (let (prologue (map process (reimported))
+          result (process `(set %result ,form)))
+      (let (compiled (compile `((%function () (do ,@prologue ,result)))))
         (set target previous)
-        (run compiled)))))
+        (run compiled)
+        %result))))
