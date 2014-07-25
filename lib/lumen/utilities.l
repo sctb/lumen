@@ -316,9 +316,7 @@
       (when b.variable
         (add exports `(set (get ,m ',n) ,n))))
     (if (some? exports)
-        `((%local ,m (table))
-          (set (get nexus ',k) ,m)
-          ,@(sortk exports td))
+        `((%local ,m (get nexus ',k)) ,@(sortk exports td))
       ())))
 
 ;; bootstrap

@@ -105,7 +105,8 @@
          (table import: imp export: (table) alias: alias))
     (each (k) (or exp ())
       (setenv k :export))
-    `(do ,@imports)))
+    (let (k (module-key current-module))
+      `(do (set (get nexus ',k) (table)) ,@imports))))
 
 (define-macro define-macro (name args rest: body)
   (let (form `(fn ,args ,@body))
