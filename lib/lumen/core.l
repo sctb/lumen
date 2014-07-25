@@ -17,8 +17,9 @@
            define-macro
            define-special
            define-symbol
-           define
            define*
+           define
+           set*
            with-bindings
            let-macro
            let-symbol
@@ -136,8 +137,11 @@
   (setenv name :variable)
   (if (some? body)
       (let ((args body) (bind* x body))
-        (link name `(%local-function ,name ,args ,@body)))
-    (link name `(%local ,name ,x))))
+        (linked name `(%local-function ,name ,args ,@body)))
+    (linked name `(%local ,name ,x))))
+
+(define-macro set* (name value)
+  (linked name `(set ,name ,value)))
 
 (define-macro with-frame (rest: body :scope)
   (let (x (make-id))

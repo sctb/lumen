@@ -26,8 +26,7 @@
            id
            sortk
            imported
-           exported
-           link
+           linked
            mapo
            quote-environment
            quote-modules
@@ -180,7 +179,7 @@
 (define quasiexpand)
 (define quasiquote-list)
 
-(set quasiquote-list
+(set* quasiquote-list
   (fn (form depth)
     (let (xs (list '(list)))
       (each (k v) form
@@ -204,7 +203,7 @@
                   xs))
         `(join* ,@pruned)))))
 
-(set quasiexpand
+(set* quasiexpand
   (fn (form depth)
     (if (quasiquoting? depth)
         (if (atom? form) (list 'quote form)
@@ -309,18 +308,7 @@
       `((%local ,m (get nexus ',k))
         ,@(sortk imports sd)))))
 
-(define exported ()
-  (let (m (make-id)
-        k (module-key current-module)
-        exports ())
-    (each (n b) (get (module current-module) 'export)
-      (when b.variable
-        (add exports `(set (get ,m ',n) ,n))))
-    (if (some? exports)
-        `((%local ,m (get nexus ',k)) ,@(sortk exports td))
-      ())))
-
-(define link (name form)
+(define linked (name form)
   (if (toplevel?)
       (let (k (module-key current-module))
         `(do ,form (set (get (get nexus ',k) ',name) ,name)))

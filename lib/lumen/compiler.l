@@ -122,7 +122,7 @@
            (and (not (= (hd form) 'return))
                 (not (statement? (hd form)))))))
 
-(set compile
+(set* compile
   (fn (form :stmt)
     (if (nil? form) ""
         (special-form? form)
@@ -226,7 +226,7 @@
   (let (e (lower-call form hoist))
     (if e (add hoist e))))
 
-(set lower
+(set* lower
   (fn (form hoist stmt? tail?)
     (if (atom? form) form
         (empty? form) '(%array)
@@ -257,9 +257,7 @@
   (cat (module-key spec) ".l"))
 
 (define encapsulate (body)
-  (let (body (map process body)
-        epilogue (map process (exported)))
-    `((%function () (do ,@body ,@epilogue)))))
+  `((%function () ,(process `(do ,@body)))))
 
 (define compile-file (file)
   (let (str (read-file file)
@@ -287,10 +285,10 @@
         env0 environment)
     (set current-module spec)
     (set environment (initial-environment))
-    (let (compiled (compile-file path))
+    (let (code (compile-file path))
       (set current-module mod0)
       (set environment env0)
-      (conclude compiled))))
+      (conclude code))))
 
 (define open-module (spec :all)
   (let (m (module spec)
@@ -330,9 +328,8 @@
 (define eval (form)
   (let (previous target)
     (set target (language))
-    (let (prologue (map process (reimported))
-          result (process `(set %result ,form)))
-      (let (compiled (compile `((%function () (do ,@prologue ,result)))))
-        (set target previous)
-        (run compiled)
-        %result))))
+    (let (body `(,@(reimported) (set %result ,form))
+          code (compile (encapsulate body)))
+      (set target previous)
+      (run code)
+      %result)))
