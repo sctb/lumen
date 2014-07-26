@@ -91,7 +91,7 @@
                    (set id rename))
                (setenv id :variable))
              (add locals `(%local ,id ,val))))
-         (pairwise bindings))
+         (pair bindings))
     `(do ,@locals (let-symbol ,renames ,@body))))
 
 (define-macro define-module (spec rest: body)
@@ -168,7 +168,7 @@
   (with-frame
     (map (fn ((name exp))
            (macroexpand `(define-symbol ,name ,exp)))
-         (pairwise expansions))
+         (pair expansions))
     `(do ,@(macroexpand body))))
 
 (define-macro fn (args rest: body)

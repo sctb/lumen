@@ -57,7 +57,7 @@
            reduce
            keep
            find
-           pairwise
+           pair
            sort
            iterate
            replicate
@@ -239,7 +239,7 @@
     (let (x (f x))
       (if x (return x)))))
 
-(define pairwise (l)
+(define pair (l)
   (let (i 0
         l1 ())
     (while (< i (length l))
