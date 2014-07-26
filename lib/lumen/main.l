@@ -3,8 +3,7 @@
 (define-module (lumen main)
   import: ((lumen)
            (lumen reader)
-           (lumen compiler)
-           (user)))
+           (lumen compiler)))
 
 (let-macro ((init ()
               (declare '(define* nexus (table)))))
@@ -20,7 +19,8 @@
         (lumen compiler)
         (lumen special)
         (lumen core)
-        (lumen boot)))
+        (lumen boot)
+        (user)))
 
 (define rep (str)
   (let ((_ x) (guard (eval (read-from-string str))))
