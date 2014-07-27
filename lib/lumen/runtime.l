@@ -80,6 +80,7 @@
            write-file
            write
            exit
+           today
            number
            string
            apply
@@ -406,6 +407,18 @@
 
 (define exit (code)
   (target js: (process.exit code) lua: (os.exit code)))
+
+(define today ()
+  (target
+    js: (let (pad (fn (n)
+                    (if (< n 10)
+                        (cat "0" n)
+                      (string n)))
+              now (|new Date|))
+          (cat (pad (now.getUTCFullYear)) "-"
+               (pad (+ (now.getUTCMonth) 1)) "-"
+               (pad (now.getUTCDate))))
+    lua: (os.date "!%F")))
 
 (define number (str)
   (target
