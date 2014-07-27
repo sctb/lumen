@@ -81,6 +81,7 @@
            write
            exit
            today
+           now
            number
            string
            apply
@@ -419,6 +420,11 @@
                (pad (+ (now.getUTCMonth) 1)) "-"
                (pad (now.getUTCDate))))
     lua: (os.date "!%F")))
+
+(define now ()
+  (target
+    js: (floor (/ ((get (|new Date|) 'getTime)) 1000))
+    lua: (os.time)))
 
 (define number (str)
   (target
