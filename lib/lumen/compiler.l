@@ -9,6 +9,7 @@
            open-module
            load-module
            in-module
+           import-modules
            compile-module
            declare
            eval))
@@ -307,6 +308,20 @@
   (let (m (module spec))
     (map open-module m.import))
   (set current-module spec))
+
+(define import-modules (specs)
+  (let (imports () bindings ())
+    (each (spec) (or specs ())
+      (load-module spec)
+      (let (m (module spec))
+        (if m.alias
+            (let ((aliased bs) (import-modules m.alias))
+              (join! imports aliased)
+              (join! bindings bs))
+          (let (bs (imported spec))
+            (add imports spec)
+            (join! bindings bs)))))
+    (list imports bindings)))
 
 (define compile-module (spec)
   (set compiling? true)
