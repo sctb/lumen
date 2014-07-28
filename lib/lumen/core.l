@@ -130,7 +130,9 @@
 
 (define-macro define (name x rest: body)
   (setenv name :variable)
-  (if (some? body)
+  (if (and (some? body) (= target 'js))
+      (linked name `(%local ,name (fn ,x ,@body)))
+      (some? body)
       (let ((args body) (bind* x body))
         (linked name `(%local-function ,name ,args ,@body)))
     (linked name `(%local ,name ,x))))
