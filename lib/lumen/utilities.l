@@ -12,7 +12,6 @@
            symbol?
            variable?
            bound?
-           toplevel?
            quoted
            stash*
            bind
