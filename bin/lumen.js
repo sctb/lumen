@@ -2407,9 +2407,9 @@ global.nexus = {};
   nexus["lumen/compiler"].declare = declare;
   var reimported = function () {
     var m = module(current_module);
-    return(join(imported(current_module, {_stash: true, all: true}), map(function (x) {
+    return(join(map(function (x) {
       return(splice(imported(x)));
-    }, m.import)));
+    }, m.import), imported(current_module, {_stash: true, all: true})));
   };
   nexus["lumen/compiler"].reimported = reimported;
   global._37result = undefined;
