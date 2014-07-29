@@ -93,7 +93,11 @@
            module
            setenv))
 
-(define nil? (x) (= x nil))
+(define nil? (x)
+  (target
+    js: (or (= x nil) (= x null))
+    lua: (= x nil)))
+
 (define is? (x) (not (nil? x)))
 
 (define math (target js: Math lua: math))
