@@ -42,7 +42,6 @@
            table?
            list?
            substring
-           sublist
            sub
            inner
            tl
@@ -154,26 +153,26 @@
   (target js: (str.substring from upto)
           lua: (string.sub str (+ from 1) upto)))
 
-(define sublist (l from upto)
-  (target
-   js: (Array.prototype.slice.call l from upto)
-   lua: (let (i (or from 0) j 0
-              upto (or upto (length l))
-              l2 ())
-          (while (< i upto)
-            (set (at l2 j) (at l i))
-            (inc i)
-            (inc j))
-          l2)))
+(define max* (x n) (if (nil? x) n (max x n)))
+(define min* (x n) (if (nil? x) n (min x n)))
+
+(define subl (l from upto)
+  (let (i (max* from 0)
+        upto (min* upto (length l))
+        j 0 l2 ())
+    (while (< i upto)
+      (set (at l2 j) (at l i))
+      (inc i)
+      (inc j))
+    l2))
 
 (define sub (x from upto)
-  (let (from (or from 0))
-    (if (string? x)
-        (substring x from upto)
-      (let (l (sublist x from upto))
-        (each (k v) x
-          (set (get l k) v))
-        l))))
+  (if (string? x)
+      (substring x (or from 0) upto)
+    (let (l (subl x from upto))
+      (each (k v) x
+        (set (get l k) v))
+      l)))
 
 (define inner (x)
   (sub x 1 (- (length x) 1)))
@@ -337,7 +336,7 @@
   (join t xs))
 
 (define exclude (t rest: keys)
-  (let (t1 (sublist t))
+  (let (t1 (subl t))
     (each (k v) t
       (unless (get keys k)
         (set (get t1 k) v)))
