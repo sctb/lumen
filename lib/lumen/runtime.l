@@ -453,13 +453,14 @@
           (cat! str " ")))
       (cat str  ")"))))
 
-(define space xs
+(define space (xs)
   (define string (x)
     (if (or (string-literal? x)
             (and (list? x) (= (hd x) 'cat)))
         x
       `(string ,x)))
-  (if (one? xs) (string (hd xs))
+  (if (one? xs)
+      (string (hd xs))
     (reduce (fn (a b)
               `(cat ,(string a) " " ,(string b)))
             xs)))

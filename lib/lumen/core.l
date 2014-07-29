@@ -227,7 +227,4 @@
   `(set ,n (- ,n ,(or by 1))))
 
 (define-macro pr xs
-  (let (xs (map (fn (x)
-                  (splice `((string ,x) " ")))
-                xs))
-    `(print (cat ,@xs))))
+  `(print ,(space xs)))
