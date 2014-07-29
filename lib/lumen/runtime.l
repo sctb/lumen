@@ -28,6 +28,7 @@
            length
            none?
            some?
+           one?
            in?
            hd
            sd
@@ -84,6 +85,7 @@
            now
            number
            string
+           space
            apply
            make-id
            %message-handler
@@ -125,6 +127,9 @@
 
 (define some? (x)
   (> (length x) 0))
+
+(define one? (x)
+  (= (length x) 1))
 
 (define in? (x l)
   (each (y) l
@@ -228,7 +233,7 @@
 
 (define reduce (f x)
   (if (none? x) x
-      (= (length x) 1) (hd x)
+      (one? x) (hd x)
     (f (hd x) (reduce f (tl x)))))
 
 (define keep (f l)
@@ -448,6 +453,17 @@
           (cat! str " ")))
       (cat str  ")"))))
 
+(define space xs
+  (define string (x)
+    (if (or (string-literal? x)
+            (and (list? x) (= (hd x) 'cat)))
+        x
+      `(string ,x)))
+  (if (one? xs) (string (hd xs))
+    (reduce (fn (a b)
+              `(cat ,(string a) " " ,(string b)))
+            xs)))
+
 (define apply (f args)
   (let (args (stash args))
     (target js: (f.apply f args) lua: (f (unpack args)))))
@@ -463,7 +479,7 @@
     (sub msg (+ i 2))))
 
 (define toplevel? ()
-  (= (length environment) 1))
+  (one? environment))
 
 (define module-key (spec)
   (if (atom? spec)

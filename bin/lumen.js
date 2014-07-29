@@ -61,6 +61,10 @@ global.nexus = {};
     return(length(x) > 0);
   };
   nexus["lumen/runtime"]["some?"] = some63;
+  var one63 = function (x) {
+    return(length(x) === 1);
+  };
+  nexus["lumen/runtime"]["one?"] = one63;
   var in63 = function (x, l) {
     var _g23 = l;
     var _g24 = 0;
@@ -248,7 +252,7 @@ global.nexus = {};
     if (none63(x)) {
       return(x);
     } else {
-      if (length(x) === 1) {
+      if (one63(x)) {
         return(hd(x));
       } else {
         return(f(hd(x), reduce(f, tl(x))));
@@ -657,6 +661,24 @@ global.nexus = {};
     }
   };
   nexus["lumen/runtime"].string = string;
+  var space = function () {
+    var xs = unstash(Array.prototype.slice.call(arguments, 0));
+    var string = function (x) {
+      if (string_literal63(x) || list63(x) && hd(x) === "cat") {
+        return(x);
+      } else {
+        return(["string", x]);
+      }
+    };
+    if (one63(xs)) {
+      return(string(hd(xs)));
+    } else {
+      return(reduce(function (a, b) {
+        return(["cat", string(a), "\" \"", string(b)]);
+      }, xs));
+    }
+  };
+  nexus["lumen/runtime"].space = space;
   var apply = function (f, args) {
     var _g52 = stash(args);
     return(f.apply(f, _g52));
@@ -675,7 +697,7 @@ global.nexus = {};
   };
   nexus["lumen/runtime"]["%message-handler"] = _37message_handler;
   var toplevel63 = function () {
-    return(length(environment) === 1);
+    return(one63(environment));
   };
   nexus["lumen/runtime"]["toplevel?"] = toplevel63;
   var module_key = function (spec) {
@@ -779,6 +801,7 @@ global.nexus = {};
   var now = _g59.now;
   var number = _g59.number;
   var number63 = _g59["number?"];
+  var one63 = _g59["one?"];
   var pair = _g59.pair;
   var pow = _g59.pow;
   var random = _g59.random;
@@ -793,6 +816,7 @@ global.nexus = {};
   var sinh = _g59.sinh;
   var some63 = _g59["some?"];
   var sort = _g59.sort;
+  var space = _g59.space;
   var splice = _g59.splice;
   var split = _g59.split;
   var sqrt = _g59.sqrt;
@@ -1413,6 +1437,7 @@ global.nexus = {};
   var now = _g100.now;
   var number = _g100.number;
   var number63 = _g100["number?"];
+  var one63 = _g100["one?"];
   var pair = _g100.pair;
   var pow = _g100.pow;
   var random = _g100.random;
@@ -1427,6 +1452,7 @@ global.nexus = {};
   var sinh = _g100.sinh;
   var some63 = _g100["some?"];
   var sort = _g100.sort;
+  var space = _g100.space;
   var splice = _g100.splice;
   var split = _g100.split;
   var sqrt = _g100.sqrt;
@@ -1723,6 +1749,7 @@ global.nexus = {};
   var now = _g111.now;
   var number = _g111.number;
   var number63 = _g111["number?"];
+  var one63 = _g111["one?"];
   var pair = _g111.pair;
   var pow = _g111.pow;
   var random = _g111.random;
@@ -1737,6 +1764,7 @@ global.nexus = {};
   var sinh = _g111.sinh;
   var some63 = _g111["some?"];
   var sort = _g111.sort;
+  var space = _g111.space;
   var splice = _g111.splice;
   var split = _g111.split;
   var sqrt = _g111.sqrt;
@@ -1855,7 +1883,7 @@ global.nexus = {};
   var unary63 = function (form) {
     var op = form[0];
     var args = sub(form, 1);
-    return(length(args) === 1 && in63(op, ["not", "-"]));
+    return(one63(args) && in63(op, ["not", "-"]));
   };
   nexus["lumen/compiler"]["unary?"] = unary63;
   var precedence = function (form) {
@@ -2488,6 +2516,7 @@ global.nexus = {};
   var now = _g189.now;
   var number = _g189.number;
   var number63 = _g189["number?"];
+  var one63 = _g189["one?"];
   var pair = _g189.pair;
   var pow = _g189.pow;
   var random = _g189.random;
@@ -2502,6 +2531,7 @@ global.nexus = {};
   var sinh = _g189.sinh;
   var some63 = _g189["some?"];
   var sort = _g189.sort;
+  var space = _g189.space;
   var splice = _g189.splice;
   var split = _g189.split;
   var sqrt = _g189.sqrt;
@@ -2625,6 +2655,7 @@ global.nexus = {};
   var now = _g373.now;
   var number = _g373.number;
   var number63 = _g373["number?"];
+  var one63 = _g373["one?"];
   var pair = _g373.pair;
   var pow = _g373.pow;
   var random = _g373.random;
@@ -2639,6 +2670,7 @@ global.nexus = {};
   var sinh = _g373.sinh;
   var some63 = _g373["some?"];
   var sort = _g373.sort;
+  var space = _g373.space;
   var splice = _g373.splice;
   var split = _g373.split;
   var sqrt = _g373.sqrt;
@@ -2763,6 +2795,7 @@ global.nexus = {};
   var now = _g677.now;
   var number = _g677.number;
   var number63 = _g677["number?"];
+  var one63 = _g677["one?"];
   var pair = _g677.pair;
   var pow = _g677.pow;
   var random = _g677.random;
@@ -2777,6 +2810,7 @@ global.nexus = {};
   var sinh = _g677.sinh;
   var some63 = _g677["some?"];
   var sort = _g677.sort;
+  var space = _g677.space;
   var splice = _g677.splice;
   var split = _g677.split;
   var sqrt = _g677.sqrt;
@@ -3125,7 +3159,7 @@ global.nexus = {};
     var body = unstash(Array.prototype.slice.call(arguments, 1));
     var _g740 = sub(body, 0);
     return(["set", ["get", "read-table", char], join(["fn", [stream]], _g740)]);
-  }}, delimiters: {variable: true}, eof: {variable: true}, "flag?": {variable: true}, "key?": {variable: true}, "make-stream": {export: true, variable: true}, "peek-char": {variable: true}, read: {export: true, variable: true}, "read-all": {export: true, variable: true}, "read-char": {variable: true}, "read-from-string": {export: true, variable: true}, "read-table": {export: true, variable: true}, "skip-non-code": {variable: true}, whitespace: {variable: true}}, import: [["lumen", "runtime"], ["lumen", "special"], ["lumen", "core"]]}, "lumen/runtime": {export: {"%": {export: true, variable: true}, "%message-handler": {export: true, variable: true}, "*": {export: true, variable: true}, "+": {export: true, variable: true}, "-": {export: true, variable: true}, "/": {export: true, variable: true}, "<": {export: true, variable: true}, "<=": {export: true, variable: true}, "=": {export: true, variable: true}, ">": {export: true, variable: true}, ">=": {export: true, variable: true}, abs: {export: true, variable: true}, acos: {export: true, variable: true}, add: {export: true, variable: true}, apply: {export: true, variable: true}, asin: {export: true, variable: true}, atan: {export: true, variable: true}, atan2: {export: true, variable: true}, "atom?": {export: true, variable: true}, "boolean?": {export: true, variable: true}, cat: {export: true, variable: true}, ceil: {export: true, variable: true}, char: {export: true, variable: true}, code: {export: true, variable: true}, "composite?": {export: true, variable: true}, cos: {export: true, variable: true}, drop: {export: true, variable: true}, "empty?": {export: true, variable: true}, exclude: {export: true, variable: true}, exit: {export: true, variable: true}, extend: {export: true, variable: true}, find: {export: true, variable: true}, flat: {export: true, variable: true}, flat1: {export: true, variable: true}, floor: {export: true, variable: true}, fs: {variable: true}, "function?": {export: true, variable: true}, hd: {export: true, variable: true}, "id-count": {variable: true}, "id-literal?": {export: true, variable: true}, "in?": {export: true, variable: true}, inner: {export: true, variable: true}, "is?": {export: true, variable: true}, iterate: {export: true, variable: true}, join: {export: true, variable: true}, keep: {export: true, variable: true}, "keys?": {export: true, variable: true}, last: {export: true, variable: true}, length: {export: true, variable: true}, "list?": {export: true, variable: true}, log: {export: true, variable: true}, log10: {export: true, variable: true}, "make-id": {export: true, variable: true}, map: {export: true, variable: true}, mapl: {variable: true}, math: {variable: true}, max: {export: true, variable: true}, min: {export: true, variable: true}, module: {export: true, variable: true}, "module-key": {export: true, variable: true}, "nil?": {export: true, variable: true}, "none?": {export: true, variable: true}, now: {export: true, variable: true}, number: {export: true, variable: true}, "number?": {export: true, variable: true}, pair: {export: true, variable: true}, pow: {export: true, variable: true}, print: {export: true, global: true}, random: {export: true, variable: true}, "read-file": {export: true, variable: true}, reduce: {export: true, variable: true}, replicate: {export: true, variable: true}, require: {export: true, global: true}, reverse: {export: true, variable: true}, sd: {export: true, variable: true}, search: {export: true, variable: true}, setenv: {export: true, variable: true}, sin: {export: true, variable: true}, sinh: {export: true, variable: true}, "some?": {export: true, variable: true}, sort: {export: true, variable: true}, splice: {export: true, variable: true}, "splice?": {variable: true}, split: {export: true, variable: true}, sqrt: {export: true, variable: true}, stash: {export: true, variable: true}, string: {export: true, variable: true}, "string-literal?": {export: true, variable: true}, "string?": {export: true, variable: true}, sub: {export: true, variable: true}, sublist: {export: true, variable: true}, substring: {export: true, variable: true}, "table?": {export: true, variable: true}, tan: {export: true, variable: true}, tanh: {export: true, variable: true}, td: {export: true, variable: true}, tl: {export: true, variable: true}, today: {export: true, variable: true}, "toplevel?": {export: true, variable: true}, type: {variable: true}, unstash: {export: true, variable: true}, write: {export: true, variable: true}, "write-file": {export: true, variable: true}}, import: [["lumen", "special"], ["lumen", "core"]]}, "lumen/special": {export: {"%array": {export: true, foo: true, special: function () {
+  }}, delimiters: {variable: true}, eof: {variable: true}, "flag?": {variable: true}, "key?": {variable: true}, "make-stream": {export: true, variable: true}, "peek-char": {variable: true}, read: {export: true, variable: true}, "read-all": {export: true, variable: true}, "read-char": {variable: true}, "read-from-string": {export: true, variable: true}, "read-table": {export: true, variable: true}, "skip-non-code": {variable: true}, whitespace: {variable: true}}, import: [["lumen", "runtime"], ["lumen", "special"], ["lumen", "core"]]}, "lumen/runtime": {export: {"%": {export: true, variable: true}, "%message-handler": {export: true, variable: true}, "*": {export: true, variable: true}, "+": {export: true, variable: true}, "-": {export: true, variable: true}, "/": {export: true, variable: true}, "<": {export: true, variable: true}, "<=": {export: true, variable: true}, "=": {export: true, variable: true}, ">": {export: true, variable: true}, ">=": {export: true, variable: true}, abs: {export: true, variable: true}, acos: {export: true, variable: true}, add: {export: true, variable: true}, apply: {export: true, variable: true}, asin: {export: true, variable: true}, atan: {export: true, variable: true}, atan2: {export: true, variable: true}, "atom?": {export: true, variable: true}, "boolean?": {export: true, variable: true}, cat: {export: true, variable: true}, ceil: {export: true, variable: true}, char: {export: true, variable: true}, code: {export: true, variable: true}, "composite?": {export: true, variable: true}, cos: {export: true, variable: true}, drop: {export: true, variable: true}, "empty?": {export: true, variable: true}, exclude: {export: true, variable: true}, exit: {export: true, variable: true}, extend: {export: true, variable: true}, find: {export: true, variable: true}, flat: {export: true, variable: true}, flat1: {export: true, variable: true}, floor: {export: true, variable: true}, fs: {variable: true}, "function?": {export: true, variable: true}, hd: {export: true, variable: true}, "id-count": {variable: true}, "id-literal?": {export: true, variable: true}, "in?": {export: true, variable: true}, inner: {export: true, variable: true}, "is?": {export: true, variable: true}, iterate: {export: true, variable: true}, join: {export: true, variable: true}, keep: {export: true, variable: true}, "keys?": {export: true, variable: true}, last: {export: true, variable: true}, length: {export: true, variable: true}, "list?": {export: true, variable: true}, log: {export: true, variable: true}, log10: {export: true, variable: true}, "make-id": {export: true, variable: true}, map: {export: true, variable: true}, mapl: {variable: true}, math: {variable: true}, max: {export: true, variable: true}, min: {export: true, variable: true}, module: {export: true, variable: true}, "module-key": {export: true, variable: true}, "nil?": {export: true, variable: true}, "none?": {export: true, variable: true}, now: {export: true, variable: true}, number: {export: true, variable: true}, "number?": {export: true, variable: true}, "one?": {export: true, variable: true}, pair: {export: true, variable: true}, pow: {export: true, variable: true}, print: {export: true, global: true}, random: {export: true, variable: true}, "read-file": {export: true, variable: true}, reduce: {export: true, variable: true}, replicate: {export: true, variable: true}, require: {export: true, global: true}, reverse: {export: true, variable: true}, sd: {export: true, variable: true}, search: {export: true, variable: true}, setenv: {export: true, variable: true}, sin: {export: true, variable: true}, sinh: {export: true, variable: true}, "some?": {export: true, variable: true}, sort: {export: true, variable: true}, space: {export: true, variable: true}, splice: {export: true, variable: true}, "splice?": {variable: true}, split: {export: true, variable: true}, sqrt: {export: true, variable: true}, stash: {export: true, variable: true}, string: {export: true, variable: true}, "string-literal?": {export: true, variable: true}, "string?": {export: true, variable: true}, sub: {export: true, variable: true}, sublist: {export: true, variable: true}, substring: {export: true, variable: true}, "table?": {export: true, variable: true}, tan: {export: true, variable: true}, tanh: {export: true, variable: true}, td: {export: true, variable: true}, tl: {export: true, variable: true}, today: {export: true, variable: true}, "toplevel?": {export: true, variable: true}, type: {variable: true}, unstash: {export: true, variable: true}, write: {export: true, variable: true}, "write-file": {export: true, variable: true}}, import: [["lumen", "special"], ["lumen", "core"]]}, "lumen/special": {export: {"%array": {export: true, foo: true, special: function () {
     var forms = unstash(Array.prototype.slice.call(arguments, 0));
     var _g775;
     if (target === "lua") {
@@ -3448,6 +3482,7 @@ global.nexus = {};
   var now = _g782.now;
   var number = _g782.number;
   var number63 = _g782["number?"];
+  var one63 = _g782["one?"];
   var pair = _g782.pair;
   var pow = _g782.pow;
   var random = _g782.random;
@@ -3462,6 +3497,7 @@ global.nexus = {};
   var sinh = _g782.sinh;
   var some63 = _g782["some?"];
   var sort = _g782.sort;
+  var space = _g782.space;
   var splice = _g782.splice;
   var split = _g782.split;
   var sqrt = _g782.sqrt;
@@ -3547,6 +3583,7 @@ global.nexus = {};
   var now = _g2.now;
   var number = _g2.number;
   var number63 = _g2["number?"];
+  var one63 = _g2["one?"];
   var pair = _g2.pair;
   var pow = _g2.pow;
   var random = _g2.random;
@@ -3561,6 +3598,7 @@ global.nexus = {};
   var sinh = _g2.sinh;
   var some63 = _g2["some?"];
   var sort = _g2.sort;
+  var space = _g2.space;
   var splice = _g2.splice;
   var split = _g2.split;
   var sqrt = _g2.sqrt;

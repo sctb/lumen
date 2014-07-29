@@ -26,7 +26,7 @@
 
 (define unary? (form)
   (let ((op rest: args) form)
-    (and (= (length args) 1) (in? op '(not -)))))
+    (and (one? args) (in? op '(not -)))))
 
 (define precedence (form)
   (when (and (list? form) (not (unary? form)))
