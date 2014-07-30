@@ -2,7 +2,7 @@
 
 (define-module (lumen special)
   import: ((lumen)
-           (lumen utilities)
+           (lumen lib)
            (lumen compiler))
   export: (do
            %if

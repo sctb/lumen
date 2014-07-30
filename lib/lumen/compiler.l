@@ -2,7 +2,7 @@
 
 (define-module (lumen compiler)
   import: ((lumen)
-           (lumen utilities)
+           (lumen lib)
            (lumen reader))
   export: (compile-function
            compile

@@ -2,7 +2,7 @@
 
 (define-module (lumen boot)
   import: ((lumen)
-           (lumen utilities)
+           (lumen lib)
            (lumen compiler)))
 
 (define-macro %initial-environment ()

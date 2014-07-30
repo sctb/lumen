@@ -2,7 +2,7 @@
 
 (define-module (lumen core)
   import: ((lumen)
-           (lumen utilities)
+           (lumen lib)
            (lumen compiler))
   export: (quote
            quasiquote

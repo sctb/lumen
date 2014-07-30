@@ -772,7 +772,7 @@ nexus = {}
   nexus["lumen/runtime"].setenv = setenv
 end)();
 (function ()
-  nexus["lumen/utilities"] = {}
+  nexus["lumen/lib"] = {}
   local _g63 = nexus["lumen/runtime"]
   local _37 = _g63["%"]
   local _37message_handler = _g63["%message-handler"]
@@ -895,50 +895,50 @@ end)();
       end
     end
   end
-  nexus["lumen/utilities"].getenv = getenv
+  nexus["lumen/lib"].getenv = getenv
   local function macro_function(k)
     return(getenv(k, {_stash = true, macro = true}))
   end
-  nexus["lumen/utilities"]["macro-function"] = macro_function
+  nexus["lumen/lib"]["macro-function"] = macro_function
   local function macro63(k)
     return(is63(macro_function(k)))
   end
-  nexus["lumen/utilities"]["macro?"] = macro63
+  nexus["lumen/lib"]["macro?"] = macro63
   local function special63(k)
     return(is63(getenv(k, {_stash = true, special = true})))
   end
-  nexus["lumen/utilities"]["special?"] = special63
+  nexus["lumen/lib"]["special?"] = special63
   local function special_form63(form)
     return(list63(form) and special63(hd(form)))
   end
-  nexus["lumen/utilities"]["special-form?"] = special_form63
+  nexus["lumen/lib"]["special-form?"] = special_form63
   local function statement63(k)
     return(special63(k) and getenv(k, {_stash = true, stmt = true}))
   end
-  nexus["lumen/utilities"]["statement?"] = statement63
+  nexus["lumen/lib"]["statement?"] = statement63
   local function symbol_expansion(k)
     return(getenv(k, {_stash = true, symbol = true}))
   end
-  nexus["lumen/utilities"]["symbol-expansion"] = symbol_expansion
+  nexus["lumen/lib"]["symbol-expansion"] = symbol_expansion
   local function symbol63(k)
     return(is63(symbol_expansion(k)))
   end
-  nexus["lumen/utilities"]["symbol?"] = symbol63
+  nexus["lumen/lib"]["symbol?"] = symbol63
   local function variable63(k)
     local b = find(function (frame)
       return(frame[k] or frame._scope)
     end, reverse(environment))
     return(table63(b) and is63(b.variable))
   end
-  nexus["lumen/utilities"]["variable?"] = variable63
+  nexus["lumen/lib"]["variable?"] = variable63
   local function global63(k)
     return(getenv(k, {_stash = true, global = true}))
   end
-  nexus["lumen/utilities"]["global?"] = global63
+  nexus["lumen/lib"]["global?"] = global63
   local function bound63(x)
     return(macro63(x) or special63(x) or symbol63(x) or variable63(x) or global63(x))
   end
-  nexus["lumen/utilities"]["bound?"] = bound63
+  nexus["lumen/lib"]["bound?"] = bound63
   local function escape(str)
     local str1 = "\""
     local i = 0
@@ -968,7 +968,7 @@ end)();
     end
     return(str1 .. "\"")
   end
-  nexus["lumen/utilities"].escape = escape
+  nexus["lumen/lib"].escape = escape
   local function quoted(form)
     if string63(form) then
       return(escape(form))
@@ -980,7 +980,7 @@ end)();
       end
     end
   end
-  nexus["lumen/utilities"].quoted = quoted
+  nexus["lumen/lib"].quoted = quoted
   local function stash42(args)
     if keys63(args) then
       local l = {"%object", "_stash", true}
@@ -998,7 +998,7 @@ end)();
       return(args)
     end
   end
-  nexus["lumen/utilities"]["stash*"] = stash42
+  nexus["lumen/lib"]["stash*"] = stash42
   local function bind(lh, rh)
     if composite63(lh) and list63(rh) then
       local id = make_id()
@@ -1036,7 +1036,7 @@ end)();
       end
     end
   end
-  nexus["lumen/utilities"].bind = bind
+  nexus["lumen/lib"].bind = bind
   local function bind42(args, body)
     local args1 = {}
     local function rest()
@@ -1080,23 +1080,23 @@ end)();
       end
     end
   end
-  nexus["lumen/utilities"]["bind*"] = bind42
+  nexus["lumen/lib"]["bind*"] = bind42
   local function quoting63(depth)
     return(number63(depth))
   end
-  nexus["lumen/utilities"]["quoting?"] = quoting63
+  nexus["lumen/lib"]["quoting?"] = quoting63
   local function quasiquoting63(depth)
     return(quoting63(depth) and depth > 0)
   end
-  nexus["lumen/utilities"]["quasiquoting?"] = quasiquoting63
+  nexus["lumen/lib"]["quasiquoting?"] = quasiquoting63
   local function can_unquote63(depth)
     return(quoting63(depth) and depth == 1)
   end
-  nexus["lumen/utilities"]["can-unquote?"] = can_unquote63
+  nexus["lumen/lib"]["can-unquote?"] = can_unquote63
   local function quasisplice63(x, depth)
     return(list63(x) and can_unquote63(depth) and hd(x) == "unquote-splicing")
   end
-  nexus["lumen/utilities"]["quasisplice?"] = quasisplice63
+  nexus["lumen/lib"]["quasisplice?"] = quasisplice63
   local function macroexpand(form)
     if symbol63(form) then
       return(macroexpand(symbol_expansion(form)))
@@ -1148,11 +1148,11 @@ end)();
       end
     end
   end
-  nexus["lumen/utilities"].macroexpand = macroexpand
+  nexus["lumen/lib"].macroexpand = macroexpand
   local quasiexpand
-  nexus["lumen/utilities"].quasiexpand = quasiexpand
+  nexus["lumen/lib"].quasiexpand = quasiexpand
   local quasiquote_list
-  nexus["lumen/utilities"]["quasiquote-list"] = quasiquote_list
+  nexus["lumen/lib"]["quasiquote-list"] = quasiquote_list
   quasiquote_list = function (form, depth)
     local xs = {{"list"}}
     local _g84 = form
@@ -1188,7 +1188,7 @@ end)();
     end, xs)
     return(join({"join*"}, pruned))
   end
-  nexus["lumen/utilities"]["quasiquote-list"] = quasiquote_list
+  nexus["lumen/lib"]["quasiquote-list"] = quasiquote_list
   quasiexpand = function (form, depth)
     if quasiquoting63(depth) then
       if atom63(form) then
@@ -1226,26 +1226,26 @@ end)();
       end
     end
   end
-  nexus["lumen/utilities"].quasiexpand = quasiexpand
+  nexus["lumen/lib"].quasiexpand = quasiexpand
   indent_level = 0
   local function indentation()
     return(apply(cat, replicate(indent_level, "  ")))
   end
-  nexus["lumen/utilities"].indentation = indentation
+  nexus["lumen/lib"].indentation = indentation
   local reserved = {["%"] = true, ["*"] = true, ["+"] = true, ["-"] = true, ["/"] = true, ["<"] = true, ["<="] = true, ["="] = true, ["=="] = true, [">"] = true, [">="] = true, ["and"] = true, ["break"] = true, ["case"] = true, ["catch"] = true, ["continue"] = true, ["debugger"] = true, ["default"] = true, ["delete"] = true, ["do"] = true, ["else"] = true, ["elseif"] = true, ["end"] = true, ["false"] = true, ["finally"] = true, ["for"] = true, ["function"] = true, ["if"] = true, ["in"] = true, ["instanceof"] = true, ["local"] = true, ["new"] = true, ["nil"] = true, ["not"] = true, ["or"] = true, ["repeat"] = true, ["return"] = true, ["switch"] = true, ["then"] = true, ["this"] = true, ["throw"] = true, ["true"] = true, ["try"] = true, ["typeof"] = true, ["until"] = true, ["var"] = true, ["void"] = true, ["while"] = true, ["with"] = true}
-  nexus["lumen/utilities"].reserved = reserved
+  nexus["lumen/lib"].reserved = reserved
   local function reserved63(x)
     return(reserved[x])
   end
-  nexus["lumen/utilities"]["reserved?"] = reserved63
+  nexus["lumen/lib"]["reserved?"] = reserved63
   local function numeric63(n)
     return(n > 47 and n < 58)
   end
-  nexus["lumen/utilities"]["numeric?"] = numeric63
+  nexus["lumen/lib"]["numeric?"] = numeric63
   local function valid_char63(n)
     return(numeric63(n) or n > 64 and n < 91 or n > 96 and n < 123 or n == 95)
   end
-  nexus["lumen/utilities"]["valid-char?"] = valid_char63
+  nexus["lumen/lib"]["valid-char?"] = valid_char63
   local function valid_id63(id)
     if none63(id) then
       return(false)
@@ -1269,7 +1269,7 @@ end)();
       end
     end
   end
-  nexus["lumen/utilities"]["valid-id?"] = valid_id63
+  nexus["lumen/lib"]["valid-id?"] = valid_id63
   local function id(id)
     local id1 = ""
     local i = 0
@@ -1306,13 +1306,13 @@ end)();
     end
     return(id1)
   end
-  nexus["lumen/utilities"].id = id
+  nexus["lumen/lib"].id = id
   local function sortk(l, k)
     return(sort(l, function (a, b)
       return(k(a) < k(b))
     end))
   end
-  nexus["lumen/utilities"].sortk = sortk
+  nexus["lumen/lib"].sortk = sortk
   local function imported(spec, ...)
     local _g93 = unstash({...})
     local all = _g93.all
@@ -1335,7 +1335,7 @@ end)();
       return(join({{"%local", m, {"get", "nexus", {"quote", k}}}}, sortk(imports, sd)))
     end
   end
-  nexus["lumen/utilities"].imported = imported
+  nexus["lumen/lib"].imported = imported
   local function linked(name, form)
     if toplevel63() then
       local k = module_key(current_module)
@@ -1344,7 +1344,7 @@ end)();
       return(form)
     end
   end
-  nexus["lumen/utilities"].linked = linked
+  nexus["lumen/lib"].linked = linked
   local function quote_binding(b)
     if is63(b.symbol) then
       return(extend(b, {_stash = true, symbol = {"quote", b.symbol}}))
@@ -1366,7 +1366,7 @@ end)();
       end
     end
   end
-  nexus["lumen/utilities"]["quote-binding"] = quote_binding
+  nexus["lumen/lib"]["quote-binding"] = quote_binding
   local function mapo(f, t)
     local o = {}
     local _g95 = t
@@ -1383,17 +1383,17 @@ end)();
     end
     return(o)
   end
-  nexus["lumen/utilities"].mapo = mapo
+  nexus["lumen/lib"].mapo = mapo
   local function quote_frame(t)
     return(join({"%object"}, mapo(function (b)
       return(join({"table"}, quote_binding(b)))
     end, t)))
   end
-  nexus["lumen/utilities"]["quote-frame"] = quote_frame
+  nexus["lumen/lib"]["quote-frame"] = quote_frame
   local function quote_environment(env)
     return(join({"list"}, map(quote_frame, env)))
   end
-  nexus["lumen/utilities"]["quote-environment"] = quote_environment
+  nexus["lumen/lib"]["quote-environment"] = quote_environment
   local function quote_module(m)
     local _g96 = {"table"}
     _g96.alias = quoted(m.alias)
@@ -1401,15 +1401,15 @@ end)();
     _g96.import = quoted(m.import)
     return(_g96)
   end
-  nexus["lumen/utilities"]["quote-module"] = quote_module
+  nexus["lumen/lib"]["quote-module"] = quote_module
   local function quote_modules()
     return(join({"table"}, map(quote_module, modules)))
   end
-  nexus["lumen/utilities"]["quote-modules"] = quote_modules
+  nexus["lumen/lib"]["quote-modules"] = quote_modules
   local function initial_environment()
     return({{["define-module"] = getenv("define-module")}})
   end
-  nexus["lumen/utilities"]["initial-environment"] = initial_environment
+  nexus["lumen/lib"]["initial-environment"] = initial_environment
 end)();
 (function ()
   nexus["lumen/reader"] = {}
@@ -1824,7 +1824,7 @@ end)();
   local unstash = _g116.unstash
   local write = _g116.write
   local write_file = _g116["write-file"]
-  local _g119 = nexus["lumen/utilities"]
+  local _g119 = nexus["lumen/lib"]
   local bind = _g119.bind
   local bind42 = _g119["bind*"]
   local bound63 = _g119["bound?"]
@@ -1887,11 +1887,11 @@ end)();
   _g136[">"] = true
   _g136[">="] = true
   local _g140 = {}
-  _g140.js = "!="
-  _g140.lua = "~="
+  _g140.js = "==="
+  _g140.lua = "=="
   local _g142 = {}
-  _g142.js = "==="
-  _g142.lua = "=="
+  _g142.js = "!="
+  _g142.lua = "~="
   local _g138 = {}
   local _g143 = {}
   _g143.js = "==="
@@ -2595,7 +2595,7 @@ end)();
   local unstash = _g194.unstash
   local write = _g194.write
   local write_file = _g194["write-file"]
-  local _g197 = nexus["lumen/utilities"]
+  local _g197 = nexus["lumen/lib"]
   local bind = _g197.bind
   local bind42 = _g197["bind*"]
   local bound63 = _g197["bound?"]
@@ -2733,7 +2733,7 @@ end)();
   local unstash = _g378.unstash
   local write = _g378.write
   local write_file = _g378["write-file"]
-  local _g381 = nexus["lumen/utilities"]
+  local _g381 = nexus["lumen/lib"]
   local bind = _g381.bind
   local bind42 = _g381["bind*"]
   local bound63 = _g381["bound?"]
@@ -2872,7 +2872,7 @@ end)();
   local unstash = _g681.unstash
   local write = _g681.write
   local write_file = _g681["write-file"]
-  local _g684 = nexus["lumen/utilities"]
+  local _g684 = nexus["lumen/lib"]
   local bind = _g684.bind
   local bind42 = _g684["bind*"]
   local bound63 = _g684["bound?"]
@@ -2914,7 +2914,7 @@ end)();
     return(quote_environment(initial_environment()))
   end}, ["%initial-modules"] = {macro = function ()
     return(quote_modules())
-  end}, modules = {export = true, global = true}}, import = {{"lumen", "runtime"}, {"lumen", "special"}, {"lumen", "core"}, {"lumen", "utilities"}, {"lumen", "compiler"}}}, ["lumen/compiler"] = {export = {["%compile-module"] = {variable = true}, ["%result"] = {export = true, global = true}, ["can-return?"] = {variable = true}, compile = {export = true, variable = true}, ["compile-args"] = {variable = true}, ["compile-atom"] = {variable = true}, ["compile-call"] = {variable = true}, ["compile-file"] = {variable = true}, ["compile-function"] = {export = true, variable = true}, ["compile-infix"] = {variable = true}, ["compile-module"] = {export = true, variable = true}, ["compile-special"] = {variable = true}, ["compiler-output"] = {variable = true}, ["compiling?"] = {variable = true}, conclude = {variable = true}, ["current-module"] = {export = true, global = true}, declare = {export = true, variable = true}, encapsulate = {variable = true}, eval = {export = true, variable = true}, getop = {variable = true}, ["import-modules"] = {export = true, variable = true}, ["in-module"] = {export = true, variable = true}, infix = {variable = true}, ["infix?"] = {variable = true}, ["load-module"] = {export = true, variable = true}, lower = {variable = true}, ["lower-body"] = {variable = true}, ["lower-call"] = {variable = true}, ["lower-definition"] = {variable = true}, ["lower-do"] = {variable = true}, ["lower-for"] = {variable = true}, ["lower-function"] = {variable = true}, ["lower-if"] = {variable = true}, ["lower-infix"] = {variable = true}, ["lower-infix?"] = {variable = true}, ["lower-short"] = {variable = true}, ["lower-special"] = {variable = true}, ["lower-statement"] = {variable = true}, ["lower-try"] = {variable = true}, ["lower-while"] = {variable = true}, ["module-path"] = {variable = true}, ["op-delims"] = {variable = true}, ["open-module"] = {export = true, variable = true}, ["parenthesize-call?"] = {variable = true}, precedence = {variable = true}, process = {variable = true}, reimported = {variable = true}, run = {variable = true}, terminator = {variable = true}, ["unary?"] = {variable = true}}, import = {{"lumen", "runtime"}, {"lumen", "special"}, {"lumen", "core"}, {"lumen", "utilities"}, {"lumen", "reader"}}}, ["lumen/core"] = {export = {at = {export = true, macro = function (l, i)
+  end}, modules = {export = true, global = true}}, import = {{"lumen", "runtime"}, {"lumen", "special"}, {"lumen", "core"}, {"lumen", "lib"}, {"lumen", "compiler"}}}, ["lumen/compiler"] = {export = {["%compile-module"] = {variable = true}, ["%result"] = {export = true, global = true}, ["can-return?"] = {variable = true}, compile = {export = true, variable = true}, ["compile-args"] = {variable = true}, ["compile-atom"] = {variable = true}, ["compile-call"] = {variable = true}, ["compile-file"] = {variable = true}, ["compile-function"] = {export = true, variable = true}, ["compile-infix"] = {variable = true}, ["compile-module"] = {export = true, variable = true}, ["compile-special"] = {variable = true}, ["compiler-output"] = {variable = true}, ["compiling?"] = {variable = true}, conclude = {variable = true}, ["current-module"] = {export = true, global = true}, declare = {export = true, variable = true}, encapsulate = {variable = true}, eval = {export = true, variable = true}, getop = {variable = true}, ["import-modules"] = {export = true, variable = true}, ["in-module"] = {export = true, variable = true}, infix = {variable = true}, ["infix?"] = {variable = true}, ["load-module"] = {export = true, variable = true}, lower = {variable = true}, ["lower-body"] = {variable = true}, ["lower-call"] = {variable = true}, ["lower-definition"] = {variable = true}, ["lower-do"] = {variable = true}, ["lower-for"] = {variable = true}, ["lower-function"] = {variable = true}, ["lower-if"] = {variable = true}, ["lower-infix"] = {variable = true}, ["lower-infix?"] = {variable = true}, ["lower-short"] = {variable = true}, ["lower-special"] = {variable = true}, ["lower-statement"] = {variable = true}, ["lower-try"] = {variable = true}, ["lower-while"] = {variable = true}, ["module-path"] = {variable = true}, ["op-delims"] = {variable = true}, ["open-module"] = {export = true, variable = true}, ["parenthesize-call?"] = {variable = true}, precedence = {variable = true}, process = {variable = true}, reimported = {variable = true}, run = {variable = true}, terminator = {variable = true}, ["unary?"] = {variable = true}}, import = {{"lumen", "runtime"}, {"lumen", "special"}, {"lumen", "core"}, {"lumen", "lib"}, {"lumen", "reader"}}}, ["lumen/core"] = {export = {at = {export = true, macro = function (l, i)
     if target == "lua" and number63(i) then
       i = i + 1
     else
@@ -2925,35 +2925,35 @@ end)();
     return({"get", l, i})
   end}, ["cat!"] = {export = true, macro = function (a, ...)
     local bs = unstash({...})
-    local _g702 = sub(bs, 0)
-    return({"set", a, join({"cat", a}, _g702)})
+    local _g708 = sub(bs, 0)
+    return({"set", a, join({"cat", a}, _g708)})
   end}, dec = {export = true, macro = function (n, by)
     return({"set", n, {"-", n, by or 1}})
   end}, define = {export = true, macro = function (name, x, ...)
     local body = unstash({...})
-    local _g703 = sub(body, 0)
+    local _g710 = sub(body, 0)
     setenv(name, {_stash = true, variable = true})
-    if some63(_g703) and target == "js" then
-      return(linked(name, {"%local", name, join({"fn", x}, _g703)}))
+    if some63(_g710) and target == "js" then
+      return(linked(name, {"%local", name, join({"fn", x}, _g710)}))
     else
-      if some63(_g703) then
-        local _g704 = bind42(x, _g703)
-        local args = _g704[1]
-        local _g705 = _g704[2]
-        return(linked(name, join({"%local-function", name, args}, _g705)))
+      if some63(_g710) then
+        local _g711 = bind42(x, _g710)
+        local args = _g711[1]
+        local _g712 = _g711[2]
+        return(linked(name, join({"%local-function", name, args}, _g712)))
       else
         return(linked(name, {"%local", name, x}))
       end
     end
   end}, ["define*"] = {export = true, macro = function (name, x, ...)
     local body = unstash({...})
-    local _g718 = sub(body, 0)
+    local _g739 = sub(body, 0)
     setenv(name, {_stash = true, export = true, global = true})
-    if some63(_g718) then
-      local _g719 = bind42(x, _g718)
-      local args = _g719[1]
-      local _g720 = _g719[2]
-      return(join({"%global-function", name, args}, _g720))
+    if some63(_g739) then
+      local _g740 = bind42(x, _g739)
+      local args = _g740[1]
+      local _g741 = _g740[2]
+      return(join({"%global-function", name, args}, _g741))
     else
       if target == "js" then
         return({"set", {"get", "global", {"quote", id(name)}}, x})
@@ -2963,48 +2963,48 @@ end)();
     end
   end}, ["define-macro"] = {export = true, macro = function (name, args, ...)
     local body = unstash({...})
-    local _g709 = sub(body, 0)
-    local form = join({"fn", args}, _g709)
-    local _g710 = {"setenv", {"quote", name}}
-    _g710.form = {"quote", form}
-    _g710.macro = form
-    eval(_g710)
+    local _g735 = sub(body, 0)
+    local form = join({"fn", args}, _g735)
+    local _g736 = {"setenv", {"quote", name}}
+    _g736.form = {"quote", form}
+    _g736.macro = form
+    eval(_g736)
     return(nil)
   end}, ["define-module"] = {export = true, macro = function (spec, ...)
     local body = unstash({...})
-    local _g737 = sub(body, 0)
-    local imp = _g737.import
-    local exp = _g737.export
-    local alias = _g737.alias
-    local _g738 = import_modules(imp)
-    local imports = _g738[1]
-    local bindings = _g738[2]
+    local _g725 = sub(body, 0)
+    local exp = _g725.export
+    local imp = _g725.import
+    local alias = _g725.alias
+    local _g726 = import_modules(imp)
+    local imports = _g726[1]
+    local bindings = _g726[2]
     local k = module_key(spec)
     modules[k] = {alias = alias, export = {}, import = imports}
-    local _g739 = exp or {}
-    local _g740 = 0
-    while _g740 < length(_g739) do
-      local x = _g739[_g740 + 1]
+    local _g727 = exp or {}
+    local _g728 = 0
+    while _g728 < length(_g727) do
+      local x = _g727[_g728 + 1]
       setenv(x, {_stash = true, export = true})
-      _g740 = _g740 + 1
+      _g728 = _g728 + 1
     end
     return(join({"do", {"set", {"get", "nexus", {"quote", k}}, {"table"}}}, bindings))
   end}, ["define-special"] = {export = true, macro = function (name, args, ...)
     local body = unstash({...})
-    local _g727 = sub(body, 0)
-    local form = join({"fn", args}, _g727)
-    local keys = sub(_g727, length(_g727))
-    local _g728 = {"setenv", {"quote", name}}
-    _g728.form = {"quote", form}
-    _g728.special = form
-    eval(join(_g728, keys))
+    local _g713 = sub(body, 0)
+    local form = join({"fn", args}, _g713)
+    local keys = sub(_g713, length(_g713))
+    local _g714 = {"setenv", {"quote", name}}
+    _g714.form = {"quote", form}
+    _g714.special = form
+    eval(join(_g714, keys))
     return(nil)
   end}, ["define-symbol"] = {export = true, macro = function (name, expansion)
     setenv(name, {_stash = true, symbol = expansion})
     return(nil)
   end}, each = {export = true, macro = function (b, t, ...)
     local body = unstash({...})
-    local _g716 = sub(body, 0)
+    local _g719 = sub(body, 0)
     local k = b[1]
     local v = b[2]
     local t1 = make_id()
@@ -3017,21 +3017,21 @@ end)();
         _g771 = make_id()
       end
       local i = _g771
-      _g770 = {"let", {i, 0}, {"while", {"<", i, {"length", t1}}, join({"let", {k, {"at", t1, i}}}, _g716), {"inc", i}}}
+      _g770 = {"let", {i, 0}, {"while", {"<", i, {"length", t1}}, join({"let", {k, {"at", t1, i}}}, _g719), {"inc", i}}}
     else
-      local _g717 = {"target"}
-      _g717.js = {"nil?", {"number", k}}
-      _g717.lua = {"not", {"number?", k}}
-      _g770 = {"let", {k, "nil"}, {"%for", t1, k, {"when", _g717, join({"let", {v, {"get", t1, k}}}, _g716)}}}
+      local _g720 = {"target"}
+      _g720.js = {"nil?", {"number", k}}
+      _g720.lua = {"not", {"number?", k}}
+      _g770 = {"let", {k, "nil"}, {"%for", t1, k, {"when", _g720, join({"let", {v, {"get", t1, k}}}, _g719)}}}
     end
     return({"let", {t1, t}, _g770})
   end}, fn = {export = true, macro = function (args, ...)
     local body = unstash({...})
-    local _g698 = sub(body, 0)
-    local _g699 = bind42(args, _g698)
-    local _g700 = _g699[1]
-    local _g701 = _g699[2]
-    return(join({"%function", _g700}, _g701))
+    local _g700 = sub(body, 0)
+    local _g701 = bind42(args, _g700)
+    local _g702 = _g701[1]
+    local _g703 = _g701[2]
+    return(join({"%function", _g702}, _g703))
   end}, guard = {export = true, macro = function (expr)
     if target == "js" then
       return({{"fn", {}, {"%try", {"list", true, expr}}}})
@@ -3043,10 +3043,10 @@ end)();
     end
   end}, ["if"] = {export = true, macro = function (...)
     local branches = unstash({...})
-    local function step(_g706)
-      local a = _g706[1]
-      local b = _g706[2]
-      local c = sub(_g706, 2)
+    local function step(_g734)
+      local a = _g734[1]
+      local b = _g734[2]
+      local c = sub(_g734, 2)
       if is63(b) then
         return({join({"%if", a, b}, step(c))})
       else
@@ -3060,8 +3060,8 @@ end)();
     return({"set", n, {"+", n, by or 1}})
   end}, ["join!"] = {export = true, macro = function (a, ...)
     local bs = unstash({...})
-    local _g714 = sub(bs, 0)
-    return({"set", a, join({"join*", a}, _g714)})
+    local _g709 = sub(bs, 0)
+    return({"set", a, join({"join*", a}, _g709)})
   end}, ["join*"] = {export = true, macro = function (...)
     local xs = unstash({...})
     return(reduce(function (a, b)
@@ -3099,26 +3099,26 @@ end)();
     return(join({"do"}, join(locals, {join({"let-symbol", renames}, _g729)})))
   end}, ["let-macro"] = {export = true, macro = function (definitions, ...)
     local body = unstash({...})
-    local _g734 = sub(body, 0)
+    local _g715 = sub(body, 0)
     add(environment, {})
     map(function (m)
       return(macroexpand(join({"define-macro"}, m)))
     end, definitions)
-    local _g735 = join({"do"}, macroexpand(_g734))
+    local _g716 = join({"do"}, macroexpand(_g715))
     drop(environment)
-    return(_g735)
+    return(_g716)
   end}, ["let-symbol"] = {export = true, macro = function (expansions, ...)
     local body = unstash({...})
-    local _g711 = sub(body, 0)
+    local _g705 = sub(body, 0)
     add(environment, {})
-    map(function (_g713)
-      local name = _g713[1]
-      local exp = _g713[2]
+    map(function (_g707)
+      local name = _g707[1]
+      local exp = _g707[2]
       return(macroexpand({"define-symbol", name, exp}))
     end, pair(expansions))
-    local _g712 = join({"do"}, macroexpand(_g711))
+    local _g706 = join({"do"}, macroexpand(_g705))
     drop(environment)
-    return(_g712)
+    return(_g706)
   end}, list = {export = true, macro = function (...)
     local body = unstash({...})
     local l = join({"%array"}, body)
@@ -3127,11 +3127,11 @@ end)();
     else
       local id = make_id()
       local init = {}
-      local _g715 = body
+      local _g738 = body
       local k = nil
-      for k in next, _g715 do
+      for k in next, _g738 do
         if not number63(k) then
-          local v = _g715[k]
+          local v = _g738[k]
           add(init, {k, {"set", {"get", id, {"quote", k}}, v}})
         end
       end
@@ -3149,12 +3149,12 @@ end)();
   end}, ["set-of"] = {export = true, macro = function (...)
     local elements = unstash({...})
     local l = {}
-    local _g707 = elements
-    local _g708 = 0
-    while _g708 < length(_g707) do
-      local e = _g707[_g708 + 1]
+    local _g717 = elements
+    local _g718 = 0
+    while _g718 < length(_g717) do
+      local e = _g717[_g718 + 1]
       l[e] = true
-      _g708 = _g708 + 1
+      _g718 = _g718 + 1
     end
     return(join({"table"}, l))
   end}, table = {export = true, macro = function (...)
@@ -3167,57 +3167,60 @@ end)();
     return(clauses[target])
   end}, unless = {export = true, macro = function (cond, ...)
     local body = unstash({...})
-    local _g736 = sub(body, 0)
-    return({"if", {"not", cond}, join({"do"}, _g736)})
+    local _g704 = sub(body, 0)
+    return({"if", {"not", cond}, join({"do"}, _g704)})
   end}, when = {export = true, macro = function (cond, ...)
     local body = unstash({...})
-    local _g741 = sub(body, 0)
-    return({"if", cond, join({"do"}, _g741)})
-  end}, ["with-bindings"] = {export = true, macro = function (_g723, ...)
-    local names = _g723[1]
+    local _g737 = sub(body, 0)
+    return({"if", cond, join({"do"}, _g737)})
+  end}, ["with-bindings"] = {export = true, macro = function (_g721, ...)
+    local names = _g721[1]
     local body = unstash({...})
-    local _g724 = sub(body, 0)
+    local _g722 = sub(body, 0)
     local x = make_id()
-    local _g726 = {"setenv", x}
-    _g726.variable = true
-    local _g725 = {"with-frame", {"each", {x}, names, _g726}}
-    _g725.scope = true
-    return(join(_g725, _g724))
+    local _g724 = {"setenv", x}
+    _g724.variable = true
+    local _g723 = {"with-frame", {"each", {x}, names, _g724}}
+    _g723.scope = true
+    return(join(_g723, _g722))
   end}, ["with-frame"] = {export = true, macro = function (...)
     local body = unstash({...})
-    local _g721 = sub(body, 0)
+    local _g698 = sub(body, 0)
     local scope = body.scope
     local x = make_id()
-    local _g722 = {"table"}
-    _g722._scope = scope
-    return({"do", {"add", "environment", _g722}, {"let", {x, join({"do"}, _g721)}, {"drop", "environment"}, x}})
-  end}}, import = {{"lumen", "runtime"}, {"lumen", "special"}, {"lumen", "core"}, {"lumen", "utilities"}, {"lumen", "compiler"}}}, ["lumen/main"] = {export = {}, import = {{"lumen", "runtime"}, {"lumen", "special"}, {"lumen", "core"}, {"lumen", "reader"}, {"lumen", "compiler"}}}, ["lumen/reader"] = {export = {["define-reader"] = {export = true, macro = function (_g764, ...)
-    local char = _g764[1]
-    local stream = _g764[2]
+    local _g699 = {"table"}
+    _g699._scope = scope
+    return({"do", {"add", "environment", _g699}, {"let", {x, join({"do"}, _g698)}, {"drop", "environment"}, x}})
+  end}}, import = {{"lumen", "runtime"}, {"lumen", "special"}, {"lumen", "core"}, {"lumen", "lib"}, {"lumen", "compiler"}}}, ["lumen/lib"] = {export = {bind = {export = true, variable = true}, ["bind*"] = {export = true, variable = true}, ["bound?"] = {export = true, variable = true}, ["can-unquote?"] = {variable = true}, escape = {variable = true}, getenv = {export = true, variable = true}, ["global?"] = {variable = true}, id = {export = true, variable = true}, imported = {export = true, variable = true}, ["indent-level"] = {export = true, global = true}, indentation = {export = true, variable = true}, ["initial-environment"] = {export = true, variable = true}, linked = {export = true, variable = true}, ["macro-function"] = {export = true, variable = true}, ["macro?"] = {export = true, variable = true}, macroexpand = {export = true, variable = true}, mapo = {export = true, variable = true}, ["numeric?"] = {variable = true}, quasiexpand = {export = true, variable = true}, ["quasiquote-list"] = {variable = true}, ["quasiquoting?"] = {variable = true}, ["quasisplice?"] = {variable = true}, ["quote-binding"] = {variable = true}, ["quote-environment"] = {export = true, variable = true}, ["quote-frame"] = {variable = true}, ["quote-module"] = {variable = true}, ["quote-modules"] = {export = true, variable = true}, quoted = {export = true, variable = true}, ["quoting?"] = {variable = true}, reserved = {variable = true}, ["reserved?"] = {export = true, variable = true}, sortk = {export = true, variable = true}, ["special-form?"] = {export = true, variable = true}, ["special?"] = {export = true, variable = true}, ["stash*"] = {export = true, variable = true}, ["statement?"] = {export = true, variable = true}, ["symbol-expansion"] = {export = true, variable = true}, ["symbol?"] = {export = true, variable = true}, ["valid-char?"] = {variable = true}, ["valid-id?"] = {export = true, variable = true}, ["variable?"] = {export = true, variable = true}, ["with-indent"] = {export = true, macro = function (form)
+    local result = make_id()
+    return({"do", {"inc", "indent-level"}, {"let", {result, form}, {"dec", "indent-level"}, result}})
+  end}}, import = {{"lumen", "runtime"}, {"lumen", "special"}, {"lumen", "core"}}}, ["lumen/main"] = {export = {}, import = {{"lumen", "runtime"}, {"lumen", "special"}, {"lumen", "core"}, {"lumen", "reader"}, {"lumen", "compiler"}}}, ["lumen/reader"] = {export = {["define-reader"] = {export = true, macro = function (_g742, ...)
+    local char = _g742[1]
+    local stream = _g742[2]
     local body = unstash({...})
-    local _g765 = sub(body, 0)
-    return({"set", {"get", "read-table", char}, join({"fn", {stream}}, _g765)})
+    local _g743 = sub(body, 0)
+    return({"set", {"get", "read-table", char}, join({"fn", {stream}}, _g743)})
   end}, delimiters = {variable = true}, eof = {variable = true}, ["flag?"] = {variable = true}, ["key?"] = {variable = true}, ["make-stream"] = {export = true, variable = true}, ["peek-char"] = {variable = true}, read = {export = true, variable = true}, ["read-all"] = {export = true, variable = true}, ["read-char"] = {variable = true}, ["read-from-string"] = {export = true, variable = true}, ["read-table"] = {export = true, variable = true}, ["skip-non-code"] = {variable = true}, whitespace = {variable = true}}, import = {{"lumen", "runtime"}, {"lumen", "special"}, {"lumen", "core"}}}, ["lumen/runtime"] = {export = {["%"] = {export = true, variable = true}, ["%message-handler"] = {export = true, variable = true}, ["*"] = {export = true, variable = true}, ["+"] = {export = true, variable = true}, ["-"] = {export = true, variable = true}, ["/"] = {export = true, variable = true}, ["<"] = {export = true, variable = true}, ["<="] = {export = true, variable = true}, ["="] = {export = true, variable = true}, [">"] = {export = true, variable = true}, [">="] = {export = true, variable = true}, abs = {export = true, variable = true}, acos = {export = true, variable = true}, add = {export = true, variable = true}, apply = {export = true, variable = true}, asin = {export = true, variable = true}, atan = {export = true, variable = true}, atan2 = {export = true, variable = true}, ["atom?"] = {export = true, variable = true}, ["boolean?"] = {export = true, variable = true}, cat = {export = true, variable = true}, ceil = {export = true, variable = true}, char = {export = true, variable = true}, code = {export = true, variable = true}, ["composite?"] = {export = true, variable = true}, cos = {export = true, variable = true}, drop = {export = true, variable = true}, ["empty?"] = {export = true, variable = true}, exclude = {export = true, variable = true}, exit = {export = true, variable = true}, extend = {export = true, variable = true}, find = {export = true, variable = true}, flat = {export = true, variable = true}, flat1 = {export = true, variable = true}, floor = {export = true, variable = true}, ["function?"] = {export = true, variable = true}, hd = {export = true, variable = true}, ["id-count"] = {variable = true}, ["id-literal?"] = {export = true, variable = true}, ["in?"] = {export = true, variable = true}, inner = {export = true, variable = true}, ["is?"] = {export = true, variable = true}, iterate = {export = true, variable = true}, join = {export = true, variable = true}, keep = {export = true, variable = true}, ["keys?"] = {export = true, variable = true}, last = {export = true, variable = true}, length = {export = true, variable = true}, ["list?"] = {export = true, variable = true}, log = {export = true, variable = true}, log10 = {export = true, variable = true}, ["make-id"] = {export = true, variable = true}, map = {export = true, variable = true}, mapl = {variable = true}, math = {variable = true}, max = {export = true, variable = true}, ["max*"] = {variable = true}, min = {export = true, variable = true}, ["min*"] = {variable = true}, module = {export = true, variable = true}, ["module-key"] = {export = true, variable = true}, ["nil?"] = {export = true, variable = true}, ["none?"] = {export = true, variable = true}, now = {export = true, variable = true}, number = {export = true, variable = true}, ["number?"] = {export = true, variable = true}, ["one?"] = {export = true, variable = true}, pair = {export = true, variable = true}, pow = {export = true, variable = true}, random = {export = true, variable = true}, ["read-file"] = {export = true, variable = true}, reduce = {export = true, variable = true}, replicate = {export = true, variable = true}, reverse = {export = true, variable = true}, sd = {export = true, variable = true}, search = {export = true, variable = true}, setenv = {export = true, variable = true}, sin = {export = true, variable = true}, sinh = {export = true, variable = true}, ["some?"] = {export = true, variable = true}, sort = {export = true, variable = true}, space = {export = true, variable = true}, splice = {export = true, variable = true}, ["splice?"] = {variable = true}, split = {export = true, variable = true}, sqrt = {export = true, variable = true}, stash = {export = true, variable = true}, string = {export = true, variable = true}, ["string-literal?"] = {export = true, variable = true}, ["string?"] = {export = true, variable = true}, sub = {export = true, variable = true}, subl = {variable = true}, substring = {export = true, variable = true}, ["table?"] = {export = true, variable = true}, tan = {export = true, variable = true}, tanh = {export = true, variable = true}, td = {export = true, variable = true}, tl = {export = true, variable = true}, today = {export = true, variable = true}, ["toplevel?"] = {export = true, variable = true}, unstash = {export = true, variable = true}, write = {export = true, variable = true}, ["write-file"] = {export = true, variable = true}}, import = {{"lumen", "special"}, {"lumen", "core"}}}, ["lumen/special"] = {export = {["%array"] = {export = true, foo = true, special = function (...)
     local forms = unstash({...})
-    local _g773
+    local _g781
     if target == "lua" then
-      _g773 = "{"
+      _g781 = "{"
     else
-      _g773 = "["
+      _g781 = "["
     end
-    local open = _g773
-    local _g774
+    local open = _g781
+    local _g782
     if target == "lua" then
-      _g774 = "}"
+      _g782 = "}"
     else
-      _g774 = "]"
+      _g782 = "]"
     end
-    local close = _g774
+    local close = _g782
     local str = ""
-    local _g742 = forms
+    local _g756 = forms
     local i = 0
-    while i < length(_g742) do
-      local x = _g742[i + 1]
+    while i < length(_g756) do
+      local x = _g756[i + 1]
       str = str .. compile(x)
       if i < length(forms) - 1 then
         str = str .. ", "
@@ -3226,16 +3229,16 @@ end)();
     end
     return(open .. str .. close)
   end}, ["%for"] = {export = true, foo = true, special = function (t, k, form)
-    local _g749 = compile(t)
+    local _g757 = compile(t)
     local ind = indentation()
     indent_level = indent_level + 1
-    local _g750 = compile(form, {_stash = true, stmt = true})
+    local _g758 = compile(form, {_stash = true, stmt = true})
     indent_level = indent_level - 1
-    local body = _g750
+    local body = _g758
     if target == "lua" then
-      return(ind .. "for " .. k .. " in next, " .. _g749 .. " do\n" .. body .. ind .. "end\n")
+      return(ind .. "for " .. k .. " in next, " .. _g757 .. " do\n" .. body .. ind .. "end\n")
     else
-      return(ind .. "for (" .. k .. " in " .. _g749 .. ") {\n" .. body .. ind .. "}\n")
+      return(ind .. "for (" .. k .. " in " .. _g757 .. ") {\n" .. body .. ind .. "}\n")
     end
   end, stmt = true, tr = true}, ["%function"] = {export = true, foo = true, special = function (args, body)
     return(compile_function(args, body))
@@ -3247,31 +3250,31 @@ end)();
       return(compile({"set", name, {"%function", args, body}}, {_stash = true, stmt = true}))
     end
   end, stmt = true, tr = true}, ["%if"] = {export = true, foo = true, special = function (cond, cons, alt)
-    local _g758 = compile(cond)
+    local _g761 = compile(cond)
     indent_level = indent_level + 1
-    local _g761 = compile(cons, {_stash = true, stmt = true})
+    local _g764 = compile(cons, {_stash = true, stmt = true})
     indent_level = indent_level - 1
-    local _g759 = _g761
+    local _g762 = _g764
     local _g784
     if alt then
       indent_level = indent_level + 1
-      local _g762 = compile(alt, {_stash = true, stmt = true})
+      local _g765 = compile(alt, {_stash = true, stmt = true})
       indent_level = indent_level - 1
-      _g784 = _g762
+      _g784 = _g765
     end
-    local _g760 = _g784
+    local _g763 = _g784
     local ind = indentation()
     local str = ""
     if target == "js" then
-      str = str .. ind .. "if (" .. _g758 .. ") {\n" .. _g759 .. ind .. "}"
+      str = str .. ind .. "if (" .. _g761 .. ") {\n" .. _g762 .. ind .. "}"
     else
-      str = str .. ind .. "if " .. _g758 .. " then\n" .. _g759
+      str = str .. ind .. "if " .. _g761 .. " then\n" .. _g762
     end
-    if _g760 and target == "js" then
-      str = str .. " else {\n" .. _g760 .. ind .. "}"
+    if _g763 and target == "js" then
+      str = str .. " else {\n" .. _g763 .. ind .. "}"
     else
-      if _g760 then
-        str = str .. ind .. "else\n" .. _g760
+      if _g763 then
+        str = str .. ind .. "else\n" .. _g763
       end
     end
     if target == "lua" then
@@ -3282,20 +3285,20 @@ end)();
   end, stmt = true, tr = true}, ["%local"] = {export = true, foo = true, special = function (name, value)
     local id = compile(name)
     local value1 = compile(value)
-    local _g782
+    local _g773
     if is63(value) then
-      _g782 = " = " .. value1
+      _g773 = " = " .. value1
     else
-      _g782 = ""
+      _g773 = ""
     end
-    local rh = _g782
-    local _g783
+    local rh = _g773
+    local _g774
     if target == "js" then
-      _g783 = "var "
+      _g774 = "var "
     else
-      _g783 = "local "
+      _g774 = "local "
     end
-    local keyword = _g783
+    local keyword = _g774
     local ind = indentation()
     return(ind .. keyword .. id .. rh)
   end, stmt = true}, ["%local-function"] = {export = true, foo = true, special = function (name, args, body)
@@ -3304,50 +3307,50 @@ end)();
   end, stmt = true, tr = true}, ["%object"] = {export = true, foo = true, special = function (...)
     local forms = unstash({...})
     local str = "{"
-    local _g775
+    local _g776
     if target == "lua" then
-      _g775 = " = "
+      _g776 = " = "
     else
-      _g775 = ": "
+      _g776 = ": "
     end
-    local sep = _g775
+    local sep = _g776
     local pairs = sortk(pair(forms), hd)
-    local _g743 = pairs
+    local _g752 = pairs
     local i = 0
-    while i < length(_g743) do
-      local _g744 = _g743[i + 1]
-      local k = _g744[1]
-      local v = _g744[2]
+    while i < length(_g752) do
+      local _g753 = _g752[i + 1]
+      local k = _g753[1]
+      local v = _g753[2]
       if not string63(k) then
         error("Illegal key: " .. string(k))
       end
-      local _g745 = compile(v)
-      local _g776
+      local _g754 = compile(v)
+      local _g777
       if valid_id63(k) then
-        _g776 = k
+        _g777 = k
       else
-        local _g777
+        local _g778
         if target == "js" and string_literal63(k) then
-          _g777 = k
+          _g778 = k
         else
-          local _g778
+          local _g779
           if target == "js" then
-            _g778 = quoted(k)
+            _g779 = quoted(k)
           else
-            local _g779
+            local _g780
             if string_literal63(k) then
-              _g779 = "[" .. k .. "]"
+              _g780 = "[" .. k .. "]"
             else
-              _g779 = "[" .. quoted(k) .. "]"
+              _g780 = "[" .. quoted(k) .. "]"
             end
-            _g778 = _g779
+            _g779 = _g780
           end
-          _g777 = _g778
+          _g778 = _g779
         end
-        _g776 = _g777
+        _g777 = _g778
       end
-      local _g746 = _g776
-      str = str .. _g746 .. sep .. _g745
+      local _g755 = _g777
+      str = str .. _g755 .. sep .. _g754
       if i < length(pairs) - 1 then
         str = str .. ", "
       end
@@ -3357,27 +3360,27 @@ end)();
   end}, ["%try"] = {export = true, foo = true, special = function (form)
     local ind = indentation()
     indent_level = indent_level + 1
-    local _g751 = compile(form, {_stash = true, stmt = true})
+    local _g748 = compile(form, {_stash = true, stmt = true})
     indent_level = indent_level - 1
-    local body = _g751
+    local body = _g748
     local e = make_id()
     local hf = {"return", {"%array", false, {"get", e, "\"message\""}}}
     indent_level = indent_level + 1
-    local _g752 = compile(hf, {_stash = true, stmt = true})
+    local _g749 = compile(hf, {_stash = true, stmt = true})
     indent_level = indent_level - 1
-    local h = _g752
+    local h = _g749
     return(ind .. "try {\n" .. body .. ind .. "}\n" .. ind .. "catch (" .. e .. ") {\n" .. h .. ind .. "}\n")
   end, stmt = true, tr = true}, ["break"] = {export = true, foo = true, special = function ()
     return(indentation() .. "break")
   end, stmt = true}, ["do"] = {export = true, foo = true, special = function (...)
     local forms = unstash({...})
     local str = ""
-    local _g756 = forms
-    local _g757 = 0
-    while _g757 < length(_g756) do
-      local x = _g756[_g757 + 1]
+    local _g746 = forms
+    local _g747 = 0
+    while _g747 < length(_g746) do
+      local x = _g746[_g747 + 1]
       str = str .. compile(x, {_stash = true, stmt = true})
-      _g757 = _g757 + 1
+      _g747 = _g747 + 1
     end
     return(str)
   end, stmt = true, tr = true}, ["error"] = {export = true, foo = true, special = function (x)
@@ -3390,56 +3393,53 @@ end)();
     local e = _g772
     return(indentation() .. e)
   end, stmt = true}, ["get"] = {export = true, foo = true, special = function (t, k)
-    local _g763 = compile(t)
+    local _g760 = compile(t)
     local k1 = compile(k)
-    if target == "lua" and char(_g763, 0) == "{" then
-      _g763 = "(" .. _g763 .. ")"
+    if target == "lua" and char(_g760, 0) == "{" then
+      _g760 = "(" .. _g760 .. ")"
     end
     if string_literal63(k) and valid_id63(inner(k)) then
-      return(_g763 .. "." .. inner(k))
+      return(_g760 .. "." .. inner(k))
     else
-      return(_g763 .. "[" .. k1 .. "]")
+      return(_g760 .. "[" .. k1 .. "]")
     end
   end}, ["not"] = {}, ["return"] = {export = true, foo = true, special = function (x)
-    local _g781
+    local _g783
     if nil63(x) then
-      _g781 = "return"
+      _g783 = "return"
     else
-      _g781 = "return(" .. compile(x) .. ")"
+      _g783 = "return(" .. compile(x) .. ")"
     end
-    local _g753 = _g781
-    return(indentation() .. _g753)
+    local _g759 = _g783
+    return(indentation() .. _g759)
   end, stmt = true}, ["set"] = {export = true, foo = true, special = function (lh, rh)
-    local _g747 = compile(lh)
-    local _g780
+    local _g750 = compile(lh)
+    local _g775
     if nil63(rh) then
-      _g780 = "nil"
+      _g775 = "nil"
     else
-      _g780 = rh
+      _g775 = rh
     end
-    local _g748 = compile(_g780)
-    return(indentation() .. _g747 .. " = " .. _g748)
+    local _g751 = compile(_g775)
+    return(indentation() .. _g750 .. " = " .. _g751)
   end, stmt = true}, ["while"] = {export = true, foo = true, special = function (cond, form)
-    local _g754 = compile(cond)
+    local _g744 = compile(cond)
     indent_level = indent_level + 1
-    local _g755 = compile(form, {_stash = true, stmt = true})
+    local _g745 = compile(form, {_stash = true, stmt = true})
     indent_level = indent_level - 1
-    local body = _g755
+    local body = _g745
     local ind = indentation()
     if target == "js" then
-      return(ind .. "while (" .. _g754 .. ") {\n" .. body .. ind .. "}\n")
+      return(ind .. "while (" .. _g744 .. ") {\n" .. body .. ind .. "}\n")
     else
-      return(ind .. "while " .. _g754 .. " do\n" .. body .. ind .. "end\n")
+      return(ind .. "while " .. _g744 .. " do\n" .. body .. ind .. "end\n")
     end
-  end, stmt = true, tr = true}}, import = {{"lumen", "runtime"}, {"lumen", "special"}, {"lumen", "core"}, {"lumen", "utilities"}, {"lumen", "compiler"}}}, ["lumen/system"] = {export = {nexus = {export = true, global = true}}, import = {{"lumen", "special"}, {"lumen", "core"}}}, ["lumen/utilities"] = {export = {bind = {export = true, variable = true}, ["bind*"] = {export = true, variable = true}, ["bound?"] = {export = true, variable = true}, ["can-unquote?"] = {variable = true}, escape = {variable = true}, getenv = {export = true, variable = true}, ["global?"] = {variable = true}, id = {export = true, variable = true}, imported = {export = true, variable = true}, ["indent-level"] = {export = true, global = true}, indentation = {export = true, variable = true}, ["initial-environment"] = {export = true, variable = true}, linked = {export = true, variable = true}, ["macro-function"] = {export = true, variable = true}, ["macro?"] = {export = true, variable = true}, macroexpand = {export = true, variable = true}, mapo = {export = true, variable = true}, ["numeric?"] = {variable = true}, quasiexpand = {export = true, variable = true}, ["quasiquote-list"] = {variable = true}, ["quasiquoting?"] = {variable = true}, ["quasisplice?"] = {variable = true}, ["quote-binding"] = {variable = true}, ["quote-environment"] = {export = true, variable = true}, ["quote-frame"] = {variable = true}, ["quote-module"] = {variable = true}, ["quote-modules"] = {export = true, variable = true}, quoted = {export = true, variable = true}, ["quoting?"] = {variable = true}, reserved = {variable = true}, ["reserved?"] = {export = true, variable = true}, sortk = {export = true, variable = true}, ["special-form?"] = {export = true, variable = true}, ["special?"] = {export = true, variable = true}, ["stash*"] = {export = true, variable = true}, ["statement?"] = {export = true, variable = true}, ["symbol-expansion"] = {export = true, variable = true}, ["symbol?"] = {export = true, variable = true}, ["valid-char?"] = {variable = true}, ["valid-id?"] = {export = true, variable = true}, ["variable?"] = {export = true, variable = true}, ["with-indent"] = {export = true, macro = function (form)
-    local result = make_id()
-    return({"do", {"inc", "indent-level"}, {"let", {result, form}, {"dec", "indent-level"}, result}})
-  end}}, import = {{"lumen", "runtime"}, {"lumen", "special"}, {"lumen", "core"}}}, user = {export = {}, import = {"lumen", {"lumen", "runtime"}, {"lumen", "special"}, {"lumen", "core"}}}}
+  end, stmt = true, tr = true}}, import = {{"lumen", "runtime"}, {"lumen", "special"}, {"lumen", "core"}, {"lumen", "lib"}, {"lumen", "compiler"}}}, ["lumen/system"] = {export = {nexus = {export = true, global = true}}, import = {{"lumen", "special"}, {"lumen", "core"}}}, user = {export = {}, import = {"lumen", {"lumen", "runtime"}, {"lumen", "special"}, {"lumen", "core"}}}}
   environment = {{["define-module"] = {export = true, macro = function (spec, ...)
     local body = unstash({...})
     local _g766 = sub(body, 0)
-    local imp = _g766.import
     local exp = _g766.export
+    local imp = _g766.import
     local alias = _g766.alias
     local _g767 = import_modules(imp)
     local imports = _g767[1]

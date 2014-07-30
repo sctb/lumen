@@ -1,6 +1,6 @@
 ;; -*- mode: lisp -*-
 
-(define-module (lumen utilities)
+(define-module (lumen lib)
   import: (lumen)
   export: (getenv
            macro-function

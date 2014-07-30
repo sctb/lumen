@@ -787,7 +787,7 @@ global.nexus = {};
   nexus["lumen/runtime"].setenv = setenv;
 })();
 (function () {
-  nexus["lumen/utilities"] = {};
+  nexus["lumen/lib"] = {};
   var _g61 = nexus["lumen/runtime"];
   var _37 = _g61["%"];
   var _37message_handler = _g61["%message-handler"];
@@ -910,50 +910,50 @@ global.nexus = {};
       }
     }
   };
-  nexus["lumen/utilities"].getenv = getenv;
+  nexus["lumen/lib"].getenv = getenv;
   var macro_function = function (k) {
     return(getenv(k, {_stash: true, macro: true}));
   };
-  nexus["lumen/utilities"]["macro-function"] = macro_function;
+  nexus["lumen/lib"]["macro-function"] = macro_function;
   var macro63 = function (k) {
     return(is63(macro_function(k)));
   };
-  nexus["lumen/utilities"]["macro?"] = macro63;
+  nexus["lumen/lib"]["macro?"] = macro63;
   var special63 = function (k) {
     return(is63(getenv(k, {_stash: true, special: true})));
   };
-  nexus["lumen/utilities"]["special?"] = special63;
+  nexus["lumen/lib"]["special?"] = special63;
   var special_form63 = function (form) {
     return(list63(form) && special63(hd(form)));
   };
-  nexus["lumen/utilities"]["special-form?"] = special_form63;
+  nexus["lumen/lib"]["special-form?"] = special_form63;
   var statement63 = function (k) {
     return(special63(k) && getenv(k, {_stash: true, stmt: true}));
   };
-  nexus["lumen/utilities"]["statement?"] = statement63;
+  nexus["lumen/lib"]["statement?"] = statement63;
   var symbol_expansion = function (k) {
     return(getenv(k, {_stash: true, symbol: true}));
   };
-  nexus["lumen/utilities"]["symbol-expansion"] = symbol_expansion;
+  nexus["lumen/lib"]["symbol-expansion"] = symbol_expansion;
   var symbol63 = function (k) {
     return(is63(symbol_expansion(k)));
   };
-  nexus["lumen/utilities"]["symbol?"] = symbol63;
+  nexus["lumen/lib"]["symbol?"] = symbol63;
   var variable63 = function (k) {
     var b = find(function (frame) {
       return(frame[k] || frame._scope);
     }, reverse(environment));
     return(table63(b) && is63(b.variable));
   };
-  nexus["lumen/utilities"]["variable?"] = variable63;
+  nexus["lumen/lib"]["variable?"] = variable63;
   var global63 = function (k) {
     return(getenv(k, {_stash: true, global: true}));
   };
-  nexus["lumen/utilities"]["global?"] = global63;
+  nexus["lumen/lib"]["global?"] = global63;
   var bound63 = function (x) {
     return(macro63(x) || special63(x) || symbol63(x) || variable63(x) || global63(x));
   };
-  nexus["lumen/utilities"]["bound?"] = bound63;
+  nexus["lumen/lib"]["bound?"] = bound63;
   var escape = function (str) {
     var str1 = "\"";
     var i = 0;
@@ -983,7 +983,7 @@ global.nexus = {};
     }
     return(str1 + "\"");
   };
-  nexus["lumen/utilities"].escape = escape;
+  nexus["lumen/lib"].escape = escape;
   var quoted = function (form) {
     if (string63(form)) {
       return(escape(form));
@@ -995,7 +995,7 @@ global.nexus = {};
       }
     }
   };
-  nexus["lumen/utilities"].quoted = quoted;
+  nexus["lumen/lib"].quoted = quoted;
   var stash42 = function (args) {
     if (keys63(args)) {
       var l = ["%object", "_stash", true];
@@ -1013,7 +1013,7 @@ global.nexus = {};
       return(args);
     }
   };
-  nexus["lumen/utilities"]["stash*"] = stash42;
+  nexus["lumen/lib"]["stash*"] = stash42;
   var bind = function (lh, rh) {
     if (composite63(lh) && list63(rh)) {
       var id = make_id();
@@ -1051,7 +1051,7 @@ global.nexus = {};
       }
     }
   };
-  nexus["lumen/utilities"].bind = bind;
+  nexus["lumen/lib"].bind = bind;
   var bind42 = function (args, body) {
     var args1 = [];
     var rest = function () {
@@ -1095,23 +1095,23 @@ global.nexus = {};
       }
     }
   };
-  nexus["lumen/utilities"]["bind*"] = bind42;
+  nexus["lumen/lib"]["bind*"] = bind42;
   var quoting63 = function (depth) {
     return(number63(depth));
   };
-  nexus["lumen/utilities"]["quoting?"] = quoting63;
+  nexus["lumen/lib"]["quoting?"] = quoting63;
   var quasiquoting63 = function (depth) {
     return(quoting63(depth) && depth > 0);
   };
-  nexus["lumen/utilities"]["quasiquoting?"] = quasiquoting63;
+  nexus["lumen/lib"]["quasiquoting?"] = quasiquoting63;
   var can_unquote63 = function (depth) {
     return(quoting63(depth) && depth === 1);
   };
-  nexus["lumen/utilities"]["can-unquote?"] = can_unquote63;
+  nexus["lumen/lib"]["can-unquote?"] = can_unquote63;
   var quasisplice63 = function (x, depth) {
     return(list63(x) && can_unquote63(depth) && hd(x) === "unquote-splicing");
   };
-  nexus["lumen/utilities"]["quasisplice?"] = quasisplice63;
+  nexus["lumen/lib"]["quasisplice?"] = quasisplice63;
   var macroexpand = function (form) {
     if (symbol63(form)) {
       return(macroexpand(symbol_expansion(form)));
@@ -1163,11 +1163,11 @@ global.nexus = {};
       }
     }
   };
-  nexus["lumen/utilities"].macroexpand = macroexpand;
+  nexus["lumen/lib"].macroexpand = macroexpand;
   var quasiexpand;
-  nexus["lumen/utilities"].quasiexpand = quasiexpand;
+  nexus["lumen/lib"].quasiexpand = quasiexpand;
   var quasiquote_list;
-  nexus["lumen/utilities"]["quasiquote-list"] = quasiquote_list;
+  nexus["lumen/lib"]["quasiquote-list"] = quasiquote_list;
   quasiquote_list = function (form, depth) {
     var xs = [["list"]];
     var _g82 = form;
@@ -1203,7 +1203,7 @@ global.nexus = {};
     }, xs);
     return(join(["join*"], pruned));
   };
-  nexus["lumen/utilities"]["quasiquote-list"] = quasiquote_list;
+  nexus["lumen/lib"]["quasiquote-list"] = quasiquote_list;
   quasiexpand = function (form, depth) {
     if (quasiquoting63(depth)) {
       if (atom63(form)) {
@@ -1241,26 +1241,26 @@ global.nexus = {};
       }
     }
   };
-  nexus["lumen/utilities"].quasiexpand = quasiexpand;
+  nexus["lumen/lib"].quasiexpand = quasiexpand;
   global.indent_level = 0;
   var indentation = function () {
     return(apply(cat, replicate(indent_level, "  ")));
   };
-  nexus["lumen/utilities"].indentation = indentation;
+  nexus["lumen/lib"].indentation = indentation;
   var reserved = {"%": true, "*": true, "+": true, "-": true, "/": true, "<": true, "<=": true, "=": true, "==": true, ">": true, ">=": true, "and": true, "break": true, "case": true, "catch": true, "continue": true, "debugger": true, "default": true, "delete": true, "do": true, "else": true, "elseif": true, "end": true, "false": true, "finally": true, "for": true, "function": true, "if": true, "in": true, "instanceof": true, "local": true, "new": true, "nil": true, "not": true, "or": true, "repeat": true, "return": true, "switch": true, "then": true, "this": true, "throw": true, "true": true, "try": true, "typeof": true, "until": true, "var": true, "void": true, "while": true, "with": true};
-  nexus["lumen/utilities"].reserved = reserved;
+  nexus["lumen/lib"].reserved = reserved;
   var reserved63 = function (x) {
     return(reserved[x]);
   };
-  nexus["lumen/utilities"]["reserved?"] = reserved63;
+  nexus["lumen/lib"]["reserved?"] = reserved63;
   var numeric63 = function (n) {
     return(n > 47 && n < 58);
   };
-  nexus["lumen/utilities"]["numeric?"] = numeric63;
+  nexus["lumen/lib"]["numeric?"] = numeric63;
   var valid_char63 = function (n) {
     return(numeric63(n) || n > 64 && n < 91 || n > 96 && n < 123 || n === 95);
   };
-  nexus["lumen/utilities"]["valid-char?"] = valid_char63;
+  nexus["lumen/lib"]["valid-char?"] = valid_char63;
   var valid_id63 = function (id) {
     if (none63(id)) {
       return(false);
@@ -1284,7 +1284,7 @@ global.nexus = {};
       }
     }
   };
-  nexus["lumen/utilities"]["valid-id?"] = valid_id63;
+  nexus["lumen/lib"]["valid-id?"] = valid_id63;
   var id = function (id) {
     var id1 = "";
     var i = 0;
@@ -1321,13 +1321,13 @@ global.nexus = {};
     }
     return(id1);
   };
-  nexus["lumen/utilities"].id = id;
+  nexus["lumen/lib"].id = id;
   var sortk = function (l, k) {
     return(sort(l, function (a, b) {
       return(k(a) < k(b));
     }));
   };
-  nexus["lumen/utilities"].sortk = sortk;
+  nexus["lumen/lib"].sortk = sortk;
   var imported = function (spec) {
     var _g91 = unstash(Array.prototype.slice.call(arguments, 1));
     var all = _g91.all;
@@ -1350,7 +1350,7 @@ global.nexus = {};
       return(join([["%local", m, ["get", "nexus", ["quote", k]]]], sortk(imports, sd)));
     }
   };
-  nexus["lumen/utilities"].imported = imported;
+  nexus["lumen/lib"].imported = imported;
   var linked = function (name, form) {
     if (toplevel63()) {
       var k = module_key(current_module);
@@ -1359,7 +1359,7 @@ global.nexus = {};
       return(form);
     }
   };
-  nexus["lumen/utilities"].linked = linked;
+  nexus["lumen/lib"].linked = linked;
   var quote_binding = function (b) {
     if (is63(b.symbol)) {
       return(extend(b, {_stash: true, symbol: ["quote", b.symbol]}));
@@ -1381,7 +1381,7 @@ global.nexus = {};
       }
     }
   };
-  nexus["lumen/utilities"]["quote-binding"] = quote_binding;
+  nexus["lumen/lib"]["quote-binding"] = quote_binding;
   var mapo = function (f, t) {
     var o = [];
     var _g93 = t;
@@ -1398,17 +1398,17 @@ global.nexus = {};
     }
     return(o);
   };
-  nexus["lumen/utilities"].mapo = mapo;
+  nexus["lumen/lib"].mapo = mapo;
   var quote_frame = function (t) {
     return(join(["%object"], mapo(function (b) {
       return(join(["table"], quote_binding(b)));
     }, t)));
   };
-  nexus["lumen/utilities"]["quote-frame"] = quote_frame;
+  nexus["lumen/lib"]["quote-frame"] = quote_frame;
   var quote_environment = function (env) {
     return(join(["list"], map(quote_frame, env)));
   };
-  nexus["lumen/utilities"]["quote-environment"] = quote_environment;
+  nexus["lumen/lib"]["quote-environment"] = quote_environment;
   var quote_module = function (m) {
     var _g94 = ["table"];
     _g94.alias = quoted(m.alias);
@@ -1416,15 +1416,15 @@ global.nexus = {};
     _g94.import = quoted(m.import);
     return(_g94);
   };
-  nexus["lumen/utilities"]["quote-module"] = quote_module;
+  nexus["lumen/lib"]["quote-module"] = quote_module;
   var quote_modules = function () {
     return(join(["table"], map(quote_module, modules)));
   };
-  nexus["lumen/utilities"]["quote-modules"] = quote_modules;
+  nexus["lumen/lib"]["quote-modules"] = quote_modules;
   var initial_environment = function () {
     return([{"define-module": getenv("define-module")}]);
   };
-  nexus["lumen/utilities"]["initial-environment"] = initial_environment;
+  nexus["lumen/lib"]["initial-environment"] = initial_environment;
 })();
 (function () {
   nexus["lumen/reader"] = {};
@@ -1839,7 +1839,7 @@ global.nexus = {};
   var unstash = _g114.unstash;
   var write = _g114.write;
   var write_file = _g114["write-file"];
-  var _g117 = nexus["lumen/utilities"];
+  var _g117 = nexus["lumen/lib"];
   var bind = _g117.bind;
   var bind42 = _g117["bind*"];
   var bound63 = _g117["bound?"];
@@ -2605,7 +2605,7 @@ global.nexus = {};
   var unstash = _g192.unstash;
   var write = _g192.write;
   var write_file = _g192["write-file"];
-  var _g195 = nexus["lumen/utilities"];
+  var _g195 = nexus["lumen/lib"];
   var bind = _g195.bind;
   var bind42 = _g195["bind*"];
   var bound63 = _g195["bound?"];
@@ -2743,7 +2743,7 @@ global.nexus = {};
   var unstash = _g376.unstash;
   var write = _g376.write;
   var write_file = _g376["write-file"];
-  var _g379 = nexus["lumen/utilities"];
+  var _g379 = nexus["lumen/lib"];
   var bind = _g379.bind;
   var bind42 = _g379["bind*"];
   var bound63 = _g379["bound?"];
@@ -2882,7 +2882,7 @@ global.nexus = {};
   var unstash = _g679.unstash;
   var write = _g679.write;
   var write_file = _g679["write-file"];
-  var _g682 = nexus["lumen/utilities"];
+  var _g682 = nexus["lumen/lib"];
   var bind = _g682.bind;
   var bind42 = _g682["bind*"];
   var bound63 = _g682["bound?"];
@@ -2924,7 +2924,7 @@ global.nexus = {};
     return(quote_environment(initial_environment()));
   }}, "%initial-modules": {macro: function () {
     return(quote_modules());
-  }}, modules: {export: true, global: true}}, import: [["lumen", "runtime"], ["lumen", "special"], ["lumen", "core"], ["lumen", "utilities"], ["lumen", "compiler"]]}, "lumen/compiler": {export: {"%compile-module": {variable: true}, "%result": {export: true, global: true}, "can-return?": {variable: true}, compile: {export: true, variable: true}, "compile-args": {variable: true}, "compile-atom": {variable: true}, "compile-call": {variable: true}, "compile-file": {variable: true}, "compile-function": {export: true, variable: true}, "compile-infix": {variable: true}, "compile-module": {export: true, variable: true}, "compile-special": {variable: true}, "compiler-output": {variable: true}, "compiling?": {variable: true}, conclude: {variable: true}, "current-module": {export: true, global: true}, declare: {export: true, variable: true}, encapsulate: {variable: true}, eval: {export: true, variable: true}, getop: {variable: true}, "import-modules": {export: true, variable: true}, "in-module": {export: true, variable: true}, infix: {variable: true}, "infix?": {variable: true}, "load-module": {export: true, variable: true}, lower: {variable: true}, "lower-body": {variable: true}, "lower-call": {variable: true}, "lower-definition": {variable: true}, "lower-do": {variable: true}, "lower-for": {variable: true}, "lower-function": {variable: true}, "lower-if": {variable: true}, "lower-infix": {variable: true}, "lower-infix?": {variable: true}, "lower-short": {variable: true}, "lower-special": {variable: true}, "lower-statement": {variable: true}, "lower-try": {variable: true}, "lower-while": {variable: true}, "module-path": {variable: true}, "op-delims": {variable: true}, "open-module": {export: true, variable: true}, "parenthesize-call?": {variable: true}, precedence: {variable: true}, process: {variable: true}, reimported: {variable: true}, run: {variable: true}, terminator: {variable: true}, "unary?": {variable: true}}, import: [["lumen", "runtime"], ["lumen", "special"], ["lumen", "core"], ["lumen", "utilities"], ["lumen", "reader"]]}, "lumen/core": {export: {at: {export: true, macro: function (l, i) {
+  }}, modules: {export: true, global: true}}, import: [["lumen", "runtime"], ["lumen", "special"], ["lumen", "core"], ["lumen", "lib"], ["lumen", "compiler"]]}, "lumen/compiler": {export: {"%compile-module": {variable: true}, "%result": {export: true, global: true}, "can-return?": {variable: true}, compile: {export: true, variable: true}, "compile-args": {variable: true}, "compile-atom": {variable: true}, "compile-call": {variable: true}, "compile-file": {variable: true}, "compile-function": {export: true, variable: true}, "compile-infix": {variable: true}, "compile-module": {export: true, variable: true}, "compile-special": {variable: true}, "compiler-output": {variable: true}, "compiling?": {variable: true}, conclude: {variable: true}, "current-module": {export: true, global: true}, declare: {export: true, variable: true}, encapsulate: {variable: true}, eval: {export: true, variable: true}, getop: {variable: true}, "import-modules": {export: true, variable: true}, "in-module": {export: true, variable: true}, infix: {variable: true}, "infix?": {variable: true}, "load-module": {export: true, variable: true}, lower: {variable: true}, "lower-body": {variable: true}, "lower-call": {variable: true}, "lower-definition": {variable: true}, "lower-do": {variable: true}, "lower-for": {variable: true}, "lower-function": {variable: true}, "lower-if": {variable: true}, "lower-infix": {variable: true}, "lower-infix?": {variable: true}, "lower-short": {variable: true}, "lower-special": {variable: true}, "lower-statement": {variable: true}, "lower-try": {variable: true}, "lower-while": {variable: true}, "module-path": {variable: true}, "op-delims": {variable: true}, "open-module": {export: true, variable: true}, "parenthesize-call?": {variable: true}, precedence: {variable: true}, process: {variable: true}, reimported: {variable: true}, run: {variable: true}, terminator: {variable: true}, "unary?": {variable: true}}, import: [["lumen", "runtime"], ["lumen", "special"], ["lumen", "core"], ["lumen", "lib"], ["lumen", "reader"]]}, "lumen/core": {export: {at: {export: true, macro: function (l, i) {
     if (target === "lua" && number63(i)) {
       i = i + 1;
     } else {
@@ -3201,7 +3201,10 @@ global.nexus = {};
     var _g739 = ["table"];
     _g739._scope = scope;
     return(["do", ["add", "environment", _g739], ["let", [x, join(["do"], _g738)], ["drop", "environment"], x]]);
-  }}}, import: [["lumen", "runtime"], ["lumen", "special"], ["lumen", "core"], ["lumen", "utilities"], ["lumen", "compiler"]]}, "lumen/main": {export: {}, import: [["lumen", "runtime"], ["lumen", "special"], ["lumen", "core"], ["lumen", "reader"], ["lumen", "compiler"]]}, "lumen/reader": {export: {"define-reader": {export: true, macro: function (_g740) {
+  }}}, import: [["lumen", "runtime"], ["lumen", "special"], ["lumen", "core"], ["lumen", "lib"], ["lumen", "compiler"]]}, "lumen/lib": {export: {bind: {export: true, variable: true}, "bind*": {export: true, variable: true}, "bound?": {export: true, variable: true}, "can-unquote?": {variable: true}, escape: {variable: true}, getenv: {export: true, variable: true}, "global?": {variable: true}, id: {export: true, variable: true}, imported: {export: true, variable: true}, "indent-level": {export: true, global: true}, indentation: {export: true, variable: true}, "initial-environment": {export: true, variable: true}, linked: {export: true, variable: true}, "macro-function": {export: true, variable: true}, "macro?": {export: true, variable: true}, macroexpand: {export: true, variable: true}, mapo: {export: true, variable: true}, "numeric?": {variable: true}, quasiexpand: {export: true, variable: true}, "quasiquote-list": {variable: true}, "quasiquoting?": {variable: true}, "quasisplice?": {variable: true}, "quote-binding": {variable: true}, "quote-environment": {export: true, variable: true}, "quote-frame": {variable: true}, "quote-module": {variable: true}, "quote-modules": {export: true, variable: true}, quoted: {export: true, variable: true}, "quoting?": {variable: true}, reserved: {variable: true}, "reserved?": {export: true, variable: true}, sortk: {export: true, variable: true}, "special-form?": {export: true, variable: true}, "special?": {export: true, variable: true}, "stash*": {export: true, variable: true}, "statement?": {export: true, variable: true}, "symbol-expansion": {export: true, variable: true}, "symbol?": {export: true, variable: true}, "valid-char?": {variable: true}, "valid-id?": {export: true, variable: true}, "variable?": {export: true, variable: true}, "with-indent": {export: true, macro: function (form) {
+    var result = make_id();
+    return(["do", ["inc", "indent-level"], ["let", [result, form], ["dec", "indent-level"], result]]);
+  }}}, import: [["lumen", "runtime"], ["lumen", "special"], ["lumen", "core"]]}, "lumen/main": {export: {}, import: [["lumen", "runtime"], ["lumen", "special"], ["lumen", "core"], ["lumen", "reader"], ["lumen", "compiler"]]}, "lumen/reader": {export: {"define-reader": {export: true, macro: function (_g740) {
     var char = _g740[0];
     var stream = _g740[1];
     var body = unstash(Array.prototype.slice.call(arguments, 1));
@@ -3441,10 +3444,7 @@ global.nexus = {};
     } else {
       return(ind + "while " + _g749 + " do\n" + body + ind + "end\n");
     }
-  }, stmt: true, tr: true}}, import: [["lumen", "runtime"], ["lumen", "special"], ["lumen", "core"], ["lumen", "utilities"], ["lumen", "compiler"]]}, "lumen/system": {export: {nexus: {export: true, global: true}}, import: [["lumen", "special"], ["lumen", "core"]]}, "lumen/utilities": {export: {bind: {export: true, variable: true}, "bind*": {export: true, variable: true}, "bound?": {export: true, variable: true}, "can-unquote?": {variable: true}, escape: {variable: true}, getenv: {export: true, variable: true}, "global?": {variable: true}, id: {export: true, variable: true}, imported: {export: true, variable: true}, "indent-level": {export: true, global: true}, indentation: {export: true, variable: true}, "initial-environment": {export: true, variable: true}, linked: {export: true, variable: true}, "macro-function": {export: true, variable: true}, "macro?": {export: true, variable: true}, macroexpand: {export: true, variable: true}, mapo: {export: true, variable: true}, "numeric?": {variable: true}, quasiexpand: {export: true, variable: true}, "quasiquote-list": {variable: true}, "quasiquoting?": {variable: true}, "quasisplice?": {variable: true}, "quote-binding": {variable: true}, "quote-environment": {export: true, variable: true}, "quote-frame": {variable: true}, "quote-module": {variable: true}, "quote-modules": {export: true, variable: true}, quoted: {export: true, variable: true}, "quoting?": {variable: true}, reserved: {variable: true}, "reserved?": {export: true, variable: true}, sortk: {export: true, variable: true}, "special-form?": {export: true, variable: true}, "special?": {export: true, variable: true}, "stash*": {export: true, variable: true}, "statement?": {export: true, variable: true}, "symbol-expansion": {export: true, variable: true}, "symbol?": {export: true, variable: true}, "valid-char?": {variable: true}, "valid-id?": {export: true, variable: true}, "variable?": {export: true, variable: true}, "with-indent": {export: true, macro: function (form) {
-    var result = make_id();
-    return(["do", ["inc", "indent-level"], ["let", [result, form], ["dec", "indent-level"], result]]);
-  }}}, import: [["lumen", "runtime"], ["lumen", "special"], ["lumen", "core"]]}, user: {export: {}, import: ["lumen", ["lumen", "runtime"], ["lumen", "special"], ["lumen", "core"]]}};
+  }, stmt: true, tr: true}}, import: [["lumen", "runtime"], ["lumen", "special"], ["lumen", "core"], ["lumen", "lib"], ["lumen", "compiler"]]}, "lumen/system": {export: {nexus: {export: true, global: true}}, import: [["lumen", "special"], ["lumen", "core"]]}, user: {export: {}, import: ["lumen", ["lumen", "runtime"], ["lumen", "special"], ["lumen", "core"]]}};
   global.environment = [{"define-module": {export: true, macro: function (spec) {
     var body = unstash(Array.prototype.slice.call(arguments, 1));
     var _g764 = sub(body, 0);

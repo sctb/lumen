@@ -14,7 +14,7 @@
        (map compile-module specs)
        nil))
   (save (lumen runtime)
-        (lumen utilities)
+        (lumen lib)
         (lumen reader)
         (lumen compiler)
         (lumen special)
