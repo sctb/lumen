@@ -299,8 +299,7 @@
         imports ())
     (when (get nexus k)
       (each (n b) (get (module spec) 'export)
-        (when (and b.variable
-                   (or all b.export))
+        (when (and b.variable (or all b.export))
           (add imports `(%local ,n (get ,m ',n))))))
     (when (some? imports)
       `((%local ,m (get nexus ',k))
