@@ -56,6 +56,7 @@
            join
            reduce
            keep
+           in?
            find
            pair
            sort
@@ -243,6 +244,10 @@
   (let (l1 ())
     (each (x) l (if (f x) (add l1 x)))
     l1))
+
+(define in? (x xs)
+  (each (y) xs
+    (when (= x y) (return true))))
 
 (define find (f l)
   (each (x) l

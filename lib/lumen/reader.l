@@ -54,7 +54,8 @@
     l))
 
 (define read-from-string (str)
-  (read (make-stream str)))
+  (let (x (read (make-stream str)))
+    (if (~= x eof) x)))
 
 (define key? (atom)
   (and (string? atom)

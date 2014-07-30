@@ -298,16 +298,28 @@ global.nexus = {};
     return(l1);
   };
   nexus["lumen/runtime"].keep = keep;
-  var find = function (f, l) {
-    var _g31 = l;
+  var in63 = function (x, xs) {
+    var _g31 = xs;
     var _g32 = 0;
     while (_g32 < length(_g31)) {
-      var x = _g31[_g32];
-      var _g33 = f(x);
-      if (_g33) {
-        return(_g33);
+      var y = _g31[_g32];
+      if (x === y) {
+        return(true);
       }
       _g32 = _g32 + 1;
+    }
+  };
+  nexus["lumen/runtime"]["in?"] = in63;
+  var find = function (f, l) {
+    var _g33 = l;
+    var _g34 = 0;
+    while (_g34 < length(_g33)) {
+      var x = _g33[_g34];
+      var _g35 = f(x);
+      if (_g35) {
+        return(_g35);
+      }
+      _g34 = _g34 + 1;
     }
   };
   nexus["lumen/runtime"].find = find;
@@ -322,9 +334,9 @@ global.nexus = {};
   };
   nexus["lumen/runtime"].pair = pair;
   var sort = function (l, f) {
-    var _g55;
+    var _g57;
     if (f) {
-      _g55 = function (a, b) {
+      _g57 = function (a, b) {
         if (f(a, b)) {
           return(-1);
         } else {
@@ -332,7 +344,7 @@ global.nexus = {};
         }
       };
     }
-    return(l.sort(_g55));
+    return(l.sort(_g57));
   };
   nexus["lumen/runtime"].sort = sort;
   var iterate = function (f, count) {
@@ -361,30 +373,30 @@ global.nexus = {};
   nexus["lumen/runtime"]["splice?"] = splice63;
   var mapl = function (f, l) {
     var l1 = [];
-    var _g34 = l;
-    var _g35 = 0;
-    while (_g35 < length(_g34)) {
-      var x = _g34[_g35];
-      var _g36 = f(x);
-      if (splice63(_g36)) {
-        l1 = join(l1, _g36.value);
+    var _g36 = l;
+    var _g37 = 0;
+    while (_g37 < length(_g36)) {
+      var x = _g36[_g37];
+      var _g38 = f(x);
+      if (splice63(_g38)) {
+        l1 = join(l1, _g38.value);
       } else {
-        if (is63(_g36)) {
-          add(l1, _g36);
+        if (is63(_g38)) {
+          add(l1, _g38);
         }
       }
-      _g35 = _g35 + 1;
+      _g37 = _g37 + 1;
     }
     return(l1);
   };
   nexus["lumen/runtime"].mapl = mapl;
   var map = function (f, t) {
     var l = mapl(f, t);
-    var _g37 = t;
+    var _g39 = t;
     var k = undefined;
-    for (k in _g37) {
+    for (k in _g39) {
       if (isNaN(parseInt(k))) {
-        var v = _g37[k];
+        var v = _g39[k];
         var x = f(v);
         if (splice63(x)) {
           l[k] = x.value;
@@ -428,11 +440,11 @@ global.nexus = {};
   nexus["lumen/runtime"].flat1 = flat1;
   var keys63 = function (t) {
     var k63 = false;
-    var _g38 = t;
+    var _g40 = t;
     var k = undefined;
-    for (k in _g38) {
+    for (k in _g40) {
       if (isNaN(parseInt(k))) {
-        var v = _g38[k];
+        var v = _g40[k];
         k63 = true;
         break;
       }
@@ -447,11 +459,11 @@ global.nexus = {};
   var stash = function (args) {
     if (keys63(args)) {
       var p = {_stash: true};
-      var _g39 = args;
+      var _g41 = args;
       var k = undefined;
-      for (k in _g39) {
+      for (k in _g41) {
         if (isNaN(parseInt(k))) {
-          var v = _g39[k];
+          var v = _g41[k];
           p[k] = v;
         }
       }
@@ -468,11 +480,11 @@ global.nexus = {};
       var l = last(args);
       if (table63(l) && l._stash) {
         var args1 = sub(args, 0, length(args) - 1);
-        var _g40 = l;
+        var _g42 = l;
         var k = undefined;
-        for (k in _g40) {
+        for (k in _g42) {
           if (isNaN(parseInt(k))) {
-            var v = _g40[k];
+            var v = _g42[k];
             if (!(k === "_stash")) {
               args1[k] = v;
             }
@@ -487,20 +499,20 @@ global.nexus = {};
   nexus["lumen/runtime"].unstash = unstash;
   var extend = function (t) {
     var xs = unstash(Array.prototype.slice.call(arguments, 1));
-    var _g41 = sub(xs, 0);
-    return(join(t, _g41));
+    var _g43 = sub(xs, 0);
+    return(join(t, _g43));
   };
   nexus["lumen/runtime"].extend = extend;
   var exclude = function (t) {
     var keys = unstash(Array.prototype.slice.call(arguments, 1));
-    var _g42 = sub(keys, 0);
+    var _g44 = sub(keys, 0);
     var t1 = subl(t);
-    var _g43 = t;
+    var _g45 = t;
     var k = undefined;
-    for (k in _g43) {
+    for (k in _g45) {
       if (isNaN(parseInt(k))) {
-        var v = _g43[k];
-        if (!_g42[k]) {
+        var v = _g45[k];
+        if (!_g44[k]) {
           t1[k] = v;
         }
       }
@@ -521,54 +533,54 @@ global.nexus = {};
   nexus["lumen/runtime"].split = split;
   var cat = function () {
     var xs = unstash(Array.prototype.slice.call(arguments, 0));
-    var _g44 = sub(xs, 0);
-    if (none63(_g44)) {
+    var _g46 = sub(xs, 0);
+    if (none63(_g46)) {
       return("");
     } else {
       return(reduce(function (a, b) {
         return(a + b);
-      }, _g44));
+      }, _g46));
     }
   };
   nexus["lumen/runtime"].cat = cat;
   var _43 = function () {
     var xs = unstash(Array.prototype.slice.call(arguments, 0));
-    var _g45 = sub(xs, 0);
+    var _g47 = sub(xs, 0);
     return(reduce(function (a, b) {
       return(a + b);
-    }, _g45));
+    }, _g47));
   };
   nexus["lumen/runtime"]["+"] = _43;
   var _ = function () {
     var xs = unstash(Array.prototype.slice.call(arguments, 0));
-    var _g46 = sub(xs, 0);
+    var _g48 = sub(xs, 0);
     return(reduce(function (b, a) {
       return(a - b);
-    }, reverse(_g46)));
+    }, reverse(_g48)));
   };
   nexus["lumen/runtime"]["-"] = _;
   var _42 = function () {
     var xs = unstash(Array.prototype.slice.call(arguments, 0));
-    var _g47 = sub(xs, 0);
+    var _g49 = sub(xs, 0);
     return(reduce(function (a, b) {
       return(a * b);
-    }, _g47));
+    }, _g49));
   };
   nexus["lumen/runtime"]["*"] = _42;
   var _47 = function () {
     var xs = unstash(Array.prototype.slice.call(arguments, 0));
-    var _g48 = sub(xs, 0);
+    var _g50 = sub(xs, 0);
     return(reduce(function (b, a) {
       return(a / b);
-    }, reverse(_g48)));
+    }, reverse(_g50)));
   };
   nexus["lumen/runtime"]["/"] = _47;
   var _37 = function () {
     var xs = unstash(Array.prototype.slice.call(arguments, 0));
-    var _g49 = sub(xs, 0);
+    var _g51 = sub(xs, 0);
     return(reduce(function (b, a) {
       return(a % b);
-    }, reverse(_g49)));
+    }, reverse(_g51)));
   };
   nexus["lumen/runtime"]["%"] = _37;
   var _62 = function (a, b) {
@@ -659,19 +671,19 @@ global.nexus = {};
           } else {
             var str = "(";
             var x1 = sub(x);
-            var _g50 = x;
+            var _g52 = x;
             var k = undefined;
-            for (k in _g50) {
+            for (k in _g52) {
               if (isNaN(parseInt(k))) {
-                var v = _g50[k];
+                var v = _g52[k];
                 add(x1, k + ":");
                 add(x1, v);
               }
             }
-            var _g51 = x1;
+            var _g53 = x1;
             var i = 0;
-            while (i < length(_g51)) {
-              var y = _g51[i];
+            while (i < length(_g53)) {
+              var y = _g53[i];
               str = str + string(y);
               if (i < length(x1) - 1) {
                 str = str + " ";
@@ -703,8 +715,8 @@ global.nexus = {};
   };
   nexus["lumen/runtime"].space = space;
   var apply = function (f, args) {
-    var _g52 = stash(args);
-    return(f.apply(f, _g52));
+    var _g54 = stash(args);
+    return(f.apply(f, _g54));
   };
   nexus["lumen/runtime"].apply = apply;
   var id_count = 0;
@@ -739,15 +751,15 @@ global.nexus = {};
   nexus["lumen/runtime"].module = module;
   var setenv = function (k) {
     var keys = unstash(Array.prototype.slice.call(arguments, 1));
-    var _g53 = sub(keys, 0);
+    var _g55 = sub(keys, 0);
     if (string63(k)) {
       var frame = last(environment);
       var x = frame[k] || {};
-      var _g54 = _g53;
+      var _g56 = _g55;
       var k1 = undefined;
-      for (k1 in _g54) {
+      for (k1 in _g56) {
         if (isNaN(parseInt(k1))) {
-          var v = _g54[k1];
+          var v = _g56[k1];
           x[k1] = v;
         }
       }
@@ -762,122 +774,122 @@ global.nexus = {};
 })();
 (function () {
   nexus["lumen/utilities"] = {};
-  var _g59 = nexus["lumen/runtime"];
-  var _37 = _g59["%"];
-  var _37message_handler = _g59["%message-handler"];
-  var _42 = _g59["*"];
-  var _43 = _g59["+"];
-  var _ = _g59["-"];
-  var _47 = _g59["/"];
-  var _60 = _g59["<"];
-  var _6061 = _g59["<="];
-  var _61 = _g59["="];
-  var _62 = _g59[">"];
-  var _6261 = _g59[">="];
-  var abs = _g59.abs;
-  var acos = _g59.acos;
-  var add = _g59.add;
-  var apply = _g59.apply;
-  var asin = _g59.asin;
-  var atan = _g59.atan;
-  var atan2 = _g59.atan2;
-  var atom63 = _g59["atom?"];
-  var boolean63 = _g59["boolean?"];
-  var cat = _g59.cat;
-  var ceil = _g59.ceil;
-  var char = _g59.char;
-  var code = _g59.code;
-  var composite63 = _g59["composite?"];
-  var cos = _g59.cos;
-  var drop = _g59.drop;
-  var empty63 = _g59["empty?"];
-  var exclude = _g59.exclude;
-  var exit = _g59.exit;
-  var extend = _g59.extend;
-  var find = _g59.find;
-  var flat = _g59.flat;
-  var flat1 = _g59.flat1;
-  var floor = _g59.floor;
-  var function63 = _g59["function?"];
-  var hd = _g59.hd;
-  var id_literal63 = _g59["id-literal?"];
-  var in63 = _g59["in?"];
-  var inner = _g59.inner;
-  var is63 = _g59["is?"];
-  var iterate = _g59.iterate;
-  var join = _g59.join;
-  var keep = _g59.keep;
-  var keys63 = _g59["keys?"];
-  var last = _g59.last;
-  var length = _g59.length;
-  var list63 = _g59["list?"];
-  var log = _g59.log;
-  var log10 = _g59.log10;
-  var make_id = _g59["make-id"];
-  var map = _g59.map;
-  var max = _g59.max;
-  var min = _g59.min;
-  var module = _g59.module;
-  var module_key = _g59["module-key"];
-  var nil63 = _g59["nil?"];
-  var none63 = _g59["none?"];
-  var now = _g59.now;
-  var number = _g59.number;
-  var number63 = _g59["number?"];
-  var one63 = _g59["one?"];
-  var pair = _g59.pair;
-  var pow = _g59.pow;
-  var random = _g59.random;
-  var read_file = _g59["read-file"];
-  var reduce = _g59.reduce;
-  var replicate = _g59.replicate;
-  var reverse = _g59.reverse;
-  var sd = _g59.sd;
-  var search = _g59.search;
-  var setenv = _g59.setenv;
-  var sin = _g59.sin;
-  var sinh = _g59.sinh;
-  var some63 = _g59["some?"];
-  var sort = _g59.sort;
-  var space = _g59.space;
-  var splice = _g59.splice;
-  var split = _g59.split;
-  var sqrt = _g59.sqrt;
-  var stash = _g59.stash;
-  var string = _g59.string;
-  var string_literal63 = _g59["string-literal?"];
-  var string63 = _g59["string?"];
-  var sub = _g59.sub;
-  var substring = _g59.substring;
-  var table63 = _g59["table?"];
-  var tan = _g59.tan;
-  var tanh = _g59.tanh;
-  var td = _g59.td;
-  var tl = _g59.tl;
-  var today = _g59.today;
-  var toplevel63 = _g59["toplevel?"];
-  var unstash = _g59.unstash;
-  var write = _g59.write;
-  var write_file = _g59["write-file"];
+  var _g61 = nexus["lumen/runtime"];
+  var _37 = _g61["%"];
+  var _37message_handler = _g61["%message-handler"];
+  var _42 = _g61["*"];
+  var _43 = _g61["+"];
+  var _ = _g61["-"];
+  var _47 = _g61["/"];
+  var _60 = _g61["<"];
+  var _6061 = _g61["<="];
+  var _61 = _g61["="];
+  var _62 = _g61[">"];
+  var _6261 = _g61[">="];
+  var abs = _g61.abs;
+  var acos = _g61.acos;
+  var add = _g61.add;
+  var apply = _g61.apply;
+  var asin = _g61.asin;
+  var atan = _g61.atan;
+  var atan2 = _g61.atan2;
+  var atom63 = _g61["atom?"];
+  var boolean63 = _g61["boolean?"];
+  var cat = _g61.cat;
+  var ceil = _g61.ceil;
+  var char = _g61.char;
+  var code = _g61.code;
+  var composite63 = _g61["composite?"];
+  var cos = _g61.cos;
+  var drop = _g61.drop;
+  var empty63 = _g61["empty?"];
+  var exclude = _g61.exclude;
+  var exit = _g61.exit;
+  var extend = _g61.extend;
+  var find = _g61.find;
+  var flat = _g61.flat;
+  var flat1 = _g61.flat1;
+  var floor = _g61.floor;
+  var function63 = _g61["function?"];
+  var hd = _g61.hd;
+  var id_literal63 = _g61["id-literal?"];
+  var in63 = _g61["in?"];
+  var inner = _g61.inner;
+  var is63 = _g61["is?"];
+  var iterate = _g61.iterate;
+  var join = _g61.join;
+  var keep = _g61.keep;
+  var keys63 = _g61["keys?"];
+  var last = _g61.last;
+  var length = _g61.length;
+  var list63 = _g61["list?"];
+  var log = _g61.log;
+  var log10 = _g61.log10;
+  var make_id = _g61["make-id"];
+  var map = _g61.map;
+  var max = _g61.max;
+  var min = _g61.min;
+  var module = _g61.module;
+  var module_key = _g61["module-key"];
+  var nil63 = _g61["nil?"];
+  var none63 = _g61["none?"];
+  var now = _g61.now;
+  var number = _g61.number;
+  var number63 = _g61["number?"];
+  var one63 = _g61["one?"];
+  var pair = _g61.pair;
+  var pow = _g61.pow;
+  var random = _g61.random;
+  var read_file = _g61["read-file"];
+  var reduce = _g61.reduce;
+  var replicate = _g61.replicate;
+  var reverse = _g61.reverse;
+  var sd = _g61.sd;
+  var search = _g61.search;
+  var setenv = _g61.setenv;
+  var sin = _g61.sin;
+  var sinh = _g61.sinh;
+  var some63 = _g61["some?"];
+  var sort = _g61.sort;
+  var space = _g61.space;
+  var splice = _g61.splice;
+  var split = _g61.split;
+  var sqrt = _g61.sqrt;
+  var stash = _g61.stash;
+  var string = _g61.string;
+  var string_literal63 = _g61["string-literal?"];
+  var string63 = _g61["string?"];
+  var sub = _g61.sub;
+  var substring = _g61.substring;
+  var table63 = _g61["table?"];
+  var tan = _g61.tan;
+  var tanh = _g61.tanh;
+  var td = _g61.td;
+  var tl = _g61.tl;
+  var today = _g61.today;
+  var toplevel63 = _g61["toplevel?"];
+  var unstash = _g61.unstash;
+  var write = _g61.write;
+  var write_file = _g61["write-file"];
   var getenv = function (k) {
     var keys = unstash(Array.prototype.slice.call(arguments, 1));
-    var _g62 = sub(keys, 0);
+    var _g64 = sub(keys, 0);
     if (string63(k)) {
       var b = find(function (e) {
         return(e[k]);
       }, reverse(environment));
       if (table63(b)) {
-        var _g63 = undefined;
-        var _g64 = _g62;
+        var _g65 = undefined;
+        var _g66 = _g64;
         var x = undefined;
-        for (x in _g64) {
+        for (x in _g66) {
           if (isNaN(parseInt(x))) {
-            var _g56 = _g64[x];
-            _g63 = x;
+            var _g58 = _g66[x];
+            _g65 = x;
           }
         }
-        if (_g63) {
-          return(b[_g63]);
+        if (_g65) {
+          return(b[_g65]);
         } else {
           return(b);
         }
@@ -933,25 +945,25 @@ global.nexus = {};
     var i = 0;
     while (i < length(str)) {
       var c = char(str, i);
-      var _g93;
+      var _g95;
       if (c === "\n") {
-        _g93 = "\\n";
+        _g95 = "\\n";
       } else {
-        var _g94;
+        var _g96;
         if (c === "\"") {
-          _g94 = "\\\"";
+          _g96 = "\\\"";
         } else {
-          var _g95;
+          var _g97;
           if (c === "\\") {
-            _g95 = "\\\\";
+            _g97 = "\\\\";
           } else {
-            _g95 = c;
+            _g97 = c;
           }
-          _g94 = _g95;
+          _g96 = _g97;
         }
-        _g93 = _g94;
+        _g95 = _g96;
       }
-      var c1 = _g93;
+      var c1 = _g95;
       str1 = str1 + c1;
       i = i + 1;
     }
@@ -973,11 +985,11 @@ global.nexus = {};
   var stash42 = function (args) {
     if (keys63(args)) {
       var l = ["%object", "_stash", true];
-      var _g65 = args;
+      var _g67 = args;
       var k = undefined;
-      for (k in _g65) {
+      for (k in _g67) {
         if (isNaN(parseInt(k))) {
-          var v = _g65[k];
+          var v = _g67[k];
           add(l, k);
           add(l, v);
         }
@@ -998,21 +1010,21 @@ global.nexus = {};
       } else {
         var bs = [];
         var r = lh.rest;
-        var _g66 = lh;
+        var _g68 = lh;
         var i = 0;
-        while (i < length(_g66)) {
-          var x = _g66[i];
+        while (i < length(_g68)) {
+          var x = _g68[i];
           bs = join(bs, bind(x, ["at", rh, i]));
           i = i + 1;
         }
         if (r) {
           bs = join(bs, bind(r, ["sub", rh, length(lh)]));
         }
-        var _g67 = lh;
+        var _g69 = lh;
         var k = undefined;
-        for (k in _g67) {
+        for (k in _g69) {
           if (isNaN(parseInt(k))) {
-            var v = _g67[k];
+            var v = _g69[k];
             if (v === true) {
               v = k;
             }
@@ -1041,10 +1053,10 @@ global.nexus = {};
     } else {
       var bs = [];
       var r = args.rest || keys63(args) && make_id();
-      var _g68 = args;
-      var _g69 = 0;
-      while (_g69 < length(_g68)) {
-        var arg = _g68[_g69];
+      var _g70 = args;
+      var _g71 = 0;
+      while (_g71 < length(_g70)) {
+        var arg = _g70[_g71];
         if (atom63(arg)) {
           add(args1, arg);
         } else {
@@ -1054,7 +1066,7 @@ global.nexus = {};
             bs = join(bs, [arg, v]);
           }
         }
-        _g69 = _g69 + 1;
+        _g71 = _g71 + 1;
       }
       if (r) {
         bs = join(bs, [r, rest()]);
@@ -1095,37 +1107,37 @@ global.nexus = {};
       } else {
         var x = hd(form);
         if (x === "%function") {
-          var _g57 = form[0];
+          var _g59 = form[0];
           var args = form[1];
           var body = sub(form, 2);
           add(environment, {_scope: true});
-          var _g72 = args;
-          var _g73 = 0;
-          while (_g73 < length(_g72)) {
-            var _g70 = _g72[_g73];
-            setenv(_g70, {_stash: true, variable: true});
-            _g73 = _g73 + 1;
+          var _g74 = args;
+          var _g75 = 0;
+          while (_g75 < length(_g74)) {
+            var _g72 = _g74[_g75];
+            setenv(_g72, {_stash: true, variable: true});
+            _g75 = _g75 + 1;
           }
-          var _g71 = join(["%function", map(macroexpand, args)], macroexpand(body));
+          var _g73 = join(["%function", map(macroexpand, args)], macroexpand(body));
           drop(environment);
-          return(_g71);
+          return(_g73);
         } else {
           if (x === "%local-function" || x === "%global-function") {
-            var _g58 = form[0];
+            var _g60 = form[0];
             var name = form[1];
-            var _g74 = form[2];
-            var _g75 = sub(form, 3);
+            var _g76 = form[2];
+            var _g77 = sub(form, 3);
             add(environment, {_scope: true});
-            var _g78 = _g74;
-            var _g79 = 0;
-            while (_g79 < length(_g78)) {
-              var _g76 = _g78[_g79];
-              setenv(_g76, {_stash: true, variable: true});
-              _g79 = _g79 + 1;
+            var _g80 = _g76;
+            var _g81 = 0;
+            while (_g81 < length(_g80)) {
+              var _g78 = _g80[_g81];
+              setenv(_g78, {_stash: true, variable: true});
+              _g81 = _g81 + 1;
             }
-            var _g77 = join([x, name, map(macroexpand, _g74)], macroexpand(_g75));
+            var _g79 = join([x, name, map(macroexpand, _g76)], macroexpand(_g77));
             drop(environment);
-            return(_g77);
+            return(_g79);
           } else {
             if (macro63(x)) {
               return(macroexpand(apply(macro_function(x), tl(form))));
@@ -1144,33 +1156,33 @@ global.nexus = {};
   nexus["lumen/utilities"]["quasiquote-list"] = quasiquote_list;
   quasiquote_list = function (form, depth) {
     var xs = [["list"]];
-    var _g80 = form;
+    var _g82 = form;
     var k = undefined;
-    for (k in _g80) {
+    for (k in _g82) {
       if (isNaN(parseInt(k))) {
-        var v = _g80[k];
-        var _g96;
+        var v = _g82[k];
+        var _g98;
         if (quasisplice63(v, depth)) {
-          _g96 = quasiexpand(v[1]);
+          _g98 = quasiexpand(v[1]);
         } else {
-          _g96 = quasiexpand(v, depth);
+          _g98 = quasiexpand(v, depth);
         }
-        var _g81 = _g96;
-        last(xs)[k] = _g81;
+        var _g83 = _g98;
+        last(xs)[k] = _g83;
       }
     }
-    var _g82 = form;
-    var _g83 = 0;
-    while (_g83 < length(_g82)) {
-      var x = _g82[_g83];
+    var _g84 = form;
+    var _g85 = 0;
+    while (_g85 < length(_g84)) {
+      var x = _g84[_g85];
       if (quasisplice63(x, depth)) {
-        var _g84 = quasiexpand(x[1]);
-        add(xs, _g84);
+        var _g86 = quasiexpand(x[1]);
+        add(xs, _g86);
         add(xs, ["list"]);
       } else {
         add(last(xs), quasiexpand(x, depth));
       }
-      _g83 = _g83 + 1;
+      _g85 = _g85 + 1;
     }
     var pruned = keep(function (x) {
       return(length(x) > 1 || !(hd(x) === "list") || keys63(x));
@@ -1266,25 +1278,25 @@ global.nexus = {};
     while (i < length(id)) {
       var c = char(id, i);
       var n = code(c);
-      var _g97;
+      var _g99;
       if (c === "-") {
-        _g97 = "_";
+        _g99 = "_";
       } else {
-        var _g98;
+        var _g100;
         if (valid_char63(n)) {
-          _g98 = c;
+          _g100 = c;
         } else {
-          var _g99;
+          var _g101;
           if (i === 0) {
-            _g99 = "_" + n;
+            _g101 = "_" + n;
           } else {
-            _g99 = n;
+            _g101 = n;
           }
-          _g98 = _g99;
+          _g100 = _g101;
         }
-        _g97 = _g98;
+        _g99 = _g100;
       }
-      var c1 = _g97;
+      var c1 = _g99;
       id1 = id1 + c1;
       i = i + 1;
     }
@@ -1298,17 +1310,17 @@ global.nexus = {};
   };
   nexus["lumen/utilities"].sortk = sortk;
   var imported = function (spec) {
-    var _g89 = unstash(Array.prototype.slice.call(arguments, 1));
-    var all = _g89.all;
+    var _g91 = unstash(Array.prototype.slice.call(arguments, 1));
+    var all = _g91.all;
     var m = make_id();
     var k = module_key(spec);
     var imports = [];
     if (nexus[k]) {
-      var _g90 = module(spec).export;
+      var _g92 = module(spec).export;
       var n = undefined;
-      for (n in _g90) {
+      for (n in _g92) {
         if (isNaN(parseInt(n))) {
-          var b = _g90[n];
+          var b = _g92[n];
           if (b.variable && (all || b.export)) {
             add(imports, ["%local", n, ["get", m, ["quote", n]]]);
           }
@@ -1353,11 +1365,11 @@ global.nexus = {};
   nexus["lumen/utilities"]["quote-binding"] = quote_binding;
   var mapo = function (f, t) {
     var o = [];
-    var _g91 = t;
+    var _g93 = t;
     var k = undefined;
-    for (k in _g91) {
+    for (k in _g93) {
       if (isNaN(parseInt(k))) {
-        var v = _g91[k];
+        var v = _g93[k];
         var x = f(v);
         if (is63(x)) {
           add(o, k);
@@ -1379,11 +1391,11 @@ global.nexus = {};
   };
   nexus["lumen/utilities"]["quote-environment"] = quote_environment;
   var quote_module = function (m) {
-    var _g92 = ["table"];
-    _g92.alias = quoted(m.alias);
-    _g92.export = quote_frame(m.export);
-    _g92.import = quoted(m.import);
-    return(_g92);
+    var _g94 = ["table"];
+    _g94.alias = quoted(m.alias);
+    _g94.export = quote_frame(m.export);
+    _g94.import = quoted(m.import);
+    return(_g94);
   };
   nexus["lumen/utilities"]["quote-module"] = quote_module;
   var quote_modules = function () {
@@ -1397,103 +1409,103 @@ global.nexus = {};
 })();
 (function () {
   nexus["lumen/reader"] = {};
-  var _g100 = nexus["lumen/runtime"];
-  var _37 = _g100["%"];
-  var _37message_handler = _g100["%message-handler"];
-  var _42 = _g100["*"];
-  var _43 = _g100["+"];
-  var _ = _g100["-"];
-  var _47 = _g100["/"];
-  var _60 = _g100["<"];
-  var _6061 = _g100["<="];
-  var _61 = _g100["="];
-  var _62 = _g100[">"];
-  var _6261 = _g100[">="];
-  var abs = _g100.abs;
-  var acos = _g100.acos;
-  var add = _g100.add;
-  var apply = _g100.apply;
-  var asin = _g100.asin;
-  var atan = _g100.atan;
-  var atan2 = _g100.atan2;
-  var atom63 = _g100["atom?"];
-  var boolean63 = _g100["boolean?"];
-  var cat = _g100.cat;
-  var ceil = _g100.ceil;
-  var char = _g100.char;
-  var code = _g100.code;
-  var composite63 = _g100["composite?"];
-  var cos = _g100.cos;
-  var drop = _g100.drop;
-  var empty63 = _g100["empty?"];
-  var exclude = _g100.exclude;
-  var exit = _g100.exit;
-  var extend = _g100.extend;
-  var find = _g100.find;
-  var flat = _g100.flat;
-  var flat1 = _g100.flat1;
-  var floor = _g100.floor;
-  var function63 = _g100["function?"];
-  var hd = _g100.hd;
-  var id_literal63 = _g100["id-literal?"];
-  var in63 = _g100["in?"];
-  var inner = _g100.inner;
-  var is63 = _g100["is?"];
-  var iterate = _g100.iterate;
-  var join = _g100.join;
-  var keep = _g100.keep;
-  var keys63 = _g100["keys?"];
-  var last = _g100.last;
-  var length = _g100.length;
-  var list63 = _g100["list?"];
-  var log = _g100.log;
-  var log10 = _g100.log10;
-  var make_id = _g100["make-id"];
-  var map = _g100.map;
-  var max = _g100.max;
-  var min = _g100.min;
-  var module = _g100.module;
-  var module_key = _g100["module-key"];
-  var nil63 = _g100["nil?"];
-  var none63 = _g100["none?"];
-  var now = _g100.now;
-  var number = _g100.number;
-  var number63 = _g100["number?"];
-  var one63 = _g100["one?"];
-  var pair = _g100.pair;
-  var pow = _g100.pow;
-  var random = _g100.random;
-  var read_file = _g100["read-file"];
-  var reduce = _g100.reduce;
-  var replicate = _g100.replicate;
-  var reverse = _g100.reverse;
-  var sd = _g100.sd;
-  var search = _g100.search;
-  var setenv = _g100.setenv;
-  var sin = _g100.sin;
-  var sinh = _g100.sinh;
-  var some63 = _g100["some?"];
-  var sort = _g100.sort;
-  var space = _g100.space;
-  var splice = _g100.splice;
-  var split = _g100.split;
-  var sqrt = _g100.sqrt;
-  var stash = _g100.stash;
-  var string = _g100.string;
-  var string_literal63 = _g100["string-literal?"];
-  var string63 = _g100["string?"];
-  var sub = _g100.sub;
-  var substring = _g100.substring;
-  var table63 = _g100["table?"];
-  var tan = _g100.tan;
-  var tanh = _g100.tanh;
-  var td = _g100.td;
-  var tl = _g100.tl;
-  var today = _g100.today;
-  var toplevel63 = _g100["toplevel?"];
-  var unstash = _g100.unstash;
-  var write = _g100.write;
-  var write_file = _g100["write-file"];
+  var _g102 = nexus["lumen/runtime"];
+  var _37 = _g102["%"];
+  var _37message_handler = _g102["%message-handler"];
+  var _42 = _g102["*"];
+  var _43 = _g102["+"];
+  var _ = _g102["-"];
+  var _47 = _g102["/"];
+  var _60 = _g102["<"];
+  var _6061 = _g102["<="];
+  var _61 = _g102["="];
+  var _62 = _g102[">"];
+  var _6261 = _g102[">="];
+  var abs = _g102.abs;
+  var acos = _g102.acos;
+  var add = _g102.add;
+  var apply = _g102.apply;
+  var asin = _g102.asin;
+  var atan = _g102.atan;
+  var atan2 = _g102.atan2;
+  var atom63 = _g102["atom?"];
+  var boolean63 = _g102["boolean?"];
+  var cat = _g102.cat;
+  var ceil = _g102.ceil;
+  var char = _g102.char;
+  var code = _g102.code;
+  var composite63 = _g102["composite?"];
+  var cos = _g102.cos;
+  var drop = _g102.drop;
+  var empty63 = _g102["empty?"];
+  var exclude = _g102.exclude;
+  var exit = _g102.exit;
+  var extend = _g102.extend;
+  var find = _g102.find;
+  var flat = _g102.flat;
+  var flat1 = _g102.flat1;
+  var floor = _g102.floor;
+  var function63 = _g102["function?"];
+  var hd = _g102.hd;
+  var id_literal63 = _g102["id-literal?"];
+  var in63 = _g102["in?"];
+  var inner = _g102.inner;
+  var is63 = _g102["is?"];
+  var iterate = _g102.iterate;
+  var join = _g102.join;
+  var keep = _g102.keep;
+  var keys63 = _g102["keys?"];
+  var last = _g102.last;
+  var length = _g102.length;
+  var list63 = _g102["list?"];
+  var log = _g102.log;
+  var log10 = _g102.log10;
+  var make_id = _g102["make-id"];
+  var map = _g102.map;
+  var max = _g102.max;
+  var min = _g102.min;
+  var module = _g102.module;
+  var module_key = _g102["module-key"];
+  var nil63 = _g102["nil?"];
+  var none63 = _g102["none?"];
+  var now = _g102.now;
+  var number = _g102.number;
+  var number63 = _g102["number?"];
+  var one63 = _g102["one?"];
+  var pair = _g102.pair;
+  var pow = _g102.pow;
+  var random = _g102.random;
+  var read_file = _g102["read-file"];
+  var reduce = _g102.reduce;
+  var replicate = _g102.replicate;
+  var reverse = _g102.reverse;
+  var sd = _g102.sd;
+  var search = _g102.search;
+  var setenv = _g102.setenv;
+  var sin = _g102.sin;
+  var sinh = _g102.sinh;
+  var some63 = _g102["some?"];
+  var sort = _g102.sort;
+  var space = _g102.space;
+  var splice = _g102.splice;
+  var split = _g102.split;
+  var sqrt = _g102.sqrt;
+  var stash = _g102.stash;
+  var string = _g102.string;
+  var string_literal63 = _g102["string-literal?"];
+  var string63 = _g102["string?"];
+  var sub = _g102.sub;
+  var substring = _g102.substring;
+  var table63 = _g102["table?"];
+  var tan = _g102.tan;
+  var tanh = _g102.tanh;
+  var td = _g102.td;
+  var tl = _g102.tl;
+  var today = _g102.today;
+  var toplevel63 = _g102["toplevel?"];
+  var unstash = _g102.unstash;
+  var write = _g102.write;
+  var write_file = _g102["write-file"];
   var delimiters = {"(": true, ")": true, ";": true, "\n": true};
   nexus["lumen/reader"].delimiters = delimiters;
   var whitespace = {" ": true, "\n": true, "\t": true};
@@ -1565,7 +1577,10 @@ global.nexus = {};
   };
   nexus["lumen/reader"]["read-all"] = read_all;
   var read_from_string = function (str) {
-    return(read(make_stream(str)));
+    var x = read(make_stream(str));
+    if (x != eof) {
+      return(x);
+    }
   };
   nexus["lumen/reader"]["read-from-string"] = read_from_string;
   var key63 = function (atom) {
@@ -1708,197 +1723,197 @@ global.nexus = {};
 })();
 (function () {
   nexus["lumen/compiler"] = {};
-  var _g111 = nexus["lumen/runtime"];
-  var _37 = _g111["%"];
-  var _37message_handler = _g111["%message-handler"];
-  var _42 = _g111["*"];
-  var _43 = _g111["+"];
-  var _ = _g111["-"];
-  var _47 = _g111["/"];
-  var _60 = _g111["<"];
-  var _6061 = _g111["<="];
-  var _61 = _g111["="];
-  var _62 = _g111[">"];
-  var _6261 = _g111[">="];
-  var abs = _g111.abs;
-  var acos = _g111.acos;
-  var add = _g111.add;
-  var apply = _g111.apply;
-  var asin = _g111.asin;
-  var atan = _g111.atan;
-  var atan2 = _g111.atan2;
-  var atom63 = _g111["atom?"];
-  var boolean63 = _g111["boolean?"];
-  var cat = _g111.cat;
-  var ceil = _g111.ceil;
-  var char = _g111.char;
-  var code = _g111.code;
-  var composite63 = _g111["composite?"];
-  var cos = _g111.cos;
-  var drop = _g111.drop;
-  var empty63 = _g111["empty?"];
-  var exclude = _g111.exclude;
-  var exit = _g111.exit;
-  var extend = _g111.extend;
-  var find = _g111.find;
-  var flat = _g111.flat;
-  var flat1 = _g111.flat1;
-  var floor = _g111.floor;
-  var function63 = _g111["function?"];
-  var hd = _g111.hd;
-  var id_literal63 = _g111["id-literal?"];
-  var in63 = _g111["in?"];
-  var inner = _g111.inner;
-  var is63 = _g111["is?"];
-  var iterate = _g111.iterate;
-  var join = _g111.join;
-  var keep = _g111.keep;
-  var keys63 = _g111["keys?"];
-  var last = _g111.last;
-  var length = _g111.length;
-  var list63 = _g111["list?"];
-  var log = _g111.log;
-  var log10 = _g111.log10;
-  var make_id = _g111["make-id"];
-  var map = _g111.map;
-  var max = _g111.max;
-  var min = _g111.min;
-  var module = _g111.module;
-  var module_key = _g111["module-key"];
-  var nil63 = _g111["nil?"];
-  var none63 = _g111["none?"];
-  var now = _g111.now;
-  var number = _g111.number;
-  var number63 = _g111["number?"];
-  var one63 = _g111["one?"];
-  var pair = _g111.pair;
-  var pow = _g111.pow;
-  var random = _g111.random;
-  var read_file = _g111["read-file"];
-  var reduce = _g111.reduce;
-  var replicate = _g111.replicate;
-  var reverse = _g111.reverse;
-  var sd = _g111.sd;
-  var search = _g111.search;
-  var setenv = _g111.setenv;
-  var sin = _g111.sin;
-  var sinh = _g111.sinh;
-  var some63 = _g111["some?"];
-  var sort = _g111.sort;
-  var space = _g111.space;
-  var splice = _g111.splice;
-  var split = _g111.split;
-  var sqrt = _g111.sqrt;
-  var stash = _g111.stash;
-  var string = _g111.string;
-  var string_literal63 = _g111["string-literal?"];
-  var string63 = _g111["string?"];
-  var sub = _g111.sub;
-  var substring = _g111.substring;
-  var table63 = _g111["table?"];
-  var tan = _g111.tan;
-  var tanh = _g111.tanh;
-  var td = _g111.td;
-  var tl = _g111.tl;
-  var today = _g111.today;
-  var toplevel63 = _g111["toplevel?"];
-  var unstash = _g111.unstash;
-  var write = _g111.write;
-  var write_file = _g111["write-file"];
-  var _g114 = nexus["lumen/utilities"];
-  var bind = _g114.bind;
-  var bind42 = _g114["bind*"];
-  var bound63 = _g114["bound?"];
-  var getenv = _g114.getenv;
-  var id = _g114.id;
-  var imported = _g114.imported;
-  var indentation = _g114.indentation;
-  var initial_environment = _g114["initial-environment"];
-  var linked = _g114.linked;
-  var macro_function = _g114["macro-function"];
-  var macro63 = _g114["macro?"];
-  var macroexpand = _g114.macroexpand;
-  var mapo = _g114.mapo;
-  var quasiexpand = _g114.quasiexpand;
-  var quote_environment = _g114["quote-environment"];
-  var quote_modules = _g114["quote-modules"];
-  var quoted = _g114.quoted;
-  var reserved63 = _g114["reserved?"];
-  var sortk = _g114.sortk;
-  var special_form63 = _g114["special-form?"];
-  var special63 = _g114["special?"];
-  var stash42 = _g114["stash*"];
-  var statement63 = _g114["statement?"];
-  var symbol_expansion = _g114["symbol-expansion"];
-  var symbol63 = _g114["symbol?"];
-  var valid_id63 = _g114["valid-id?"];
-  var variable63 = _g114["variable?"];
-  var _g115 = nexus["lumen/reader"];
-  var make_stream = _g115["make-stream"];
-  var read = _g115.read;
-  var read_all = _g115["read-all"];
-  var read_from_string = _g115["read-from-string"];
-  var read_table = _g115["read-table"];
+  var _g113 = nexus["lumen/runtime"];
+  var _37 = _g113["%"];
+  var _37message_handler = _g113["%message-handler"];
+  var _42 = _g113["*"];
+  var _43 = _g113["+"];
+  var _ = _g113["-"];
+  var _47 = _g113["/"];
+  var _60 = _g113["<"];
+  var _6061 = _g113["<="];
+  var _61 = _g113["="];
+  var _62 = _g113[">"];
+  var _6261 = _g113[">="];
+  var abs = _g113.abs;
+  var acos = _g113.acos;
+  var add = _g113.add;
+  var apply = _g113.apply;
+  var asin = _g113.asin;
+  var atan = _g113.atan;
+  var atan2 = _g113.atan2;
+  var atom63 = _g113["atom?"];
+  var boolean63 = _g113["boolean?"];
+  var cat = _g113.cat;
+  var ceil = _g113.ceil;
+  var char = _g113.char;
+  var code = _g113.code;
+  var composite63 = _g113["composite?"];
+  var cos = _g113.cos;
+  var drop = _g113.drop;
+  var empty63 = _g113["empty?"];
+  var exclude = _g113.exclude;
+  var exit = _g113.exit;
+  var extend = _g113.extend;
+  var find = _g113.find;
+  var flat = _g113.flat;
+  var flat1 = _g113.flat1;
+  var floor = _g113.floor;
+  var function63 = _g113["function?"];
+  var hd = _g113.hd;
+  var id_literal63 = _g113["id-literal?"];
+  var in63 = _g113["in?"];
+  var inner = _g113.inner;
+  var is63 = _g113["is?"];
+  var iterate = _g113.iterate;
+  var join = _g113.join;
+  var keep = _g113.keep;
+  var keys63 = _g113["keys?"];
+  var last = _g113.last;
+  var length = _g113.length;
+  var list63 = _g113["list?"];
+  var log = _g113.log;
+  var log10 = _g113.log10;
+  var make_id = _g113["make-id"];
+  var map = _g113.map;
+  var max = _g113.max;
+  var min = _g113.min;
+  var module = _g113.module;
+  var module_key = _g113["module-key"];
+  var nil63 = _g113["nil?"];
+  var none63 = _g113["none?"];
+  var now = _g113.now;
+  var number = _g113.number;
+  var number63 = _g113["number?"];
+  var one63 = _g113["one?"];
+  var pair = _g113.pair;
+  var pow = _g113.pow;
+  var random = _g113.random;
+  var read_file = _g113["read-file"];
+  var reduce = _g113.reduce;
+  var replicate = _g113.replicate;
+  var reverse = _g113.reverse;
+  var sd = _g113.sd;
+  var search = _g113.search;
+  var setenv = _g113.setenv;
+  var sin = _g113.sin;
+  var sinh = _g113.sinh;
+  var some63 = _g113["some?"];
+  var sort = _g113.sort;
+  var space = _g113.space;
+  var splice = _g113.splice;
+  var split = _g113.split;
+  var sqrt = _g113.sqrt;
+  var stash = _g113.stash;
+  var string = _g113.string;
+  var string_literal63 = _g113["string-literal?"];
+  var string63 = _g113["string?"];
+  var sub = _g113.sub;
+  var substring = _g113.substring;
+  var table63 = _g113["table?"];
+  var tan = _g113.tan;
+  var tanh = _g113.tanh;
+  var td = _g113.td;
+  var tl = _g113.tl;
+  var today = _g113.today;
+  var toplevel63 = _g113["toplevel?"];
+  var unstash = _g113.unstash;
+  var write = _g113.write;
+  var write_file = _g113["write-file"];
+  var _g116 = nexus["lumen/utilities"];
+  var bind = _g116.bind;
+  var bind42 = _g116["bind*"];
+  var bound63 = _g116["bound?"];
+  var getenv = _g116.getenv;
+  var id = _g116.id;
+  var imported = _g116.imported;
+  var indentation = _g116.indentation;
+  var initial_environment = _g116["initial-environment"];
+  var linked = _g116.linked;
+  var macro_function = _g116["macro-function"];
+  var macro63 = _g116["macro?"];
+  var macroexpand = _g116.macroexpand;
+  var mapo = _g116.mapo;
+  var quasiexpand = _g116.quasiexpand;
+  var quote_environment = _g116["quote-environment"];
+  var quote_modules = _g116["quote-modules"];
+  var quoted = _g116.quoted;
+  var reserved63 = _g116["reserved?"];
+  var sortk = _g116.sortk;
+  var special_form63 = _g116["special-form?"];
+  var special63 = _g116["special?"];
+  var stash42 = _g116["stash*"];
+  var statement63 = _g116["statement?"];
+  var symbol_expansion = _g116["symbol-expansion"];
+  var symbol63 = _g116["symbol?"];
+  var valid_id63 = _g116["valid-id?"];
+  var variable63 = _g116["variable?"];
+  var _g117 = nexus["lumen/reader"];
+  var make_stream = _g117["make-stream"];
+  var read = _g117.read;
+  var read_all = _g117["read-all"];
+  var read_from_string = _g117["read-from-string"];
+  var read_table = _g117["read-table"];
+  var _g121 = [];
+  _g121.js = "!";
+  _g121.lua = "not ";
   var _g119 = [];
-  _g119.js = "!";
-  _g119.lua = "not ";
-  var _g117 = [];
-  var _g120 = [];
-  _g120.js = "!";
-  _g120.lua = "not ";
-  _g117["not"] = _g120;
   var _g122 = [];
-  _g122["%"] = true;
-  _g122["*"] = true;
-  _g122["/"] = true;
+  _g122.js = "!";
+  _g122.lua = "not ";
+  _g119["not"] = _g122;
   var _g124 = [];
-  _g124["+"] = true;
-  _g124["-"] = true;
-  var _g128 = [];
-  _g128.js = "+";
-  _g128.lua = "..";
+  _g124["%"] = true;
+  _g124["*"] = true;
+  _g124["/"] = true;
   var _g126 = [];
-  var _g129 = [];
-  _g129.js = "+";
-  _g129.lua = "..";
-  _g126.cat = _g129;
+  _g126["+"] = true;
+  _g126["-"] = true;
+  var _g130 = [];
+  _g130.js = "+";
+  _g130.lua = "..";
+  var _g128 = [];
   var _g131 = [];
-  _g131["<"] = true;
-  _g131["<="] = true;
-  _g131[">"] = true;
-  _g131[">="] = true;
-  var _g137 = [];
-  _g137.js = "!=";
-  _g137.lua = "~=";
-  var _g135 = [];
-  _g135.js = "===";
-  _g135.lua = "==";
+  _g131.js = "+";
+  _g131.lua = "..";
+  _g128.cat = _g131;
   var _g133 = [];
-  var _g138 = [];
-  _g138.js = "===";
-  _g138.lua = "==";
-  _g133["="] = _g138;
+  _g133["<"] = true;
+  _g133["<="] = true;
+  _g133[">"] = true;
+  _g133[">="] = true;
+  var _g137 = [];
+  _g137.js = "===";
+  _g137.lua = "==";
   var _g139 = [];
   _g139.js = "!=";
   _g139.lua = "~=";
-  _g133["~="] = _g139;
-  var _g143 = [];
-  _g143.js = "&&";
-  _g143.lua = "and";
+  var _g135 = [];
+  var _g140 = [];
+  _g140.js = "===";
+  _g140.lua = "==";
+  _g135["="] = _g140;
   var _g141 = [];
-  var _g144 = [];
-  _g144.js = "&&";
-  _g144.lua = "and";
-  _g141["and"] = _g144;
-  var _g148 = [];
-  _g148.js = "||";
-  _g148.lua = "or";
+  _g141.js = "!=";
+  _g141.lua = "~=";
+  _g135["~="] = _g141;
+  var _g145 = [];
+  _g145.js = "&&";
+  _g145.lua = "and";
+  var _g143 = [];
   var _g146 = [];
-  var _g149 = [];
-  _g149.js = "||";
-  _g149.lua = "or";
-  _g146["or"] = _g149;
-  var infix = [_g117, _g122, _g124, _g126, _g131, _g133, _g141, _g146];
+  _g146.js = "&&";
+  _g146.lua = "and";
+  _g143["and"] = _g146;
+  var _g150 = [];
+  _g150.js = "||";
+  _g150.lua = "or";
+  var _g148 = [];
+  var _g151 = [];
+  _g151.js = "||";
+  _g151.lua = "or";
+  _g148["or"] = _g151;
+  var infix = [_g119, _g124, _g126, _g128, _g133, _g135, _g143, _g148];
   nexus["lumen/compiler"].infix = infix;
   var unary63 = function (form) {
     var op = form[0];
@@ -1908,10 +1923,10 @@ global.nexus = {};
   nexus["lumen/compiler"]["unary?"] = unary63;
   var precedence = function (form) {
     if (list63(form) && !unary63(form)) {
-      var _g150 = infix;
+      var _g152 = infix;
       var i = 0;
-      while (i < length(_g150)) {
-        var level = _g150[i];
+      while (i < length(_g152)) {
+        var level = _g152[i];
         if (level[hd(form)]) {
           return(i);
         }
@@ -1942,10 +1957,10 @@ global.nexus = {};
   nexus["lumen/compiler"].compile = compile;
   var compile_args = function (args) {
     var str = "(";
-    var _g151 = args;
+    var _g153 = args;
     var i = 0;
-    while (i < length(_g151)) {
-      var arg = _g151[i];
+    while (i < length(_g153)) {
+      var arg = _g153[i];
       str = str + compile(arg);
       if (i < length(args) - 1) {
         str = str + ", ";
@@ -2006,10 +2021,10 @@ global.nexus = {};
   var compile_special = function (form, stmt63) {
     var x = form[0];
     var args = sub(form, 1);
-    var _g152 = getenv(x);
-    var stmt = _g152.stmt;
-    var special = _g152.special;
-    var self_tr63 = _g152.tr;
+    var _g154 = getenv(x);
+    var special = _g154.special;
+    var stmt = _g154.stmt;
+    var self_tr63 = _g154.tr;
     var tr = terminator(stmt63 && !self_tr63);
     return(apply(special, args) + tr);
   };
@@ -2030,15 +2045,15 @@ global.nexus = {};
   };
   nexus["lumen/compiler"]["compile-call"] = compile_call;
   var op_delims = function (parent, child) {
-    var _g153 = unstash(Array.prototype.slice.call(arguments, 2));
-    var right = _g153.right;
-    var _g180;
+    var _g155 = unstash(Array.prototype.slice.call(arguments, 2));
+    var right = _g155.right;
+    var _g182;
     if (right) {
-      _g180 = _6261;
+      _g182 = _6261;
     } else {
-      _g180 = _62;
+      _g182 = _62;
     }
-    if (_g180(precedence(child), precedence(parent))) {
+    if (_g182(precedence(child), precedence(parent))) {
       return(["(", ")"]);
     } else {
       return(["", ""]);
@@ -2047,57 +2062,57 @@ global.nexus = {};
   nexus["lumen/compiler"]["op-delims"] = op_delims;
   var compile_infix = function (form) {
     var op = form[0];
-    var _g154 = sub(form, 1);
-    var a = _g154[0];
-    var b = _g154[1];
-    var _g155 = op_delims(form, a);
-    var ao = _g155[0];
-    var ac = _g155[1];
-    var _g156 = op_delims(form, b, {_stash: true, right: true});
-    var bo = _g156[0];
-    var bc = _g156[1];
-    var _g157 = compile(a);
-    var _g158 = compile(b);
-    var _g159 = getop(op);
+    var _g156 = sub(form, 1);
+    var a = _g156[0];
+    var b = _g156[1];
+    var _g157 = op_delims(form, a);
+    var ao = _g157[0];
+    var ac = _g157[1];
+    var _g158 = op_delims(form, b, {_stash: true, right: true});
+    var bo = _g158[0];
+    var bc = _g158[1];
+    var _g159 = compile(a);
+    var _g160 = compile(b);
+    var _g161 = getop(op);
     if (unary63(form)) {
-      return(_g159 + ao + _g157 + ac);
+      return(_g161 + ao + _g159 + ac);
     } else {
-      return(ao + _g157 + ac + " " + _g159 + " " + bo + _g158 + bc);
+      return(ao + _g159 + ac + " " + _g161 + " " + bo + _g160 + bc);
     }
   };
   nexus["lumen/compiler"]["compile-infix"] = compile_infix;
   var compile_function = function (args, body) {
-    var _g160 = unstash(Array.prototype.slice.call(arguments, 2));
-    var prefix = _g160.prefix;
-    var name = _g160.name;
-    var _g181;
+    var _g162 = unstash(Array.prototype.slice.call(arguments, 2));
+    var name = _g162.name;
+    var prefix = _g162.prefix;
+    var _g183;
     if (name) {
-      _g181 = compile(name);
+      _g183 = compile(name);
     } else {
-      _g181 = "";
+      _g183 = "";
     }
-    var id = _g181;
-    var _g161 = prefix || "";
-    var _g162 = compile_args(args);
+    var id = _g183;
+    var _g163 = prefix || "";
+    var _g164 = compile_args(args);
     indent_level = indent_level + 1;
-    var _g164 = compile(body, {_stash: true, stmt: true});
+    var _g166 = compile(body, {_stash: true, stmt: true});
     indent_level = indent_level - 1;
-    var _g163 = _g164;
+    var _g165 = _g166;
     var ind = indentation();
-    var _g182;
+    var _g184;
     if (target === "js") {
-      _g182 = "";
+      _g184 = "";
     } else {
-      _g182 = "end";
+      _g184 = "end";
     }
-    var tr = _g182;
+    var tr = _g184;
     if (name) {
       tr = tr + "\n";
     }
     if (target === "js") {
-      return("function " + id + _g162 + " {\n" + _g163 + ind + "}" + tr);
+      return("function " + id + _g164 + " {\n" + _g165 + ind + "}" + tr);
     } else {
-      return(_g161 + "function " + id + _g162 + "\n" + _g163 + ind + tr);
+      return(_g163 + "function " + id + _g164 + "\n" + _g165 + ind + tr);
     }
   };
   nexus["lumen/compiler"]["compile-function"] = compile_function;
@@ -2106,8 +2121,8 @@ global.nexus = {};
   };
   nexus["lumen/compiler"]["can-return?"] = can_return63;
   compile = function (form) {
-    var _g165 = unstash(Array.prototype.slice.call(arguments, 1));
-    var stmt = _g165.stmt;
+    var _g167 = unstash(Array.prototype.slice.call(arguments, 1));
+    var stmt = _g167.stmt;
     if (nil63(form)) {
       return("");
     } else {
@@ -2115,27 +2130,27 @@ global.nexus = {};
         return(compile_special(form, stmt));
       } else {
         var tr = terminator(stmt);
-        var _g183;
+        var _g185;
         if (stmt) {
-          _g183 = indentation();
+          _g185 = indentation();
         } else {
-          _g183 = "";
+          _g185 = "";
         }
-        var ind = _g183;
-        var _g184;
+        var ind = _g185;
+        var _g186;
         if (atom63(form)) {
-          _g184 = compile_atom(form);
+          _g186 = compile_atom(form);
         } else {
-          var _g185;
+          var _g187;
           if (infix63(hd(form))) {
-            _g185 = compile_infix(form);
+            _g187 = compile_infix(form);
           } else {
-            _g185 = compile_call(form);
+            _g187 = compile_call(form);
           }
-          _g184 = _g185;
+          _g186 = _g187;
         }
-        var _g166 = _g184;
-        return(ind + _g166 + tr);
+        var _g168 = _g186;
+        return(ind + _g168 + tr);
       }
     }
   };
@@ -2165,12 +2180,12 @@ global.nexus = {};
   };
   nexus["lumen/compiler"]["lower-body"] = lower_body;
   var lower_do = function (args, hoist, stmt63, tail63) {
-    var _g167 = sub(args, 0, length(args) - 1);
-    var _g168 = 0;
-    while (_g168 < length(_g167)) {
-      var x = _g167[_g168];
+    var _g169 = sub(args, 0, length(args) - 1);
+    var _g170 = 0;
+    while (_g170 < length(_g169)) {
+      var x = _g169[_g170];
       add(hoist, lower(x, hoist, stmt63));
-      _g168 = _g168 + 1;
+      _g170 = _g170 + 1;
     }
     var e = lower(last(args), hoist, stmt63, tail63);
     if (tail63 && can_return63(e)) {
@@ -2182,22 +2197,22 @@ global.nexus = {};
   nexus["lumen/compiler"]["lower-do"] = lower_do;
   var lower_if = function (args, hoist, stmt63, tail63) {
     var cond = args[0];
-    var _g169 = args[1];
-    var _g170 = args[2];
+    var _g171 = args[1];
+    var _g172 = args[2];
     if (stmt63 || tail63) {
-      var _g187;
-      if (_g170) {
-        _g187 = [lower_body([_g170], tail63)];
+      var _g189;
+      if (_g172) {
+        _g189 = [lower_body([_g172], tail63)];
       }
-      return(add(hoist, join(["%if", lower(cond, hoist), lower_body([_g169], tail63)], _g187)));
+      return(add(hoist, join(["%if", lower(cond, hoist), lower_body([_g171], tail63)], _g189)));
     } else {
       var e = make_id();
       add(hoist, ["%local", e]);
-      var _g186;
-      if (_g170) {
-        _g186 = [lower(["set", e, _g170])];
+      var _g188;
+      if (_g172) {
+        _g188 = [lower(["set", e, _g172])];
       }
-      add(hoist, join(["%if", lower(cond, hoist), lower(["set", e, _g169])], _g186));
+      add(hoist, join(["%if", lower(cond, hoist), lower(["set", e, _g171])], _g188));
       return(e);
     }
   };
@@ -2209,13 +2224,13 @@ global.nexus = {};
     var b1 = lower(b, hoist1);
     if (some63(hoist1)) {
       var id = make_id();
-      var _g188;
+      var _g190;
       if (x === "and") {
-        _g188 = ["%if", id, b, id];
+        _g190 = ["%if", id, b, id];
       } else {
-        _g188 = ["%if", id, id, b];
+        _g190 = ["%if", id, id, b];
       }
-      return(lower(["do", ["%local", id, a], _g188], hoist));
+      return(lower(["do", ["%local", id, a], _g190], hoist));
     } else {
       return([x, lower(a, hoist), b1]);
     }
@@ -2246,17 +2261,17 @@ global.nexus = {};
   nexus["lumen/compiler"]["lower-function"] = lower_function;
   var lower_definition = function (kind, args, hoist) {
     var name = args[0];
-    var _g171 = args[1];
+    var _g173 = args[1];
     var body = sub(args, 2);
-    return(add(hoist, [kind, name, _g171, lower_body(body, true)]));
+    return(add(hoist, [kind, name, _g173, lower_body(body, true)]));
   };
   nexus["lumen/compiler"]["lower-definition"] = lower_definition;
   var lower_call = function (form, hoist) {
-    var _g172 = map(function (x) {
+    var _g174 = map(function (x) {
       return(lower(x, hoist));
     }, form);
-    if (some63(_g172)) {
-      return(_g172);
+    if (some63(_g174)) {
+      return(_g174);
     }
   };
   nexus["lumen/compiler"]["lower-call"] = lower_call;
@@ -2386,15 +2401,15 @@ global.nexus = {};
   };
   nexus["lumen/compiler"]["%compile-module"] = _37compile_module;
   var open_module = function (spec) {
-    var _g173 = unstash(Array.prototype.slice.call(arguments, 1));
-    var all = _g173.all;
+    var _g175 = unstash(Array.prototype.slice.call(arguments, 1));
+    var all = _g175.all;
     var m = module(spec);
     var frame = last(environment);
-    var _g174 = m.export;
+    var _g176 = m.export;
     var k = undefined;
-    for (k in _g174) {
+    for (k in _g176) {
       if (isNaN(parseInt(k))) {
-        var v = _g174[k];
+        var v = _g176[k];
         if (v.export || all) {
           frame[k] = v;
         }
@@ -2403,8 +2418,8 @@ global.nexus = {};
   };
   nexus["lumen/compiler"]["open-module"] = open_module;
   var load_module = function (spec) {
-    var _g175 = unstash(Array.prototype.slice.call(arguments, 1));
-    var all = _g175.all;
+    var _g177 = unstash(Array.prototype.slice.call(arguments, 1));
+    var all = _g177.all;
     if (!module(spec)) {
       _37compile_module(spec);
     }
@@ -2421,24 +2436,24 @@ global.nexus = {};
   var import_modules = function (specs) {
     var imports = [];
     var bindings = [];
-    var _g176 = specs || [];
-    var _g177 = 0;
-    while (_g177 < length(_g176)) {
-      var spec = _g176[_g177];
+    var _g178 = specs || [];
+    var _g179 = 0;
+    while (_g179 < length(_g178)) {
+      var spec = _g178[_g179];
       load_module(spec);
       var m = module(spec);
       if (m.alias) {
-        var _g178 = import_modules(m.alias);
-        var aliased = _g178[0];
-        var bs = _g178[1];
+        var _g180 = import_modules(m.alias);
+        var aliased = _g180[0];
+        var bs = _g180[1];
         imports = join(imports, aliased);
         bindings = join(bindings, bs);
       } else {
-        var _g179 = imported(spec);
+        var _g181 = imported(spec);
         add(imports, spec);
-        bindings = join(bindings, _g179);
+        bindings = join(bindings, _g181);
       }
-      _g177 = _g177 + 1;
+      _g179 = _g179 + 1;
     }
     return([imports, bindings]);
   };
@@ -2474,418 +2489,418 @@ global.nexus = {};
 })();
 (function () {
   nexus["lumen/special"] = {};
-  var _g189 = nexus["lumen/runtime"];
-  var _37 = _g189["%"];
-  var _37message_handler = _g189["%message-handler"];
-  var _42 = _g189["*"];
-  var _43 = _g189["+"];
-  var _ = _g189["-"];
-  var _47 = _g189["/"];
-  var _60 = _g189["<"];
-  var _6061 = _g189["<="];
-  var _61 = _g189["="];
-  var _62 = _g189[">"];
-  var _6261 = _g189[">="];
-  var abs = _g189.abs;
-  var acos = _g189.acos;
-  var add = _g189.add;
-  var apply = _g189.apply;
-  var asin = _g189.asin;
-  var atan = _g189.atan;
-  var atan2 = _g189.atan2;
-  var atom63 = _g189["atom?"];
-  var boolean63 = _g189["boolean?"];
-  var cat = _g189.cat;
-  var ceil = _g189.ceil;
-  var char = _g189.char;
-  var code = _g189.code;
-  var composite63 = _g189["composite?"];
-  var cos = _g189.cos;
-  var drop = _g189.drop;
-  var empty63 = _g189["empty?"];
-  var exclude = _g189.exclude;
-  var exit = _g189.exit;
-  var extend = _g189.extend;
-  var find = _g189.find;
-  var flat = _g189.flat;
-  var flat1 = _g189.flat1;
-  var floor = _g189.floor;
-  var function63 = _g189["function?"];
-  var hd = _g189.hd;
-  var id_literal63 = _g189["id-literal?"];
-  var in63 = _g189["in?"];
-  var inner = _g189.inner;
-  var is63 = _g189["is?"];
-  var iterate = _g189.iterate;
-  var join = _g189.join;
-  var keep = _g189.keep;
-  var keys63 = _g189["keys?"];
-  var last = _g189.last;
-  var length = _g189.length;
-  var list63 = _g189["list?"];
-  var log = _g189.log;
-  var log10 = _g189.log10;
-  var make_id = _g189["make-id"];
-  var map = _g189.map;
-  var max = _g189.max;
-  var min = _g189.min;
-  var module = _g189.module;
-  var module_key = _g189["module-key"];
-  var nil63 = _g189["nil?"];
-  var none63 = _g189["none?"];
-  var now = _g189.now;
-  var number = _g189.number;
-  var number63 = _g189["number?"];
-  var one63 = _g189["one?"];
-  var pair = _g189.pair;
-  var pow = _g189.pow;
-  var random = _g189.random;
-  var read_file = _g189["read-file"];
-  var reduce = _g189.reduce;
-  var replicate = _g189.replicate;
-  var reverse = _g189.reverse;
-  var sd = _g189.sd;
-  var search = _g189.search;
-  var setenv = _g189.setenv;
-  var sin = _g189.sin;
-  var sinh = _g189.sinh;
-  var some63 = _g189["some?"];
-  var sort = _g189.sort;
-  var space = _g189.space;
-  var splice = _g189.splice;
-  var split = _g189.split;
-  var sqrt = _g189.sqrt;
-  var stash = _g189.stash;
-  var string = _g189.string;
-  var string_literal63 = _g189["string-literal?"];
-  var string63 = _g189["string?"];
-  var sub = _g189.sub;
-  var substring = _g189.substring;
-  var table63 = _g189["table?"];
-  var tan = _g189.tan;
-  var tanh = _g189.tanh;
-  var td = _g189.td;
-  var tl = _g189.tl;
-  var today = _g189.today;
-  var toplevel63 = _g189["toplevel?"];
-  var unstash = _g189.unstash;
-  var write = _g189.write;
-  var write_file = _g189["write-file"];
-  var _g192 = nexus["lumen/utilities"];
-  var bind = _g192.bind;
-  var bind42 = _g192["bind*"];
-  var bound63 = _g192["bound?"];
-  var getenv = _g192.getenv;
-  var id = _g192.id;
-  var imported = _g192.imported;
-  var indentation = _g192.indentation;
-  var initial_environment = _g192["initial-environment"];
-  var linked = _g192.linked;
-  var macro_function = _g192["macro-function"];
-  var macro63 = _g192["macro?"];
-  var macroexpand = _g192.macroexpand;
-  var mapo = _g192.mapo;
-  var quasiexpand = _g192.quasiexpand;
-  var quote_environment = _g192["quote-environment"];
-  var quote_modules = _g192["quote-modules"];
-  var quoted = _g192.quoted;
-  var reserved63 = _g192["reserved?"];
-  var sortk = _g192.sortk;
-  var special_form63 = _g192["special-form?"];
-  var special63 = _g192["special?"];
-  var stash42 = _g192["stash*"];
-  var statement63 = _g192["statement?"];
-  var symbol_expansion = _g192["symbol-expansion"];
-  var symbol63 = _g192["symbol?"];
-  var valid_id63 = _g192["valid-id?"];
-  var variable63 = _g192["variable?"];
-  var _g193 = nexus["lumen/compiler"];
-  var compile = _g193.compile;
-  var compile_function = _g193["compile-function"];
-  var compile_module = _g193["compile-module"];
-  var declare = _g193.declare;
-  var eval = _g193.eval;
-  var import_modules = _g193["import-modules"];
-  var in_module = _g193["in-module"];
-  var load_module = _g193["load-module"];
-  var open_module = _g193["open-module"];
+  var _g191 = nexus["lumen/runtime"];
+  var _37 = _g191["%"];
+  var _37message_handler = _g191["%message-handler"];
+  var _42 = _g191["*"];
+  var _43 = _g191["+"];
+  var _ = _g191["-"];
+  var _47 = _g191["/"];
+  var _60 = _g191["<"];
+  var _6061 = _g191["<="];
+  var _61 = _g191["="];
+  var _62 = _g191[">"];
+  var _6261 = _g191[">="];
+  var abs = _g191.abs;
+  var acos = _g191.acos;
+  var add = _g191.add;
+  var apply = _g191.apply;
+  var asin = _g191.asin;
+  var atan = _g191.atan;
+  var atan2 = _g191.atan2;
+  var atom63 = _g191["atom?"];
+  var boolean63 = _g191["boolean?"];
+  var cat = _g191.cat;
+  var ceil = _g191.ceil;
+  var char = _g191.char;
+  var code = _g191.code;
+  var composite63 = _g191["composite?"];
+  var cos = _g191.cos;
+  var drop = _g191.drop;
+  var empty63 = _g191["empty?"];
+  var exclude = _g191.exclude;
+  var exit = _g191.exit;
+  var extend = _g191.extend;
+  var find = _g191.find;
+  var flat = _g191.flat;
+  var flat1 = _g191.flat1;
+  var floor = _g191.floor;
+  var function63 = _g191["function?"];
+  var hd = _g191.hd;
+  var id_literal63 = _g191["id-literal?"];
+  var in63 = _g191["in?"];
+  var inner = _g191.inner;
+  var is63 = _g191["is?"];
+  var iterate = _g191.iterate;
+  var join = _g191.join;
+  var keep = _g191.keep;
+  var keys63 = _g191["keys?"];
+  var last = _g191.last;
+  var length = _g191.length;
+  var list63 = _g191["list?"];
+  var log = _g191.log;
+  var log10 = _g191.log10;
+  var make_id = _g191["make-id"];
+  var map = _g191.map;
+  var max = _g191.max;
+  var min = _g191.min;
+  var module = _g191.module;
+  var module_key = _g191["module-key"];
+  var nil63 = _g191["nil?"];
+  var none63 = _g191["none?"];
+  var now = _g191.now;
+  var number = _g191.number;
+  var number63 = _g191["number?"];
+  var one63 = _g191["one?"];
+  var pair = _g191.pair;
+  var pow = _g191.pow;
+  var random = _g191.random;
+  var read_file = _g191["read-file"];
+  var reduce = _g191.reduce;
+  var replicate = _g191.replicate;
+  var reverse = _g191.reverse;
+  var sd = _g191.sd;
+  var search = _g191.search;
+  var setenv = _g191.setenv;
+  var sin = _g191.sin;
+  var sinh = _g191.sinh;
+  var some63 = _g191["some?"];
+  var sort = _g191.sort;
+  var space = _g191.space;
+  var splice = _g191.splice;
+  var split = _g191.split;
+  var sqrt = _g191.sqrt;
+  var stash = _g191.stash;
+  var string = _g191.string;
+  var string_literal63 = _g191["string-literal?"];
+  var string63 = _g191["string?"];
+  var sub = _g191.sub;
+  var substring = _g191.substring;
+  var table63 = _g191["table?"];
+  var tan = _g191.tan;
+  var tanh = _g191.tanh;
+  var td = _g191.td;
+  var tl = _g191.tl;
+  var today = _g191.today;
+  var toplevel63 = _g191["toplevel?"];
+  var unstash = _g191.unstash;
+  var write = _g191.write;
+  var write_file = _g191["write-file"];
+  var _g194 = nexus["lumen/utilities"];
+  var bind = _g194.bind;
+  var bind42 = _g194["bind*"];
+  var bound63 = _g194["bound?"];
+  var getenv = _g194.getenv;
+  var id = _g194.id;
+  var imported = _g194.imported;
+  var indentation = _g194.indentation;
+  var initial_environment = _g194["initial-environment"];
+  var linked = _g194.linked;
+  var macro_function = _g194["macro-function"];
+  var macro63 = _g194["macro?"];
+  var macroexpand = _g194.macroexpand;
+  var mapo = _g194.mapo;
+  var quasiexpand = _g194.quasiexpand;
+  var quote_environment = _g194["quote-environment"];
+  var quote_modules = _g194["quote-modules"];
+  var quoted = _g194.quoted;
+  var reserved63 = _g194["reserved?"];
+  var sortk = _g194.sortk;
+  var special_form63 = _g194["special-form?"];
+  var special63 = _g194["special?"];
+  var stash42 = _g194["stash*"];
+  var statement63 = _g194["statement?"];
+  var symbol_expansion = _g194["symbol-expansion"];
+  var symbol63 = _g194["symbol?"];
+  var valid_id63 = _g194["valid-id?"];
+  var variable63 = _g194["variable?"];
+  var _g195 = nexus["lumen/compiler"];
+  var compile = _g195.compile;
+  var compile_function = _g195["compile-function"];
+  var compile_module = _g195["compile-module"];
+  var declare = _g195.declare;
+  var eval = _g195.eval;
+  var import_modules = _g195["import-modules"];
+  var in_module = _g195["in-module"];
+  var load_module = _g195["load-module"];
+  var open_module = _g195["open-module"];
 })();
 (function () {
   nexus["lumen/core"] = {};
-  var _g373 = nexus["lumen/runtime"];
-  var _37 = _g373["%"];
-  var _37message_handler = _g373["%message-handler"];
-  var _42 = _g373["*"];
-  var _43 = _g373["+"];
-  var _ = _g373["-"];
-  var _47 = _g373["/"];
-  var _60 = _g373["<"];
-  var _6061 = _g373["<="];
-  var _61 = _g373["="];
-  var _62 = _g373[">"];
-  var _6261 = _g373[">="];
-  var abs = _g373.abs;
-  var acos = _g373.acos;
-  var add = _g373.add;
-  var apply = _g373.apply;
-  var asin = _g373.asin;
-  var atan = _g373.atan;
-  var atan2 = _g373.atan2;
-  var atom63 = _g373["atom?"];
-  var boolean63 = _g373["boolean?"];
-  var cat = _g373.cat;
-  var ceil = _g373.ceil;
-  var char = _g373.char;
-  var code = _g373.code;
-  var composite63 = _g373["composite?"];
-  var cos = _g373.cos;
-  var drop = _g373.drop;
-  var empty63 = _g373["empty?"];
-  var exclude = _g373.exclude;
-  var exit = _g373.exit;
-  var extend = _g373.extend;
-  var find = _g373.find;
-  var flat = _g373.flat;
-  var flat1 = _g373.flat1;
-  var floor = _g373.floor;
-  var function63 = _g373["function?"];
-  var hd = _g373.hd;
-  var id_literal63 = _g373["id-literal?"];
-  var in63 = _g373["in?"];
-  var inner = _g373.inner;
-  var is63 = _g373["is?"];
-  var iterate = _g373.iterate;
-  var join = _g373.join;
-  var keep = _g373.keep;
-  var keys63 = _g373["keys?"];
-  var last = _g373.last;
-  var length = _g373.length;
-  var list63 = _g373["list?"];
-  var log = _g373.log;
-  var log10 = _g373.log10;
-  var make_id = _g373["make-id"];
-  var map = _g373.map;
-  var max = _g373.max;
-  var min = _g373.min;
-  var module = _g373.module;
-  var module_key = _g373["module-key"];
-  var nil63 = _g373["nil?"];
-  var none63 = _g373["none?"];
-  var now = _g373.now;
-  var number = _g373.number;
-  var number63 = _g373["number?"];
-  var one63 = _g373["one?"];
-  var pair = _g373.pair;
-  var pow = _g373.pow;
-  var random = _g373.random;
-  var read_file = _g373["read-file"];
-  var reduce = _g373.reduce;
-  var replicate = _g373.replicate;
-  var reverse = _g373.reverse;
-  var sd = _g373.sd;
-  var search = _g373.search;
-  var setenv = _g373.setenv;
-  var sin = _g373.sin;
-  var sinh = _g373.sinh;
-  var some63 = _g373["some?"];
-  var sort = _g373.sort;
-  var space = _g373.space;
-  var splice = _g373.splice;
-  var split = _g373.split;
-  var sqrt = _g373.sqrt;
-  var stash = _g373.stash;
-  var string = _g373.string;
-  var string_literal63 = _g373["string-literal?"];
-  var string63 = _g373["string?"];
-  var sub = _g373.sub;
-  var substring = _g373.substring;
-  var table63 = _g373["table?"];
-  var tan = _g373.tan;
-  var tanh = _g373.tanh;
-  var td = _g373.td;
-  var tl = _g373.tl;
-  var today = _g373.today;
-  var toplevel63 = _g373["toplevel?"];
-  var unstash = _g373.unstash;
-  var write = _g373.write;
-  var write_file = _g373["write-file"];
-  var _g376 = nexus["lumen/utilities"];
-  var bind = _g376.bind;
-  var bind42 = _g376["bind*"];
-  var bound63 = _g376["bound?"];
-  var getenv = _g376.getenv;
-  var id = _g376.id;
-  var imported = _g376.imported;
-  var indentation = _g376.indentation;
-  var initial_environment = _g376["initial-environment"];
-  var linked = _g376.linked;
-  var macro_function = _g376["macro-function"];
-  var macro63 = _g376["macro?"];
-  var macroexpand = _g376.macroexpand;
-  var mapo = _g376.mapo;
-  var quasiexpand = _g376.quasiexpand;
-  var quote_environment = _g376["quote-environment"];
-  var quote_modules = _g376["quote-modules"];
-  var quoted = _g376.quoted;
-  var reserved63 = _g376["reserved?"];
-  var sortk = _g376.sortk;
-  var special_form63 = _g376["special-form?"];
-  var special63 = _g376["special?"];
-  var stash42 = _g376["stash*"];
-  var statement63 = _g376["statement?"];
-  var symbol_expansion = _g376["symbol-expansion"];
-  var symbol63 = _g376["symbol?"];
-  var valid_id63 = _g376["valid-id?"];
-  var variable63 = _g376["variable?"];
-  var _g377 = nexus["lumen/compiler"];
-  var compile = _g377.compile;
-  var compile_function = _g377["compile-function"];
-  var compile_module = _g377["compile-module"];
-  var declare = _g377.declare;
-  var eval = _g377.eval;
-  var import_modules = _g377["import-modules"];
-  var in_module = _g377["in-module"];
-  var load_module = _g377["load-module"];
-  var open_module = _g377["open-module"];
+  var _g375 = nexus["lumen/runtime"];
+  var _37 = _g375["%"];
+  var _37message_handler = _g375["%message-handler"];
+  var _42 = _g375["*"];
+  var _43 = _g375["+"];
+  var _ = _g375["-"];
+  var _47 = _g375["/"];
+  var _60 = _g375["<"];
+  var _6061 = _g375["<="];
+  var _61 = _g375["="];
+  var _62 = _g375[">"];
+  var _6261 = _g375[">="];
+  var abs = _g375.abs;
+  var acos = _g375.acos;
+  var add = _g375.add;
+  var apply = _g375.apply;
+  var asin = _g375.asin;
+  var atan = _g375.atan;
+  var atan2 = _g375.atan2;
+  var atom63 = _g375["atom?"];
+  var boolean63 = _g375["boolean?"];
+  var cat = _g375.cat;
+  var ceil = _g375.ceil;
+  var char = _g375.char;
+  var code = _g375.code;
+  var composite63 = _g375["composite?"];
+  var cos = _g375.cos;
+  var drop = _g375.drop;
+  var empty63 = _g375["empty?"];
+  var exclude = _g375.exclude;
+  var exit = _g375.exit;
+  var extend = _g375.extend;
+  var find = _g375.find;
+  var flat = _g375.flat;
+  var flat1 = _g375.flat1;
+  var floor = _g375.floor;
+  var function63 = _g375["function?"];
+  var hd = _g375.hd;
+  var id_literal63 = _g375["id-literal?"];
+  var in63 = _g375["in?"];
+  var inner = _g375.inner;
+  var is63 = _g375["is?"];
+  var iterate = _g375.iterate;
+  var join = _g375.join;
+  var keep = _g375.keep;
+  var keys63 = _g375["keys?"];
+  var last = _g375.last;
+  var length = _g375.length;
+  var list63 = _g375["list?"];
+  var log = _g375.log;
+  var log10 = _g375.log10;
+  var make_id = _g375["make-id"];
+  var map = _g375.map;
+  var max = _g375.max;
+  var min = _g375.min;
+  var module = _g375.module;
+  var module_key = _g375["module-key"];
+  var nil63 = _g375["nil?"];
+  var none63 = _g375["none?"];
+  var now = _g375.now;
+  var number = _g375.number;
+  var number63 = _g375["number?"];
+  var one63 = _g375["one?"];
+  var pair = _g375.pair;
+  var pow = _g375.pow;
+  var random = _g375.random;
+  var read_file = _g375["read-file"];
+  var reduce = _g375.reduce;
+  var replicate = _g375.replicate;
+  var reverse = _g375.reverse;
+  var sd = _g375.sd;
+  var search = _g375.search;
+  var setenv = _g375.setenv;
+  var sin = _g375.sin;
+  var sinh = _g375.sinh;
+  var some63 = _g375["some?"];
+  var sort = _g375.sort;
+  var space = _g375.space;
+  var splice = _g375.splice;
+  var split = _g375.split;
+  var sqrt = _g375.sqrt;
+  var stash = _g375.stash;
+  var string = _g375.string;
+  var string_literal63 = _g375["string-literal?"];
+  var string63 = _g375["string?"];
+  var sub = _g375.sub;
+  var substring = _g375.substring;
+  var table63 = _g375["table?"];
+  var tan = _g375.tan;
+  var tanh = _g375.tanh;
+  var td = _g375.td;
+  var tl = _g375.tl;
+  var today = _g375.today;
+  var toplevel63 = _g375["toplevel?"];
+  var unstash = _g375.unstash;
+  var write = _g375.write;
+  var write_file = _g375["write-file"];
+  var _g378 = nexus["lumen/utilities"];
+  var bind = _g378.bind;
+  var bind42 = _g378["bind*"];
+  var bound63 = _g378["bound?"];
+  var getenv = _g378.getenv;
+  var id = _g378.id;
+  var imported = _g378.imported;
+  var indentation = _g378.indentation;
+  var initial_environment = _g378["initial-environment"];
+  var linked = _g378.linked;
+  var macro_function = _g378["macro-function"];
+  var macro63 = _g378["macro?"];
+  var macroexpand = _g378.macroexpand;
+  var mapo = _g378.mapo;
+  var quasiexpand = _g378.quasiexpand;
+  var quote_environment = _g378["quote-environment"];
+  var quote_modules = _g378["quote-modules"];
+  var quoted = _g378.quoted;
+  var reserved63 = _g378["reserved?"];
+  var sortk = _g378.sortk;
+  var special_form63 = _g378["special-form?"];
+  var special63 = _g378["special?"];
+  var stash42 = _g378["stash*"];
+  var statement63 = _g378["statement?"];
+  var symbol_expansion = _g378["symbol-expansion"];
+  var symbol63 = _g378["symbol?"];
+  var valid_id63 = _g378["valid-id?"];
+  var variable63 = _g378["variable?"];
+  var _g379 = nexus["lumen/compiler"];
+  var compile = _g379.compile;
+  var compile_function = _g379["compile-function"];
+  var compile_module = _g379["compile-module"];
+  var declare = _g379.declare;
+  var eval = _g379.eval;
+  var import_modules = _g379["import-modules"];
+  var in_module = _g379["in-module"];
+  var load_module = _g379["load-module"];
+  var open_module = _g379["open-module"];
   global.target = "js";
 })();
 (function () {
   nexus["lumen/boot"] = {};
-  var _g676 = nexus["lumen/runtime"];
-  var _37 = _g676["%"];
-  var _37message_handler = _g676["%message-handler"];
-  var _42 = _g676["*"];
-  var _43 = _g676["+"];
-  var _ = _g676["-"];
-  var _47 = _g676["/"];
-  var _60 = _g676["<"];
-  var _6061 = _g676["<="];
-  var _61 = _g676["="];
-  var _62 = _g676[">"];
-  var _6261 = _g676[">="];
-  var abs = _g676.abs;
-  var acos = _g676.acos;
-  var add = _g676.add;
-  var apply = _g676.apply;
-  var asin = _g676.asin;
-  var atan = _g676.atan;
-  var atan2 = _g676.atan2;
-  var atom63 = _g676["atom?"];
-  var boolean63 = _g676["boolean?"];
-  var cat = _g676.cat;
-  var ceil = _g676.ceil;
-  var char = _g676.char;
-  var code = _g676.code;
-  var composite63 = _g676["composite?"];
-  var cos = _g676.cos;
-  var drop = _g676.drop;
-  var empty63 = _g676["empty?"];
-  var exclude = _g676.exclude;
-  var exit = _g676.exit;
-  var extend = _g676.extend;
-  var find = _g676.find;
-  var flat = _g676.flat;
-  var flat1 = _g676.flat1;
-  var floor = _g676.floor;
-  var function63 = _g676["function?"];
-  var hd = _g676.hd;
-  var id_literal63 = _g676["id-literal?"];
-  var in63 = _g676["in?"];
-  var inner = _g676.inner;
-  var is63 = _g676["is?"];
-  var iterate = _g676.iterate;
-  var join = _g676.join;
-  var keep = _g676.keep;
-  var keys63 = _g676["keys?"];
-  var last = _g676.last;
-  var length = _g676.length;
-  var list63 = _g676["list?"];
-  var log = _g676.log;
-  var log10 = _g676.log10;
-  var make_id = _g676["make-id"];
-  var map = _g676.map;
-  var max = _g676.max;
-  var min = _g676.min;
-  var module = _g676.module;
-  var module_key = _g676["module-key"];
-  var nil63 = _g676["nil?"];
-  var none63 = _g676["none?"];
-  var now = _g676.now;
-  var number = _g676.number;
-  var number63 = _g676["number?"];
-  var one63 = _g676["one?"];
-  var pair = _g676.pair;
-  var pow = _g676.pow;
-  var random = _g676.random;
-  var read_file = _g676["read-file"];
-  var reduce = _g676.reduce;
-  var replicate = _g676.replicate;
-  var reverse = _g676.reverse;
-  var sd = _g676.sd;
-  var search = _g676.search;
-  var setenv = _g676.setenv;
-  var sin = _g676.sin;
-  var sinh = _g676.sinh;
-  var some63 = _g676["some?"];
-  var sort = _g676.sort;
-  var space = _g676.space;
-  var splice = _g676.splice;
-  var split = _g676.split;
-  var sqrt = _g676.sqrt;
-  var stash = _g676.stash;
-  var string = _g676.string;
-  var string_literal63 = _g676["string-literal?"];
-  var string63 = _g676["string?"];
-  var sub = _g676.sub;
-  var substring = _g676.substring;
-  var table63 = _g676["table?"];
-  var tan = _g676.tan;
-  var tanh = _g676.tanh;
-  var td = _g676.td;
-  var tl = _g676.tl;
-  var today = _g676.today;
-  var toplevel63 = _g676["toplevel?"];
-  var unstash = _g676.unstash;
-  var write = _g676.write;
-  var write_file = _g676["write-file"];
-  var _g679 = nexus["lumen/utilities"];
-  var bind = _g679.bind;
-  var bind42 = _g679["bind*"];
-  var bound63 = _g679["bound?"];
-  var getenv = _g679.getenv;
-  var id = _g679.id;
-  var imported = _g679.imported;
-  var indentation = _g679.indentation;
-  var initial_environment = _g679["initial-environment"];
-  var linked = _g679.linked;
-  var macro_function = _g679["macro-function"];
-  var macro63 = _g679["macro?"];
-  var macroexpand = _g679.macroexpand;
-  var mapo = _g679.mapo;
-  var quasiexpand = _g679.quasiexpand;
-  var quote_environment = _g679["quote-environment"];
-  var quote_modules = _g679["quote-modules"];
-  var quoted = _g679.quoted;
-  var reserved63 = _g679["reserved?"];
-  var sortk = _g679.sortk;
-  var special_form63 = _g679["special-form?"];
-  var special63 = _g679["special?"];
-  var stash42 = _g679["stash*"];
-  var statement63 = _g679["statement?"];
-  var symbol_expansion = _g679["symbol-expansion"];
-  var symbol63 = _g679["symbol?"];
-  var valid_id63 = _g679["valid-id?"];
-  var variable63 = _g679["variable?"];
-  var _g680 = nexus["lumen/compiler"];
-  var compile = _g680.compile;
-  var compile_function = _g680["compile-function"];
-  var compile_module = _g680["compile-module"];
-  var declare = _g680.declare;
-  var eval = _g680.eval;
-  var import_modules = _g680["import-modules"];
-  var in_module = _g680["in-module"];
-  var load_module = _g680["load-module"];
-  var open_module = _g680["open-module"];
+  var _g678 = nexus["lumen/runtime"];
+  var _37 = _g678["%"];
+  var _37message_handler = _g678["%message-handler"];
+  var _42 = _g678["*"];
+  var _43 = _g678["+"];
+  var _ = _g678["-"];
+  var _47 = _g678["/"];
+  var _60 = _g678["<"];
+  var _6061 = _g678["<="];
+  var _61 = _g678["="];
+  var _62 = _g678[">"];
+  var _6261 = _g678[">="];
+  var abs = _g678.abs;
+  var acos = _g678.acos;
+  var add = _g678.add;
+  var apply = _g678.apply;
+  var asin = _g678.asin;
+  var atan = _g678.atan;
+  var atan2 = _g678.atan2;
+  var atom63 = _g678["atom?"];
+  var boolean63 = _g678["boolean?"];
+  var cat = _g678.cat;
+  var ceil = _g678.ceil;
+  var char = _g678.char;
+  var code = _g678.code;
+  var composite63 = _g678["composite?"];
+  var cos = _g678.cos;
+  var drop = _g678.drop;
+  var empty63 = _g678["empty?"];
+  var exclude = _g678.exclude;
+  var exit = _g678.exit;
+  var extend = _g678.extend;
+  var find = _g678.find;
+  var flat = _g678.flat;
+  var flat1 = _g678.flat1;
+  var floor = _g678.floor;
+  var function63 = _g678["function?"];
+  var hd = _g678.hd;
+  var id_literal63 = _g678["id-literal?"];
+  var in63 = _g678["in?"];
+  var inner = _g678.inner;
+  var is63 = _g678["is?"];
+  var iterate = _g678.iterate;
+  var join = _g678.join;
+  var keep = _g678.keep;
+  var keys63 = _g678["keys?"];
+  var last = _g678.last;
+  var length = _g678.length;
+  var list63 = _g678["list?"];
+  var log = _g678.log;
+  var log10 = _g678.log10;
+  var make_id = _g678["make-id"];
+  var map = _g678.map;
+  var max = _g678.max;
+  var min = _g678.min;
+  var module = _g678.module;
+  var module_key = _g678["module-key"];
+  var nil63 = _g678["nil?"];
+  var none63 = _g678["none?"];
+  var now = _g678.now;
+  var number = _g678.number;
+  var number63 = _g678["number?"];
+  var one63 = _g678["one?"];
+  var pair = _g678.pair;
+  var pow = _g678.pow;
+  var random = _g678.random;
+  var read_file = _g678["read-file"];
+  var reduce = _g678.reduce;
+  var replicate = _g678.replicate;
+  var reverse = _g678.reverse;
+  var sd = _g678.sd;
+  var search = _g678.search;
+  var setenv = _g678.setenv;
+  var sin = _g678.sin;
+  var sinh = _g678.sinh;
+  var some63 = _g678["some?"];
+  var sort = _g678.sort;
+  var space = _g678.space;
+  var splice = _g678.splice;
+  var split = _g678.split;
+  var sqrt = _g678.sqrt;
+  var stash = _g678.stash;
+  var string = _g678.string;
+  var string_literal63 = _g678["string-literal?"];
+  var string63 = _g678["string?"];
+  var sub = _g678.sub;
+  var substring = _g678.substring;
+  var table63 = _g678["table?"];
+  var tan = _g678.tan;
+  var tanh = _g678.tanh;
+  var td = _g678.td;
+  var tl = _g678.tl;
+  var today = _g678.today;
+  var toplevel63 = _g678["toplevel?"];
+  var unstash = _g678.unstash;
+  var write = _g678.write;
+  var write_file = _g678["write-file"];
+  var _g681 = nexus["lumen/utilities"];
+  var bind = _g681.bind;
+  var bind42 = _g681["bind*"];
+  var bound63 = _g681["bound?"];
+  var getenv = _g681.getenv;
+  var id = _g681.id;
+  var imported = _g681.imported;
+  var indentation = _g681.indentation;
+  var initial_environment = _g681["initial-environment"];
+  var linked = _g681.linked;
+  var macro_function = _g681["macro-function"];
+  var macro63 = _g681["macro?"];
+  var macroexpand = _g681.macroexpand;
+  var mapo = _g681.mapo;
+  var quasiexpand = _g681.quasiexpand;
+  var quote_environment = _g681["quote-environment"];
+  var quote_modules = _g681["quote-modules"];
+  var quoted = _g681.quoted;
+  var reserved63 = _g681["reserved?"];
+  var sortk = _g681.sortk;
+  var special_form63 = _g681["special-form?"];
+  var special63 = _g681["special?"];
+  var stash42 = _g681["stash*"];
+  var statement63 = _g681["statement?"];
+  var symbol_expansion = _g681["symbol-expansion"];
+  var symbol63 = _g681["symbol?"];
+  var valid_id63 = _g681["valid-id?"];
+  var variable63 = _g681["variable?"];
+  var _g682 = nexus["lumen/compiler"];
+  var compile = _g682.compile;
+  var compile_function = _g682["compile-function"];
+  var compile_module = _g682["compile-module"];
+  var declare = _g682.declare;
+  var eval = _g682.eval;
+  var import_modules = _g682["import-modules"];
+  var in_module = _g682["in-module"];
+  var load_module = _g682["load-module"];
+  var open_module = _g682["open-module"];
   global.modules = {lumen: {alias: [["lumen", "runtime"], ["lumen", "special"], ["lumen", "core"]], export: {}, import: [["lumen", "special"]]}, "lumen/boot": {export: {"%initial-environment": {macro: function () {
     return(quote_environment(initial_environment()));
   }}, "%initial-modules": {macro: function () {
@@ -2901,35 +2916,35 @@ global.nexus = {};
     return(["get", l, i]);
   }}, "cat!": {export: true, macro: function (a) {
     var bs = unstash(Array.prototype.slice.call(arguments, 1));
-    var _g706 = sub(bs, 0);
-    return(["set", a, join(["cat", a], _g706)]);
+    var _g736 = sub(bs, 0);
+    return(["set", a, join(["cat", a], _g736)]);
   }}, dec: {export: true, macro: function (n, by) {
     return(["set", n, ["-", n, by || 1]]);
   }}, define: {export: true, macro: function (name, x) {
     var body = unstash(Array.prototype.slice.call(arguments, 2));
-    var _g729 = sub(body, 0);
+    var _g715 = sub(body, 0);
     setenv(name, {_stash: true, variable: true});
-    if (some63(_g729) && target === "js") {
-      return(linked(name, ["%local", name, join(["fn", x], _g729)]));
+    if (some63(_g715) && target === "js") {
+      return(linked(name, ["%local", name, join(["fn", x], _g715)]));
     } else {
-      if (some63(_g729)) {
-        var _g730 = bind42(x, _g729);
-        var args = _g730[0];
-        var _g731 = _g730[1];
-        return(linked(name, join(["%local-function", name, args], _g731)));
+      if (some63(_g715)) {
+        var _g716 = bind42(x, _g715);
+        var args = _g716[0];
+        var _g717 = _g716[1];
+        return(linked(name, join(["%local-function", name, args], _g717)));
       } else {
         return(linked(name, ["%local", name, x]));
       }
     }
   }}, "define*": {export: true, macro: function (name, x) {
     var body = unstash(Array.prototype.slice.call(arguments, 2));
-    var _g696 = sub(body, 0);
+    var _g712 = sub(body, 0);
     setenv(name, {_stash: true, export: true, global: true});
-    if (some63(_g696)) {
-      var _g697 = bind42(x, _g696);
-      var args = _g697[0];
-      var _g698 = _g697[1];
-      return(join(["%global-function", name, args], _g698));
+    if (some63(_g712)) {
+      var _g713 = bind42(x, _g712);
+      var args = _g713[0];
+      var _g714 = _g713[1];
+      return(join(["%global-function", name, args], _g714));
     } else {
       if (target === "js") {
         return(["set", ["get", "global", ["quote", id(name)]], x]);
@@ -2939,75 +2954,75 @@ global.nexus = {};
     }
   }}, "define-macro": {export: true, macro: function (name, args) {
     var body = unstash(Array.prototype.slice.call(arguments, 2));
-    var _g721 = sub(body, 0);
-    var form = join(["fn", args], _g721);
-    var _g722 = ["setenv", ["quote", name]];
-    _g722.form = ["quote", form];
-    _g722.macro = form;
-    eval(_g722);
+    var _g708 = sub(body, 0);
+    var form = join(["fn", args], _g708);
+    var _g709 = ["setenv", ["quote", name]];
+    _g709.form = ["quote", form];
+    _g709.macro = form;
+    eval(_g709);
     return(undefined);
   }}, "define-module": {export: true, macro: function (spec) {
     var body = unstash(Array.prototype.slice.call(arguments, 1));
-    var _g699 = sub(body, 0);
-    var alias = _g699.alias;
-    var exp = _g699.export;
-    var imp = _g699.import;
-    var _g700 = import_modules(imp);
-    var imports = _g700[0];
-    var bindings = _g700[1];
+    var _g704 = sub(body, 0);
+    var alias = _g704.alias;
+    var exp = _g704.export;
+    var imp = _g704.import;
+    var _g705 = import_modules(imp);
+    var imports = _g705[0];
+    var bindings = _g705[1];
     var k = module_key(spec);
     modules[k] = {alias: alias, export: {}, import: imports};
-    var _g701 = exp || [];
-    var _g702 = 0;
-    while (_g702 < length(_g701)) {
-      var x = _g701[_g702];
+    var _g706 = exp || [];
+    var _g707 = 0;
+    while (_g707 < length(_g706)) {
+      var x = _g706[_g707];
       setenv(x, {_stash: true, export: true});
-      _g702 = _g702 + 1;
+      _g707 = _g707 + 1;
     }
     return(join(["do", ["set", ["get", "nexus", ["quote", k]], ["table"]]], bindings));
   }}, "define-special": {export: true, macro: function (name, args) {
     var body = unstash(Array.prototype.slice.call(arguments, 2));
-    var _g723 = sub(body, 0);
-    var form = join(["fn", args], _g723);
-    var keys = sub(_g723, length(_g723));
-    var _g724 = ["setenv", ["quote", name]];
-    _g724.form = ["quote", form];
-    _g724.special = form;
-    eval(join(_g724, keys));
+    var _g710 = sub(body, 0);
+    var form = join(["fn", args], _g710);
+    var keys = sub(_g710, length(_g710));
+    var _g711 = ["setenv", ["quote", name]];
+    _g711.form = ["quote", form];
+    _g711.special = form;
+    eval(join(_g711, keys));
     return(undefined);
   }}, "define-symbol": {export: true, macro: function (name, expansion) {
     setenv(name, {_stash: true, symbol: expansion});
     return(undefined);
   }}, each: {export: true, macro: function (b, t) {
     var body = unstash(Array.prototype.slice.call(arguments, 2));
-    var _g693 = sub(body, 0);
+    var _g731 = sub(body, 0);
     var k = b[0];
     var v = b[1];
     var t1 = make_id();
-    var _g765;
+    var _g767;
     if (nil63(v)) {
-      var _g766;
+      var _g768;
       if (b.i) {
-        _g766 = "i";
+        _g768 = "i";
       } else {
-        _g766 = make_id();
+        _g768 = make_id();
       }
-      var i = _g766;
-      _g765 = ["let", [i, 0], ["while", ["<", i, ["length", t1]], join(["let", [k, ["at", t1, i]]], _g693), ["inc", i]]];
+      var i = _g768;
+      _g767 = ["let", [i, 0], ["while", ["<", i, ["length", t1]], join(["let", [k, ["at", t1, i]]], _g731), ["inc", i]]];
     } else {
-      var _g694 = ["target"];
-      _g694.js = ["isNaN", ["parseInt", k]];
-      _g694.lua = ["not", ["number?", k]];
-      _g765 = ["let", [k, "nil"], ["%for", t1, k, ["when", _g694, join(["let", [v, ["get", t1, k]]], _g693)]]];
+      var _g732 = ["target"];
+      _g732.js = ["isNaN", ["parseInt", k]];
+      _g732.lua = ["not", ["number?", k]];
+      _g767 = ["let", [k, "nil"], ["%for", t1, k, ["when", _g732, join(["let", [v, ["get", t1, k]]], _g731)]]];
     }
-    return(["let", [t1, t], _g765]);
+    return(["let", [t1, t], _g767]);
   }}, fn: {export: true, macro: function (args) {
     var body = unstash(Array.prototype.slice.call(arguments, 1));
-    var _g717 = sub(body, 0);
-    var _g718 = bind42(args, _g717);
-    var _g719 = _g718[0];
-    var _g720 = _g718[1];
-    return(join(["%function", _g719], _g720));
+    var _g727 = sub(body, 0);
+    var _g728 = bind42(args, _g727);
+    var _g729 = _g728[0];
+    var _g730 = _g728[1];
+    return(join(["%function", _g729], _g730));
   }}, guard: {export: true, macro: function (expr) {
     if (target === "js") {
       return([["fn", [], ["%try", ["list", true, expr]]]]);
@@ -3019,10 +3034,10 @@ global.nexus = {};
     }
   }}, "if": {export: true, macro: function () {
     var branches = unstash(Array.prototype.slice.call(arguments, 0));
-    var step = function (_g703) {
-      var a = _g703[0];
-      var b = _g703[1];
-      var c = sub(_g703, 2);
+    var step = function (_g696) {
+      var a = _g696[0];
+      var b = _g696[1];
+      var c = sub(_g696, 2);
       if (is63(b)) {
         return([join(["%if", a, b], step(c))]);
       } else {
@@ -3036,8 +3051,8 @@ global.nexus = {};
     return(["set", n, ["+", n, by || 1]]);
   }}, "join!": {export: true, macro: function (a) {
     var bs = unstash(Array.prototype.slice.call(arguments, 1));
-    var _g707 = sub(bs, 0);
-    return(["set", a, join(["join*", a], _g707)]);
+    var _g735 = sub(bs, 0);
+    return(["set", a, join(["join*", a], _g735)]);
   }}, "join*": {export: true, macro: function () {
     var xs = unstash(Array.prototype.slice.call(arguments, 0));
     return(reduce(function (a, b) {
@@ -3047,19 +3062,19 @@ global.nexus = {};
     return(["quote", target]);
   }}, let: {export: true, macro: function (bindings) {
     var body = unstash(Array.prototype.slice.call(arguments, 1));
-    var _g712 = sub(body, 0);
+    var _g699 = sub(body, 0);
     var i = 0;
     var renames = [];
     var locals = [];
-    map(function (_g713) {
-      var lh = _g713[0];
-      var rh = _g713[1];
-      var _g714 = bind(lh, rh);
-      var _g715 = 0;
-      while (_g715 < length(_g714)) {
-        var _g716 = _g714[_g715];
-        var id = _g716[0];
-        var val = _g716[1];
+    map(function (_g700) {
+      var lh = _g700[0];
+      var rh = _g700[1];
+      var _g701 = bind(lh, rh);
+      var _g702 = 0;
+      while (_g702 < length(_g701)) {
+        var _g703 = _g701[_g702];
+        var id = _g703[0];
+        var val = _g703[1];
         if (bound63(id) || reserved63(id) || toplevel63()) {
           var rename = make_id();
           add(renames, id);
@@ -3069,32 +3084,32 @@ global.nexus = {};
           setenv(id, {_stash: true, variable: true});
         }
         add(locals, ["%local", id, val]);
-        _g715 = _g715 + 1;
+        _g702 = _g702 + 1;
       }
     }, pair(bindings));
-    return(join(["do"], join(locals, [join(["let-symbol", renames], _g712)])));
+    return(join(["do"], join(locals, [join(["let-symbol", renames], _g699)])));
   }}, "let-macro": {export: true, macro: function (definitions) {
     var body = unstash(Array.prototype.slice.call(arguments, 1));
-    var _g704 = sub(body, 0);
+    var _g722 = sub(body, 0);
     add(environment, {});
     map(function (m) {
       return(macroexpand(join(["define-macro"], m)));
     }, definitions);
-    var _g705 = join(["do"], macroexpand(_g704));
+    var _g723 = join(["do"], macroexpand(_g722));
     drop(environment);
-    return(_g705);
+    return(_g723);
   }}, "let-symbol": {export: true, macro: function (expansions) {
     var body = unstash(Array.prototype.slice.call(arguments, 1));
-    var _g733 = sub(body, 0);
+    var _g724 = sub(body, 0);
     add(environment, {});
-    map(function (_g735) {
-      var name = _g735[0];
-      var exp = _g735[1];
+    map(function (_g726) {
+      var name = _g726[0];
+      var exp = _g726[1];
       return(macroexpand(["define-symbol", name, exp]));
     }, pair(expansions));
-    var _g734 = join(["do"], macroexpand(_g733));
+    var _g725 = join(["do"], macroexpand(_g724));
     drop(environment);
-    return(_g734);
+    return(_g725);
   }}, list: {export: true, macro: function () {
     var body = unstash(Array.prototype.slice.call(arguments, 0));
     var l = join(["%array"], body);
@@ -3103,11 +3118,11 @@ global.nexus = {};
     } else {
       var id = make_id();
       var init = [];
-      var _g732 = body;
+      var _g695 = body;
       var k = undefined;
-      for (k in _g732) {
+      for (k in _g695) {
         if (isNaN(parseInt(k))) {
-          var v = _g732[k];
+          var v = _g695[k];
           add(init, [k, ["set", ["get", id, ["quote", k]], v]]);
         }
       }
@@ -3125,12 +3140,12 @@ global.nexus = {};
   }}, "set-of": {export: true, macro: function () {
     var elements = unstash(Array.prototype.slice.call(arguments, 0));
     var l = [];
-    var _g710 = elements;
-    var _g711 = 0;
-    while (_g711 < length(_g710)) {
-      var e = _g710[_g711];
+    var _g733 = elements;
+    var _g734 = 0;
+    while (_g734 < length(_g733)) {
+      var e = _g733[_g734];
       l[e] = true;
-      _g711 = _g711 + 1;
+      _g734 = _g734 + 1;
     }
     return(join(["table"], l));
   }}, table: {export: true, macro: function () {
@@ -3143,57 +3158,57 @@ global.nexus = {};
     return(clauses[target]);
   }}, unless: {export: true, macro: function (cond) {
     var body = unstash(Array.prototype.slice.call(arguments, 1));
-    var _g695 = sub(body, 0);
-    return(["if", ["not", cond], join(["do"], _g695)]);
+    var _g698 = sub(body, 0);
+    return(["if", ["not", cond], join(["do"], _g698)]);
   }}, when: {export: true, macro: function (cond) {
     var body = unstash(Array.prototype.slice.call(arguments, 1));
-    var _g736 = sub(body, 0);
-    return(["if", cond, join(["do"], _g736)]);
-  }}, "with-bindings": {export: true, macro: function (_g725) {
-    var names = _g725[0];
+    var _g697 = sub(body, 0);
+    return(["if", cond, join(["do"], _g697)]);
+  }}, "with-bindings": {export: true, macro: function (_g718) {
+    var names = _g718[0];
     var body = unstash(Array.prototype.slice.call(arguments, 1));
-    var _g726 = sub(body, 0);
+    var _g719 = sub(body, 0);
     var x = make_id();
-    var _g728 = ["setenv", x];
-    _g728.variable = true;
-    var _g727 = ["with-frame", ["each", [x], names, _g728]];
-    _g727.scope = true;
-    return(join(_g727, _g726));
+    var _g721 = ["setenv", x];
+    _g721.variable = true;
+    var _g720 = ["with-frame", ["each", [x], names, _g721]];
+    _g720.scope = true;
+    return(join(_g720, _g719));
   }}, "with-frame": {export: true, macro: function () {
     var body = unstash(Array.prototype.slice.call(arguments, 0));
-    var _g708 = sub(body, 0);
+    var _g737 = sub(body, 0);
     var scope = body.scope;
     var x = make_id();
-    var _g709 = ["table"];
-    _g709._scope = scope;
-    return(["do", ["add", "environment", _g709], ["let", [x, join(["do"], _g708)], ["drop", "environment"], x]]);
-  }}}, import: [["lumen", "runtime"], ["lumen", "special"], ["lumen", "core"], ["lumen", "utilities"], ["lumen", "compiler"]]}, "lumen/main": {export: {}, import: [["lumen", "runtime"], ["lumen", "special"], ["lumen", "core"], ["lumen", "reader"], ["lumen", "compiler"]]}, "lumen/reader": {export: {"define-reader": {export: true, macro: function (_g759) {
-    var char = _g759[0];
-    var stream = _g759[1];
+    var _g738 = ["table"];
+    _g738._scope = scope;
+    return(["do", ["add", "environment", _g738], ["let", [x, join(["do"], _g737)], ["drop", "environment"], x]]);
+  }}}, import: [["lumen", "runtime"], ["lumen", "special"], ["lumen", "core"], ["lumen", "utilities"], ["lumen", "compiler"]]}, "lumen/main": {export: {}, import: [["lumen", "runtime"], ["lumen", "special"], ["lumen", "core"], ["lumen", "reader"], ["lumen", "compiler"]]}, "lumen/reader": {export: {"define-reader": {export: true, macro: function (_g739) {
+    var char = _g739[0];
+    var stream = _g739[1];
     var body = unstash(Array.prototype.slice.call(arguments, 1));
-    var _g760 = sub(body, 0);
-    return(["set", ["get", "read-table", char], join(["fn", [stream]], _g760)]);
+    var _g740 = sub(body, 0);
+    return(["set", ["get", "read-table", char], join(["fn", [stream]], _g740)]);
   }}, delimiters: {variable: true}, eof: {variable: true}, "flag?": {variable: true}, "key?": {variable: true}, "make-stream": {export: true, variable: true}, "peek-char": {variable: true}, read: {export: true, variable: true}, "read-all": {export: true, variable: true}, "read-char": {variable: true}, "read-from-string": {export: true, variable: true}, "read-table": {export: true, variable: true}, "skip-non-code": {variable: true}, whitespace: {variable: true}}, import: [["lumen", "runtime"], ["lumen", "special"], ["lumen", "core"]]}, "lumen/runtime": {export: {"%": {export: true, variable: true}, "%message-handler": {export: true, variable: true}, "*": {export: true, variable: true}, "+": {export: true, variable: true}, "-": {export: true, variable: true}, "/": {export: true, variable: true}, "<": {export: true, variable: true}, "<=": {export: true, variable: true}, "=": {export: true, variable: true}, ">": {export: true, variable: true}, ">=": {export: true, variable: true}, abs: {export: true, variable: true}, acos: {export: true, variable: true}, add: {export: true, variable: true}, apply: {export: true, variable: true}, asin: {export: true, variable: true}, atan: {export: true, variable: true}, atan2: {export: true, variable: true}, "atom?": {export: true, variable: true}, "boolean?": {export: true, variable: true}, cat: {export: true, variable: true}, ceil: {export: true, variable: true}, char: {export: true, variable: true}, code: {export: true, variable: true}, "composite?": {export: true, variable: true}, cos: {export: true, variable: true}, drop: {export: true, variable: true}, "empty?": {export: true, variable: true}, exclude: {export: true, variable: true}, exit: {export: true, variable: true}, extend: {export: true, variable: true}, find: {export: true, variable: true}, flat: {export: true, variable: true}, flat1: {export: true, variable: true}, floor: {export: true, variable: true}, fs: {variable: true}, "function?": {export: true, variable: true}, hd: {export: true, variable: true}, "id-count": {variable: true}, "id-literal?": {export: true, variable: true}, "in?": {export: true, variable: true}, inner: {export: true, variable: true}, "is?": {export: true, variable: true}, iterate: {export: true, variable: true}, join: {export: true, variable: true}, keep: {export: true, variable: true}, "keys?": {export: true, variable: true}, last: {export: true, variable: true}, length: {export: true, variable: true}, "list?": {export: true, variable: true}, log: {export: true, variable: true}, log10: {export: true, variable: true}, "make-id": {export: true, variable: true}, map: {export: true, variable: true}, mapl: {variable: true}, math: {variable: true}, max: {export: true, variable: true}, "max*": {variable: true}, min: {export: true, variable: true}, "min*": {variable: true}, module: {export: true, variable: true}, "module-key": {export: true, variable: true}, "nil?": {export: true, variable: true}, "none?": {export: true, variable: true}, now: {export: true, variable: true}, number: {export: true, variable: true}, "number?": {export: true, variable: true}, "one?": {export: true, variable: true}, pair: {export: true, variable: true}, pow: {export: true, variable: true}, print: {export: true, global: true}, random: {export: true, variable: true}, "read-file": {export: true, variable: true}, reduce: {export: true, variable: true}, replicate: {export: true, variable: true}, require: {export: true, global: true}, reverse: {export: true, variable: true}, sd: {export: true, variable: true}, search: {export: true, variable: true}, setenv: {export: true, variable: true}, sin: {export: true, variable: true}, sinh: {export: true, variable: true}, "some?": {export: true, variable: true}, sort: {export: true, variable: true}, space: {export: true, variable: true}, splice: {export: true, variable: true}, "splice?": {variable: true}, split: {export: true, variable: true}, sqrt: {export: true, variable: true}, stash: {export: true, variable: true}, string: {export: true, variable: true}, "string-literal?": {export: true, variable: true}, "string?": {export: true, variable: true}, sub: {export: true, variable: true}, subl: {variable: true}, substring: {export: true, variable: true}, "table?": {export: true, variable: true}, tan: {export: true, variable: true}, tanh: {export: true, variable: true}, td: {export: true, variable: true}, tl: {export: true, variable: true}, today: {export: true, variable: true}, "toplevel?": {export: true, variable: true}, type: {variable: true}, unstash: {export: true, variable: true}, write: {export: true, variable: true}, "write-file": {export: true, variable: true}}, import: [["lumen", "special"], ["lumen", "core"]]}, "lumen/special": {export: {"%array": {export: true, foo: true, special: function () {
     var forms = unstash(Array.prototype.slice.call(arguments, 0));
-    var _g777;
+    var _g775;
     if (target === "lua") {
-      _g777 = "{";
+      _g775 = "{";
     } else {
-      _g777 = "[";
+      _g775 = "[";
     }
-    var open = _g777;
-    var _g778;
+    var open = _g775;
+    var _g776;
     if (target === "lua") {
-      _g778 = "}";
+      _g776 = "}";
     } else {
-      _g778 = "]";
+      _g776 = "]";
     }
-    var close = _g778;
+    var close = _g776;
     var str = "";
-    var _g756 = forms;
+    var _g758 = forms;
     var i = 0;
-    while (i < length(_g756)) {
-      var x = _g756[i];
+    while (i < length(_g758)) {
+      var x = _g758[i];
       str = str + compile(x);
       if (i < length(forms) - 1) {
         str = str + ", ";
@@ -3202,16 +3217,16 @@ global.nexus = {};
     }
     return(open + str + close);
   }}, "%for": {export: true, foo: true, special: function (t, k, form) {
-    var _g754 = compile(t);
+    var _g750 = compile(t);
     var ind = indentation();
     indent_level = indent_level + 1;
-    var _g755 = compile(form, {_stash: true, stmt: true});
+    var _g751 = compile(form, {_stash: true, stmt: true});
     indent_level = indent_level - 1;
-    var body = _g755;
+    var body = _g751;
     if (target === "lua") {
-      return(ind + "for " + k + " in next, " + _g754 + " do\n" + body + ind + "end\n");
+      return(ind + "for " + k + " in next, " + _g750 + " do\n" + body + ind + "end\n");
     } else {
-      return(ind + "for (" + k + " in " + _g754 + ") {\n" + body + ind + "}\n");
+      return(ind + "for (" + k + " in " + _g750 + ") {\n" + body + ind + "}\n");
     }
   }, stmt: true, tr: true}, "%function": {export: true, foo: true, special: function (args, body) {
     return(compile_function(args, body));
@@ -3223,31 +3238,31 @@ global.nexus = {};
       return(compile(["set", name, ["%function", args, body]], {_stash: true, stmt: true}));
     }
   }, stmt: true, tr: true}, "%if": {export: true, foo: true, special: function (cond, cons, alt) {
-    var _g737 = compile(cond);
+    var _g743 = compile(cond);
     indent_level = indent_level + 1;
-    var _g740 = compile(cons, {_stash: true, stmt: true});
+    var _g746 = compile(cons, {_stash: true, stmt: true});
     indent_level = indent_level - 1;
-    var _g738 = _g740;
-    var _g767;
+    var _g744 = _g746;
+    var _g769;
     if (alt) {
       indent_level = indent_level + 1;
-      var _g741 = compile(alt, {_stash: true, stmt: true});
+      var _g747 = compile(alt, {_stash: true, stmt: true});
       indent_level = indent_level - 1;
-      _g767 = _g741;
+      _g769 = _g747;
     }
-    var _g739 = _g767;
+    var _g745 = _g769;
     var ind = indentation();
     var str = "";
     if (target === "js") {
-      str = str + ind + "if (" + _g737 + ") {\n" + _g738 + ind + "}";
+      str = str + ind + "if (" + _g743 + ") {\n" + _g744 + ind + "}";
     } else {
-      str = str + ind + "if " + _g737 + " then\n" + _g738;
+      str = str + ind + "if " + _g743 + " then\n" + _g744;
     }
-    if (_g739 && target === "js") {
-      str = str + " else {\n" + _g739 + ind + "}";
+    if (_g745 && target === "js") {
+      str = str + " else {\n" + _g745 + ind + "}";
     } else {
-      if (_g739) {
-        str = str + ind + "else\n" + _g739;
+      if (_g745) {
+        str = str + ind + "else\n" + _g745;
       }
     }
     if (target === "lua") {
@@ -3258,20 +3273,20 @@ global.nexus = {};
   }, stmt: true, tr: true}, "%local": {export: true, foo: true, special: function (name, value) {
     var id = compile(name);
     var value1 = compile(value);
-    var _g768;
+    var _g772;
     if (is63(value)) {
-      _g768 = " = " + value1;
+      _g772 = " = " + value1;
     } else {
-      _g768 = "";
+      _g772 = "";
     }
-    var rh = _g768;
-    var _g769;
+    var rh = _g772;
+    var _g773;
     if (target === "js") {
-      _g769 = "var ";
+      _g773 = "var ";
     } else {
-      _g769 = "local ";
+      _g773 = "local ";
     }
-    var keyword = _g769;
+    var keyword = _g773;
     var ind = indentation();
     return(ind + keyword + id + rh);
   }, stmt: true}, "%local-function": {export: true, foo: true, special: function (name, args, body) {
@@ -3280,50 +3295,50 @@ global.nexus = {};
   }, stmt: true, tr: true}, "%object": {export: true, foo: true, special: function () {
     var forms = unstash(Array.prototype.slice.call(arguments, 0));
     var str = "{";
-    var _g772;
+    var _g777;
     if (target === "lua") {
-      _g772 = " = ";
+      _g777 = " = ";
     } else {
-      _g772 = ": ";
+      _g777 = ": ";
     }
-    var sep = _g772;
+    var sep = _g777;
     var pairs = sortk(pair(forms), hd);
-    var _g749 = pairs;
+    var _g759 = pairs;
     var i = 0;
-    while (i < length(_g749)) {
-      var _g750 = _g749[i];
-      var k = _g750[0];
-      var v = _g750[1];
+    while (i < length(_g759)) {
+      var _g760 = _g759[i];
+      var k = _g760[0];
+      var v = _g760[1];
       if (!string63(k)) {
         throw new Error("Illegal key: " + string(k));
       }
-      var _g751 = compile(v);
-      var _g773;
+      var _g761 = compile(v);
+      var _g778;
       if (valid_id63(k)) {
-        _g773 = k;
+        _g778 = k;
       } else {
-        var _g774;
+        var _g779;
         if (target === "js" && string_literal63(k)) {
-          _g774 = k;
+          _g779 = k;
         } else {
-          var _g775;
+          var _g780;
           if (target === "js") {
-            _g775 = quoted(k);
+            _g780 = quoted(k);
           } else {
-            var _g776;
+            var _g781;
             if (string_literal63(k)) {
-              _g776 = "[" + k + "]";
+              _g781 = "[" + k + "]";
             } else {
-              _g776 = "[" + quoted(k) + "]";
+              _g781 = "[" + quoted(k) + "]";
             }
-            _g775 = _g776;
+            _g780 = _g781;
           }
-          _g774 = _g775;
+          _g779 = _g780;
         }
-        _g773 = _g774;
+        _g778 = _g779;
       }
-      var _g752 = _g773;
-      str = str + _g752 + sep + _g751;
+      var _g762 = _g778;
+      str = str + _g762 + sep + _g761;
       if (i < length(pairs) - 1) {
         str = str + ", ";
       }
@@ -3333,79 +3348,79 @@ global.nexus = {};
   }}, "%try": {export: true, foo: true, special: function (form) {
     var ind = indentation();
     indent_level = indent_level + 1;
-    var _g747 = compile(form, {_stash: true, stmt: true});
+    var _g752 = compile(form, {_stash: true, stmt: true});
     indent_level = indent_level - 1;
-    var body = _g747;
+    var body = _g752;
     var e = make_id();
     var hf = ["return", ["%array", false, ["get", e, "\"message\""]]];
     indent_level = indent_level + 1;
-    var _g748 = compile(hf, {_stash: true, stmt: true});
+    var _g753 = compile(hf, {_stash: true, stmt: true});
     indent_level = indent_level - 1;
-    var h = _g748;
+    var h = _g753;
     return(ind + "try {\n" + body + ind + "}\n" + ind + "catch (" + e + ") {\n" + h + ind + "}\n");
   }, stmt: true, tr: true}, "break": {export: true, foo: true, special: function () {
     return(indentation() + "break");
   }, stmt: true}, "do": {export: true, foo: true, special: function () {
     var forms = unstash(Array.prototype.slice.call(arguments, 0));
     var str = "";
-    var _g757 = forms;
-    var _g758 = 0;
-    while (_g758 < length(_g757)) {
-      var x = _g757[_g758];
+    var _g741 = forms;
+    var _g742 = 0;
+    while (_g742 < length(_g741)) {
+      var x = _g741[_g742];
       str = str + compile(x, {_stash: true, stmt: true});
-      _g758 = _g758 + 1;
+      _g742 = _g742 + 1;
     }
     return(str);
   }, stmt: true, tr: true}, "error": {export: true, foo: true, special: function (x) {
-    var _g779;
+    var _g771;
     if (target === "js") {
-      _g779 = "throw new " + compile(["Error", x]);
+      _g771 = "throw new " + compile(["Error", x]);
     } else {
-      _g779 = "error(" + compile(x) + ")";
+      _g771 = "error(" + compile(x) + ")";
     }
-    var e = _g779;
+    var e = _g771;
     return(indentation() + e);
   }, stmt: true}, "get": {export: true, foo: true, special: function (t, k) {
-    var _g753 = compile(t);
+    var _g757 = compile(t);
     var k1 = compile(k);
-    if (target === "lua" && char(_g753, 0) === "{") {
-      _g753 = "(" + _g753 + ")";
+    if (target === "lua" && char(_g757, 0) === "{") {
+      _g757 = "(" + _g757 + ")";
     }
     if (string_literal63(k) && valid_id63(inner(k))) {
-      return(_g753 + "." + inner(k));
+      return(_g757 + "." + inner(k));
     } else {
-      return(_g753 + "[" + k1 + "]");
+      return(_g757 + "[" + k1 + "]");
     }
   }}, "not": {}, "return": {export: true, foo: true, special: function (x) {
-    var _g771;
-    if (nil63(x)) {
-      _g771 = "return";
-    } else {
-      _g771 = "return(" + compile(x) + ")";
-    }
-    var _g746 = _g771;
-    return(indentation() + _g746);
-  }, stmt: true}, "set": {export: true, foo: true, special: function (lh, rh) {
-    var _g744 = compile(lh);
     var _g770;
-    if (nil63(rh)) {
-      _g770 = "nil";
+    if (nil63(x)) {
+      _g770 = "return";
     } else {
-      _g770 = rh;
+      _g770 = "return(" + compile(x) + ")";
     }
-    var _g745 = compile(_g770);
-    return(indentation() + _g744 + " = " + _g745);
+    var _g754 = _g770;
+    return(indentation() + _g754);
+  }, stmt: true}, "set": {export: true, foo: true, special: function (lh, rh) {
+    var _g755 = compile(lh);
+    var _g774;
+    if (nil63(rh)) {
+      _g774 = "nil";
+    } else {
+      _g774 = rh;
+    }
+    var _g756 = compile(_g774);
+    return(indentation() + _g755 + " = " + _g756);
   }, stmt: true}, "while": {export: true, foo: true, special: function (cond, form) {
-    var _g742 = compile(cond);
+    var _g748 = compile(cond);
     indent_level = indent_level + 1;
-    var _g743 = compile(form, {_stash: true, stmt: true});
+    var _g749 = compile(form, {_stash: true, stmt: true});
     indent_level = indent_level - 1;
-    var body = _g743;
+    var body = _g749;
     var ind = indentation();
     if (target === "js") {
-      return(ind + "while (" + _g742 + ") {\n" + body + ind + "}\n");
+      return(ind + "while (" + _g748 + ") {\n" + body + ind + "}\n");
     } else {
-      return(ind + "while " + _g742 + " do\n" + body + ind + "end\n");
+      return(ind + "while " + _g748 + " do\n" + body + ind + "end\n");
     }
   }, stmt: true, tr: true}}, import: [["lumen", "runtime"], ["lumen", "special"], ["lumen", "core"], ["lumen", "utilities"], ["lumen", "compiler"]]}, "lumen/system": {export: {nexus: {export: true, global: true}}, import: [["lumen", "special"], ["lumen", "core"]]}, "lumen/utilities": {export: {bind: {export: true, variable: true}, "bind*": {export: true, variable: true}, "bound?": {export: true, variable: true}, "can-unquote?": {variable: true}, escape: {variable: true}, getenv: {export: true, variable: true}, "global?": {variable: true}, id: {export: true, variable: true}, imported: {export: true, variable: true}, "indent-level": {export: true, global: true}, indentation: {export: true, variable: true}, "initial-environment": {export: true, variable: true}, linked: {export: true, variable: true}, "macro-function": {export: true, variable: true}, "macro?": {export: true, variable: true}, macroexpand: {export: true, variable: true}, mapo: {export: true, variable: true}, "numeric?": {variable: true}, quasiexpand: {export: true, variable: true}, "quasiquote-list": {variable: true}, "quasiquoting?": {variable: true}, "quasisplice?": {variable: true}, "quote-binding": {variable: true}, "quote-environment": {export: true, variable: true}, "quote-frame": {variable: true}, "quote-module": {variable: true}, "quote-modules": {export: true, variable: true}, quoted: {export: true, variable: true}, "quoting?": {variable: true}, reserved: {variable: true}, "reserved?": {export: true, variable: true}, sortk: {export: true, variable: true}, "special-form?": {export: true, variable: true}, "special?": {export: true, variable: true}, "stash*": {export: true, variable: true}, "statement?": {export: true, variable: true}, "symbol-expansion": {export: true, variable: true}, "symbol?": {export: true, variable: true}, "valid-char?": {variable: true}, "valid-id?": {export: true, variable: true}, "variable?": {export: true, variable: true}, "with-indent": {export: true, macro: function (form) {
     var result = make_id();
@@ -3413,124 +3428,124 @@ global.nexus = {};
   }}}, import: [["lumen", "runtime"], ["lumen", "special"], ["lumen", "core"]]}, user: {export: {}, import: ["lumen", ["lumen", "runtime"], ["lumen", "special"], ["lumen", "core"]]}};
   global.environment = [{"define-module": {export: true, macro: function (spec) {
     var body = unstash(Array.prototype.slice.call(arguments, 1));
-    var _g761 = sub(body, 0);
-    var alias = _g761.alias;
-    var exp = _g761.export;
-    var imp = _g761.import;
-    var _g762 = import_modules(imp);
-    var imports = _g762[0];
-    var bindings = _g762[1];
+    var _g763 = sub(body, 0);
+    var alias = _g763.alias;
+    var exp = _g763.export;
+    var imp = _g763.import;
+    var _g764 = import_modules(imp);
+    var imports = _g764[0];
+    var bindings = _g764[1];
     var k = module_key(spec);
     modules[k] = {alias: alias, export: {}, import: imports};
-    var _g763 = exp || [];
-    var _g764 = 0;
-    while (_g764 < length(_g763)) {
-      var x = _g763[_g764];
+    var _g765 = exp || [];
+    var _g766 = 0;
+    while (_g766 < length(_g765)) {
+      var x = _g765[_g766];
       setenv(x, {_stash: true, export: true});
-      _g764 = _g764 + 1;
+      _g766 = _g766 + 1;
     }
     return(join(["do", ["set", ["get", "nexus", ["quote", k]], ["table"]]], bindings));
   }}}];
 })();
 (function () {
   nexus.user = {};
-  var _g780 = nexus["lumen/runtime"];
-  var _37 = _g780["%"];
-  var _37message_handler = _g780["%message-handler"];
-  var _42 = _g780["*"];
-  var _43 = _g780["+"];
-  var _ = _g780["-"];
-  var _47 = _g780["/"];
-  var _60 = _g780["<"];
-  var _6061 = _g780["<="];
-  var _61 = _g780["="];
-  var _62 = _g780[">"];
-  var _6261 = _g780[">="];
-  var abs = _g780.abs;
-  var acos = _g780.acos;
-  var add = _g780.add;
-  var apply = _g780.apply;
-  var asin = _g780.asin;
-  var atan = _g780.atan;
-  var atan2 = _g780.atan2;
-  var atom63 = _g780["atom?"];
-  var boolean63 = _g780["boolean?"];
-  var cat = _g780.cat;
-  var ceil = _g780.ceil;
-  var char = _g780.char;
-  var code = _g780.code;
-  var composite63 = _g780["composite?"];
-  var cos = _g780.cos;
-  var drop = _g780.drop;
-  var empty63 = _g780["empty?"];
-  var exclude = _g780.exclude;
-  var exit = _g780.exit;
-  var extend = _g780.extend;
-  var find = _g780.find;
-  var flat = _g780.flat;
-  var flat1 = _g780.flat1;
-  var floor = _g780.floor;
-  var function63 = _g780["function?"];
-  var hd = _g780.hd;
-  var id_literal63 = _g780["id-literal?"];
-  var in63 = _g780["in?"];
-  var inner = _g780.inner;
-  var is63 = _g780["is?"];
-  var iterate = _g780.iterate;
-  var join = _g780.join;
-  var keep = _g780.keep;
-  var keys63 = _g780["keys?"];
-  var last = _g780.last;
-  var length = _g780.length;
-  var list63 = _g780["list?"];
-  var log = _g780.log;
-  var log10 = _g780.log10;
-  var make_id = _g780["make-id"];
-  var map = _g780.map;
-  var max = _g780.max;
-  var min = _g780.min;
-  var module = _g780.module;
-  var module_key = _g780["module-key"];
-  var nil63 = _g780["nil?"];
-  var none63 = _g780["none?"];
-  var now = _g780.now;
-  var number = _g780.number;
-  var number63 = _g780["number?"];
-  var one63 = _g780["one?"];
-  var pair = _g780.pair;
-  var pow = _g780.pow;
-  var random = _g780.random;
-  var read_file = _g780["read-file"];
-  var reduce = _g780.reduce;
-  var replicate = _g780.replicate;
-  var reverse = _g780.reverse;
-  var sd = _g780.sd;
-  var search = _g780.search;
-  var setenv = _g780.setenv;
-  var sin = _g780.sin;
-  var sinh = _g780.sinh;
-  var some63 = _g780["some?"];
-  var sort = _g780.sort;
-  var space = _g780.space;
-  var splice = _g780.splice;
-  var split = _g780.split;
-  var sqrt = _g780.sqrt;
-  var stash = _g780.stash;
-  var string = _g780.string;
-  var string_literal63 = _g780["string-literal?"];
-  var string63 = _g780["string?"];
-  var sub = _g780.sub;
-  var substring = _g780.substring;
-  var table63 = _g780["table?"];
-  var tan = _g780.tan;
-  var tanh = _g780.tanh;
-  var td = _g780.td;
-  var tl = _g780.tl;
-  var today = _g780.today;
-  var toplevel63 = _g780["toplevel?"];
-  var unstash = _g780.unstash;
-  var write = _g780.write;
-  var write_file = _g780["write-file"];
+  var _g782 = nexus["lumen/runtime"];
+  var _37 = _g782["%"];
+  var _37message_handler = _g782["%message-handler"];
+  var _42 = _g782["*"];
+  var _43 = _g782["+"];
+  var _ = _g782["-"];
+  var _47 = _g782["/"];
+  var _60 = _g782["<"];
+  var _6061 = _g782["<="];
+  var _61 = _g782["="];
+  var _62 = _g782[">"];
+  var _6261 = _g782[">="];
+  var abs = _g782.abs;
+  var acos = _g782.acos;
+  var add = _g782.add;
+  var apply = _g782.apply;
+  var asin = _g782.asin;
+  var atan = _g782.atan;
+  var atan2 = _g782.atan2;
+  var atom63 = _g782["atom?"];
+  var boolean63 = _g782["boolean?"];
+  var cat = _g782.cat;
+  var ceil = _g782.ceil;
+  var char = _g782.char;
+  var code = _g782.code;
+  var composite63 = _g782["composite?"];
+  var cos = _g782.cos;
+  var drop = _g782.drop;
+  var empty63 = _g782["empty?"];
+  var exclude = _g782.exclude;
+  var exit = _g782.exit;
+  var extend = _g782.extend;
+  var find = _g782.find;
+  var flat = _g782.flat;
+  var flat1 = _g782.flat1;
+  var floor = _g782.floor;
+  var function63 = _g782["function?"];
+  var hd = _g782.hd;
+  var id_literal63 = _g782["id-literal?"];
+  var in63 = _g782["in?"];
+  var inner = _g782.inner;
+  var is63 = _g782["is?"];
+  var iterate = _g782.iterate;
+  var join = _g782.join;
+  var keep = _g782.keep;
+  var keys63 = _g782["keys?"];
+  var last = _g782.last;
+  var length = _g782.length;
+  var list63 = _g782["list?"];
+  var log = _g782.log;
+  var log10 = _g782.log10;
+  var make_id = _g782["make-id"];
+  var map = _g782.map;
+  var max = _g782.max;
+  var min = _g782.min;
+  var module = _g782.module;
+  var module_key = _g782["module-key"];
+  var nil63 = _g782["nil?"];
+  var none63 = _g782["none?"];
+  var now = _g782.now;
+  var number = _g782.number;
+  var number63 = _g782["number?"];
+  var one63 = _g782["one?"];
+  var pair = _g782.pair;
+  var pow = _g782.pow;
+  var random = _g782.random;
+  var read_file = _g782["read-file"];
+  var reduce = _g782.reduce;
+  var replicate = _g782.replicate;
+  var reverse = _g782.reverse;
+  var sd = _g782.sd;
+  var search = _g782.search;
+  var setenv = _g782.setenv;
+  var sin = _g782.sin;
+  var sinh = _g782.sinh;
+  var some63 = _g782["some?"];
+  var sort = _g782.sort;
+  var space = _g782.space;
+  var splice = _g782.splice;
+  var split = _g782.split;
+  var sqrt = _g782.sqrt;
+  var stash = _g782.stash;
+  var string = _g782.string;
+  var string_literal63 = _g782["string-literal?"];
+  var string63 = _g782["string?"];
+  var sub = _g782.sub;
+  var substring = _g782.substring;
+  var table63 = _g782["table?"];
+  var tan = _g782.tan;
+  var tanh = _g782.tanh;
+  var td = _g782.td;
+  var tl = _g782.tl;
+  var today = _g782.today;
+  var toplevel63 = _g782["toplevel?"];
+  var unstash = _g782.unstash;
+  var write = _g782.write;
+  var write_file = _g782["write-file"];
 })();
 (function () {
   nexus["lumen/main"] = {};
@@ -3648,16 +3663,16 @@ global.nexus = {};
   var load_module = _g6["load-module"];
   var open_module = _g6["open-module"];
   var rep = function (str) {
-    var _g783 = (function () {
+    var _g785 = (function () {
       try {
         return([true, eval(read_from_string(str))]);
       }
-      catch (_g785) {
-        return([false, _g785.message]);
+      catch (_g787) {
+        return([false, _g787.message]);
       }
     })();
-    var _g1 = _g783[0];
-    var x = _g783[1];
+    var _g1 = _g785[0];
+    var x = _g785[1];
     if (is63(x)) {
       return(print(string(x)));
     }
@@ -3691,10 +3706,10 @@ global.nexus = {};
     var output = undefined;
     var target1 = undefined;
     var expr = undefined;
-    var _g784 = args;
+    var _g786 = args;
     var i = 0;
-    while (i < length(_g784)) {
-      var arg = _g784[i];
+    while (i < length(_g786)) {
+      var arg = _g786[i];
       if (arg === "-o" || arg === "-t" || arg === "-e") {
         if (i === length(args) - 1) {
           print("missing argument for" + " " + string(arg));

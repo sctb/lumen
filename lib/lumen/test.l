@@ -40,6 +40,7 @@
   (pr "  " passed "passed," failed "failed"))
 
 (define-test reader ()
+  (test= nil (read-from-string ""))
   (test= 17 (read-from-string "17"))
   (test= 0.015 (read-from-string "1.5e-2"))
   (test= true (read-from-string "true"))
@@ -655,6 +656,11 @@
   (let (even (fn (x) (= (% x 2) 0)))
     (test= '(6) (keep even '(5 6 7))))
   (test= '((1) (2 3)) (keep some? '(() (1) () (2 3)))))
+
+(define-test in? ()
+  (test= true (in? 'x '(x y z)))
+  (test= true (in? 7 '(5 6 7)))
+  (test= nil (in? 'baz '(no can do))))
 
 (define-test find ()
   (test= nil (find (fn (x) x) ()))
