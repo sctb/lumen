@@ -159,7 +159,10 @@
       (macroexpand (symbol-expansion form))
       (atom? form) form
     (let (x (hd form))
-      (if (= x '%function)
+      (if (= x '%local)
+          (let ((_ name value) form)
+            `(%local ,name ,(macroexpand value)))
+          (= x '%function)
           (let ((_ args rest: body) form)
             (with-bindings (args)
               `(%function ,(map macroexpand args)
@@ -171,8 +174,7 @@
               `(,x ,name ,(map macroexpand args)
                  ,@(macroexpand body))))
 	  (macro? x)
-          (macroexpand
-           (apply (macro-function x) (tl form)))
+          (macroexpand (apply (macro-function x) (tl form)))
         (map macroexpand form)))))
 
 (define quasiexpand)
