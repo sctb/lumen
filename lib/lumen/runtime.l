@@ -149,8 +149,12 @@
 (define number? (x) (= (type x) 'number))
 (define boolean? (x) (= (type x) 'boolean))
 (define function? (x) (= (type x) 'function))
-(define composite? (x) (= (type x) (target js: 'object lua: 'table)))
-(define atom? (x) (not (composite? x)))
+
+(define composite? (x)
+  (and (is? x)
+       (= (type x) (target js: 'object lua: 'table))))
+
+(define atom? (x) (or (nil? x) (not (composite? x))))
 (define table? (x) (and (composite? x) (nil? (hd x))))
 (define list? (x) (and (composite? x) (is? (hd x))))
 

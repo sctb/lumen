@@ -110,11 +110,11 @@ global.nexus = {};
   };
   nexus["lumen/runtime"]["function?"] = function63;
   var composite63 = function (x) {
-    return(type(x) === "object");
+    return(is63(x) && type(x) === "object");
   };
   nexus["lumen/runtime"]["composite?"] = composite63;
   var atom63 = function (x) {
-    return(!composite63(x));
+    return(nil63(x) || !composite63(x));
   };
   nexus["lumen/runtime"]["atom?"] = atom63;
   var table63 = function (x) {

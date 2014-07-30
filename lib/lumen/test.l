@@ -682,6 +682,13 @@
   (test= '(3 2 1) (sort '(1 2 3) >)))
 
 (define-test type ()
+  (test= true (atom? nil))
+  (test= true (atom? "abc"))
+  (test= true (atom? 42))
+  (test= true (atom? true))
+  (test= true (atom? (fn ())))
+  (test= false (atom? '(1)))
+  (test= false (atom? (table)))
   (test= true (string? "abc"))
   (test= false (string? 17))
   (test= false (string? '(a)))
