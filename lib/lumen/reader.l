@@ -85,7 +85,7 @@
 	  (= str "true") true
 	  (= str "false") false
           (= str "_") (make-id)
-          dot?
+          (and dot? (not (one? str)))
           (reduce (fn (a b)
                     `(get ,b (quote ,a)))
                   (reverse (split str ".")))
