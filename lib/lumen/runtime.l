@@ -376,16 +376,16 @@
   (reduce (fn (a b) (+ a b)) xs))
 
 (define - (rest: xs)
-  (reduce (fn (a b) (- b a)) (reverse xs)))
+  (reduce (fn (b a) (- a b)) (reverse xs)))
 
 (define * (rest: xs)
   (reduce (fn (a b) (* a b)) xs))
 
 (define / (rest: xs)
-  (reduce (fn (a b) (/ b a)) (reverse xs)))
+  (reduce (fn (b a) (/ a b)) (reverse xs)))
 
 (define % (rest: xs)
-  (reduce (fn (a b) (% b a)) (reverse xs)))
+  (reduce (fn (b a) (% a b)) (reverse xs)))
 
 (define > (a b) (> a b))
 (define < (a b) (< a b))
