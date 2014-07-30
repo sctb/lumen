@@ -166,7 +166,7 @@ global.nexus = {};
       var _g26 = x;
       var k = undefined;
       for (k in _g26) {
-        if (isNaN(parseInt(k))) {
+        if (nil63(number(k))) {
           var v = _g26[k];
           l[k] = v;
         }
@@ -253,7 +253,7 @@ global.nexus = {};
           var _g27 = l1;
           var k = undefined;
           for (k in _g27) {
-            if (isNaN(parseInt(k))) {
+            if (nil63(number(k))) {
               var v = _g27[k];
               l[k] = v;
             }
@@ -261,7 +261,7 @@ global.nexus = {};
           var _g28 = l2;
           var k = undefined;
           for (k in _g28) {
-            if (isNaN(parseInt(k))) {
+            if (nil63(number(k))) {
               var v = _g28[k];
               l[k] = v;
             }
@@ -395,7 +395,7 @@ global.nexus = {};
     var _g39 = t;
     var k = undefined;
     for (k in _g39) {
-      if (isNaN(parseInt(k))) {
+      if (nil63(number(k))) {
         var v = _g39[k];
         var x = f(v);
         if (splice63(x)) {
@@ -443,7 +443,7 @@ global.nexus = {};
     var _g40 = t;
     var k = undefined;
     for (k in _g40) {
-      if (isNaN(parseInt(k))) {
+      if (nil63(number(k))) {
         var v = _g40[k];
         k63 = true;
         break;
@@ -462,7 +462,7 @@ global.nexus = {};
       var _g41 = args;
       var k = undefined;
       for (k in _g41) {
-        if (isNaN(parseInt(k))) {
+        if (nil63(number(k))) {
           var v = _g41[k];
           p[k] = v;
         }
@@ -483,7 +483,7 @@ global.nexus = {};
         var _g42 = l;
         var k = undefined;
         for (k in _g42) {
-          if (isNaN(parseInt(k))) {
+          if (nil63(number(k))) {
             var v = _g42[k];
             if (!(k === "_stash")) {
               args1[k] = v;
@@ -510,7 +510,7 @@ global.nexus = {};
     var _g45 = t;
     var k = undefined;
     for (k in _g45) {
-      if (isNaN(parseInt(k))) {
+      if (nil63(number(k))) {
         var v = _g45[k];
         if (!_g44[k]) {
           t1[k] = v;
@@ -688,7 +688,7 @@ global.nexus = {};
             var _g52 = x;
             var k = undefined;
             for (k in _g52) {
-              if (isNaN(parseInt(k))) {
+              if (nil63(number(k))) {
                 var v = _g52[k];
                 add(x1, k + ":");
                 add(x1, v);
@@ -772,7 +772,7 @@ global.nexus = {};
       var _g56 = _g55;
       var k1 = undefined;
       for (k1 in _g56) {
-        if (isNaN(parseInt(k1))) {
+        if (nil63(number(k1))) {
           var v = _g56[k1];
           x[k1] = v;
         }
@@ -897,7 +897,7 @@ global.nexus = {};
         var _g66 = _g64;
         var x = undefined;
         for (x in _g66) {
-          if (isNaN(parseInt(x))) {
+          if (nil63(number(x))) {
             var _g58 = _g66[x];
             _g65 = x;
           }
@@ -1002,7 +1002,7 @@ global.nexus = {};
       var _g67 = args;
       var k = undefined;
       for (k in _g67) {
-        if (isNaN(parseInt(k))) {
+        if (nil63(number(k))) {
           var v = _g67[k];
           add(l, k);
           add(l, v);
@@ -1037,7 +1037,7 @@ global.nexus = {};
         var _g69 = lh;
         var k = undefined;
         for (k in _g69) {
-          if (isNaN(parseInt(k))) {
+          if (nil63(number(k))) {
             var v = _g69[k];
             if (v === true) {
               v = k;
@@ -1173,7 +1173,7 @@ global.nexus = {};
     var _g82 = form;
     var k = undefined;
     for (k in _g82) {
-      if (isNaN(parseInt(k))) {
+      if (nil63(number(k))) {
         var v = _g82[k];
         var _g98;
         if (quasisplice63(v, depth)) {
@@ -1274,7 +1274,7 @@ global.nexus = {};
           var i = 0;
           while (i < length(id)) {
             var n = code(id, i);
-            if (!valid_char63(n)) {
+            if (!(valid_char63(n) && (i > 0 || !numeric63(n)))) {
               return(false);
             }
             i = i + 1;
@@ -1338,7 +1338,7 @@ global.nexus = {};
       var _g92 = module(spec).export;
       var n = undefined;
       for (n in _g92) {
-        if (isNaN(parseInt(n))) {
+        if (nil63(number(n))) {
           var b = _g92[n];
           if (b.variable && (all || b.export)) {
             add(imports, ["%local", n, ["get", m, ["quote", n]]]);
@@ -1387,7 +1387,7 @@ global.nexus = {};
     var _g93 = t;
     var k = undefined;
     for (k in _g93) {
-      if (isNaN(parseInt(k))) {
+      if (nil63(number(k))) {
         var v = _g93[k];
         var x = f(v);
         if (is63(x)) {
@@ -2427,7 +2427,7 @@ global.nexus = {};
     var _g177 = m.export;
     var k = undefined;
     for (k in _g177) {
-      if (isNaN(parseInt(k))) {
+      if (nil63(number(k))) {
         var v = _g177[k];
         if (v.export || all) {
           frame[k] = v;
@@ -3030,7 +3030,7 @@ global.nexus = {};
       _g768 = ["let", [i, 0], ["while", ["<", i, ["length", t1]], join(["let", [k, ["at", t1, i]]], _g732), ["inc", i]]];
     } else {
       var _g733 = ["target"];
-      _g733.js = ["isNaN", ["parseInt", k]];
+      _g733.js = ["nil?", ["number", k]];
       _g733.lua = ["not", ["number?", k]];
       _g768 = ["let", [k, "nil"], ["%for", t1, k, ["when", _g733, join(["let", [v, ["get", t1, k]]], _g732)]]];
     }
@@ -3140,7 +3140,7 @@ global.nexus = {};
       var _g696 = body;
       var k = undefined;
       for (k in _g696) {
-        if (isNaN(parseInt(k))) {
+        if (nil63(number(k))) {
           var v = _g696[k];
           add(init, [k, ["set", ["get", id, ["quote", k]], v]]);
         }

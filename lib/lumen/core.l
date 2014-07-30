@@ -194,7 +194,7 @@
           `(let (,k nil)
              (%for ,t1 ,k
                (when (target
-                       js: (isNaN (parseInt ,k))
+                       js: (nil? (number ,k))
                        lua: (not (number? ,k)))
                  (let (,v (get ,t1 ,k))
                    ,@body))))))))
