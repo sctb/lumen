@@ -245,6 +245,18 @@
     (test= 20 |b.x|)
     (test= 30 |f()|)))
 
+(define-test names ()
+  (let (a! 0
+        b? 1
+        2c 2
+        2> 3
+        break 4)
+    (test= 0 a!)
+    (test= 1 b?)
+    (test= 2 2c)
+    (test= 3 2>)
+    (test= 4 break)))
+
 (define-test set ()
   (let (a 42)
     (set a 'bar)

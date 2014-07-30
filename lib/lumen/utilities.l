@@ -270,11 +270,9 @@
       (reserved? id) false
     (let (i 0)
       (while (< i (length id))
-        (let (n (code id i)
-              valid? (valid-char? n))
-          (if (or (not valid?)
-                  (and (= i 0) (numeric? n)))
-              (return false)))
+        (let (n (code id i))
+          (unless (valid-char? n) 
+            (return false)))
         (inc i))
       true)))
 
@@ -284,6 +282,7 @@
       (let (c (char id i)
             n (code c)
             c1 (if (= c "-") "_"
+                   (and (= i 0) (numeric? n)) (cat "_" n)
                    (valid-char? n) c
                    (= i 0) (cat "_" n)
                  n))
