@@ -2033,9 +2033,9 @@ end)();
     local x = form[1]
     local args = sub(form, 1)
     local _g159 = getenv(x)
-    local self_tr63 = _g159.tr
-    local special = _g159.special
     local stmt = _g159.stmt
+    local special = _g159.special
+    local self_tr63 = _g159.tr
     local tr = terminator(stmt63 and not self_tr63)
     return(apply(special, args) .. tr)
   end
@@ -2782,141 +2782,141 @@ end)();
 end)();
 (function ()
   nexus["lumen/boot"] = {}
-  local _g683 = nexus["lumen/runtime"]
-  local _37 = _g683["%"]
-  local _37message_handler = _g683["%message-handler"]
-  local _42 = _g683["*"]
-  local _43 = _g683["+"]
-  local _ = _g683["-"]
-  local _47 = _g683["/"]
-  local _60 = _g683["<"]
-  local _6061 = _g683["<="]
-  local _61 = _g683["="]
-  local _62 = _g683[">"]
-  local _6261 = _g683[">="]
-  local abs = _g683.abs
-  local acos = _g683.acos
-  local add = _g683.add
-  local apply = _g683.apply
-  local asin = _g683.asin
-  local atan = _g683.atan
-  local atan2 = _g683.atan2
-  local atom63 = _g683["atom?"]
-  local boolean63 = _g683["boolean?"]
-  local cat = _g683.cat
-  local ceil = _g683.ceil
-  local char = _g683.char
-  local code = _g683.code
-  local composite63 = _g683["composite?"]
-  local cos = _g683.cos
-  local drop = _g683.drop
-  local empty63 = _g683["empty?"]
-  local exclude = _g683.exclude
-  local exit = _g683.exit
-  local extend = _g683.extend
-  local find = _g683.find
-  local flat = _g683.flat
-  local flat1 = _g683.flat1
-  local floor = _g683.floor
-  local function63 = _g683["function?"]
-  local hd = _g683.hd
-  local id_literal63 = _g683["id-literal?"]
-  local in63 = _g683["in?"]
-  local inner = _g683.inner
-  local is63 = _g683["is?"]
-  local iterate = _g683.iterate
-  local join = _g683.join
-  local keep = _g683.keep
-  local keys63 = _g683["keys?"]
-  local last = _g683.last
-  local length = _g683.length
-  local list63 = _g683["list?"]
-  local log = _g683.log
-  local log10 = _g683.log10
-  local make_id = _g683["make-id"]
-  local map = _g683.map
-  local max = _g683.max
-  local min = _g683.min
-  local module = _g683.module
-  local module_key = _g683["module-key"]
-  local nil63 = _g683["nil?"]
-  local none63 = _g683["none?"]
-  local now = _g683.now
-  local number = _g683.number
-  local number63 = _g683["number?"]
-  local one63 = _g683["one?"]
-  local pair = _g683.pair
-  local pow = _g683.pow
-  local random = _g683.random
-  local read_file = _g683["read-file"]
-  local reduce = _g683.reduce
-  local replicate = _g683.replicate
-  local reverse = _g683.reverse
-  local sd = _g683.sd
-  local search = _g683.search
-  local setenv = _g683.setenv
-  local sin = _g683.sin
-  local sinh = _g683.sinh
-  local some63 = _g683["some?"]
-  local sort = _g683.sort
-  local space = _g683.space
-  local splice = _g683.splice
-  local split = _g683.split
-  local sqrt = _g683.sqrt
-  local stash = _g683.stash
-  local string = _g683.string
-  local string_literal63 = _g683["string-literal?"]
-  local string63 = _g683["string?"]
-  local sub = _g683.sub
-  local substring = _g683.substring
-  local table63 = _g683["table?"]
-  local tan = _g683.tan
-  local tanh = _g683.tanh
-  local td = _g683.td
-  local tl = _g683.tl
-  local today = _g683.today
-  local toplevel63 = _g683["toplevel?"]
-  local unstash = _g683.unstash
-  local write = _g683.write
-  local write_file = _g683["write-file"]
-  local _g686 = nexus["lumen/lib"]
-  local bind = _g686.bind
-  local bind42 = _g686["bind*"]
-  local bound63 = _g686["bound?"]
-  local getenv = _g686.getenv
-  local id = _g686.id
-  local imported = _g686.imported
-  local indentation = _g686.indentation
-  local initial_environment = _g686["initial-environment"]
-  local linked = _g686.linked
-  local macro_function = _g686["macro-function"]
-  local macro63 = _g686["macro?"]
-  local macroexpand = _g686.macroexpand
-  local mapo = _g686.mapo
-  local quasiexpand = _g686.quasiexpand
-  local quote_environment = _g686["quote-environment"]
-  local quote_modules = _g686["quote-modules"]
-  local quoted = _g686.quoted
-  local reserved63 = _g686["reserved?"]
-  local sortk = _g686.sortk
-  local special_form63 = _g686["special-form?"]
-  local special63 = _g686["special?"]
-  local stash42 = _g686["stash*"]
-  local statement63 = _g686["statement?"]
-  local symbol_expansion = _g686["symbol-expansion"]
-  local symbol63 = _g686["symbol?"]
-  local valid_id63 = _g686["valid-id?"]
-  local variable63 = _g686["variable?"]
-  local _g687 = nexus["lumen/compiler"]
-  local compile = _g687.compile
-  local compile_function = _g687["compile-function"]
-  local compile_module = _g687["compile-module"]
-  local declare = _g687.declare
-  local eval = _g687.eval
-  local import_modules = _g687["import-modules"]
-  local in_module = _g687["in-module"]
-  local load_module = _g687["load-module"]
-  local open_module = _g687["open-module"]
+  local _g697 = nexus["lumen/runtime"]
+  local _37 = _g697["%"]
+  local _37message_handler = _g697["%message-handler"]
+  local _42 = _g697["*"]
+  local _43 = _g697["+"]
+  local _ = _g697["-"]
+  local _47 = _g697["/"]
+  local _60 = _g697["<"]
+  local _6061 = _g697["<="]
+  local _61 = _g697["="]
+  local _62 = _g697[">"]
+  local _6261 = _g697[">="]
+  local abs = _g697.abs
+  local acos = _g697.acos
+  local add = _g697.add
+  local apply = _g697.apply
+  local asin = _g697.asin
+  local atan = _g697.atan
+  local atan2 = _g697.atan2
+  local atom63 = _g697["atom?"]
+  local boolean63 = _g697["boolean?"]
+  local cat = _g697.cat
+  local ceil = _g697.ceil
+  local char = _g697.char
+  local code = _g697.code
+  local composite63 = _g697["composite?"]
+  local cos = _g697.cos
+  local drop = _g697.drop
+  local empty63 = _g697["empty?"]
+  local exclude = _g697.exclude
+  local exit = _g697.exit
+  local extend = _g697.extend
+  local find = _g697.find
+  local flat = _g697.flat
+  local flat1 = _g697.flat1
+  local floor = _g697.floor
+  local function63 = _g697["function?"]
+  local hd = _g697.hd
+  local id_literal63 = _g697["id-literal?"]
+  local in63 = _g697["in?"]
+  local inner = _g697.inner
+  local is63 = _g697["is?"]
+  local iterate = _g697.iterate
+  local join = _g697.join
+  local keep = _g697.keep
+  local keys63 = _g697["keys?"]
+  local last = _g697.last
+  local length = _g697.length
+  local list63 = _g697["list?"]
+  local log = _g697.log
+  local log10 = _g697.log10
+  local make_id = _g697["make-id"]
+  local map = _g697.map
+  local max = _g697.max
+  local min = _g697.min
+  local module = _g697.module
+  local module_key = _g697["module-key"]
+  local nil63 = _g697["nil?"]
+  local none63 = _g697["none?"]
+  local now = _g697.now
+  local number = _g697.number
+  local number63 = _g697["number?"]
+  local one63 = _g697["one?"]
+  local pair = _g697.pair
+  local pow = _g697.pow
+  local random = _g697.random
+  local read_file = _g697["read-file"]
+  local reduce = _g697.reduce
+  local replicate = _g697.replicate
+  local reverse = _g697.reverse
+  local sd = _g697.sd
+  local search = _g697.search
+  local setenv = _g697.setenv
+  local sin = _g697.sin
+  local sinh = _g697.sinh
+  local some63 = _g697["some?"]
+  local sort = _g697.sort
+  local space = _g697.space
+  local splice = _g697.splice
+  local split = _g697.split
+  local sqrt = _g697.sqrt
+  local stash = _g697.stash
+  local string = _g697.string
+  local string_literal63 = _g697["string-literal?"]
+  local string63 = _g697["string?"]
+  local sub = _g697.sub
+  local substring = _g697.substring
+  local table63 = _g697["table?"]
+  local tan = _g697.tan
+  local tanh = _g697.tanh
+  local td = _g697.td
+  local tl = _g697.tl
+  local today = _g697.today
+  local toplevel63 = _g697["toplevel?"]
+  local unstash = _g697.unstash
+  local write = _g697.write
+  local write_file = _g697["write-file"]
+  local _g700 = nexus["lumen/lib"]
+  local bind = _g700.bind
+  local bind42 = _g700["bind*"]
+  local bound63 = _g700["bound?"]
+  local getenv = _g700.getenv
+  local id = _g700.id
+  local imported = _g700.imported
+  local indentation = _g700.indentation
+  local initial_environment = _g700["initial-environment"]
+  local linked = _g700.linked
+  local macro_function = _g700["macro-function"]
+  local macro63 = _g700["macro?"]
+  local macroexpand = _g700.macroexpand
+  local mapo = _g700.mapo
+  local quasiexpand = _g700.quasiexpand
+  local quote_environment = _g700["quote-environment"]
+  local quote_modules = _g700["quote-modules"]
+  local quoted = _g700.quoted
+  local reserved63 = _g700["reserved?"]
+  local sortk = _g700.sortk
+  local special_form63 = _g700["special-form?"]
+  local special63 = _g700["special?"]
+  local stash42 = _g700["stash*"]
+  local statement63 = _g700["statement?"]
+  local symbol_expansion = _g700["symbol-expansion"]
+  local symbol63 = _g700["symbol?"]
+  local valid_id63 = _g700["valid-id?"]
+  local variable63 = _g700["variable?"]
+  local _g701 = nexus["lumen/compiler"]
+  local compile = _g701.compile
+  local compile_function = _g701["compile-function"]
+  local compile_module = _g701["compile-module"]
+  local declare = _g701.declare
+  local eval = _g701.eval
+  local import_modules = _g701["import-modules"]
+  local in_module = _g701["in-module"]
+  local load_module = _g701["load-module"]
+  local open_module = _g701["open-module"]
   modules = {lumen = {alias = {{"lumen", "runtime"}, {"lumen", "special"}, {"lumen", "core"}}, export = {}, import = {{"lumen", "special"}}}, ["lumen/boot"] = {export = {["%initial-environment"] = {macro = function ()
     return(quote_environment(initial_environment()))
   end}, ["%initial-modules"] = {macro = function ()
@@ -2932,8 +2932,8 @@ end)();
     return({"get", l, i})
   end}, ["cat!"] = {export = true, macro = function (a, ...)
     local bs = unstash({...})
-    local _g729 = sub(bs, 0)
-    return({"set", a, join({"cat", a}, _g729)})
+    local _g758 = sub(bs, 0)
+    return({"set", a, join({"cat", a}, _g758)})
   end}, dec = {export = true, macro = function (n, by)
     return({"set", n, {"-", n, by or 1}})
   end}, define = {export = true, macro = function (name, x, ...)
@@ -2954,13 +2954,13 @@ end)();
     end
   end}, ["define*"] = {export = true, macro = function (name, x, ...)
     local body = unstash({...})
-    local _g744 = sub(body, 0)
+    local _g724 = sub(body, 0)
     setenv(name, {_stash = true, export = true, global = true})
-    if some63(_g744) then
-      local _g745 = bind42(x, _g744)
-      local args = _g745[1]
-      local _g746 = _g745[2]
-      return(join({"%global-function", name, args}, _g746))
+    if some63(_g724) then
+      local _g725 = bind42(x, _g724)
+      local args = _g725[1]
+      local _g726 = _g725[2]
+      return(join({"%global-function", name, args}, _g726))
     else
       if target == "js" then
         return({"set", {"get", "global", {"quote", id(name)}}, x})
@@ -2970,75 +2970,75 @@ end)();
     end
   end}, ["define-macro"] = {export = true, macro = function (name, args, ...)
     local body = unstash({...})
-    local _g726 = sub(body, 0)
-    local form = join({"fn", args}, _g726)
-    local _g727 = {"setenv", {"quote", name}}
-    _g727.form = {"quote", form}
-    _g727.macro = form
-    eval(_g727)
+    local _g746 = sub(body, 0)
+    local form = join({"fn", args}, _g746)
+    local _g747 = {"setenv", {"quote", name}}
+    _g747.form = {"quote", form}
+    _g747.macro = form
+    eval(_g747)
     return(nil)
   end}, ["define-module"] = {export = true, macro = function (spec, ...)
     local body = unstash({...})
-    local _g762 = sub(body, 0)
-    local exp = _g762.export
-    local imp = _g762.import
-    local alias = _g762.alias
-    local _g763 = import_modules(imp)
-    local imports = _g763[1]
-    local bindings = _g763[2]
+    local _g727 = sub(body, 0)
+    local imp = _g727.import
+    local exp = _g727.export
+    local alias = _g727.alias
+    local _g728 = import_modules(imp)
+    local imports = _g728[1]
+    local bindings = _g728[2]
     local k = module_key(spec)
     modules[k] = {alias = alias, export = {}, import = imports}
-    local _g764 = exp or {}
-    local _g765 = 0
-    while _g765 < length(_g764) do
-      local x = _g764[_g765 + 1]
+    local _g729 = exp or {}
+    local _g730 = 0
+    while _g730 < length(_g729) do
+      local x = _g729[_g730 + 1]
       setenv(x, {_stash = true, export = true})
-      _g765 = _g765 + 1
+      _g730 = _g730 + 1
     end
     return(join({"do", {"set", {"get", "nexus", {"quote", k}}, {"table"}}}, bindings))
   end}, ["define-special"] = {export = true, macro = function (name, args, ...)
     local body = unstash({...})
-    local _g722 = sub(body, 0)
-    local form = join({"fn", args}, _g722)
-    local keys = sub(_g722, length(_g722))
-    local _g723 = {"setenv", {"quote", name}}
-    _g723.form = {"quote", form}
-    _g723.special = form
-    eval(join(_g723, keys))
+    local _g752 = sub(body, 0)
+    local form = join({"fn", args}, _g752)
+    local keys = sub(_g752, length(_g752))
+    local _g753 = {"setenv", {"quote", name}}
+    _g753.form = {"quote", form}
+    _g753.special = form
+    eval(join(_g753, keys))
     return(nil)
   end}, ["define-symbol"] = {export = true, macro = function (name, expansion)
     setenv(name, {_stash = true, symbol = expansion})
     return(nil)
   end}, each = {export = true, macro = function (b, t, ...)
     local body = unstash({...})
-    local _g742 = sub(body, 0)
+    local _g731 = sub(body, 0)
     local k = b[1]
     local v = b[2]
     local t1 = make_id()
-    local _g785
+    local _g790
     if nil63(v) then
-      local _g786
+      local _g791
       if b.i then
-        _g786 = "i"
+        _g791 = "i"
       else
-        _g786 = make_id()
+        _g791 = make_id()
       end
-      local i = _g786
-      _g785 = {"let", {i, 0}, {"while", {"<", i, {"length", t1}}, join({"let", {k, {"at", t1, i}}}, _g742), {"inc", i}}}
+      local i = _g791
+      _g790 = {"let", {i, 0}, {"while", {"<", i, {"length", t1}}, join({"let", {k, {"at", t1, i}}}, _g731), {"inc", i}}}
     else
-      local _g743 = {"target"}
-      _g743.js = {"nil?", {"number", k}}
-      _g743.lua = {"not", {"number?", k}}
-      _g785 = {"let", {k, "nil"}, {"%for", t1, k, {"when", _g743, join({"let", {v, {"get", t1, k}}}, _g742)}}}
+      local _g732 = {"target"}
+      _g732.js = {"nil?", {"number", k}}
+      _g732.lua = {"not", {"number?", k}}
+      _g790 = {"let", {k, "nil"}, {"%for", t1, k, {"when", _g732, join({"let", {v, {"get", t1, k}}}, _g731)}}}
     end
-    return({"let", {t1, t}, _g785})
+    return({"let", {t1, t}, _g790})
   end}, fn = {export = true, macro = function (args, ...)
     local body = unstash({...})
-    local _g738 = sub(body, 0)
-    local _g739 = bind42(args, _g738)
-    local _g740 = _g739[1]
-    local _g741 = _g739[2]
-    return(join({"%function", _g740}, _g741))
+    local _g748 = sub(body, 0)
+    local _g749 = bind42(args, _g748)
+    local _g750 = _g749[1]
+    local _g751 = _g749[2]
+    return(join({"%function", _g750}, _g751))
   end}, guard = {export = true, macro = function (expr)
     if target == "js" then
       return({{"fn", {}, {"%try", {"list", true, expr}}}})
@@ -3050,10 +3050,10 @@ end)();
     end
   end}, ["if"] = {export = true, macro = function (...)
     local branches = unstash({...})
-    local function step(_g758)
-      local a = _g758[1]
-      local b = _g758[2]
-      local c = sub(_g758, 2)
+    local function step(_g741)
+      local a = _g741[1]
+      local b = _g741[2]
+      local c = sub(_g741, 2)
       if is63(b) then
         return({join({"%if", a, b}, step(c))})
       else
@@ -3067,8 +3067,8 @@ end)();
     return({"set", n, {"+", n, by or 1}})
   end}, ["join!"] = {export = true, macro = function (a, ...)
     local bs = unstash({...})
-    local _g733 = sub(bs, 0)
-    return({"set", a, join({"join*", a}, _g733)})
+    local _g716 = sub(bs, 0)
+    return({"set", a, join({"join*", a}, _g716)})
   end}, ["join*"] = {export = true, macro = function (...)
     local xs = unstash({...})
     return(reduce(function (a, b)
@@ -3078,19 +3078,19 @@ end)();
     return({"quote", target})
   end}, let = {export = true, macro = function (bindings, ...)
     local body = unstash({...})
-    local _g749 = sub(body, 0)
+    local _g719 = sub(body, 0)
     local i = 0
     local renames = {}
     local locals = {}
-    map(function (_g750)
-      local lh = _g750[1]
-      local rh = _g750[2]
-      local _g751 = bind(lh, rh)
-      local _g752 = 0
-      while _g752 < length(_g751) do
-        local _g753 = _g751[_g752 + 1]
-        local id = _g753[1]
-        local val = _g753[2]
+    map(function (_g720)
+      local lh = _g720[1]
+      local rh = _g720[2]
+      local _g721 = bind(lh, rh)
+      local _g722 = 0
+      while _g722 < length(_g721) do
+        local _g723 = _g721[_g722 + 1]
+        local id = _g723[1]
+        local val = _g723[2]
         if bound63(id) or reserved63(id) or toplevel63() then
           local rename = make_id()
           add(renames, id)
@@ -3100,32 +3100,61 @@ end)();
           setenv(id, {_stash = true, variable = true})
         end
         add(locals, {"%local", id, val})
-        _g752 = _g752 + 1
+        _g722 = _g722 + 1
       end
     end, pair(bindings))
-    return(join({"do"}, join(locals, {join({"let-symbol", renames}, _g749)})))
+    return(join({"do"}, join(locals, {join({"let-symbol", renames}, _g719)})))
+  end}, ["let*"] = {export = true, macro = function (bindings, ...)
+    local body = unstash({...})
+    local _g733 = sub(body, 0)
+    if length(bindings) < 2 then
+      return(join({"do"}, _g733))
+    else
+      local renames = {}
+      local locals = {}
+      local lh = bindings[1]
+      local rh = bindings[2]
+      local _g734 = bind(lh, rh)
+      local _g735 = 0
+      while _g735 < length(_g734) do
+        local _g736 = _g734[_g735 + 1]
+        local id = _g736[1]
+        local val = _g736[2]
+        if bound63(id) or reserved63(id) or toplevel63() then
+          local id1 = make_id()
+          add(renames, id)
+          add(renames, id1)
+          id = id1
+        else
+          setenv(id, {_stash = true, variable = true})
+        end
+        add(locals, {"%local", id, val})
+        _g735 = _g735 + 1
+      end
+      return(join({"do"}, join(locals, {{"let-symbol", renames, join({"let*", sub(bindings, 2)}, _g733)}})))
+    end
   end}, ["let-macro"] = {export = true, macro = function (definitions, ...)
     local body = unstash({...})
-    local _g747 = sub(body, 0)
+    local _g717 = sub(body, 0)
     add(environment, {})
     map(function (m)
       return(macroexpand(join({"define-macro"}, m)))
     end, definitions)
-    local _g748 = join({"do"}, macroexpand(_g747))
+    local _g718 = join({"do"}, macroexpand(_g717))
     drop(environment)
-    return(_g748)
+    return(_g718)
   end}, ["let-symbol"] = {export = true, macro = function (expansions, ...)
     local body = unstash({...})
-    local _g730 = sub(body, 0)
+    local _g738 = sub(body, 0)
     add(environment, {})
-    map(function (_g732)
-      local name = _g732[1]
-      local exp = _g732[2]
+    map(function (_g740)
+      local name = _g740[1]
+      local exp = _g740[2]
       return(macroexpand({"define-symbol", name, exp}))
     end, pair(expansions))
-    local _g731 = join({"do"}, macroexpand(_g730))
+    local _g739 = join({"do"}, macroexpand(_g738))
     drop(environment)
-    return(_g731)
+    return(_g739)
   end}, list = {export = true, macro = function (...)
     local body = unstash({...})
     local l = join({"%array"}, body)
@@ -3134,11 +3163,11 @@ end)();
     else
       local id = make_id()
       local init = {}
-      local _g737 = body
+      local _g763 = body
       local k = nil
-      for k in next, _g737 do
+      for k in next, _g763 do
         if not number63(k) then
-          local v = _g737[k]
+          local v = _g763[k]
           add(init, {k, {"set", {"get", id, {"quote", k}}, v}})
         end
       end
@@ -3156,12 +3185,12 @@ end)();
   end}, ["set-of"] = {export = true, macro = function (...)
     local elements = unstash({...})
     local l = {}
-    local _g734 = elements
-    local _g735 = 0
-    while _g735 < length(_g734) do
-      local e = _g734[_g735 + 1]
+    local _g744 = elements
+    local _g745 = 0
+    while _g745 < length(_g744) do
+      local e = _g744[_g745 + 1]
       l[e] = true
-      _g735 = _g735 + 1
+      _g745 = _g745 + 1
     end
     return(join({"table"}, l))
   end}, table = {export = true, macro = function (...)
@@ -3174,12 +3203,12 @@ end)();
     return(clauses[target])
   end}, unless = {export = true, macro = function (cond, ...)
     local body = unstash({...})
-    local _g728 = sub(body, 0)
-    return({"if", {"not", cond}, join({"do"}, _g728)})
+    local _g737 = sub(body, 0)
+    return({"if", {"not", cond}, join({"do"}, _g737)})
   end}, when = {export = true, macro = function (cond, ...)
     local body = unstash({...})
-    local _g736 = sub(body, 0)
-    return({"if", cond, join({"do"}, _g736)})
+    local _g762 = sub(body, 0)
+    return({"if", cond, join({"do"}, _g762)})
   end}, ["with-bindings"] = {export = true, macro = function (_g754, ...)
     local names = _g754[1]
     local body = unstash({...})
@@ -3192,42 +3221,42 @@ end)();
     return(join(_g756, _g755))
   end}, ["with-frame"] = {export = true, macro = function (...)
     local body = unstash({...})
-    local _g724 = sub(body, 0)
+    local _g742 = sub(body, 0)
     local scope = body.scope
     local x = make_id()
-    local _g725 = {"table"}
-    _g725._scope = scope
-    return({"do", {"add", "environment", _g725}, {"let", {x, join({"do"}, _g724)}, {"drop", "environment"}, x}})
+    local _g743 = {"table"}
+    _g743._scope = scope
+    return({"do", {"add", "environment", _g743}, {"let", {x, join({"do"}, _g742)}, {"drop", "environment"}, x}})
   end}}, import = {{"lumen", "runtime"}, {"lumen", "special"}, {"lumen", "core"}, {"lumen", "lib"}, {"lumen", "compiler"}}}, ["lumen/lib"] = {export = {bind = {export = true, variable = true}, ["bind*"] = {export = true, variable = true}, ["bound?"] = {export = true, variable = true}, ["can-unquote?"] = {variable = true}, escape = {variable = true}, getenv = {export = true, variable = true}, ["global?"] = {variable = true}, id = {export = true, variable = true}, imported = {export = true, variable = true}, ["indent-level"] = {export = true, global = true}, indentation = {export = true, variable = true}, ["initial-environment"] = {export = true, variable = true}, linked = {export = true, variable = true}, ["macro-function"] = {export = true, variable = true}, ["macro?"] = {export = true, variable = true}, macroexpand = {export = true, variable = true}, mapo = {export = true, variable = true}, ["numeric?"] = {variable = true}, quasiexpand = {export = true, variable = true}, ["quasiquote-list"] = {variable = true}, ["quasiquoting?"] = {variable = true}, ["quasisplice?"] = {variable = true}, ["quote-binding"] = {variable = true}, ["quote-environment"] = {export = true, variable = true}, ["quote-frame"] = {variable = true}, ["quote-module"] = {variable = true}, ["quote-modules"] = {export = true, variable = true}, quoted = {export = true, variable = true}, ["quoting?"] = {variable = true}, reserved = {variable = true}, ["reserved?"] = {export = true, variable = true}, sortk = {export = true, variable = true}, ["special-form?"] = {export = true, variable = true}, ["special?"] = {export = true, variable = true}, ["stash*"] = {export = true, variable = true}, ["statement?"] = {export = true, variable = true}, ["symbol-expansion"] = {export = true, variable = true}, ["symbol?"] = {export = true, variable = true}, ["valid-char?"] = {variable = true}, ["valid-id?"] = {export = true, variable = true}, ["variable?"] = {export = true, variable = true}, ["with-indent"] = {export = true, macro = function (form)
     local result = make_id()
     return({"do", {"inc", "indent-level"}, {"let", {result, form}, {"dec", "indent-level"}, result}})
-  end}}, import = {{"lumen", "runtime"}, {"lumen", "special"}, {"lumen", "core"}}}, ["lumen/main"] = {export = {}, import = {{"lumen", "runtime"}, {"lumen", "special"}, {"lumen", "core"}, {"lumen", "reader"}, {"lumen", "compiler"}}}, ["lumen/reader"] = {export = {["define-reader"] = {export = true, macro = function (_g766, ...)
-    local char = _g766[1]
-    local stream = _g766[2]
+  end}}, import = {{"lumen", "runtime"}, {"lumen", "special"}, {"lumen", "core"}}}, ["lumen/main"] = {export = {}, import = {{"lumen", "runtime"}, {"lumen", "special"}, {"lumen", "core"}, {"lumen", "reader"}, {"lumen", "compiler"}}}, ["lumen/reader"] = {export = {["define-reader"] = {export = true, macro = function (_g714, ...)
+    local char = _g714[1]
+    local stream = _g714[2]
     local body = unstash({...})
-    local _g767 = sub(body, 0)
-    return({"set", {"get", "read-table", char}, join({"fn", {stream}}, _g767)})
+    local _g715 = sub(body, 0)
+    return({"set", {"get", "read-table", char}, join({"fn", {stream}}, _g715)})
   end}, delimiters = {variable = true}, eof = {variable = true}, ["flag?"] = {variable = true}, ["key?"] = {variable = true}, ["make-stream"] = {export = true, variable = true}, ["peek-char"] = {variable = true}, read = {export = true, variable = true}, ["read-all"] = {export = true, variable = true}, ["read-char"] = {variable = true}, ["read-from-string"] = {export = true, variable = true}, ["read-table"] = {export = true, variable = true}, ["skip-non-code"] = {variable = true}, whitespace = {variable = true}}, import = {{"lumen", "runtime"}, {"lumen", "special"}, {"lumen", "core"}}}, ["lumen/runtime"] = {export = {["%"] = {export = true, variable = true}, ["%message-handler"] = {export = true, variable = true}, ["*"] = {export = true, variable = true}, ["+"] = {export = true, variable = true}, ["-"] = {export = true, variable = true}, ["/"] = {export = true, variable = true}, ["<"] = {export = true, variable = true}, ["<="] = {export = true, variable = true}, ["="] = {export = true, variable = true}, [">"] = {export = true, variable = true}, [">="] = {export = true, variable = true}, abs = {export = true, variable = true}, acos = {export = true, variable = true}, add = {export = true, variable = true}, apply = {export = true, variable = true}, asin = {export = true, variable = true}, atan = {export = true, variable = true}, atan2 = {export = true, variable = true}, ["atom?"] = {export = true, variable = true}, ["boolean?"] = {export = true, variable = true}, cat = {export = true, variable = true}, ceil = {export = true, variable = true}, char = {export = true, variable = true}, code = {export = true, variable = true}, ["composite?"] = {export = true, variable = true}, cos = {export = true, variable = true}, drop = {export = true, variable = true}, ["empty?"] = {export = true, variable = true}, exclude = {export = true, variable = true}, exit = {export = true, variable = true}, extend = {export = true, variable = true}, find = {export = true, variable = true}, flat = {export = true, variable = true}, flat1 = {export = true, variable = true}, floor = {export = true, variable = true}, ["function?"] = {export = true, variable = true}, hd = {export = true, variable = true}, ["id-count"] = {variable = true}, ["id-literal?"] = {export = true, variable = true}, ["in?"] = {export = true, variable = true}, inner = {export = true, variable = true}, ["is?"] = {export = true, variable = true}, iterate = {export = true, variable = true}, join = {export = true, variable = true}, keep = {export = true, variable = true}, ["keys?"] = {export = true, variable = true}, last = {export = true, variable = true}, length = {export = true, variable = true}, ["list?"] = {export = true, variable = true}, log = {export = true, variable = true}, log10 = {export = true, variable = true}, ["make-id"] = {export = true, variable = true}, map = {export = true, variable = true}, mapl = {variable = true}, math = {variable = true}, max = {export = true, variable = true}, ["max*"] = {variable = true}, min = {export = true, variable = true}, ["min*"] = {variable = true}, module = {export = true, variable = true}, ["module-key"] = {export = true, variable = true}, ["nil?"] = {export = true, variable = true}, ["none?"] = {export = true, variable = true}, now = {export = true, variable = true}, number = {export = true, variable = true}, ["number?"] = {export = true, variable = true}, ["one?"] = {export = true, variable = true}, pair = {export = true, variable = true}, pow = {export = true, variable = true}, random = {export = true, variable = true}, ["read-file"] = {export = true, variable = true}, reduce = {export = true, variable = true}, replicate = {export = true, variable = true}, reverse = {export = true, variable = true}, sd = {export = true, variable = true}, search = {export = true, variable = true}, setenv = {export = true, variable = true}, sin = {export = true, variable = true}, sinh = {export = true, variable = true}, ["some?"] = {export = true, variable = true}, sort = {export = true, variable = true}, space = {export = true, variable = true}, splice = {export = true, variable = true}, ["splice?"] = {variable = true}, split = {export = true, variable = true}, sqrt = {export = true, variable = true}, stash = {export = true, variable = true}, string = {export = true, variable = true}, ["string-literal?"] = {export = true, variable = true}, ["string?"] = {export = true, variable = true}, sub = {export = true, variable = true}, subl = {variable = true}, substring = {export = true, variable = true}, ["table?"] = {export = true, variable = true}, tan = {export = true, variable = true}, tanh = {export = true, variable = true}, td = {export = true, variable = true}, tl = {export = true, variable = true}, today = {export = true, variable = true}, ["toplevel?"] = {export = true, variable = true}, unstash = {export = true, variable = true}, write = {export = true, variable = true}, ["write-file"] = {export = true, variable = true}}, import = {{"lumen", "special"}, {"lumen", "core"}}}, ["lumen/special"] = {export = {["%array"] = {export = true, foo = true, special = function (...)
     local forms = unstash({...})
-    local _g778
+    local _g803
     if target == "lua" then
-      _g778 = "{"
+      _g803 = "{"
     else
-      _g778 = "["
+      _g803 = "["
     end
-    local open = _g778
-    local _g779
+    local open = _g803
+    local _g804
     if target == "lua" then
-      _g779 = "}"
+      _g804 = "}"
     else
-      _g779 = "]"
+      _g804 = "]"
     end
-    local close = _g779
+    local close = _g804
     local str = ""
-    local _g706 = forms
+    local _g785 = forms
     local i = 0
-    while i < length(_g706) do
-      local x = _g706[i + 1]
+    while i < length(_g785) do
+      local x = _g785[i + 1]
       str = str .. compile(x)
       if i < length(forms) - 1 then
         str = str .. ", "
@@ -3236,16 +3265,16 @@ end)();
     end
     return(open .. str .. close)
   end}, ["%for"] = {export = true, foo = true, special = function (t, k, form)
-    local _g718 = compile(t)
+    local _g774 = compile(t)
     local ind = indentation()
     indent_level = indent_level + 1
-    local _g719 = compile(form, {_stash = true, stmt = true})
+    local _g775 = compile(form, {_stash = true, stmt = true})
     indent_level = indent_level - 1
-    local body = _g719
+    local body = _g775
     if target == "lua" then
-      return(ind .. "for " .. k .. " in next, " .. _g718 .. " do\n" .. body .. ind .. "end\n")
+      return(ind .. "for " .. k .. " in next, " .. _g774 .. " do\n" .. body .. ind .. "end\n")
     else
-      return(ind .. "for (" .. k .. " in " .. _g718 .. ") {\n" .. body .. ind .. "}\n")
+      return(ind .. "for (" .. k .. " in " .. _g774 .. ") {\n" .. body .. ind .. "}\n")
     end
   end, stmt = true, tr = true}, ["%function"] = {export = true, foo = true, special = function (args, body)
     return(compile_function(args, body))
@@ -3257,31 +3286,31 @@ end)();
       return(compile({"set", name, {"%function", args, body}}, {_stash = true, stmt = true}))
     end
   end, stmt = true, tr = true}, ["%if"] = {export = true, foo = true, special = function (cond, cons, alt)
-    local _g707 = compile(cond)
+    local _g780 = compile(cond)
     indent_level = indent_level + 1
-    local _g710 = compile(cons, {_stash = true, stmt = true})
+    local _g783 = compile(cons, {_stash = true, stmt = true})
     indent_level = indent_level - 1
-    local _g708 = _g710
-    local _g782
+    local _g781 = _g783
+    local _g802
     if alt then
       indent_level = indent_level + 1
-      local _g711 = compile(alt, {_stash = true, stmt = true})
+      local _g784 = compile(alt, {_stash = true, stmt = true})
       indent_level = indent_level - 1
-      _g782 = _g711
+      _g802 = _g784
     end
-    local _g709 = _g782
+    local _g782 = _g802
     local ind = indentation()
     local str = ""
     if target == "js" then
-      str = str .. ind .. "if (" .. _g707 .. ") {\n" .. _g708 .. ind .. "}"
+      str = str .. ind .. "if (" .. _g780 .. ") {\n" .. _g781 .. ind .. "}"
     else
-      str = str .. ind .. "if " .. _g707 .. " then\n" .. _g708
+      str = str .. ind .. "if " .. _g780 .. " then\n" .. _g781
     end
-    if _g709 and target == "js" then
-      str = str .. " else {\n" .. _g709 .. ind .. "}"
+    if _g782 and target == "js" then
+      str = str .. " else {\n" .. _g782 .. ind .. "}"
     else
-      if _g709 then
-        str = str .. ind .. "else\n" .. _g709
+      if _g782 then
+        str = str .. ind .. "else\n" .. _g782
       end
     end
     if target == "lua" then
@@ -3292,20 +3321,20 @@ end)();
   end, stmt = true, tr = true}, ["%local"] = {export = true, foo = true, special = function (name, value)
     local id = compile(name)
     local value1 = compile(value)
-    local _g780
+    local _g792
     if is63(value) then
-      _g780 = " = " .. value1
+      _g792 = " = " .. value1
     else
-      _g780 = ""
+      _g792 = ""
     end
-    local rh = _g780
-    local _g781
+    local rh = _g792
+    local _g793
     if target == "js" then
-      _g781 = "var "
+      _g793 = "var "
     else
-      _g781 = "local "
+      _g793 = "local "
     end
-    local keyword = _g781
+    local keyword = _g793
     local ind = indentation()
     return(ind .. keyword .. id .. rh)
   end, stmt = true}, ["%local-function"] = {export = true, foo = true, special = function (name, args, body)
@@ -3314,50 +3343,50 @@ end)();
   end, stmt = true, tr = true}, ["%object"] = {export = true, foo = true, special = function (...)
     local forms = unstash({...})
     local str = "{"
-    local _g773
+    local _g797
     if target == "lua" then
-      _g773 = " = "
+      _g797 = " = "
     else
-      _g773 = ": "
+      _g797 = ": "
     end
-    local sep = _g773
+    local sep = _g797
     local pairs = sortk(pair(forms), hd)
-    local _g702 = pairs
+    local _g776 = pairs
     local i = 0
-    while i < length(_g702) do
-      local _g703 = _g702[i + 1]
-      local k = _g703[1]
-      local v = _g703[2]
+    while i < length(_g776) do
+      local _g777 = _g776[i + 1]
+      local k = _g777[1]
+      local v = _g777[2]
       if not string63(k) then
         error("Illegal key: " .. string(k))
       end
-      local _g704 = compile(v)
-      local _g774
+      local _g778 = compile(v)
+      local _g798
       if valid_id63(k) then
-        _g774 = k
+        _g798 = k
       else
-        local _g775
+        local _g799
         if target == "js" and string_literal63(k) then
-          _g775 = k
+          _g799 = k
         else
-          local _g776
+          local _g800
           if target == "js" then
-            _g776 = quoted(k)
+            _g800 = quoted(k)
           else
-            local _g777
+            local _g801
             if string_literal63(k) then
-              _g777 = "[" .. k .. "]"
+              _g801 = "[" .. k .. "]"
             else
-              _g777 = "[" .. quoted(k) .. "]"
+              _g801 = "[" .. quoted(k) .. "]"
             end
-            _g776 = _g777
+            _g800 = _g801
           end
-          _g775 = _g776
+          _g799 = _g800
         end
-        _g774 = _g775
+        _g798 = _g799
       end
-      local _g705 = _g774
-      str = str .. _g705 .. sep .. _g704
+      local _g779 = _g798
+      str = str .. _g779 .. sep .. _g778
       if i < length(pairs) - 1 then
         str = str .. ", "
       end
@@ -3367,201 +3396,201 @@ end)();
   end}, ["%try"] = {export = true, foo = true, special = function (form)
     local ind = indentation()
     indent_level = indent_level + 1
-    local _g715 = compile(form, {_stash = true, stmt = true})
+    local _g769 = compile(form, {_stash = true, stmt = true})
     indent_level = indent_level - 1
-    local body = _g715
+    local body = _g769
     local e = make_id()
     local hf = {"return", {"%array", false, {"get", e, "\"message\""}}}
     indent_level = indent_level + 1
-    local _g716 = compile(hf, {_stash = true, stmt = true})
+    local _g770 = compile(hf, {_stash = true, stmt = true})
     indent_level = indent_level - 1
-    local h = _g716
+    local h = _g770
     return(ind .. "try {\n" .. body .. ind .. "}\n" .. ind .. "catch (" .. e .. ") {\n" .. h .. ind .. "}\n")
   end, stmt = true, tr = true}, ["break"] = {export = true, foo = true, special = function ()
     return(indentation() .. "break")
   end, stmt = true}, ["do"] = {export = true, foo = true, special = function (...)
     local forms = unstash({...})
     local str = ""
-    local _g720 = forms
-    local _g721 = 0
-    while _g721 < length(_g720) do
-      local x = _g720[_g721 + 1]
+    local _g771 = forms
+    local _g772 = 0
+    while _g772 < length(_g771) do
+      local x = _g771[_g772 + 1]
       str = str .. compile(x, {_stash = true, stmt = true})
-      _g721 = _g721 + 1
+      _g772 = _g772 + 1
     end
     return(str)
   end, stmt = true, tr = true}, ["error"] = {export = true, foo = true, special = function (x)
-    local _g772
+    local _g794
     if target == "js" then
-      _g772 = "throw new " .. compile({"Error", x})
+      _g794 = "throw new " .. compile({"Error", x})
     else
-      _g772 = "error(" .. compile(x) .. ")"
+      _g794 = "error(" .. compile(x) .. ")"
     end
-    local e = _g772
+    local e = _g794
     return(indentation() .. e)
   end, stmt = true}, ["get"] = {export = true, foo = true, special = function (t, k)
-    local _g717 = compile(t)
+    local _g764 = compile(t)
     local k1 = compile(k)
-    if target == "lua" and char(_g717, 0) == "{" then
-      _g717 = "(" .. _g717 .. ")"
+    if target == "lua" and char(_g764, 0) == "{" then
+      _g764 = "(" .. _g764 .. ")"
     end
     if string_literal63(k) and valid_id63(inner(k)) then
-      return(_g717 .. "." .. inner(k))
+      return(_g764 .. "." .. inner(k))
     else
-      return(_g717 .. "[" .. k1 .. "]")
+      return(_g764 .. "[" .. k1 .. "]")
     end
   end}, ["not"] = {}, ["return"] = {export = true, foo = true, special = function (x)
-    local _g783
+    local _g796
     if nil63(x) then
-      _g783 = "return"
+      _g796 = "return"
     else
-      _g783 = "return(" .. compile(x) .. ")"
+      _g796 = "return(" .. compile(x) .. ")"
     end
-    local _g712 = _g783
-    return(indentation() .. _g712)
+    local _g773 = _g796
+    return(indentation() .. _g773)
   end, stmt = true}, ["set"] = {export = true, foo = true, special = function (lh, rh)
-    local _g713 = compile(lh)
-    local _g784
+    local _g765 = compile(lh)
+    local _g795
     if nil63(rh) then
-      _g784 = "nil"
+      _g795 = "nil"
     else
-      _g784 = rh
+      _g795 = rh
     end
-    local _g714 = compile(_g784)
-    return(indentation() .. _g713 .. " = " .. _g714)
+    local _g766 = compile(_g795)
+    return(indentation() .. _g765 .. " = " .. _g766)
   end, stmt = true}, ["while"] = {export = true, foo = true, special = function (cond, form)
-    local _g700 = compile(cond)
+    local _g767 = compile(cond)
     indent_level = indent_level + 1
-    local _g701 = compile(form, {_stash = true, stmt = true})
+    local _g768 = compile(form, {_stash = true, stmt = true})
     indent_level = indent_level - 1
-    local body = _g701
+    local body = _g768
     local ind = indentation()
     if target == "js" then
-      return(ind .. "while (" .. _g700 .. ") {\n" .. body .. ind .. "}\n")
+      return(ind .. "while (" .. _g767 .. ") {\n" .. body .. ind .. "}\n")
     else
-      return(ind .. "while " .. _g700 .. " do\n" .. body .. ind .. "end\n")
+      return(ind .. "while " .. _g767 .. " do\n" .. body .. ind .. "end\n")
     end
   end, stmt = true, tr = true}}, import = {{"lumen", "runtime"}, {"lumen", "special"}, {"lumen", "core"}, {"lumen", "lib"}, {"lumen", "compiler"}}}, ["lumen/system"] = {export = {nexus = {export = true, global = true}}, import = {{"lumen", "special"}, {"lumen", "core"}}}, user = {export = {}, import = {"lumen", {"lumen", "runtime"}, {"lumen", "special"}, {"lumen", "core"}}}}
   environment = {{["define-module"] = {export = true, macro = function (spec, ...)
     local body = unstash({...})
-    local _g768 = sub(body, 0)
-    local exp = _g768.export
-    local imp = _g768.import
-    local alias = _g768.alias
-    local _g769 = import_modules(imp)
-    local imports = _g769[1]
-    local bindings = _g769[2]
+    local _g786 = sub(body, 0)
+    local imp = _g786.import
+    local exp = _g786.export
+    local alias = _g786.alias
+    local _g787 = import_modules(imp)
+    local imports = _g787[1]
+    local bindings = _g787[2]
     local k = module_key(spec)
     modules[k] = {alias = alias, export = {}, import = imports}
-    local _g770 = exp or {}
-    local _g771 = 0
-    while _g771 < length(_g770) do
-      local x = _g770[_g771 + 1]
+    local _g788 = exp or {}
+    local _g789 = 0
+    while _g789 < length(_g788) do
+      local x = _g788[_g789 + 1]
       setenv(x, {_stash = true, export = true})
-      _g771 = _g771 + 1
+      _g789 = _g789 + 1
     end
     return(join({"do", {"set", {"get", "nexus", {"quote", k}}, {"table"}}}, bindings))
   end}}}
 end)();
 (function ()
   nexus.user = {}
-  local _g787 = nexus["lumen/runtime"]
-  local _37 = _g787["%"]
-  local _37message_handler = _g787["%message-handler"]
-  local _42 = _g787["*"]
-  local _43 = _g787["+"]
-  local _ = _g787["-"]
-  local _47 = _g787["/"]
-  local _60 = _g787["<"]
-  local _6061 = _g787["<="]
-  local _61 = _g787["="]
-  local _62 = _g787[">"]
-  local _6261 = _g787[">="]
-  local abs = _g787.abs
-  local acos = _g787.acos
-  local add = _g787.add
-  local apply = _g787.apply
-  local asin = _g787.asin
-  local atan = _g787.atan
-  local atan2 = _g787.atan2
-  local atom63 = _g787["atom?"]
-  local boolean63 = _g787["boolean?"]
-  local cat = _g787.cat
-  local ceil = _g787.ceil
-  local char = _g787.char
-  local code = _g787.code
-  local composite63 = _g787["composite?"]
-  local cos = _g787.cos
-  local drop = _g787.drop
-  local empty63 = _g787["empty?"]
-  local exclude = _g787.exclude
-  local exit = _g787.exit
-  local extend = _g787.extend
-  local find = _g787.find
-  local flat = _g787.flat
-  local flat1 = _g787.flat1
-  local floor = _g787.floor
-  local function63 = _g787["function?"]
-  local hd = _g787.hd
-  local id_literal63 = _g787["id-literal?"]
-  local in63 = _g787["in?"]
-  local inner = _g787.inner
-  local is63 = _g787["is?"]
-  local iterate = _g787.iterate
-  local join = _g787.join
-  local keep = _g787.keep
-  local keys63 = _g787["keys?"]
-  local last = _g787.last
-  local length = _g787.length
-  local list63 = _g787["list?"]
-  local log = _g787.log
-  local log10 = _g787.log10
-  local make_id = _g787["make-id"]
-  local map = _g787.map
-  local max = _g787.max
-  local min = _g787.min
-  local module = _g787.module
-  local module_key = _g787["module-key"]
-  local nil63 = _g787["nil?"]
-  local none63 = _g787["none?"]
-  local now = _g787.now
-  local number = _g787.number
-  local number63 = _g787["number?"]
-  local one63 = _g787["one?"]
-  local pair = _g787.pair
-  local pow = _g787.pow
-  local random = _g787.random
-  local read_file = _g787["read-file"]
-  local reduce = _g787.reduce
-  local replicate = _g787.replicate
-  local reverse = _g787.reverse
-  local sd = _g787.sd
-  local search = _g787.search
-  local setenv = _g787.setenv
-  local sin = _g787.sin
-  local sinh = _g787.sinh
-  local some63 = _g787["some?"]
-  local sort = _g787.sort
-  local space = _g787.space
-  local splice = _g787.splice
-  local split = _g787.split
-  local sqrt = _g787.sqrt
-  local stash = _g787.stash
-  local string = _g787.string
-  local string_literal63 = _g787["string-literal?"]
-  local string63 = _g787["string?"]
-  local sub = _g787.sub
-  local substring = _g787.substring
-  local table63 = _g787["table?"]
-  local tan = _g787.tan
-  local tanh = _g787.tanh
-  local td = _g787.td
-  local tl = _g787.tl
-  local today = _g787.today
-  local toplevel63 = _g787["toplevel?"]
-  local unstash = _g787.unstash
-  local write = _g787.write
-  local write_file = _g787["write-file"]
+  local _g805 = nexus["lumen/runtime"]
+  local _37 = _g805["%"]
+  local _37message_handler = _g805["%message-handler"]
+  local _42 = _g805["*"]
+  local _43 = _g805["+"]
+  local _ = _g805["-"]
+  local _47 = _g805["/"]
+  local _60 = _g805["<"]
+  local _6061 = _g805["<="]
+  local _61 = _g805["="]
+  local _62 = _g805[">"]
+  local _6261 = _g805[">="]
+  local abs = _g805.abs
+  local acos = _g805.acos
+  local add = _g805.add
+  local apply = _g805.apply
+  local asin = _g805.asin
+  local atan = _g805.atan
+  local atan2 = _g805.atan2
+  local atom63 = _g805["atom?"]
+  local boolean63 = _g805["boolean?"]
+  local cat = _g805.cat
+  local ceil = _g805.ceil
+  local char = _g805.char
+  local code = _g805.code
+  local composite63 = _g805["composite?"]
+  local cos = _g805.cos
+  local drop = _g805.drop
+  local empty63 = _g805["empty?"]
+  local exclude = _g805.exclude
+  local exit = _g805.exit
+  local extend = _g805.extend
+  local find = _g805.find
+  local flat = _g805.flat
+  local flat1 = _g805.flat1
+  local floor = _g805.floor
+  local function63 = _g805["function?"]
+  local hd = _g805.hd
+  local id_literal63 = _g805["id-literal?"]
+  local in63 = _g805["in?"]
+  local inner = _g805.inner
+  local is63 = _g805["is?"]
+  local iterate = _g805.iterate
+  local join = _g805.join
+  local keep = _g805.keep
+  local keys63 = _g805["keys?"]
+  local last = _g805.last
+  local length = _g805.length
+  local list63 = _g805["list?"]
+  local log = _g805.log
+  local log10 = _g805.log10
+  local make_id = _g805["make-id"]
+  local map = _g805.map
+  local max = _g805.max
+  local min = _g805.min
+  local module = _g805.module
+  local module_key = _g805["module-key"]
+  local nil63 = _g805["nil?"]
+  local none63 = _g805["none?"]
+  local now = _g805.now
+  local number = _g805.number
+  local number63 = _g805["number?"]
+  local one63 = _g805["one?"]
+  local pair = _g805.pair
+  local pow = _g805.pow
+  local random = _g805.random
+  local read_file = _g805["read-file"]
+  local reduce = _g805.reduce
+  local replicate = _g805.replicate
+  local reverse = _g805.reverse
+  local sd = _g805.sd
+  local search = _g805.search
+  local setenv = _g805.setenv
+  local sin = _g805.sin
+  local sinh = _g805.sinh
+  local some63 = _g805["some?"]
+  local sort = _g805.sort
+  local space = _g805.space
+  local splice = _g805.splice
+  local split = _g805.split
+  local sqrt = _g805.sqrt
+  local stash = _g805.stash
+  local string = _g805.string
+  local string_literal63 = _g805["string-literal?"]
+  local string63 = _g805["string?"]
+  local sub = _g805.sub
+  local substring = _g805.substring
+  local table63 = _g805["table?"]
+  local tan = _g805.tan
+  local tanh = _g805.tanh
+  local td = _g805.td
+  local tl = _g805.tl
+  local today = _g805.today
+  local toplevel63 = _g805["toplevel?"]
+  local unstash = _g805.unstash
+  local write = _g805.write
+  local write_file = _g805["write-file"]
 end)();
 (function ()
   nexus["lumen/main"] = {}
@@ -3679,12 +3708,12 @@ end)();
   local load_module = _g6["load-module"]
   local open_module = _g6["open-module"]
   local function rep(str)
-    local _g791,_g792 = xpcall(function ()
+    local _g809,_g810 = xpcall(function ()
       return(eval(read_from_string(str)))
     end, _37message_handler)
-    local _g790 = {_g791, _g792}
-    local _g1 = _g790[1]
-    local x = _g790[2]
+    local _g808 = {_g809, _g810}
+    local _g1 = _g808[1]
+    local x = _g808[2]
     if is63(x) then
       return(print(string(x)))
     end
@@ -3724,10 +3753,10 @@ end)();
     local output = nil
     local target1 = nil
     local expr = nil
-    local _g793 = args
+    local _g811 = args
     local i = 0
-    while i < length(_g793) do
-      local arg = _g793[i + 1]
+    while i < length(_g811) do
+      local arg = _g811[i + 1]
       if arg == "-o" or arg == "-t" or arg == "-e" then
         if i == length(args) - 1 then
           print("missing argument for" .. " " .. string(arg))

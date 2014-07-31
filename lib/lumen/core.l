@@ -12,6 +12,7 @@
            when
            unless
            table
+           let*
            let
            define-module
            define-macro
@@ -75,6 +76,24 @@
 
 (define-macro table body
   `(%object ,@(mapo (fn (x) x) body)))
+
+(define-macro let* (bindings rest: body)
+  (if (< (length bindings) 2) `(do ,@body)
+    (let (renames () locals ()
+          (lh rh) bindings)
+      (each ((id val)) (bind lh rh)
+        (if (or (bound? id)
+                (reserved? id)
+                (toplevel?))
+            (let (id1 (make-id))
+              (add renames id)
+              (add renames id1)
+              (set id id1))
+          (setenv id :variable))
+        (add locals `(%local ,id ,val)))
+      `(do ,@locals
+           (let-symbol ,renames
+             (let* ,(sub bindings 2) ,@body))))))
 
 (define-macro let (bindings rest: body)
   (let (i 0
