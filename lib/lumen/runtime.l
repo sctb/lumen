@@ -29,7 +29,6 @@
            none?
            some?
            one?
-           in?
            hd
            sd
            td
@@ -134,10 +133,6 @@
 
 (define one? (x)
   (= (length x) 1))
-
-(define in? (x l)
-  (each (y) l
-    (if (= x y) (return true))))
 
 (define hd (l) (at l 0))
 (define sd (l) (at l 1))
