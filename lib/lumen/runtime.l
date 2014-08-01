@@ -243,8 +243,8 @@
     (each (x) l (if (f x) (add l1 x)))
     l1))
 
-(define in? (x xs)
-  (each (y) xs
+(define in? (x l)
+  (each (y) l
     (when (= x y) (return true))))
 
 (define find (f l)

@@ -98,11 +98,14 @@
       (atom? form) form
     `(list ,@(map quoted form))))
 
+(define literal (s)
+  (if (string-literal? s) s (quoted s)))
+
 (define stash* (args)
   (if (keys? args)
-      (let (l `(%object ,"_stash" true))
+      (let (l `(%object "_stash" true))
         (each (k v) args
-          (add l k)
+          (add l (literal k))
           (add l v))
         (join args (list l)))
     args))
@@ -298,10 +301,7 @@
   (define wrap (s)
     (if (= target 'lua) (cat "[" s "]") s))
   (let (i (inner k))
-    (if (valid-id? k) k
-        (and (string-literal? k) (valid-id? i)) i
-        (string-literal? k) (wrap k)
-      (wrap (quoted k)))))
+    (if (valid-id? i) i (wrap k))))
 
 (define sortk (l k)
   (sort l (fn (a b) (< (k a) (k b)))))
@@ -341,8 +341,7 @@
     (each (k v) t
       (let (x (f v))
         (when (is? x)
-          (let (k1 (if (string-literal? k) k (quoted k)))
-            (add o k1))
+          (add o (literal k))
           (add o x))))
     o))
 
