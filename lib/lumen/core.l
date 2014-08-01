@@ -218,10 +218,10 @@
                  (let (,v (get ,t1 ,k))
                    ,@body))))))))
 
-(define-macro set-of elements
+(define-macro set-of xs
   (let (l ())
-    (each (e) elements
-      (set (get l e) true))
+    (each (x) xs
+      (set (get l x) true))
     `(table ,@l)))
 
 (define* target (language))
