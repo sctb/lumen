@@ -23,6 +23,7 @@
            reserved?
            valid-id?
            id
+           key
            sortk
            imported
            linked
@@ -292,6 +293,15 @@
         (cat! id1 c1))
       (inc i))
     id1))
+
+(define key (k)
+  (define wrap (s)
+    (if (= target 'lua) (cat "[" s "]") s))
+  (let (i (inner k))
+    (if (valid-id? k) k
+        (and (string-literal? k) (valid-id? i)) i
+        (string-literal? k) (wrap k)
+      (wrap (quoted k)))))
 
 (define sortk (l k)
   (sort l (fn (a b) (< (k a) (k b)))))

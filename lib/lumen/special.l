@@ -137,12 +137,6 @@
     (each ((k v) :i) pairs
       (unless (string? k)
         (error (cat "Illegal key: " (string k))))
-      (let (v (compile v)
-            k (if (valid-id? k) k
-                  (and (= target 'js) (string-literal? k)) k
-                  (= target 'js) (quoted k)
-                  (string-literal? k) (cat "[" k "]")
-                (cat "[" (quoted k) "]")))
-        (cat! str k sep v))
+      (cat! str (key k) sep (compile v))
       (if (< i (- (length pairs) 1)) (cat! str ", ")))
     (cat str "}")))
