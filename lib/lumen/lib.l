@@ -341,7 +341,8 @@
     (each (k v) t
       (let (x (f v))
         (when (is? x)
-          (add o k)
+          (let (k1 (if (string-literal? k) k (quoted k)))
+            (add o k1))
           (add o x))))
     o))
 
