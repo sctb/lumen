@@ -79,8 +79,6 @@
       (variable? x)
       (global? x)))
 
-;; expansion
-
 (define escape (str)
   (let (str1 "\"" i 0)
     (while (< i (length str))
@@ -231,8 +229,6 @@
         (quasiexpand (at form 1) 1)
       (map (fn (x) (quasiexpand x depth)) form))))
 
-;; compiler
-
 (define* indent-level 0)
 
 (define indentation ()
@@ -323,8 +319,6 @@
       (let (k (module-key current-module))
         `(do ,form (set (get (get nexus ',k) ',name) ,name)))
     form))
-
-;; bootstrap
 
 (define quote-binding (b)
   (if (is? b.symbol)

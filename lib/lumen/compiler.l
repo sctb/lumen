@@ -250,8 +250,6 @@
 (define process (form)
   (lower (macroexpand form)))
 
-;; modules
-
 (define* current-module)
 
 (define module-path (spec)

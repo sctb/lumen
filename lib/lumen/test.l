@@ -6,8 +6,6 @@
            (lumen reader)
            (lumen compiler)))
 
-;; infrastructure
-
 (define passed 0)
 (define failed 0)
 (define tests ())
@@ -576,7 +574,12 @@
   (test= '(1) (join '(1) nil))
   (test= '(a) (join '(a) ()))
   (test= '(a) (join nil '(a)))
-  (test= '(a) (join '(a))))
+  (test= '(a) (join '(a)))
+  (test= '(a :b) (join '(a) (table :b)))
+  (test= '(a b :b) (join '(a) '(b :b)))
+  (test= '(a b: 10) (join '(a :b) (table b: 10)))
+  (test= '(b: 10) (join (table :b) '(b: 10)))
+  (test= '(a b b: 1 c: 2) (join '(a b: 1) '(b c: 2))))
 
 (define-test reverse ()
   (test= () (reverse ()))
@@ -590,9 +593,7 @@
   (test= '(2 3 4 a: 5) (map (fn (x) (+ x 1)) (list 1 2 3 a: 4)))
   (test= '(:a) (map (fn (x) x) '(:a)))
   (test= '(b: false) (map (fn (x) x) '(b: false)))
-  (let (t (map (fn (x) x) '(:a b: false)))
-    (test= true t.a)
-    (test= false t.b)))
+  (test= '(:a b: false) (map (fn (x) x) '(:a b: false))))
 
 (define-test extend ()
   (test= () (extend ()))
