@@ -327,7 +327,7 @@
 
 (define stash (args)
   (if (keys? args)
-      (let (p (%object _stash true))
+      (let (p (%object "_stash" true))
         (each (k v) args
           (set (get p k) v))
         (join args (list p)))

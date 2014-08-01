@@ -444,7 +444,7 @@ nexus = {}
   nexus["lumen/runtime"]["empty?"] = empty63
   local function stash(args)
     if keys63(args) then
-      local p = {_stash = true}
+      local p = {["_stash"] = true}
       local _g41 = args
       local k = nil
       for k in next, _g41 do
