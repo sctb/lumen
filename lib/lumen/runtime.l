@@ -82,6 +82,7 @@
            exit
            today
            now
+           clock
            number
            string
            space
@@ -436,6 +437,9 @@
   (target
     js: (floor (/ ((get (|new Date|) 'getTime)) 1000))
     lua: (os.time)))
+
+(define clock ()
+  (target js: ((get (|new Date|) 'getTime)) lua: (os.clock)))
 
 (define number (str)
   (define numeric? (c)
