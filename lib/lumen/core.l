@@ -125,14 +125,14 @@
 (define-macro define (name x rest: body)
   (setenv name :variable)
   (if (and (some? body) (= target 'js))
-      (linked name `(%local ,name (fn ,x ,@body)))
+      (link name `(%local ,name (fn ,x ,@body)))
       (some? body)
       (let ((args body) (bind* x body))
-        (linked name `(%local-function ,name ,args ,@body)))
-    (linked name `(%local ,name ,x))))
+        (link name `(%local-function ,name ,args ,@body)))
+    (link name `(%local ,name ,x))))
 
 (define-macro set* (name value)
-  (linked name `(set ,name ,value)))
+  (link name `(set ,name ,value)))
 
 (define-macro with-frame (rest: body :scope)
   (let (x (make-id))

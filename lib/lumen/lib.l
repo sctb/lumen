@@ -25,7 +25,7 @@
            id
            key
            imported
-           linked
+           link
            mapo
            quote-environment
            quote-modules
@@ -305,7 +305,7 @@
     (when (some? imports)
       `((%local ,m (get nexus ',k)) ,@imports))))
 
-(define linked (name form)
+(define link (name form)
   (if (toplevel?)
       (let (k (module-key current-module))
         `(do ,form (set (get (get nexus ',k) ',name) ,name)))

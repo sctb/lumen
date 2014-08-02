@@ -184,8 +184,11 @@
    js: (str.charCodeAt n)
    lua: (string.byte str (if n (+ n 1)))))
 
-(define string-literal? (x) (and (string? x) (= (char x 0) "\"")))
-(define id-literal? (x) (and (string? x) (= (char x 0) "|")))
+(define string-literal? (x)
+  (and (string? x) (= (char x 0) "\"")))
+
+(define id-literal? (x)
+  (and (string? x) (= (char x 0) "|")))
 
 (define add (l x)
   (target js: (do (l.push x) nil) lua: (table.insert l x)))
