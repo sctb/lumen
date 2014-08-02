@@ -38,6 +38,7 @@
            sort
            iterate
            replicate
+           series
            map
            keys?
            empty?
@@ -212,25 +213,17 @@
     (iterate (fn () (add l x)) n)
     l))
 
-;; (define map (f x)
-;;   (let (t ())
-;;     (all (k v) x
-;;       (let (y (f v))
-;;         (when (is? y)
-;;           (set (get t k) y))))
-;;     t))
+(define series (f l)
+  (iterate (fn (i) (f (at l i))) (length l)))
 
-(define map (f t)
-  (let (t1 ())
-    (each (x) t
-      (let (x (f x))
-        (when (is? x)
-          (add t1 x))))
-    (each (k v) t
-      (let (x (f v))
-        (when (is? x)
-          (set (get t1 k) x))))
-    t1))
+(define map (f x)
+  (let (t () o 0)
+    (all (k v) x
+      (let (y (f v))
+        (if (is? y)
+            (set (get t (shift k o)) y)
+          (inc o))))
+    t))
 
 (define keys? (t)
   (let (k? false)

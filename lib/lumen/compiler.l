@@ -304,7 +304,7 @@
 (define in-module (spec)
   (load-module spec :all)
   (let (m (module spec))
-    (map open-module m.import))
+    (series open-module m.import))
   (set current-module spec))
 
 (define import-modules (specs)
@@ -330,9 +330,11 @@
   (conclude (compile (process form) :stmt)))
 
 (define reimported ()
-  (let (m (module current-module))
-    (join (reduce join (map imported m.import))
-          (imported current-module :all))))
+  (let (imports () m (module current-module))
+    (series (fn (spec)
+              (join! imports (imported spec)))
+            m.import)
+    (join imports (imported current-module :all))))
 
 (define* %result)
 
