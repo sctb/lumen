@@ -1,4 +1,4 @@
-.PHONY: all cross test clean
+.PHONY: all cross test profile clean
 
 LUMEN := bin/lumen
 LIBDIR := lib
@@ -11,6 +11,9 @@ cross:
 
 test:
 	@$(MAKE) -C $(LIBDIR) test
+
+profile:
+	@$(MAKE) -C $(LIBDIR) profile
 
 clean:
 	@git checkout bin/lumen.*

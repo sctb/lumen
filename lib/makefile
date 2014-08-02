@@ -1,4 +1,4 @@
-.PHONY: all cross test
+.PHONY: all cross test profile
 
 LUA := ../bin/lumen.lua
 JS := ../bin/lumen.js
@@ -20,3 +20,7 @@ cross: all
 test: all
 	@LUMEN_HOST=lua $(LUMEN) $(TEST) -e "(run)"
 	@LUMEN_HOST=node $(LUMEN) $(TEST) -e "(run)"
+
+profile:
+	@LUMEN_HOST='luajit -jp' $(LUMEN) $(MAIN) -o $(LUA)
+	@LUMEN_HOST='luajit -jp' $(LUMEN) $(TEST) -e "(run)"
