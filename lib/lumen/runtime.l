@@ -265,17 +265,15 @@
           (and i (- i 1)))))
 
 (define split (str sep)
-  (target
-   js: (str.split sep)
-   lua: (if (or (= str "") (= sep "")) ()
-          (let (strs ())
-            (while true
-              (let (i (search str sep))
-                (if (nil? i) (break)
-                  (do (add strs (sub str 0 i))
-                      (set str (sub str (+ i 1)))))))
-            (add strs str)
-            strs))))
+  (if (or (= str "") (= sep "")) ()
+    (let (strs ())
+      (while true
+        (let (i (search str sep))
+          (if (nil? i) (break)
+            (do (add strs (sub str 0 i))
+                (set str (sub str (+ i 1)))))))
+      (add strs str)
+      strs)))
 
 (define cat (rest: xs)
   (if (none? xs) ""
