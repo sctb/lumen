@@ -31,7 +31,6 @@
            one?
            hd
            sd
-           td
            string?
            number?
            boolean?
