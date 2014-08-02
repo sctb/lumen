@@ -111,8 +111,9 @@
         (set (at l j) (at x i))
         (inc i)
         (inc j))
-      (each (k v) x
-        (set (get l k) v))
+      (all (k v) x
+        (unless (number? k)
+          (set (get l k) v)))
       l)))
 
 (define inner (x)
@@ -168,23 +169,28 @@
       (one? x) (hd x)
     (f (hd x) (reduce f (tl x)))))
 
-(define keep (f l)
-  (let (l1 ())
-    (each (x) l (if (f x) (add l1 x)))
-    l1))
+(define shift (k n)
+  (if (number? k) (- k n) k))
 
-(define in? (x l)
-  (each (y) l
+(define keep (f x)
+  (let (t () o 0)
+    (all (k v) x
+      (if (f v)
+          (set (get t (shift k o)) v)
+        (inc o)))
+    t))
+
+(define in? (x t)
+  (all (_ y) t
     (when (= x y) (return true))))
 
-(define find (f l)
-  (each (x) l
+(define find (f t)
+  (all (_ x) t
     (let (x (f x))
       (if x (return x)))))
 
 (define pair (l)
-  (let (i 0
-        l1 ())
+  (let (i 0 l1 ())
     (while (< i (length l))
       (add l1 (list (at l i) (at l (+ i 1))))
       (inc i 2))
@@ -205,6 +211,14 @@
   (let (l ())
     (iterate (fn () (add l x)) n)
     l))
+
+;; (define map (f x)
+;;   (let (t ())
+;;     (all (k v) x
+;;       (let (y (f v))
+;;         (when (is? y)
+;;           (set (get t k) y))))
+;;     t))
 
 (define map (f t)
   (let (t1 ())
