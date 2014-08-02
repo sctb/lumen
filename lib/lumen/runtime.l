@@ -30,7 +30,6 @@
            some?
            one?
            hd
-           sd
            string?
            number?
            boolean?
@@ -135,7 +134,6 @@
   (= (length x) 1))
 
 (define hd (l) (at l 0))
-(define sd (l) (at l 1))
 
 (target js: (define type (x) (typeof x)))
 

@@ -312,7 +312,7 @@
           (add imports `(%local ,n (get ,m ',n))))))
     (when (some? imports)
       `((%local ,m (get nexus ',k))
-        ,@(sortk imports sd)))))
+        ,@(sortk imports (fn (x) (at x 1)))))))
 
 (define linked (name form)
   (if (toplevel?)

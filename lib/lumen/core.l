@@ -58,7 +58,7 @@
         (each (k v) body
           (add init (list k `(set (get ,id ',k) ,v))))
         `(let (,id ,l)
-           ,@(map sd (sortk init hd))
+           ,@(map (fn (x) (at x 1)) (sortk init hd))
            ,id)))))
 
 (define-macro if branches
