@@ -325,8 +325,7 @@
     args))
 
 (define unstash (args)
-  (if (none? args)
-      ()
+  (if (none? args) ()
     (let (l (last args))
       (if (and (table? l) l._stash)
           (let (args1 (sub args 0 (- (length args) 1)))
@@ -357,8 +356,7 @@
 (define split (str sep)
   (target
    js: (str.split sep)
-   lua: (if (or (= str "") (= sep ""))
-            ()
+   lua: (if (or (= str "") (= sep "")) ()
           (let (strs ())
             (while true
               (let (i (search str sep))
@@ -462,8 +460,7 @@
             (and (list? x) (= (hd x) 'cat)))
         x
       `(string ,x)))
-  (if (one? xs)
-      (string (hd xs))
+  (if (one? xs) (string (hd xs))
     (reduce (fn (a b)
               `(cat ,(string a) " " ,(string b)))
             xs)))
@@ -486,8 +483,7 @@
   (one? environment))
 
 (define module-key (spec)
-  (if (atom? spec)
-      (string spec)
+  (if (atom? spec) (string spec)
     (reduce (fn (a b)
               (cat (module-key a) "/" (module-key b)))
             spec)))
