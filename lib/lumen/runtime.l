@@ -4,27 +4,6 @@
   import: ((lumen special) (lumen core))
   export: (nil?
            is?
-           max
-           min
-           abs
-           acos
-           asin
-           atan
-           atan2
-           ceil
-           cos
-           floor
-           log
-           log10
-           max
-           min
-           pow
-           random
-           sin
-           sinh
-           sqrt
-           tan
-           tanh
            length
            none?
            some?
@@ -93,28 +72,6 @@
 
 (define is? (x) (not (nil? x)))
 
-(define math (target js: Math lua: math))
-
-(define abs math.abs)
-(define acos math.acos)
-(define asin math.asin)
-(define atan math.atan)
-(define atan2 math.atan2)
-(define ceil math.ceil)
-(define cos math.cos)
-(define floor math.floor)
-(define log math.log)
-(define log10 math.log10)
-(define max math.max)
-(define min math.min)
-(define pow math.pow)
-(define random math.random)
-(define sin math.sin)
-(define sinh math.sinh)
-(define sqrt math.sqrt)
-(define tan math.tan)
-(define tanh math.tanh)
-
 (define length (x)
   (target js: (or x.length 0) lua: |#x|))
 
@@ -148,23 +105,18 @@
   (target js: (str.substring from upto)
           lua: (string.sub str (+ from 1) upto)))
 
-(define max* (x n) (if (nil? x) n (max x n)))
-(define min* (x n) (if (nil? x) n (min x n)))
-
-(define subl (l from upto)
-  (let (i (max* from 0)
-        upto (min* upto (length l))
-        j 0 l2 ())
-    (while (< i upto)
-      (set (at l2 j) (at l i))
-      (inc i)
-      (inc j))
-    l2))
-
 (define sub (x from upto)
   (if (string? x)
       (substring x (or from 0) upto)
-    (let (l (subl x from upto))
+    (let (l ()
+          n (length x)
+          i (if (or (nil? from) (< from 0)) 0 from)
+          upto (if (or (nil? upto) (> upto n)) n upto)
+          j 0)
+      (while (< i upto)
+        (set (at l j) (at x i))
+        (inc i)
+        (inc j))
       (each (k v) x
         (set (get l k) v))
       l)))

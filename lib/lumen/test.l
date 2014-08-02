@@ -3,6 +3,7 @@
 (define-module (lumen test)
   import: ((lumen)
            (lumen lib)
+           (lumen math)
            (lumen reader)
            (lumen compiler)))
 

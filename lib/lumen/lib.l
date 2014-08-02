@@ -313,7 +313,8 @@
   (join t xs))
 
 (define exclude (t rest: keys)
-  (let (t1 (subl t))
+  (let (t1 ())
+    (each (x) t (add t1 x))
     (each (k v) t
       (unless (get keys k)
         (set (get t1 k) v)))
