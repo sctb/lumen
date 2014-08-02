@@ -151,23 +151,17 @@
       (dec i))
     l1))
 
-(define join (l1 l2)
-  (if (and l1 l2)
-      (let (l () i 0
-            len (length l1)
-            len2 (length l2))
-        (while (< i len)
-          (set (at l i) (at l1 i))
-          (inc i))
-        (while (< i (+ len len2))
-          (set (at l i) (at l2 (- i len)))
-          (inc i))
-        (each (k v) l1
-          (set (get l k) v))
-        (each (k v) l2
-          (set (get l k) v))
-        l)
-    (or l1 l2 ())))
+(define join (a b)
+  (if (and a b)
+      (let (c () o (length a))
+        (all (k v) a
+          (set (get c k) v))
+        (all (k v) b
+          (when (number? k)
+            (inc k o))
+          (set (get c k) v))
+        c)
+    (or a b ())))
 
 (define reduce (f x)
   (if (none? x) x

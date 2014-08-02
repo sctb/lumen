@@ -25,6 +25,7 @@
            let-symbol
            fn
            guard
+           all
            each
            set-of
            language
@@ -173,6 +174,16 @@
           ex (cat "|" e "," x "|"))
       `(let (,ex (xpcall (fn () ,expr) %message-handler))
          (list ,e ,x)))))
+
+(define-macro all ((k v) t rest: body)
+  (let (x (make-id) n (make-id))
+    `(let (,x ,t ,k nil)
+       (%for ,x ,k
+         (let (,v (get ,x ,k))
+           ,@(if (= target 'lua) body
+               `((let (,n (parseInt ,k)
+                       ,k (if (isNaN ,n) ,k ,n))
+                   ,@body))))))))
 
 (define-macro each (b t rest: body)
   (let ((k v) b t1 (make-id))
