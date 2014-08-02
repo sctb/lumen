@@ -266,7 +266,7 @@
       (= n 95)))               ; _
 
 (define valid-id? (id)
-  (if (or (none? id) (special? id) (reserved? id))
+  (if (or (none? id) (reserved? id))
       false
     (let (i 0)
       (while (< i (length id))

@@ -1246,7 +1246,7 @@ global.nexus = {};
   };
   nexus["lumen/lib"]["valid-code?"] = valid_code63;
   var valid_id63 = function (id) {
-    if (none63(id) || special63(id) || reserved63(id)) {
+    if (none63(id) || reserved63(id)) {
       return(false);
     } else {
       var i = 0;
@@ -3283,7 +3283,7 @@ global.nexus = {};
     }
     var _g744 = _g760;
     return(indentation() + _g744);
-  }, stmt: true, export: true, foo: true}, "error": {special: function (x) {
+  }, stmt: true, export: true, foo: true}, error: {special: function (x) {
     var _g761;
     if (target === "js") {
       _g761 = "throw new " + compile(["Error", x]);
@@ -3311,7 +3311,7 @@ global.nexus = {};
     var keyword = _g763;
     var ind = indentation();
     return(ind + keyword + id + rh);
-  }, stmt: true, export: true, foo: true}, "set": {special: function (lh, rh) {
+  }, stmt: true, export: true, foo: true}, set: {special: function (lh, rh) {
     var _g745 = compile(lh);
     var _g764;
     if (nil63(rh)) {
@@ -3321,7 +3321,7 @@ global.nexus = {};
     }
     var _g746 = compile(_g764);
     return(indentation() + _g745 + " = " + _g746);
-  }, stmt: true, export: true, foo: true}, "get": {foo: true, export: true, special: function (t, k) {
+  }, stmt: true, export: true, foo: true}, get: {foo: true, export: true, special: function (t, k) {
     var _g747 = compile(t);
     var k1 = compile(k);
     if (target === "lua" && char(_g747, 0) === "{") {
