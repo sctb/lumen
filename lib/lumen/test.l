@@ -592,20 +592,6 @@
   (test= '(b: false) (map (fn (x) x) '(b: false)))
   (test= '(:a b: false) (map (fn (x) x) '(:a b: false))))
 
-(define-test extend ()
-  (test= () (extend ()))
-  (test= '(:a) (extend () :a))
-  (test= 2 (get (extend '(a: 1) b: 2) 'b))
-  (test= 1 (get (extend '(a: 1) b: 2) 'a))
-  (test= '(1 :a) (extend '(1) :a)))
-
-(define-test exclude ()
-  (test= () (exclude ()))
-  (test= () (exclude () :a))
-  (test= () (exclude '(:a) :a))
-  (test= '(:b) (exclude '(:a :b) :a))
-  (test= '(1 2 :b) (exclude '(1 2 :b :c) :c)))
-
 (define-test sub ()
   (test= () (sub ()))
   (test= '(a) (sub '(a)))

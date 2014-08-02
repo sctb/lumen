@@ -311,6 +311,16 @@
         `(do ,form (set (get (get nexus ',k) ',name) ,name)))
     form))
 
+(define extend (t rest: xs)
+  (join t xs))
+
+(define exclude (t rest: keys)
+  (let (t1 (subl t))
+    (each (k v) t
+      (unless (get keys k)
+        (set (get t1 k) v)))
+    t1))
+
 (define quote-binding (b)
   (if (is? b.symbol)
       (extend b symbol: `',b.symbol)

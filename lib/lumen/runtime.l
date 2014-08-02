@@ -64,8 +64,6 @@
            empty?
            stash
            unstash
-           extend
-           exclude
            search
            split
            cat
@@ -313,16 +311,6 @@
                 (set (get args1 k) v)))
             args1)
         args))))
-
-(define extend (t rest: xs)
-  (join t xs))
-
-(define exclude (t rest: keys)
-  (let (t1 (subl t))
-    (each (k v) t
-      (unless (get keys k)
-        (set (get t1 k) v)))
-    t1))
 
 (define search (str pattern start)
   (target
