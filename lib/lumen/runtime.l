@@ -75,14 +75,9 @@
 (define length (x)
   (target js: (or x.length 0) lua: |#x|))
 
-(define none? (x)
-  (= (length x) 0))
-
-(define some? (x)
-  (> (length x) 0))
-
-(define one? (x)
-  (= (length x) 1))
+(define none? (x) (= (length x) 0))
+(define some? (x) (> (length x) 0))
+(define one? (x) (= (length x) 1))
 
 (define hd (l) (at l 0))
 
@@ -161,19 +156,16 @@
   (if (and (nil? l2) (nil? l1)) ()
       (nil? l1) (join () l2)
       (nil? l2) (join l1 ())
-    (let (l () skip? false)
-      (target js:
-        (when (and (list? l1) (list? l2))
-          (set l (l1.concat l2))
-          (set skip? true)))
-      (unless skip?
-        (let (i 0 len (length l1))
-          (while (< i len)
-            (set (at l i) (at l1 i))
-            (inc i))
-          (while (< i (+ len (length l2)))
-            (set (at l i) (at l2 (- i len)))
-            (inc i))))
+    (let (l ())
+      (let (i 0
+            len (length l1)
+            len2 (length l2))
+        (while (< i len)
+          (set (at l i) (at l1 i))
+          (inc i))
+        (while (< i (+ len len2))
+          (set (at l i) (at l2 (- i len)))
+          (inc i)))
       (each (k v) l1
         (set (get l k) v))
       (each (k v) l2
