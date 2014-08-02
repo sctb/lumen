@@ -259,22 +259,19 @@
 (define numeric? (n)
   (and (> n 47) (< n 58)))
 
-(define valid-char? (n)
+(define valid-code? (n)
   (or (numeric? n)             ; 0-9
       (and (> n 64) (< n 91))  ; A-Z
       (and (> n 96) (< n 123)) ; a-z
       (= n 95)))               ; _
 
 (define valid-id? (id)
-  (if (none? id) false
-      (special? id) false
-      (reserved? id) false
+  (if (or (none? id) (special? id) (reserved? id))
+      false
     (let (i 0)
       (while (< i (length id))
-        (let (n (code id i))
-          (unless (and (valid-char? n)
-                       (or (> i 0) (not (numeric? n))))
-            (return false)))
+        (unless (valid-code? (code id i))
+          (return false))
         (inc i))
       true)))
 
@@ -284,7 +281,7 @@
       (let (c (char id i)
             n (code c)
             c1 (if (= c "-") "_"
-                   (valid-char? n) c
+                   (valid-code? n) c
                    (= i 0) (cat "_" n)
                  n))
         (cat! id1 c1))
