@@ -284,7 +284,6 @@
       (let (c (char id i)
             n (code c)
             c1 (if (= c "-") "_"
-                   (and (= i 0) (numeric? n)) (cat "_" n)
                    (valid-char? n) c
                    (= i 0) (cat "_" n)
                  n))

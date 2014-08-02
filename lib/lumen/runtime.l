@@ -439,16 +439,6 @@
   (target js: ((get (|new Date|) 'getTime)) lua: (os.clock)))
 
 (define number (str)
-  (define numeric? (c)
-    (let (n (code c))
-      (and (> n 47) (< n 58))))
-  (define number-char? (c)
-    (or (numeric? c) (in? c '(+ - e E .))))
-  (let (i 0)
-    (while (< i (length str))
-      (unless (number-char? (char str i))
-        (return))
-      (inc i)))
   (target
    js: (let (n (parseFloat str))
          (unless (isNaN n) n))

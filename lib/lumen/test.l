@@ -246,13 +246,13 @@
 (define-test names ()
   (let (a! 0
         b? 1
-        2c 2
-        2> 3
+        -% 2
+        ** 3
         break 4)
     (test= 0 a!)
     (test= 1 b?)
-    (test= 2 2c)
-    (test= 3 2>)
+    (test= 2 -%)
+    (test= 3 **)
     (test= 4 break)))
 
 (define-test set ()
@@ -366,10 +366,7 @@
       (test= 9 i))
     (let (b (each (_ _) t (inc i)))
       (test= nil b)
-      (test= 11 i))
-    (let (i 0)
-      (each (_ _) (table :2c :11y) (inc i))
-      (test= 2 i))))
+      (test= 11 i))))
 
 (define-test fn ()
   (let (f (fn (n) (+ n 10)))
