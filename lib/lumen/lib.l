@@ -31,31 +31,31 @@
            quote-modules
            initial-environment))
 
-(define getenv (k rest: keys)
+(define getenv (k p)
   (when (string? k)
-    (let (b (find (fn (e) (get e k)) (reverse environment)))
-      (when (table? b)
-        (let (k nil)
-          (each (x _) keys (set k x))
-          (if k (get b k) b))))))
+    (let (b (find (fn (e)
+                    (get e k))
+                  (reverse environment)))
+      (when (is? b)
+        (if p (get b p) b)))))
 
 (define macro-function (k)
-  (getenv k :macro))
+  (getenv k 'macro))
 
 (define macro? (k)
   (is? (macro-function k)))
 
 (define special? (k)
-  (is? (getenv k :special)))
+  (is? (getenv k 'special)))
 
 (define special-form? (form)
   (and (list? form) (special? (hd form))))
 
 (define statement? (k)
-  (and (special? k) (getenv k :stmt)))
+  (and (special? k) (getenv k 'stmt)))
 
 (define symbol-expansion (k)
-  (getenv k :symbol))
+  (getenv k 'symbol))
 
 (define symbol? (k)
   (is? (symbol-expansion k)))
@@ -67,7 +67,7 @@
     (and (table? b) (is? b.variable))))
 
 (define global? (k)
-  (getenv k :global))
+  (getenv k 'global))
 
 (define bound? (x)
   (or (macro? x)
