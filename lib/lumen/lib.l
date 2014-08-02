@@ -24,7 +24,6 @@
            valid-id?
            id
            key
-           sortk
            imported
            linked
            mapo
@@ -299,9 +298,6 @@
   (let (i (inner k))
     (if (valid-id? i) i (wrap k))))
 
-(define sortk (l k)
-  (sort l (fn (a b) (< (k a) (k b)))))
-
 (define imported (spec :all)
   (let (m (make-id)
         k (module-key spec)
@@ -311,8 +307,7 @@
         (when (and b.variable (or all b.export))
           (add imports `(%local ,n (get ,m ',n))))))
     (when (some? imports)
-      `((%local ,m (get nexus ',k))
-        ,@(sortk imports (fn (x) (at x 1)))))))
+      `((%local ,m (get nexus ',k)) ,@imports))))
 
 (define linked (name form)
   (if (toplevel?)

@@ -51,15 +51,11 @@
 
 (define-macro list body
   (let (l `(%array ,@body))
-    (if (not (keys? body))
-        l
-      (let (id (make-id)
-            init ())
+    (if (not (keys? body)) l
+      (let (id (make-id) init ())
         (each (k v) body
-          (add init (list k `(set (get ,id ',k) ,v))))
-        `(let (,id ,l)
-           ,@(map (fn (x) (at x 1)) (sortk init hd))
-           ,id)))))
+          (add init `(set (get ,id ',k) ,v)))
+        `(let (,id ,l) ,@init ,id)))))
 
 (define-macro if branches
   (define step ((a b rest: c))

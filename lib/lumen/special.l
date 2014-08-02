@@ -133,10 +133,11 @@
 (define-special %object forms
   (let (str "{"
         sep (if (= target 'lua) " = " ": ")
-        pairs (sortk (pair forms) hd))
+        pairs (pair forms)
+        n-1 (- (length pairs) 1))
     (each ((k v) :i) pairs
       (unless (string? k)
         (error (cat "Illegal key: " (string k))))
       (cat! str (key k) sep (compile v))
-      (if (< i (- (length pairs) 1)) (cat! str ", ")))
+      (if (< i n-1) (cat! str ", ")))
     (cat str "}")))
