@@ -606,14 +606,6 @@
   (test= '(:b) (exclude '(:a :b) :a))
   (test= '(1 2 :b) (exclude '(1 2 :b :c) :c)))
 
-(define-test map-splice ()
-  (test= '(1 a 2 a) (map (fn (x) (splice (list x 'a))) '(1 2)))
-  (let (f (fn (x) (splice x)))
-    (test= () (map f '(())))
-    (test= '(1 2) (map f '((1) (2))))
-    (test= '(1 2) (map f '((1) () (2))))
-    (test= '(1 2) (map f (list nil '(1) nil () '(2))))))
-
 (define-test sub ()
   (test= () (sub ()))
   (test= '(a) (sub '(a)))

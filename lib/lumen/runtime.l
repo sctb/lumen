@@ -59,7 +59,6 @@
            sort
            iterate
            replicate
-           splice
            map
            keys?
            empty?
@@ -271,30 +270,17 @@
     (iterate (fn () (add l x)) n)
     l))
 
-(define splice (x)
-  (table _splice: true value: x))
-
-(define splice? (x)
-  (and (table? x) x._splice))
-
-(define mapl (f l)
-  (let (l1 ())
-    (each (x) l
-      (let (x (f x))
-        (if (splice? x)
-            (join! l1 x.value)
-            (is? x) (add l1 x))))
-    l1))
-
 (define map (f t)
-  (let (l (mapl f t))
+  (let (t1 ())
+    (each (x) t
+      (let (x (f x))
+        (when (is? x)
+          (add t1 x))))
     (each (k v) t
       (let (x (f v))
-        (if (splice? x)
-            (set (get l k) x.value)
-            (is? x)
-            (set (get l k) x))))
-    l))
+        (when (is? x)
+          (set (get t1 k) x))))
+    t1))
 
 (define keys? (t)
   (let (k? false)
