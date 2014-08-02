@@ -153,11 +153,8 @@
     l1))
 
 (define join (l1 l2)
-  (if (and (nil? l2) (nil? l1)) ()
-      (nil? l1) (join () l2)
-      (nil? l2) (join l1 ())
-    (let (l ())
-      (let (i 0
+  (if (and l1 l2)
+      (let (l () i 0
             len (length l1)
             len2 (length l2))
         (while (< i len)
@@ -165,12 +162,13 @@
           (inc i))
         (while (< i (+ len len2))
           (set (at l i) (at l2 (- i len)))
-          (inc i)))
-      (each (k v) l1
-        (set (get l k) v))
-      (each (k v) l2
-        (set (get l k) v))
-      l)))
+          (inc i))
+        (each (k v) l1
+          (set (get l k) v))
+        (each (k v) l2
+          (set (get l k) v))
+        l)
+    (or l1 l2 ())))
 
 (define reduce (f x)
   (if (none? x) x
