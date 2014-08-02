@@ -330,11 +330,9 @@
   (conclude (compile (process form) :stmt)))
 
 (define reimported ()
-  (join (let (m (module current-module))
-          (map (fn (x)
-                 (splice (imported x)))
-               m.import))
-        (imported current-module :all)))
+  (let (m (module current-module))
+    (join (reduce join (map imported m.import))
+          (imported current-module :all))))
 
 (define* %result)
 
