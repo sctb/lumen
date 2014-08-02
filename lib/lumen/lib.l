@@ -33,9 +33,7 @@
 
 (define getenv (k rest: keys)
   (when (string? k)
-    (let (b (find (fn (e)
-                    (get e k))
-                  (reverse environment)))
+    (let (b (find (fn (e) (get e k)) (reverse environment)))
       (when (table? b)
         (let (k nil)
           (each (x _) keys (set k x))
