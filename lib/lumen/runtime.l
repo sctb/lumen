@@ -241,19 +241,21 @@
     b))
 
 (define stash (args)
-  (if (keys? args)
-      (let (p (%object "_stash" true))
-        (each (k v) args
-          (set (get p k) v))
-        (join args (list p)))
-    args))
+  (when (keys? args)
+    (let (p ())
+      (all (k v) args
+        (unless (number? k)
+          (set (get p k) v)))
+      (set (get p '_stash) true)
+      (add args p)))
+  args)
 
 (define unstash (args)
   (if (none? args) ()
     (let (l (last args))
       (if (and (table? l) l._stash)
           (let (args1 (sub args 0 (- (length args) 1)))
-            (each (k v) l
+            (all (k v) l
               (unless (= k '_stash)
                 (set (get args1 k) v)))
             args1)
