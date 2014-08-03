@@ -227,13 +227,18 @@
 
 (define keys? (t)
   (let (k? false)
-    (each (k v) t
-      (set k? true)
-      (break))
+    (all (k _) t
+      (unless (number? k)
+        (set k? true)
+        (break)))
     k?))
 
 (define empty? (t)
-  (and (none? t) (not (keys? t))))
+  (let (e? true)
+    (all (_ _) t
+      (set e? false)
+      (break))
+    e?))
 
 (define stash (args)
   (if (keys? args)
