@@ -295,7 +295,7 @@
 (define open-module (spec :private)
   (let (m (module spec)
         frame (last environment))
-    (each (k v) m.export
+    (all (k v) m.export
       (when (or v.export private)
         (set (get frame k) v)))))
 
