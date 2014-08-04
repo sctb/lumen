@@ -319,8 +319,7 @@
 
 (define exclude (t &: keys)
   (let (t1 ())
-    (each (x) t (add t1 x))
-    (each (k v) t
+    (all (k v) t
       (unless (get keys k)
         (set (get t1 k) v)))
     t1))
