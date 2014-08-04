@@ -409,8 +409,8 @@
   (when (string? k)
     (let (frame (last environment)
           x (or (get frame k) (table)))
-      (each (k1 v) keys
-        (set (get x k1) v))
+      (all (k v) keys
+        (set (get x k) v))
       (when (toplevel?)
         (let (m (module current-module))
           (set (get m.export k) x)))
