@@ -98,7 +98,7 @@
         k (module-key spec))
     (set (get modules k)
          (table import: imports export: (table) alias: alias))
-    (each (x) (or exp ())
+    (all (_ x) (or exp ())
       (setenv x :export))
     `(do (set (get nexus ',k) (table)) ,@bindings)))
 
@@ -148,7 +148,7 @@
 (define-macro with-bindings ((names) &: body)
   (let (x (make-id))
    `(with-frame :scope
-      (each (,x) ,names
+      (all (_ ,x) ,names
         (setenv ,x :variable))
       ,@body)))
 
