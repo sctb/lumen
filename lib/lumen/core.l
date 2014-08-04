@@ -107,9 +107,8 @@
   nil)
 
 (define-macro define-special (name args &: body)
-  (let (form `(fn ,args ,@body)
-        keys (sub body (length body)))
-    (eval `(setenv ',name special: ,form form: ',form ,@keys)))
+  (let (form `(fn ,args ,@body))
+    (eval `(setenv ',name special: ,form form: ',form ,@(keys body))))
   nil)
 
 (define-macro define-symbol (name expansion)
