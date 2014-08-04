@@ -348,26 +348,18 @@
       (test= 'bar (get t k)))
     (test= 'bar (get t (cat "f" "oo")))))
 
-(define-test each ()
-  (let (t '(1 2 3 :a b: false) i 0)
-    (each (x) t
-      (inc i)
-      (test= true (number? x)))
-    (test= 3 i)
-    (each (k v) t
-      (inc i)
-      (test= true (string? k))
-      (test= true (boolean? v)))
-    (test= 5 i)
-    (each (x) t
-      (if (= x 2) (break) (inc i)))
-    (test= 6 i)
-    (let (a (each (_) t (inc i)))
-      (test= nil a)
-      (test= 9 i))
-    (let (b (each (_ _) t (inc i)))
-      (test= nil b)
-      (test= 11 i))))
+(define-test all ()
+  (let (t '(1 2 3 :a b: false))
+    (let (a 0 b 0)
+      (all (k v) t
+        (if (number? k)
+            (inc a)
+          (inc b)))
+      (test= 3 a)
+      (test= 2 b))
+    (let (a 0)
+      (all (_ _) t (inc a))
+      (test= 5 a))))
 
 (define-test fn ()
   (let (f (fn (n) (+ n 10)))
