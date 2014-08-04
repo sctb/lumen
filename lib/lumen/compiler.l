@@ -334,7 +334,7 @@
     (series (fn (spec)
               (join! imports (imported spec)))
             m.import)
-    (join imports (imported current-module :all))))
+    (join imports (imported current-module :private))))
 
 (define* %result)
 
