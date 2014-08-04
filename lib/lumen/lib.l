@@ -184,19 +184,22 @@
 (set* quasiquote-list
   (fn (form depth)
     (let (xs (list '(list)))
-      (each (k v) form
-        (let (v (if (quasisplice? v depth)
-                    ;; don't splice, just expand
-                    (quasiexpand (at v 1))
-                  (quasiexpand v depth)))
-          (set (get (last xs) k) v)))
+      (all (k v) form
+        (unless (number? k)
+          (let (v (if (quasisplice? v depth)
+                      ;; don't splice, just expand
+                      (quasiexpand (at v 1))
+                    (quasiexpand v depth)))
+            (set (get (last xs) k) v))))
       ;; collect sibling lists
-      (each (x) form
-        (if (quasisplice? x depth)
-            (let (x (quasiexpand (at x 1)))
-              (add xs x)
-              (add xs '(list)))
-          (add (last xs) (quasiexpand x depth))))
+      (series
+       (fn (x)
+         (if (quasisplice? x depth)
+             (let (x (quasiexpand (at x 1)))
+               (add xs x)
+               (add xs '(list)))
+           (add (last xs) (quasiexpand x depth))))
+       form)
       (let (pruned
             (keep (fn (x)
                     (or (> (length x) 1)
