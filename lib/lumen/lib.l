@@ -302,9 +302,9 @@
         k (module-key spec)
         imports ())
     (when (get nexus k)
-      (each (n b) (get (module spec) 'export)
-        (when (and b.variable (or private b.export))
-          (add imports `(%local ,n (get ,m ',n))))))
+      (all (k v) (get (module spec) 'export)
+        (when (and v.variable (or private v.export))
+          (add imports `(%local ,k (get ,m ',k))))))
     (when (some? imports)
       `((%local ,m (get nexus ',k)) ,@imports))))
 
