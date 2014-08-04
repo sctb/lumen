@@ -266,7 +266,7 @@
   (if (none? args) ()
     (let (l (last args))
       (if (and (table? l) l._stash)
-          (let (args1 (sub args 0 (- (length args) 1)))
+          (let (args1 (butlast args))
             (all (k v) l
               (unless (= k '_stash)
                 (set (get args1 k) v)))
