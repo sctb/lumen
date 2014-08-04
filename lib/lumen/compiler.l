@@ -312,16 +312,18 @@
 
 (define import-modules (specs)
   (let (imports () bindings ())
-    (each (spec) (or specs ())
-      (load-module spec)
-      (let (m (module spec))
-        (if m.alias
-            (let ((aliased bs) (import-modules m.alias))
-              (join! imports aliased)
-              (join! bindings bs))
-          (let (bs (imported spec))
-            (add imports spec)
-            (join! bindings bs)))))
+    (series
+     (fn (spec)
+       (load-module spec)
+       (let (m (module spec))
+         (if m.alias
+             (let ((aliased bs) (import-modules m.alias))
+               (join! imports aliased)
+               (join! bindings bs))
+           (let (bs (imported spec))
+             (add imports spec)
+             (join! bindings bs)))))
+     (or specs ()))
     (list imports bindings)))
 
 (define compile-module (spec)
