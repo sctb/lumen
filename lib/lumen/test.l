@@ -30,7 +30,7 @@
 
 (define run ()
   (pr (cat (language) ":"))
-  (each (test) tests
+  (all (_ test) tests
     (let (name (at test 0)
 	  f (at test 1)
 	  result (f))

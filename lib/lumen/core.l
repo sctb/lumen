@@ -51,12 +51,14 @@
   `(get ,l ,i))
 
 (define-macro list body
-  (let (l `(%array ,@body))
-    (if (not (keys? body)) l
-      (let (id (make-id) init ())
-        (each (k v) body
-          (add init `(set (get ,id ',k) ,v)))
-        `(let (,id ,l) ,@init ,id)))))
+  (let (l () forms () id (make-id))
+    (all (k v) body
+      (if (number? k)
+          (set (get l k) v)
+        (add forms `(set (get ,id ',k) ,v))))
+    (if (some? forms)
+        `(let (,id (%array ,@l)) ,@forms ,id)
+      `(%array ,@l))))
 
 (define-macro if branches
   (define step ((a b &: c))
