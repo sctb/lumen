@@ -292,20 +292,20 @@
       (set environment env0)
       (conclude code))))
 
-(define open-module (spec :all)
+(define open-module (spec :private)
   (let (m (module spec)
         frame (last environment))
     (each (k v) m.export
-      (when (or v.export all)
+      (when (or v.export private)
         (set (get frame k) v)))))
 
-(define load-module (spec :all)
+(define load-module (spec :private)
   (unless (module spec)
     (%compile-module spec))
-  (open-module spec all: all))
+  (open-module spec private: private))
 
 (define in-module (spec)
-  (load-module spec :all)
+  (load-module spec :private)
   (let (m (module spec))
     (series open-module m.import))
   (set current-module spec))
