@@ -208,7 +208,7 @@
 
 (define-macro set-of xs
   (let (l ())
-    (each (x) xs
+    (all (_ x) xs
       (set (get l x) true))
     `(table ,@l)))
 
