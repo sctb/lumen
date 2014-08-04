@@ -288,23 +288,23 @@
       (add strs str)
       strs)))
 
-(define cat (rest: xs)
+(define cat xs
   (if (none? xs) ""
     (reduce (fn (a b) (cat a b)) xs)))
 
-(define + (rest: xs)
+(define + xs
   (reduce (fn (a b) (+ a b)) xs))
 
-(define - (rest: xs)
+(define - xs
   (reduce (fn (b a) (- a b)) (reverse xs)))
 
-(define * (rest: xs)
+(define * xs
   (reduce (fn (a b) (* a b)) xs))
 
-(define / (rest: xs)
+(define / xs
   (reduce (fn (b a) (/ a b)) (reverse xs)))
 
-(define % (rest: xs)
+(define % xs
   (reduce (fn (b a) (% a b)) (reverse xs)))
 
 (define > (a b) (> a b))
@@ -413,7 +413,7 @@
 (define module (spec)
   (get modules (module-key spec)))
 
-(define setenv (k rest: keys)
+(define setenv (k &: keys)
   (when (string? k)
     (let (frame (last environment)
           x (or (get frame k) (table)))

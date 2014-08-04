@@ -25,7 +25,7 @@
     (or: (js: ,"||" lua: or))))
 
 (define unary? (form)
-  (let ((op rest: args) form)
+  (let ((op &: args) form)
     (and (one? args) (in? op '(not -)))))
 
 (define precedence (form)
@@ -69,7 +69,7 @@
     "\n"))
 
 (define compile-special (form stmt?)
-  (let ((x rest: args) form
+  (let ((x &: args) form
         (:special :stmt tr: self-tr?) (getenv x)
         tr (terminator (and stmt? (not self-tr?))))
     (cat (apply special args) tr)))
@@ -95,7 +95,7 @@
     (list "" "")))
 
 (define compile-infix (form)
-  (let ((op rest: (a b)) form
+  (let ((op &: (a b)) form
         (ao ac) (op-delims form a)
         (bo bc) (op-delims form b :right)
         a (compile a)
@@ -190,23 +190,23 @@
   (add hoist `(%try ,(lower-body args tail?))))
 
 (define lower-while (args hoist)
-  (let ((c rest: body) args)
+  (let ((c &: body) args)
     (add hoist
          `(while ,(lower c hoist)
             ,(lower-body body)))))
 
 (define lower-for (args hoist)
-  (let ((t k rest: body) args)
+  (let ((t k &: body) args)
     (add hoist
          `(%for ,(lower t hoist) ,k
             ,(lower-body body)))))
 
 (define lower-function (args)
-  (let ((a rest: body) args)
+  (let ((a &: body) args)
     `(%function ,a ,(lower-body body true))))
 
 (define lower-definition (kind args hoist)
-  (let ((name args rest: body) args)
+  (let ((name args &: body) args)
     (add hoist `(,kind ,name ,args ,(lower-body body true)))))
 
 (define lower-call (form hoist)
@@ -217,7 +217,7 @@
   (and (infix? (hd form)) (> (length form) 3)))
 
 (define lower-infix (form hoist)
-  (let ((x rest: args) form)
+  (let ((x &: args) form)
     (lower (reduce (fn (a b)
                      (list x b a))
                    (reverse args))
@@ -233,7 +233,7 @@
         (empty? form) '(%array)
         (nil? hoist) (lower-statement form)
         (lower-infix? form) (lower-infix form hoist)
-       (let ((x rest: args) form)
+       (let ((x &: args) form)
          (if (= x 'do) (lower-do args hoist stmt? tail?)
              (= x '%if) (lower-if args hoist stmt? tail?)
              (= x '%try) (lower-try args hoist tail?)

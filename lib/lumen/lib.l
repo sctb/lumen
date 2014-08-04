@@ -113,7 +113,7 @@
       (atom? lh) `((,lh ,rh))
     (let (bs ())
       (all (k v) lh
-        (let (x (if (or (= k 'rest) (= k '&))
+        (let (x (if (= k '&)
                     `(sub ,rh ,(length lh))
                   `(get ,rh ',k)))
           (let (k (if (= v true) k v))
@@ -158,12 +158,12 @@
           (let ((_ name value) form)
             `(%local ,name ,(macroexpand value)))
           (= x '%function)
-          (let ((_ args rest: body) form)
+          (let ((_ args &: body) form)
             (with-bindings (args)
               `(%function ,args ,@(macroexpand body))))
           (or (= x '%local-function)
               (= x '%global-function))
-          (let ((_ name args rest: body) form)
+          (let ((_ name args &: body) form)
             (with-bindings (args)
               `(,x ,name ,args ,@(macroexpand body))))
 	  (macro? x)
@@ -303,10 +303,10 @@
         `(do ,form (set (get (get nexus ',k) ',name) ,name)))
     form))
 
-(define extend (t rest: xs)
+(define extend (t &: xs)
   (join t xs))
 
-(define exclude (t rest: keys)
+(define exclude (t &: keys)
   (let (t1 ())
     (each (x) t (add t1 x))
     (each (k v) t
