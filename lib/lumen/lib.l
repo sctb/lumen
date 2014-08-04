@@ -99,9 +99,10 @@
 (define stash* (args)
   (if (keys? args)
       (let (l `(%object "_stash" true))
-        (each (k v) args
-          (add l (literal k))
-          (add l v))
+        (all (k v) args
+          (unless (number? k)
+            (add l (literal k))
+            (add l v)))
         (join args (list l)))
     args))
 
