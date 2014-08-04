@@ -357,15 +357,15 @@
       (boolean? x) (if x "true" "false")
       (function? x) "#<function>"
       (atom? x) (cat x "")
-    (let (str "("
-          x1 (sub x))
-      (each (k v) x
-        (add x1 (cat k ":"))
-        (add x1 v))
-      (each (y :i) x1
-        (cat! str (string y))
-        (when (< i (- (length x1) 1))
-          (cat! str " ")))
+    (let (str "(" sp "" xs () ks ())
+      (all (k v) x
+        (if (number? k)
+            (set (get xs k) (string v))
+          (do (add ks (cat k ":"))
+              (add ks (string v)))))
+      (all (_ v) (join xs ks)
+        (cat! str sp v)
+        (set sp " "))
       (cat str  ")"))))
 
 (define space (xs)
