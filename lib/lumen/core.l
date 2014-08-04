@@ -26,7 +26,6 @@
            fn
            guard
            all
-           each
            set-of
            language
            target
@@ -186,24 +185,6 @@
            ,@(if (= target 'lua) body
                `((let (,n (parseInt ,k)
                        ,k (if (isNaN ,n) ,k ,n))
-                   ,@body))))))))
-
-(define-macro each (b t &: body)
-  (let ((k v) b t1 (make-id))
-    `(let (,t1 ,t)
-       ,(if (nil? v)
-            (let (i (if b.i 'i (make-id)))
-              `(let (,i 0)
-                 (while (< ,i (length ,t1))
-                   (let (,k (at ,t1 ,i))
-                     ,@body)
-                   (inc ,i))))
-          `(let (,k nil)
-             (%for ,t1 ,k
-               (when (target
-                       js: (isNaN (parseInt ,k))
-                       lua: (not (number? ,k)))
-                 (let (,v (get ,t1 ,k))
                    ,@body))))))))
 
 (define-macro set-of xs
