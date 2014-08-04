@@ -336,7 +336,7 @@
 
 (define mapo (f t)
   (let (o ())
-    (each (k v) t
+    (all (k v) t
       (let (x (f v))
         (when (is? x)
           (add o (literal k))
