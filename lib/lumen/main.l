@@ -52,19 +52,23 @@
     (let (spec nil
           output nil
           target1 nil
-          expr nil)
-      (each (arg :i) args
-        (if (or (= arg "-o") (= arg "-t") (= arg "-e"))
-            (if (= i (- (length args) 1))
-                (pr "missing argument for" arg)
-              (do (inc i)
-                  (let (val (at args i))
-                    (if (= arg "-o") (set output val)
-		        (= arg "-t") (set target1 val)
-		        (= arg "-e") (set expr val)))))
-	    (and (nil? spec)
-                 (~= "-" (char arg 0)))
-            (set spec arg)))
+          expr nil
+          n (length args)
+          i 0)
+      (while (< i n)
+        (let (arg (at args i))
+          (if (or (= arg "-o") (= arg "-t") (= arg "-e"))
+              (if (= i (- n 1))
+                  (pr "missing argument for" arg)
+                (do (inc i)
+                    (let (val (at args i))
+                      (if (= arg "-o") (set output val)
+		          (= arg "-t") (set target1 val)
+		          (= arg "-e") (set expr val)))))
+	      (and (nil? spec)
+                   (~= "-" (char arg 0)))
+              (set spec arg))
+          (inc i)))
       (if output
           (do (if target1 (set target target1))
               (write-file output (compile-module spec)))
