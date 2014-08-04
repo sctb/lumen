@@ -151,8 +151,10 @@
   (lower-statement `(do ,@body) tail?))
 
 (define lower-do (args hoist stmt? tail?)
-  (each (x) (sub args 0 (- (length args) 1))
-    (add hoist (lower x hoist stmt?)))
+  (let (n (- (length args) 1))
+    (all (k x) args
+      (when (and (number? k) (< (index k) n))
+        (add hoist (lower x hoist stmt?)))))
   (let (e (lower (last args) hoist stmt? tail?))
     (if (and tail? (can-return? e))
         `(return ,e)

@@ -108,7 +108,7 @@
     args))
 
 (define index (k)
-  (target js: k lua: (when (number? k) (+ k 1))))
+  (target js: k lua: (when (number? k) (- k 1))))
 
 (define bias (k)
   (when (and (number? k)
