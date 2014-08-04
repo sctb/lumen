@@ -24,8 +24,9 @@
 
 (define-special do forms :stmt :tr
   (let (str "")
-    (each (x) forms
-      (cat! str (compile x :stmt)))
+    (series (fn (x)
+              (cat! str (compile x :stmt)))
+            forms)
     str))
 
 (define-special %if (cond cons alt) :stmt :tr
@@ -124,20 +125,22 @@
 (define-special %array forms
   (let (open (if (= target 'lua) "{" "[")
 	close (if (= target 'lua) "}" "]")
-	str "")
-    (each (x :i) forms
-      (cat! str (compile x))
-      (if (< i (- (length forms) 1)) (cat! str ", ")))
+	str "" comma "")
+    (all (k v) forms
+      (when (number? k)
+        (cat! str comma (compile v))
+        (set comma ", ")))
     (cat open str close)))
 
 (define-special %object forms
   (let (str "{"
         sep (if (= target 'lua) " = " ": ")
-        pairs (pair forms)
-        n-1 (- (length pairs) 1))
-    (each ((k v) :i) pairs
-      (unless (string? k)
-        (error (cat "Illegal key: " (string k))))
-      (cat! str (key k) sep (compile v))
-      (if (< i n-1) (cat! str ", ")))
+        comma "")
+    (all (k v) (pair forms)
+      (when (number? k)
+        (let ((k v) v)
+          (unless (string? k)
+            (error (cat "Illegal key: " (string k))))
+          (cat! str comma (key k) sep (compile v))
+          (set comma ", "))))
     (cat str "}")))
