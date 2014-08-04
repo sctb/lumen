@@ -14,6 +14,7 @@
            bound?
            quoted
            stash*
+           index
            bind
            bind*
            quasiexpand
@@ -106,13 +107,16 @@
         (join args (list l)))
     args))
 
-(define index (x)
-  (when (and (number? x)
+(define index (k)
+  (target js: k lua: (when (number? k) (+ k 1))))
+
+(define bias (k)
+  (when (and (number? k)
              (~= target (language)))
     (if (= target 'js)
-        (dec x)
-      (inc x)))
-  x)
+        (dec k)
+      (inc k)))
+  k)
 
 (define bind (lh rh)
   (if (and (composite? lh) (list? rh)) ; list lh?
@@ -123,7 +127,7 @@
       (all (k v) lh
         (let (x (if (= k '&)
                     `(sub ,rh ,(length lh))
-                  `(get ,rh ',(index k))))
+                  `(get ,rh ',(bias k))))
           (let (k (if (= v true) k v))
             (join! bs (bind k x)))))
       bs)))

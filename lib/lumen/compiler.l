@@ -30,8 +30,8 @@
 
 (define precedence (form)
   (when (and (list? form) (not (unary? form)))
-    (each (level :i) infix
-      (if (get level (hd form)) (return i))))
+    (all (k v) infix
+      (if (get v (hd form)) (return (index k)))))
   0)
 
 (define getop (op)
@@ -47,10 +47,11 @@
 (define compile)
 
 (define compile-args (args)
-  (let (str "(")
-    (each (arg :i) args
-      (cat! str (compile arg))
-      (if (< i (- (length args) 1)) (cat! str ", ")))
+  (let (str "(" comma "")
+    (series (fn (x)
+              (cat! str comma (compile x))
+              (set comma ", "))
+            args)
     (cat str ")")))
 
 (define compile-atom (x)
