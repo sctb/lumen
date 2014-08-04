@@ -107,18 +107,17 @@
     args))
 
 (define bind (lh rh)
-  (if (and (composite? lh) (list? rh))
+  (if (and (composite? lh) (list? rh)) ; list lh?
       (let (id (make-id))
 	`((,id ,rh) ,@(bind lh id)))
       (atom? lh) `((,lh ,rh))
-    (let (bs () r lh.rest)
-      (each (x :i) lh
-        (join! bs (bind x `(at ,rh ,i))))
-      (if r (join! bs (bind r `(sub ,rh ,(length lh)))))
-      (each (k v) lh
-        (if (= v true) (set v k))
-        (unless (= k 'rest)
-          (join! bs (bind v `(get ,rh ',k)))))
+    (let (bs ())
+      (all (k v) lh
+        (let (x (if (= k 'rest)
+                    `(sub ,rh ,(length lh))
+                  `(get ,rh ',k)))
+          (let (k (if (= v true) k v))
+            (join! bs (bind k x)))))
       bs)))
 
 (define bind* (args body)
