@@ -29,6 +29,7 @@
            add
            drop
            last
+           butlast
            reverse
            join
            reduce
@@ -152,6 +153,9 @@
 
 (define last (l)
   (at l (- (length l) 1)))
+
+(define butlast (l)
+  (sub l 0 (- (length l) 1)))
 
 (define reverse (l)
   (let (l1 (sub l (length l))
