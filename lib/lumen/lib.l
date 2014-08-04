@@ -106,6 +106,14 @@
         (join args (list l)))
     args))
 
+(define index (x)
+  (when (and (number? x)
+             (~= target (language)))
+    (if (= target 'js)
+        (dec x)
+      (inc x)))
+  x)
+
 (define bind (lh rh)
   (if (and (composite? lh) (list? rh)) ; list lh?
       (let (id (make-id))
@@ -115,7 +123,7 @@
       (all (k v) lh
         (let (x (if (= k '&)
                     `(sub ,rh ,(length lh))
-                  `(get ,rh ',k)))
+                  `(get ,rh ',(index k))))
           (let (k (if (= v true) k v))
             (join! bs (bind k x)))))
       bs)))
