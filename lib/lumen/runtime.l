@@ -19,6 +19,7 @@
            list?
            substring
            sub
+           keys
            inner
            tl
            char
@@ -116,6 +117,13 @@
         (unless (number? k)
           (set (get l k) v)))
       l)))
+
+(define keys (x)
+  (let (t ())
+    (all (k v) x
+      (unless (number? k)
+        (set (get t k) v)))
+    t))
 
 (define inner (x)
   (sub x 1 (- (length x) 1)))
