@@ -47,10 +47,10 @@
 (define compile)
 
 (define compile-args (args)
-  (let (s "(" comma "")
+  (let (s "(" c "")
     (series (fn (x)
-              (cat! s comma (compile x))
-              (set comma ", "))
+              (cat! s c (compile x))
+              (set c ", "))
             args)
     (cat s ")")))
 

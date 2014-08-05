@@ -125,22 +125,21 @@
 (define-special %array forms
   (let (open (if (= target 'lua) "{" "[")
 	close (if (= target 'lua) "}" "]")
-	s "" comma "")
+	s "" c "")
     (all (k v) forms
       (when (number? k)
-        (cat! s comma (compile v))
-        (set comma ", ")))
+        (cat! s c (compile v))
+        (set c ", ")))
     (cat open s close)))
 
 (define-special %object forms
-  (let (s "{"
-        sep (if (= target 'lua) " = " ": ")
-        comma "")
+  (let (s "{" c ""
+        sep (if (= target 'lua) " = " ": "))
     (all (k v) (pair forms)
       (when (number? k)
         (let ((k v) v)
           (unless (string? k)
             (error (cat "Illegal key: " (string k))))
-          (cat! s comma (key k) sep (compile v))
-          (set comma ", "))))
+          (cat! s c (key k) sep (compile v))
+          (set c ", "))))
     (cat s "}")))
