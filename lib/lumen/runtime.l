@@ -136,8 +136,8 @@
 
 (define code (s n)
   (target
-   js: (s.charCodeAt n)
-   lua: (string.byte s (if n (+ n 1)))))
+    js: (s.charCodeAt n)
+    lua: (string.byte s (if n (+ n 1)))))
 
 (define string-literal? (x)
   (and (string? x) (= (char x 0) "\"")))
@@ -275,11 +275,11 @@
 
 (define search (s pattern start)
   (target
-   js: (let (i (s.indexOf pattern start))
-         (if (>= i 0) i))
-   lua: (let (start (if start (+ start 1))
-              i (string.find s pattern start true))
-          (and i (- i 1)))))
+    js: (let (i (s.indexOf pattern start))
+          (if (>= i 0) i))
+    lua: (let (start (if start (+ start 1))
+               i (string.find s pattern start true))
+           (and i (- i 1)))))
 
 (define split (s sep)
   (if (or (= s "") (= sep "")) ()
@@ -360,9 +360,9 @@
 
 (define number (s)
   (target
-   js: (let (n (parseFloat s))
-         (unless (isNaN n) n))
-   lua: (tonumber s)))
+    js: (let (n (parseFloat s))
+          (unless (isNaN n) n))
+    lua: (tonumber s)))
 
 (define string (x)
   (if (nil? x) "nil"
