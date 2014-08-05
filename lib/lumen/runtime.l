@@ -355,7 +355,7 @@
 
 (define now ()
   (target
-    js: (floor (/ ((get (|new Date|) 'getTime)) 1000))
+    js: (Math.floor (/ ((get (|new Date|) 'getTime)) 1000))
     lua: (os.time)))
 
 (define number (s)
