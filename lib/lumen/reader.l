@@ -84,7 +84,7 @@
       (if (is? n) n
 	  (= str "true") true
 	  (= str "false") false
-          (= str "_") (make-id)
+          (= str "_") (unique)
           (and dot? (not (one? str)))
           (reduce (fn (a b)
                     `(get ,b (quote ,a)))

@@ -61,7 +61,7 @@
            string
            space
            apply
-           make-id
+           unique
            %message-handler
            toplevel?
            module-key
@@ -397,9 +397,9 @@
 
 (define id-count 0)
 
-(define make-id ()
+(define unique ()
   (inc id-count)
-  (cat "_g" id-count))
+  (cat "_u" id-count))
 
 (define %message-handler (msg)
   (let (i (search msg ": "))

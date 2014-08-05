@@ -64,7 +64,7 @@
 (define-special %try (form) :stmt :tr
   (let (ind (indentation)
         body (with-indent (compile form :stmt))
-        e (make-id)
+        e (unique)
         hf `(return (%array false (get ,e "message")))
         h (with-indent (compile hf :stmt)))
     (cat ind "try {\n" body ind "}\n"

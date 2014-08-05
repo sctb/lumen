@@ -120,7 +120,7 @@
 
 (define bind (lh rh)
   (if (and (composite? lh) (list? rh)) ; list lh?
-      (let (id (make-id))
+      (let (id (unique))
 	`((,id ,rh) ,@(bind lh id)))
       (atom? lh) `((,lh ,rh))
     (let (bs ())
@@ -140,11 +140,11 @@
         (do (add args1 '|...|) '(unstash (list |...|)))))
     (if (atom? args)
         (list args1 `((let ,(list args (rest)) ,@body)))
-      (let (bs () k? (keys? args) r (make-id))
+      (let (bs () k? (keys? args) r (unique))
         (all (k v) args
           (when (number? k)
             (if (atom? v) (add args1 v)
-              (let (x (make-id))
+              (let (x (unique))
                 (add args1 x)
                 (join! bs (list v x))))))
         (when k?
@@ -241,7 +241,7 @@
   (apply cat (replicate indent-level "  ")))
 
 (define-macro with-indent (form)
-  (let (result (make-id))
+  (let (result (unique))
     `(do (inc indent-level)
          (let (,result ,form)
            (dec indent-level)
@@ -302,7 +302,7 @@
     (if (valid-id? i) i (wrap k))))
 
 (define imported (spec :private)
-  (let (m (make-id)
+  (let (m (unique)
         k (module-key spec)
         imports ())
     (when (get nexus k)

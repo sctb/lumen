@@ -166,7 +166,7 @@
              `(%if ,(lower cond hoist)
                    ,(lower-body (list then) tail?)
                    ,@(if else (list (lower-body (list else) tail?)))))
-      (let (e (make-id))
+      (let (e (unique))
         (add hoist `(%local ,e))
         (add hoist
              `(%if ,(lower cond hoist)
@@ -180,7 +180,7 @@
         hoist1 ()
         b1 (lower b hoist1))
     (if (some? hoist1)
-        (let (id (make-id))
+        (let (id (unique))
           (lower `(do (%local ,id ,a)
                       ,(if (= x 'and)
                            `(%if ,id ,b ,id)

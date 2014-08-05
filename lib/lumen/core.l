@@ -50,7 +50,7 @@
   `(get ,l ,i))
 
 (define-macro list body
-  (let (l () forms () id (make-id))
+  (let (l () forms () id (unique))
     (all (k v) body
       (if (number? k)
           (set (get l k) v)
@@ -81,7 +81,7 @@
       (all (k (id val)) (bind lh rh)
         (when (number? k)
           (if (or (bound? id) (reserved? id) (toplevel?))
-              (let (id1 (make-id))
+              (let (id1 (unique))
                 (add renames id)
                 (add renames id1)
                 (set id id1))
@@ -137,14 +137,14 @@
   (link name `(set ,name ,value)))
 
 (define-macro with-frame (&: body :scope)
-  (let (x (make-id))
+  (let (x (unique))
     `(do (add environment (table _scope: ,scope))
          (let (,x (do ,@body))
            (drop environment)
            ,x))))
 
 (define-macro with-bindings ((names) &: body)
-  (let (x (make-id))
+  (let (x (unique))
    `(with-frame :scope
       (all (_ ,x) ,names
         (setenv ,x :variable))
@@ -171,13 +171,13 @@
 (define-macro guard (expr)
   (if (= target 'js)
       `((fn () (%try (list true ,expr))))
-    (let (e (make-id) x (make-id)
+    (let (e (unique) x (unique)
           ex (cat "|" e "," x "|"))
       `(let (,ex (xpcall (fn () ,expr) %message-handler))
          (list ,e ,x)))))
 
 (define-macro all ((k v) t &: body)
-  (let (x (make-id) n (make-id))
+  (let (x (unique) n (unique))
     `(let (,x ,t ,k nil)
        (%for ,x ,k
          (let (,v (get ,x ,k))
