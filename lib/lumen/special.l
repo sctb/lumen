@@ -23,27 +23,27 @@
            %object))
 
 (define-special do forms :stmt :tr
-  (let (str "")
+  (let (s "")
     (series (fn (x)
-              (cat! str (compile x :stmt)))
+              (cat! s (compile x :stmt)))
             forms)
-    str))
+    s))
 
 (define-special %if (cond cons alt) :stmt :tr
   (let (cond (compile cond)
         cons (with-indent (compile cons :stmt))
         alt (if alt (with-indent (compile alt :stmt)))
         ind (indentation)
-        str "")
+        s "")
     (if (= target 'js)
-        (cat! str ind "if (" cond ") {\n" cons ind "}")
-      (cat! str ind "if " cond " then\n" cons))
+        (cat! s ind "if (" cond ") {\n" cons ind "}")
+      (cat! s ind "if " cond " then\n" cons))
     (if (and alt (= target 'js))
-        (cat! str " else {\n" alt ind "}")
-        alt (cat! str ind "else\n" alt))
+        (cat! s " else {\n" alt ind "}")
+        alt (cat! s ind "else\n" alt))
     (if (= target 'lua) 
-        (cat str ind "end\n")
-      (cat str "\n"))))
+        (cat s ind "end\n")
+      (cat s "\n"))))
 
 (define-special while (cond form) :stmt :tr
   (let (cond (compile cond)
@@ -125,15 +125,15 @@
 (define-special %array forms
   (let (open (if (= target 'lua) "{" "[")
 	close (if (= target 'lua) "}" "]")
-	str "" comma "")
+	s "" comma "")
     (all (k v) forms
       (when (number? k)
-        (cat! str comma (compile v))
+        (cat! s comma (compile v))
         (set comma ", ")))
-    (cat open str close)))
+    (cat open s close)))
 
 (define-special %object forms
-  (let (str "{"
+  (let (s "{"
         sep (if (= target 'lua) " = " ": ")
         comma "")
     (all (k v) (pair forms)
@@ -141,6 +141,6 @@
         (let ((k v) v)
           (unless (string? k)
             (error (cat "Illegal key: " (string k))))
-          (cat! str comma (key k) sep (compile v))
+          (cat! s comma (key k) sep (compile v))
           (set comma ", "))))
-    (cat str "}")))
+    (cat s "}")))

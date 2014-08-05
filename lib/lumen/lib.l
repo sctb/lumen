@@ -77,17 +77,17 @@
       (variable? x)
       (global? x)))
 
-(define escape (str)
-  (let (str1 "\"" i 0)
-    (while (< i (length str))
-      (let (c (char str i)
+(define escape (s)
+  (let (s1 "\"" i 0)
+    (while (< i (length s))
+      (let (c (char s i)
             c1 (if (= c "\n") "\\n"
                    (= c "\"") "\\\""
                    (= c "\\") "\\\\"
                  c))
-        (cat! str1 c1))
+        (cat! s1 c1))
       (inc i))
-    (cat str1 "\"")))
+    (cat s1 "\"")))
 
 (define quoted (form)
   (if (string? form) (escape form)

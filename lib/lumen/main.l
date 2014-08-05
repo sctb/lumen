@@ -20,21 +20,21 @@
          (lumen boot)
          (user))))
 
-(define rep (str)
-  (let ((_ x) (guard (eval (read-from-string str))))
+(define rep (s)
+  (let ((_ x) (guard (eval (read-from-string s))))
     (if (is? x) (pr x))))
 
 (define repl ()
-  (define step (str)
-    (rep str)
+  (define step (s)
+    (rep s)
     (write "> "))
   (write "> ")
   (target
    js: (do (process.stdin.setEncoding 'utf8)
            (process.stdin.on 'data step))
    lua: (while true
-          (let (str (io.read))
-            (if str (step str) (break))))))
+          (let (s (io.read))
+            (if s (step s) (break))))))
 
 (define usage ()
   (pr "usage: lumen [options] <module>")

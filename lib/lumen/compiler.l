@@ -47,12 +47,12 @@
 (define compile)
 
 (define compile-args (args)
-  (let (str "(" comma "")
+  (let (s "(" comma "")
     (series (fn (x)
-              (cat! str comma (compile x))
+              (cat! s comma (compile x))
               (set comma ", "))
             args)
-    (cat str ")")))
+    (cat s ")")))
 
 (define compile-atom (x)
   (if (and (= x "nil") (= target 'lua)) x
@@ -261,8 +261,7 @@
   `((%function () ,(process `(do ,@body)))))
 
 (define compile-file (file)
-  (let (str (read-file file)
-        body (read-all (make-stream str))
+  (let (body (read-all (make-stream (read-file file)))
         form (encapsulate body))
     (cat (compile form) ";\n")))
 

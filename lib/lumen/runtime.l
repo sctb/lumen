@@ -99,9 +99,9 @@
 (define table? (x) (and (composite? x) (nil? (hd x))))
 (define list? (x) (and (composite? x) (is? (hd x))))
 
-(define substring (str from upto)
-  (target js: (str.substring from upto)
-          lua: (string.sub str (+ from 1) upto)))
+(define substring (s from upto)
+  (target js: (s.substring from upto)
+          lua: (string.sub s (+ from 1) upto)))
 
 (define sub (x from upto)
   (if (string? x)
@@ -131,13 +131,13 @@
 
 (define tl (l) (sub l 1))
 
-(define char (str n)
-  (target js: (str.charAt n) lua: (sub str n (+ n 1))))
+(define char (s n)
+  (target js: (s.charAt n) lua: (sub s n (+ n 1))))
 
-(define code (str n)
+(define code (s n)
   (target
-   js: (str.charCodeAt n)
-   lua: (string.byte str (if n (+ n 1)))))
+   js: (s.charCodeAt n)
+   lua: (string.byte s (if n (+ n 1)))))
 
 (define string-literal? (x)
   (and (string? x) (= (char x 0) "\"")))
@@ -273,24 +273,24 @@
             args1)
         args))))
 
-(define search (str pattern start)
+(define search (s pattern start)
   (target
-   js: (let (i (str.indexOf pattern start))
+   js: (let (i (s.indexOf pattern start))
          (if (>= i 0) i))
    lua: (let (start (if start (+ start 1))
-              i (string.find str pattern start true))
+              i (string.find s pattern start true))
           (and i (- i 1)))))
 
-(define split (str sep)
-  (if (or (= str "") (= sep "")) ()
-    (let (strs ())
+(define split (s sep)
+  (if (or (= s "") (= sep "")) ()
+    (let (l ())
       (while true
-        (let (i (search str sep))
+        (let (i (search s sep))
           (if (nil? i) (break)
-            (do (add strs (sub str 0 i))
-                (set str (sub str (+ i 1)))))))
-      (add strs str)
-      strs)))
+            (do (add l (sub s 0 i))
+                (set s (sub s (+ i 1)))))))
+      (add l s)
+      l)))
 
 (define cat xs
   (if (none? xs) ""
@@ -358,27 +358,27 @@
     js: (floor (/ ((get (|new Date|) 'getTime)) 1000))
     lua: (os.time)))
 
-(define number (str)
+(define number (s)
   (target
-   js: (let (n (parseFloat str))
+   js: (let (n (parseFloat s))
          (unless (isNaN n) n))
-   lua: (tonumber str)))
+   lua: (tonumber s)))
 
 (define string (x)
   (if (nil? x) "nil"
       (boolean? x) (if x "true" "false")
       (function? x) "#<function>"
       (atom? x) (cat x "")
-    (let (str "(" sp "" xs () ks ())
+    (let (s "(" sp "" xs () ks ())
       (all (k v) x
         (if (number? k)
             (set (get xs k) (string v))
           (do (add ks (cat k ":"))
               (add ks (string v)))))
       (all (_ v) (join xs ks)
-        (cat! str sp v)
+        (cat! s sp v)
         (set sp " "))
-      (cat str  ")"))))
+      (cat s  ")"))))
 
 (define space (xs)
   (define string (x)
