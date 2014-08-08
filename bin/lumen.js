@@ -620,62 +620,67 @@ global.nexus = {};
     }
   };
   nexus["lumen/runtime"].number = number;
-  var string = function (x) {
-    if (nil63(x)) {
-      return("nil");
+  var string = function (x, depth) {
+    if (depth && depth > 5) {
+      return("#<circular>");
     } else {
-      if (boolean63(x)) {
-        if (x) {
-          return("true");
-        } else {
-          return("false");
-        }
+      if (nil63(x)) {
+        return("nil");
       } else {
-        if (function63(x)) {
-          return("#<function>");
-        } else {
-          if (atom63(x)) {
-            return(x + "");
+        if (boolean63(x)) {
+          if (x) {
+            return("true");
           } else {
-            var s = "(";
-            var sp = "";
-            var xs = [];
-            var ks = [];
-            var _u152 = x;
-            var k = undefined;
-            for (k in _u152) {
-              var v = _u152[k];
-              var _u153 = parseInt(k);
-              var _u191;
-              if (isNaN(_u153)) {
-                _u191 = k;
-              } else {
-                _u191 = _u153;
+            return("false");
+          }
+        } else {
+          if (function63(x)) {
+            return("#<function>");
+          } else {
+            if (atom63(x)) {
+              return(x + "");
+            } else {
+              var s = "(";
+              var sp = "";
+              var xs = [];
+              var ks = [];
+              var d = (depth || 0) + 1;
+              var _u152 = x;
+              var k = undefined;
+              for (k in _u152) {
+                var v = _u152[k];
+                var _u153 = parseInt(k);
+                var _u191;
+                if (isNaN(_u153)) {
+                  _u191 = k;
+                } else {
+                  _u191 = _u153;
+                }
+                var _u154 = _u191;
+                if (number63(_u154)) {
+                  xs[_u154] = string(v, d);
+                } else {
+                  add(ks, _u154 + ":");
+                  add(ks, string(v, d));
+                }
               }
-              var _u154 = _u191;
-              if (number63(_u154)) {
-                xs[_u154] = string(v);
-              } else {
-                add(ks, _u154 + ":");
-                add(ks, string(v));
+              var _u155 = join(xs, ks);
+              var _u37 = undefined;
+              for (_u37 in _u155) {
+                var v = _u155[_u37];
+                var _u156 = parseInt(_u37);
+                var _u192;
+                if (isNaN(_u156)) {
+                  _u192 = _u37;
+                } else {
+                  _u192 = _u156;
+                }
+                var _u157 = _u192;
+                s = s + sp + v;
+                sp = " ";
               }
+              return(s + ")");
             }
-            var _u155 = join(xs, ks);
-            var _u37 = undefined;
-            for (_u37 in _u155) {
-              var v = _u155[_u37];
-              var _u156 = parseInt(_u37);
-              var _u192;
-              if (isNaN(_u156)) {
-                _u192 = _u37;
-              } else {
-                _u192 = _u156;
-              }
-              var _u157 = _u192;
-              s = s + sp + v;
-              sp = " ";
-            }
-            return(s + ")");
           }
         }
       }
@@ -2836,11 +2841,11 @@ global.nexus = {};
   global.modules = {"lumen/system": {import: [["lumen", "special"], ["lumen", "core"]], export: {nexus: {export: true, global: true}}}, "lumen/lib": {import: [["lumen", "runtime"], ["lumen", "special"], ["lumen", "core"]], export: {getenv: {export: true, variable: true}, "macro-function": {export: true, variable: true}, "macro?": {export: true, variable: true}, "special?": {export: true, variable: true}, "special-form?": {export: true, variable: true}, "statement?": {export: true, variable: true}, "symbol-expansion": {export: true, variable: true}, "symbol?": {export: true, variable: true}, "variable?": {export: true, variable: true}, "bound?": {export: true, variable: true}, quoted: {export: true, variable: true}, "stash*": {export: true, variable: true}, index: {export: true, variable: true}, bind: {export: true, variable: true}, "bind*": {export: true, variable: true}, quasiexpand: {export: true, variable: true}, macroexpand: {export: true, variable: true}, indentation: {export: true, variable: true}, "with-indent": {export: true, macro: function (form) {
     var result = unique();
     return(["do", ["inc", "indent-level"], ["let", [result, form], ["dec", "indent-level"], result]]);
-  }}, "reserved?": {export: true, variable: true}, "valid-id?": {export: true, variable: true}, id: {export: true, variable: true}, key: {export: true, variable: true}, imported: {export: true, variable: true}, link: {export: true, variable: true}, mapo: {export: true, variable: true}, "quote-environment": {export: true, variable: true}, "quote-modules": {export: true, variable: true}, "initial-environment": {export: true, variable: true}, "global?": {variable: true}, escape: {variable: true}, literal: {variable: true}, bias: {variable: true}, "quoting?": {variable: true}, "quasiquoting?": {variable: true}, "can-unquote?": {variable: true}, "quasisplice?": {variable: true}, "quasiquote-list": {variable: true}, "indent-level": {export: true, global: true}, reserved: {variable: true}, "numeric?": {variable: true}, "valid-code?": {variable: true}, extend: {variable: true}, exclude: {variable: true}, "quote-binding": {variable: true}, "quote-frame": {variable: true}, "quote-module": {variable: true}}}, "lumen/main": {import: [["lumen", "runtime"], ["lumen", "special"], ["lumen", "core"], ["lumen", "reader"], ["lumen", "compiler"]], export: {}}, "lumen/boot": {import: [["lumen", "runtime"], ["lumen", "special"], ["lumen", "core"], ["lumen", "lib"], ["lumen", "compiler"]], export: {"%initial-environment": {macro: function () {
+  }}, "reserved?": {export: true, variable: true}, "valid-id?": {export: true, variable: true}, id: {export: true, variable: true}, key: {export: true, variable: true}, imported: {export: true, variable: true}, link: {export: true, variable: true}, mapo: {export: true, variable: true}, "quote-environment": {export: true, variable: true}, "quote-modules": {export: true, variable: true}, "initial-environment": {export: true, variable: true}, "global?": {variable: true}, escape: {variable: true}, literal: {variable: true}, bias: {variable: true}, "quoting?": {variable: true}, "quasiquoting?": {variable: true}, "can-unquote?": {variable: true}, "quasisplice?": {variable: true}, "quasiquote-list": {variable: true}, "indent-level": {global: true, export: true}, reserved: {variable: true}, "numeric?": {variable: true}, "valid-code?": {variable: true}, extend: {variable: true}, exclude: {variable: true}, "quote-binding": {variable: true}, "quote-frame": {variable: true}, "quote-module": {variable: true}}}, "lumen/main": {import: [["lumen", "runtime"], ["lumen", "special"], ["lumen", "core"], ["lumen", "reader"], ["lumen", "compiler"]], export: {}}, "lumen/boot": {import: [["lumen", "runtime"], ["lumen", "special"], ["lumen", "core"], ["lumen", "lib"], ["lumen", "compiler"]], export: {"%initial-environment": {macro: function () {
     return(quote_environment(initial_environment()));
   }}, "%initial-modules": {macro: function () {
     return(quote_modules());
-  }}, modules: {global: true, export: true}}}, "lumen/compiler": {import: [["lumen", "runtime"], ["lumen", "special"], ["lumen", "core"], ["lumen", "lib"], ["lumen", "reader"]], export: {"compile-function": {export: true, variable: true}, compile: {export: true, variable: true}, "open-module": {export: true, variable: true}, "load-module": {export: true, variable: true}, "in-module": {export: true, variable: true}, "import-modules": {export: true, variable: true}, "compile-module": {export: true, variable: true}, declare: {export: true, variable: true}, eval: {export: true, variable: true}, infix: {variable: true}, "unary?": {variable: true}, precedence: {variable: true}, getop: {variable: true}, "infix?": {variable: true}, "compile-args": {variable: true}, "compile-atom": {variable: true}, terminator: {variable: true}, "compile-special": {variable: true}, "parenthesize-call?": {variable: true}, "compile-call": {variable: true}, "op-delims": {variable: true}, "compile-infix": {variable: true}, "can-return?": {variable: true}, lower: {variable: true}, "lower-statement": {variable: true}, "lower-body": {variable: true}, "lower-do": {variable: true}, "lower-if": {variable: true}, "lower-short": {variable: true}, "lower-try": {variable: true}, "lower-while": {variable: true}, "lower-for": {variable: true}, "lower-function": {variable: true}, "lower-definition": {variable: true}, "lower-call": {variable: true}, "lower-infix?": {variable: true}, "lower-infix": {variable: true}, "lower-special": {variable: true}, process: {variable: true}, "current-module": {export: true, global: true}, "module-path": {variable: true}, encapsulate: {variable: true}, "compile-file": {variable: true}, run: {variable: true}, "compiling?": {variable: true}, "compiler-output": {variable: true}, conclude: {variable: true}, "%compile-module": {variable: true}, reimported: {variable: true}, "%result": {export: true, global: true}}}, "lumen/special": {import: [["lumen", "runtime"], ["lumen", "special"], ["lumen", "core"], ["lumen", "lib"], ["lumen", "compiler"]], export: {"do": {tr: true, stmt: true, special: function () {
+  }}, modules: {global: true, export: true}}}, "lumen/compiler": {import: [["lumen", "runtime"], ["lumen", "special"], ["lumen", "core"], ["lumen", "lib"], ["lumen", "reader"]], export: {"compile-function": {export: true, variable: true}, compile: {export: true, variable: true}, "open-module": {export: true, variable: true}, "load-module": {export: true, variable: true}, "in-module": {export: true, variable: true}, "import-modules": {export: true, variable: true}, "compile-module": {export: true, variable: true}, declare: {export: true, variable: true}, eval: {export: true, variable: true}, infix: {variable: true}, "unary?": {variable: true}, precedence: {variable: true}, getop: {variable: true}, "infix?": {variable: true}, "compile-args": {variable: true}, "compile-atom": {variable: true}, terminator: {variable: true}, "compile-special": {variable: true}, "parenthesize-call?": {variable: true}, "compile-call": {variable: true}, "op-delims": {variable: true}, "compile-infix": {variable: true}, "can-return?": {variable: true}, lower: {variable: true}, "lower-statement": {variable: true}, "lower-body": {variable: true}, "lower-do": {variable: true}, "lower-if": {variable: true}, "lower-short": {variable: true}, "lower-try": {variable: true}, "lower-while": {variable: true}, "lower-for": {variable: true}, "lower-function": {variable: true}, "lower-definition": {variable: true}, "lower-call": {variable: true}, "lower-infix?": {variable: true}, "lower-infix": {variable: true}, "lower-special": {variable: true}, process: {variable: true}, "current-module": {global: true, export: true}, "module-path": {variable: true}, encapsulate: {variable: true}, "compile-file": {variable: true}, run: {variable: true}, "compiling?": {variable: true}, "compiler-output": {variable: true}, conclude: {variable: true}, "%compile-module": {variable: true}, reimported: {variable: true}, "%result": {global: true, export: true}}}, "lumen/special": {import: [["lumen", "runtime"], ["lumen", "special"], ["lumen", "core"], ["lumen", "lib"], ["lumen", "compiler"]], export: {"do": {tr: true, stmt: true, special: function () {
     var forms = unstash(Array.prototype.slice.call(arguments, 0));
     var s = "";
     series(function (x) {
@@ -3059,7 +3064,7 @@ global.nexus = {};
       }
     }
     return(s + "}");
-  }, foo: true, export: true}}}, "lumen/runtime": {import: [["lumen", "special"], ["lumen", "core"]], export: {"nil?": {export: true, variable: true}, "is?": {export: true, variable: true}, length: {export: true, variable: true}, "none?": {export: true, variable: true}, "some?": {export: true, variable: true}, "one?": {export: true, variable: true}, hd: {export: true, variable: true}, "string?": {export: true, variable: true}, "number?": {export: true, variable: true}, "boolean?": {export: true, variable: true}, "function?": {export: true, variable: true}, "composite?": {export: true, variable: true}, "atom?": {export: true, variable: true}, "table?": {export: true, variable: true}, "list?": {export: true, variable: true}, substring: {export: true, variable: true}, sub: {export: true, variable: true}, keys: {export: true, variable: true}, inner: {export: true, variable: true}, tl: {export: true, variable: true}, char: {export: true, variable: true}, code: {export: true, variable: true}, "string-literal?": {export: true, variable: true}, "id-literal?": {export: true, variable: true}, add: {export: true, variable: true}, drop: {export: true, variable: true}, last: {export: true, variable: true}, butlast: {export: true, variable: true}, reverse: {export: true, variable: true}, join: {export: true, variable: true}, reduce: {export: true, variable: true}, keep: {export: true, variable: true}, "in?": {export: true, variable: true}, find: {export: true, variable: true}, pair: {export: true, variable: true}, sort: {export: true, variable: true}, iterate: {export: true, variable: true}, replicate: {export: true, variable: true}, series: {export: true, variable: true}, map: {export: true, variable: true}, "keys?": {export: true, variable: true}, "empty?": {export: true, variable: true}, stash: {export: true, variable: true}, unstash: {export: true, variable: true}, search: {export: true, variable: true}, split: {export: true, variable: true}, cat: {export: true, variable: true}, "+": {export: true, variable: true}, "-": {export: true, variable: true}, "*": {export: true, variable: true}, "/": {export: true, variable: true}, "%": {export: true, variable: true}, ">": {export: true, variable: true}, "<": {export: true, variable: true}, "=": {export: true, variable: true}, ">=": {export: true, variable: true}, "<=": {export: true, variable: true}, "read-file": {export: true, variable: true}, "write-file": {export: true, variable: true}, write: {export: true, variable: true}, exit: {export: true, variable: true}, today: {export: true, variable: true}, now: {export: true, variable: true}, number: {export: true, variable: true}, string: {export: true, variable: true}, space: {export: true, variable: true}, apply: {export: true, variable: true}, unique: {export: true, variable: true}, "%message-handler": {export: true, variable: true}, "toplevel?": {export: true, variable: true}, "module-key": {export: true, variable: true}, module: {export: true, variable: true}, setenv: {export: true, variable: true}, type: {variable: true}, shift: {variable: true}, require: {export: true, global: true}, fs: {variable: true}, print: {export: true, global: true}, "id-count": {variable: true}}}, user: {import: ["lumen", ["lumen", "runtime"], ["lumen", "special"], ["lumen", "core"]], export: {}}, "lumen/core": {import: [["lumen", "runtime"], ["lumen", "special"], ["lumen", "core"], ["lumen", "lib"], ["lumen", "compiler"]], export: {quote: {macro: function (form) {
+  }, foo: true, export: true}}}, "lumen/runtime": {import: [["lumen", "special"], ["lumen", "core"]], export: {"nil?": {export: true, variable: true}, "is?": {export: true, variable: true}, length: {export: true, variable: true}, "none?": {export: true, variable: true}, "some?": {export: true, variable: true}, "one?": {export: true, variable: true}, hd: {export: true, variable: true}, "string?": {export: true, variable: true}, "number?": {export: true, variable: true}, "boolean?": {export: true, variable: true}, "function?": {export: true, variable: true}, "composite?": {export: true, variable: true}, "atom?": {export: true, variable: true}, "table?": {export: true, variable: true}, "list?": {export: true, variable: true}, substring: {export: true, variable: true}, sub: {export: true, variable: true}, keys: {export: true, variable: true}, inner: {export: true, variable: true}, tl: {export: true, variable: true}, char: {export: true, variable: true}, code: {export: true, variable: true}, "string-literal?": {export: true, variable: true}, "id-literal?": {export: true, variable: true}, add: {export: true, variable: true}, drop: {export: true, variable: true}, last: {export: true, variable: true}, butlast: {export: true, variable: true}, reverse: {export: true, variable: true}, join: {export: true, variable: true}, reduce: {export: true, variable: true}, keep: {export: true, variable: true}, "in?": {export: true, variable: true}, find: {export: true, variable: true}, pair: {export: true, variable: true}, sort: {export: true, variable: true}, iterate: {export: true, variable: true}, replicate: {export: true, variable: true}, series: {export: true, variable: true}, map: {export: true, variable: true}, "keys?": {export: true, variable: true}, "empty?": {export: true, variable: true}, stash: {export: true, variable: true}, unstash: {export: true, variable: true}, search: {export: true, variable: true}, split: {export: true, variable: true}, cat: {export: true, variable: true}, "+": {export: true, variable: true}, "-": {export: true, variable: true}, "*": {export: true, variable: true}, "/": {export: true, variable: true}, "%": {export: true, variable: true}, ">": {export: true, variable: true}, "<": {export: true, variable: true}, "=": {export: true, variable: true}, ">=": {export: true, variable: true}, "<=": {export: true, variable: true}, "read-file": {export: true, variable: true}, "write-file": {export: true, variable: true}, write: {export: true, variable: true}, exit: {export: true, variable: true}, today: {export: true, variable: true}, now: {export: true, variable: true}, number: {export: true, variable: true}, string: {export: true, variable: true}, space: {export: true, variable: true}, apply: {export: true, variable: true}, unique: {export: true, variable: true}, "%message-handler": {export: true, variable: true}, "toplevel?": {export: true, variable: true}, "module-key": {export: true, variable: true}, module: {export: true, variable: true}, setenv: {export: true, variable: true}, type: {variable: true}, shift: {variable: true}, require: {global: true, export: true}, fs: {variable: true}, print: {global: true, export: true}, "id-count": {variable: true}}}, user: {import: ["lumen", ["lumen", "runtime"], ["lumen", "special"], ["lumen", "core"]], export: {}}, "lumen/core": {import: [["lumen", "runtime"], ["lumen", "special"], ["lumen", "core"], ["lumen", "lib"], ["lumen", "compiler"]], export: {quote: {macro: function (form) {
     return(quoted(form));
   }, export: true}, quasiquote: {macro: function (form) {
     return(quasiexpand(form, 1));
@@ -3366,7 +3371,7 @@ global.nexus = {};
     var _u2129 = unstash(Array.prototype.slice.call(arguments, 1));
     var body = sub(_u2129, 0);
     return(["set", ["get", "read-table", char], join(["fn", [stream]], body)]);
-  }}, read: {export: true, variable: true}, "read-all": {export: true, variable: true}, "read-from-string": {export: true, variable: true}, delimiters: {variable: true}, whitespace: {variable: true}, "peek-char": {variable: true}, "read-char": {variable: true}, "skip-non-code": {variable: true}, eof: {variable: true}, "key?": {variable: true}, "flag?": {variable: true}}}, lumen: {import: [["lumen", "special"]], export: {}, alias: [["lumen", "runtime"], ["lumen", "special"], ["lumen", "core"]]}};
+  }}, read: {export: true, variable: true}, "read-all": {export: true, variable: true}, "read-from-string": {export: true, variable: true}, delimiters: {variable: true}, whitespace: {variable: true}, "peek-char": {variable: true}, "read-char": {variable: true}, "skip-non-code": {variable: true}, eof: {variable: true}, "key?": {variable: true}, "flag?": {variable: true}}}, lumen: {import: [["lumen", "special"]], alias: [["lumen", "runtime"], ["lumen", "special"], ["lumen", "core"]], export: {}}};
   global.environment = [{"define-module": {macro: function (spec) {
     var _u2142 = unstash(Array.prototype.slice.call(arguments, 1));
     var body = sub(_u2142, 0);
@@ -3475,95 +3480,95 @@ global.nexus = {};
 (function () {
   nexus["lumen/main"] = {};
   var _u2 = nexus["lumen/runtime"];
-  var _6061 = _u2["<="];
-  var _6261 = _u2[">="];
-  var composite63 = _u2["composite?"];
-  var substring = _u2.substring;
-  var function63 = _u2["function?"];
-  var split = _u2.split;
-  var sort = _u2.sort;
-  var unique = _u2.unique;
-  var in63 = _u2["in?"];
-  var toplevel63 = _u2["toplevel?"];
-  var reduce = _u2.reduce;
-  var map = _u2.map;
-  var module = _u2.module;
-  var iterate = _u2.iterate;
-  var _37message_handler = _u2["%message-handler"];
-  var keys63 = _u2["keys?"];
-  var table63 = _u2["table?"];
-  var reverse = _u2.reverse;
-  var write = _u2.write;
-  var string = _u2.string;
-  var atom63 = _u2["atom?"];
-  var pair = _u2.pair;
-  var is63 = _u2["is?"];
-  var empty63 = _u2["empty?"];
-  var _43 = _u2["+"];
   var nil63 = _u2["nil?"];
-  var _ = _u2["-"];
-  var inner = _u2.inner;
+  var is63 = _u2["is?"];
+  var length = _u2.length;
+  var none63 = _u2["none?"];
+  var some63 = _u2["some?"];
+  var one63 = _u2["one?"];
+  var hd = _u2.hd;
+  var string63 = _u2["string?"];
   var number63 = _u2["number?"];
-  var stash = _u2.stash;
+  var boolean63 = _u2["boolean?"];
+  var function63 = _u2["function?"];
+  var composite63 = _u2["composite?"];
+  var atom63 = _u2["atom?"];
+  var table63 = _u2["table?"];
+  var list63 = _u2["list?"];
+  var substring = _u2.substring;
+  var sub = _u2.sub;
+  var keys = _u2.keys;
+  var inner = _u2.inner;
+  var tl = _u2.tl;
+  var char = _u2.char;
+  var code = _u2.code;
   var string_literal63 = _u2["string-literal?"];
+  var id_literal63 = _u2["id-literal?"];
+  var add = _u2.add;
+  var drop = _u2.drop;
+  var last = _u2.last;
+  var butlast = _u2.butlast;
+  var reverse = _u2.reverse;
   var join = _u2.join;
+  var reduce = _u2.reduce;
   var keep = _u2.keep;
+  var in63 = _u2["in?"];
+  var find = _u2.find;
+  var pair = _u2.pair;
+  var sort = _u2.sort;
+  var iterate = _u2.iterate;
+  var replicate = _u2.replicate;
+  var series = _u2.series;
+  var map = _u2.map;
+  var keys63 = _u2["keys?"];
+  var empty63 = _u2["empty?"];
+  var stash = _u2.stash;
+  var unstash = _u2.unstash;
+  var search = _u2.search;
+  var split = _u2.split;
+  var cat = _u2.cat;
+  var _43 = _u2["+"];
+  var _ = _u2["-"];
+  var _42 = _u2["*"];
+  var _47 = _u2["/"];
+  var _37 = _u2["%"];
+  var _62 = _u2[">"];
   var _60 = _u2["<"];
   var _61 = _u2["="];
-  var none63 = _u2["none?"];
-  var space = _u2.space;
-  var find = _u2.find;
-  var add = _u2.add;
-  var string63 = _u2["string?"];
-  var _62 = _u2[">"];
-  var exit = _u2.exit;
-  var some63 = _u2["some?"];
-  var drop = _u2.drop;
-  var id_literal63 = _u2["id-literal?"];
-  var sub = _u2.sub;
-  var list63 = _u2["list?"];
-  var write_file = _u2["write-file"];
-  var module_key = _u2["module-key"];
-  var number = _u2.number;
-  var cat = _u2.cat;
-  var apply = _u2.apply;
-  var length = _u2.length;
-  var replicate = _u2.replicate;
-  var one63 = _u2["one?"];
-  var code = _u2.code;
-  var search = _u2.search;
-  var now = _u2.now;
-  var boolean63 = _u2["boolean?"];
-  var last = _u2.last;
-  var _42 = _u2["*"];
-  var setenv = _u2.setenv;
+  var _6261 = _u2[">="];
+  var _6061 = _u2["<="];
   var read_file = _u2["read-file"];
-  var _47 = _u2["/"];
-  var unstash = _u2.unstash;
-  var _37 = _u2["%"];
-  var keys = _u2.keys;
-  var char = _u2.char;
+  var write_file = _u2["write-file"];
+  var write = _u2.write;
+  var exit = _u2.exit;
   var today = _u2.today;
-  var tl = _u2.tl;
-  var butlast = _u2.butlast;
-  var series = _u2.series;
-  var hd = _u2.hd;
+  var now = _u2.now;
+  var number = _u2.number;
+  var string = _u2.string;
+  var space = _u2.space;
+  var apply = _u2.apply;
+  var unique = _u2.unique;
+  var _37message_handler = _u2["%message-handler"];
+  var toplevel63 = _u2["toplevel?"];
+  var module_key = _u2["module-key"];
+  var module = _u2.module;
+  var setenv = _u2.setenv;
   var _u5 = nexus["lumen/reader"];
-  var read_all = _u5["read-all"];
   var make_stream = _u5["make-stream"];
   var read_table = _u5["read-table"];
-  var read_from_string = _u5["read-from-string"];
   var read = _u5.read;
+  var read_all = _u5["read-all"];
+  var read_from_string = _u5["read-from-string"];
   var _u6 = nexus["lumen/compiler"];
-  var in_module = _u6["in-module"];
-  var load_module = _u6["load-module"];
   var compile_function = _u6["compile-function"];
   var compile = _u6.compile;
+  var open_module = _u6["open-module"];
+  var load_module = _u6["load-module"];
+  var in_module = _u6["in-module"];
   var import_modules = _u6["import-modules"];
   var compile_module = _u6["compile-module"];
-  var eval = _u6.eval;
-  var open_module = _u6["open-module"];
   var declare = _u6.declare;
+  var eval = _u6.eval;
   var rep = function (s) {
     var _u2173 = (function () {
       try {

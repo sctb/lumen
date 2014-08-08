@@ -364,17 +364,20 @@
           (unless (isNaN n) n))
     lua: (tonumber s)))
 
-(define string (x)
-  (if (nil? x) "nil"
+(define string (x depth)
+  (if (and depth (> depth 5)) "#<circular>"
+      (nil? x) "nil"
       (boolean? x) (if x "true" "false")
       (function? x) "#<function>"
       (atom? x) (cat x "")
-    (let (s "(" sp "" xs () ks ())
+    (let (s "(" sp ""
+          xs () ks ()
+          d (+ (or depth 0) 1))
       (all (k v) x
         (if (number? k)
-            (set (get xs k) (string v))
+            (set (get xs k) (string v d))
           (do (add ks (cat k ":"))
-              (add ks (string v)))))
+              (add ks (string v d)))))
       (all (_ v) (join xs ks)
         (cat! s sp v)
         (set sp " "))
