@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 HOST=${LUMEN_HOST:-lua}
 FILE=lumen.lua
@@ -8,8 +8,9 @@ then
     FILE=lumen.js
 fi
 
-pushd `dirname $0` > /dev/null
 DIR=`pwd`
-popd > /dev/null
+cd "`dirname $0`"
+HOME=`pwd`
+cd $DIR
 
-$HOST $DIR/$FILE "$@"
+$HOST $HOME/$FILE "$@"
