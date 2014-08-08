@@ -13,4 +13,4 @@ cd "`dirname $0`"
 HOME=`pwd`
 cd $DIR
 
-$HOST $HOME/$FILE "$@"
+exec $HOST $HOME/$FILE "$@"
