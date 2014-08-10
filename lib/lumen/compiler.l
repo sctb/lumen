@@ -328,7 +328,7 @@
 (define declare (form)
   (conclude (compile (process form) :stmt)))
 
-(define reimported ()
+(define context ()
   (let (imports () m (module current-module))
     (series (fn (spec)
               (join! imports (imported spec)))
@@ -340,7 +340,7 @@
 (define eval (form)
   (let (previous target)
     (set target (language))
-    (let (body `(,@(reimported) (set %result ,form))
+    (let (body `(,@(context) (set %result ,form))
           code (compile (encapsulate body)))
       (set target previous)
       (run code)
