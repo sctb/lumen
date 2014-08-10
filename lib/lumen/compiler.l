@@ -283,7 +283,6 @@
   (let (path (module-path spec)
         mod0 current-module
         env0 environment)
-    (set current-module spec)
     (set environment (initial-environment))
     (let (code (compile-file path))
       (set current-module mod0)

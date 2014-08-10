@@ -95,6 +95,7 @@
   (let ((import: imp export: exp :alias) body
         (imports bindings) (import-modules imp)
         k (module-key spec))
+    (set current-module spec)
     (set (get modules k)
          (table import: imports export: (table) alias: alias))
     (all (_ x) (or exp ())
