@@ -260,11 +260,6 @@
 (define encapsulate (body)
   `((%function () ,(process `(do ,@body)))))
 
-(define compile-file (file)
-  (let (body (read-all (make-stream (read-file file)))
-        form (encapsulate body))
-    (cat (compile form) ";\n")))
-
 (define run (code)
   (target
     js: (global.eval code)
@@ -284,7 +279,9 @@
         mod0 current-module
         env0 environment)
     (set environment (initial-environment))
-    (let (code (compile-file path))
+    (let (body (read-all (make-stream (read-file path)))
+          form (encapsulate body)
+          code (cat (compile form) ";\n"))
       (set current-module mod0)
       (set environment env0)
       (conclude code))))
