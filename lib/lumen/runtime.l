@@ -17,6 +17,7 @@
            atom?
            table?
            list?
+           hd=
            substring
            sub
            keys
@@ -98,6 +99,9 @@
 (define atom? (x) (or (nil? x) (not (composite? x))))
 (define table? (x) (and (composite? x) (nil? (hd x))))
 (define list? (x) (and (composite? x) (is? (hd x))))
+
+(define hd= (l x)
+  (and (list? l) (= (hd l) x)))
 
 (define substring (s from upto)
   (target js: (s.substring from upto)
