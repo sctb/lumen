@@ -389,8 +389,7 @@
 
 (define space (xs)
   (define string (x)
-    (if (or (string-literal? x)
-            (and (list? x) (= (hd x) 'cat)))
+    (if (or (string-literal? x) (hd= x 'cat))
         x
       `(string ,x)))
   (if (one? xs) (string (hd xs))

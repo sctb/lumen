@@ -693,7 +693,7 @@ global.nexus = {};
   nexus["lumen/runtime"].string = string;
   var space = function (xs) {
     var string = function (x) {
-      if (string_literal63(x) || list63(x) && hd(x) === "cat") {
+      if (string_literal63(x) || hd61(x, "cat")) {
         return(x);
       } else {
         return(["string", x]);
@@ -2041,7 +2041,7 @@ global.nexus = {};
   };
   nexus["lumen/compiler"]["compile-special"] = compile_special;
   var parenthesize_call63 = function (x) {
-    return(list63(x) && (hd(x) === "%function" || precedence(x) > 0));
+    return(hd61(x, "%function") || precedence(x) > 0);
   };
   nexus["lumen/compiler"]["parenthesize-call?"] = parenthesize_call63;
   var compile_call = function (form) {
