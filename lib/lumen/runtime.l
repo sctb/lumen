@@ -337,7 +337,6 @@
            (f.write f data))))
 
 (target js: (define-global print (x) (console.log x)))
-(target js: (define type (x) (typeof x)))
 
 (define write (x)
   (target js: (process.stdout.write x) lua: (io.write x)))
