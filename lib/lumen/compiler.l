@@ -277,7 +277,7 @@
         mod0 current-module
         env0 environment)
     (set environment (initial-environment))
-    (let (s (make-stream (read-file path))
+    (let (s (stream (read-file path))
           first (read s))
       (unless (hd= first 'define-module)
         (set current-module 'user)

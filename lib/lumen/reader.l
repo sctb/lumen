@@ -2,7 +2,7 @@
 
 (define-module (lumen reader)
   import: (lumen)
-  export: (make-stream
+  export: (stream
            read-table
            define-reader
            read
@@ -12,7 +12,7 @@
 (define delimiters (set-of "(" ")" ";" "\n"))
 (define whitespace (set-of " " "\t" "\n"))
 
-(define make-stream (str)
+(define stream (str)
   (table pos: 0 string: str len: (length str)))
 
 (define peek-char (s)
@@ -54,7 +54,7 @@
     l))
 
 (define read-from-string (str)
-  (let (x (read (make-stream str)))
+  (let (x (read (stream str)))
     (unless (= x eof) x)))
 
 (define key? (atom)
@@ -67,8 +67,8 @@
        (> (length atom) 1)
        (= (char atom 0) ":")))
 
-(define-macro define-reader ((char stream) rest: body)
-  `(set (get read-table ,char) (fn (,stream) ,@body)))
+(define-macro define-reader ((char s) rest: body)
+  `(set (get read-table ,char) (fn (,s) ,@body)))
 
 (define-reader ("" s) ; atom
   (let (str "" dot? false)
