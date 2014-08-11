@@ -1,21 +1,5 @@
 ;; -*- mode: lisp -*-
 
-(define-module (lumen compiler)
-  import: ((lumen)
-           (lumen lib)
-           (lumen reader))
-  export: (compile-function
-           compile
-           open-module
-           load-module
-           in-module
-           import-modules
-           compile-module
-           declare
-           eval
-           load-file
-           compile-file))
-
 (define infix
   `((not: (js: ! lua: ,"not "))
     (:* :/ :%)
@@ -44,8 +28,6 @@
 
 (define infix? (x)
   (is? (getop x)))
-
-(define compile)
 
 (define compile-args (args)
   (let (s "(" c "")
@@ -124,7 +106,7 @@
            (and (not (= (hd form) 'return))
                 (not (statement? (hd form)))))))
 
-(redefine compile (form :stmt)
+(define compile (form :stmt)
   (if (nil? form) ""
       (special-form? form)
       (compile-special form stmt)
@@ -134,8 +116,6 @@
                    (infix? (hd form)) (compile-infix form)
                  (compile-call form)))
       (cat ind form tr))))
-
-(define lower)
 
 (define lower-statement (form tail?)
   (let (hoist ()
@@ -228,7 +208,7 @@
   (let (e (lower-call form hoist))
     (if e (add hoist e))))
 
-(redefine lower (form hoist stmt? tail?)
+(define lower (form hoist stmt? tail?)
   (if (atom? form) form
       (empty? form) '(%array)
       (nil? hoist) (lower-statement form)
@@ -250,111 +230,23 @@
 (define expand (form)
   (lower (macroexpand form)))
 
-(define-global current-module)
-
-(define module-path (spec)
-  (cat (module-key spec) ".l"))
-
-(define encapsulate (body)
-  `((%function () ,(expand `(do ,@body)))))
+(target js: (define vm (require 'vm)))
 
 (define run (code)
   (target
-    js: (global.eval code)
+    js: (vm.runInThisContext code)
     lua: (let (|f,e| (load code))
            (if f (f) (error (cat e " in " code))))))
-
-(define compiling? false)
-(define compiler-output "")
-
-(define conclude (code)
-  (if compiling?
-      (cat! compiler-output code)
-    (run code)))
-
-(define in-module)
-
-(define %compile-module (spec)
-  (let (path (module-path spec)
-        mod0 current-module
-        env0 environment)
-    (set environment (initial-environment))
-    (let (s (stream (read-file path))
-          first (read s))
-      (unless (hd= first 'define-module)
-        (set current-module 'user)
-        (in-module 'user))
-      (let (body (join (list first) (read-all s))
-            form (encapsulate body)
-            code (cat (compile form) ";\n")
-            spec current-module)
-        (set current-module mod0)
-        (set environment env0)
-        (conclude code)
-        spec))))
-
-(define open-module (spec :private)
-  (let (m (module spec)
-        frame (last environment))
-    (all (k v) m.export
-      (when (or v.export private)
-        (set (get frame k) v)))))
-
-(define load-module (spec :private)
-  (unless (module spec)
-    (set spec (%compile-module spec)))
-  (open-module spec private: private)
-  spec)
-
-(redefine in-module (spec)
-  (let (spec (load-module spec :private)
-        m (module spec))
-    (series open-module m.import)
-    (set current-module spec)))
-
-(define import-modules (specs)
-  (let (imports () bindings ())
-    (series
-     (fn (spec)
-       (load-module spec)
-       (let (m (module spec))
-         (if m.alias
-             (let ((aliased bs) (import-modules m.alias))
-               (join! imports aliased)
-               (join! bindings bs))
-           (let (bs (imported spec))
-             (add imports spec)
-             (join! bindings bs)))))
-     (or specs ()))
-    (list imports bindings)))
-
-(define compile-module (spec)
-  (set compiling? true)
-  (%compile-module spec)
-  compiler-output)
-
-(define declare (form)
-  (conclude (compile (expand form) :stmt)))
-
-(define context ()
-  (let (imports () m (module current-module))
-    (series (fn (spec)
-              (join! imports (imported spec)))
-            m.import)
-    (join imports (imported current-module :private))))
 
 (define-global %result)
 
 (define eval (form)
   (let (previous target)
     (set target (language))
-    (let (body `(,@(context) (set %result ,form))
-          code (compile (encapsulate body)))
+    (let (code (compile (expand `(set %result ,form))))
       (set target previous)
       (run code)
       %result)))
-
-;; next
 
 (define load-file (path)
   (run (read-file path)))

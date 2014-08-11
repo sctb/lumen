@@ -6,7 +6,8 @@
            (lumen compiler)))
 
 (let-macro ((init ()
-              (declare '(define-global nexus (table)))))
+              (declare '(define-global nexus (table)))
+              (declare '(define-global env (list (table))))))
   (init))
 
 (let-macro ((save (specs)
@@ -17,8 +18,8 @@
          (lumen compiler)
          (lumen special)
          (lumen core)
-         (lumen boot)
-         (user))))
+         (user)
+         (lumen boot))))
 
 (define rep (s)
   (let ((_ x) (guard (eval (read-from-string s))))
@@ -40,6 +41,7 @@
   (pr "  -o <output>\tOutput file")
   (pr "  -t <target>\tTarget language (default: lua)")
   (pr "  -e <expr>\tExpression to evaluate")
+  (pr "  -c <input>\tCompile file")
   (exit))
 
 (define main ()
@@ -48,6 +50,8 @@
               (= (hd args) "--help"))
       (usage))
     (let (spec nil
+          load ()
+          file nil
           output nil
           target1 nil
           expr nil
@@ -55,19 +59,24 @@
           i 0)
       (while (< i n)
         (let (arg (at args i))
-          (if (or (= arg "-o") (= arg "-t") (= arg "-e"))
+          (if (or (= arg "-o") (= arg "-t") (= arg "-e") (= arg "-c"))
               (if (= i (- n 1))
                   (pr "missing argument for" arg)
                 (do (inc i)
                     (let (val (at args i))
                       (if (= arg "-o") (set output val)
 		          (= arg "-t") (set target1 val)
-		          (= arg "-e") (set expr val)))))
-	      (and (nil? spec)
-                   (not (= "-" (char arg 0))))
-              (set spec arg))
+		          (= arg "-e") (set expr val)
+                          (= arg "-c") (set file val)))))
+	      (not (= "-" (char arg 0)))
+              (do (add load arg)
+                  (set spec arg)))
           (inc i)))
-      (if output
+      (if file 
+          (do (if target1 (set target target1))
+              (series load-file load)
+              (compile-file file output))
+          output
           (do (if target1 (set target target1))
               (write-file output (compile-module spec)))
         (do (in-module (or spec 'user))

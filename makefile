@@ -1,19 +1,39 @@
-.PHONY: all cross test profile clean
+.PHONY: clean
 
 LUMEN := bin/lumen
-LIBDIR := lib
+JS := bin/lumen.js
+LUA := bin/lumen.lua
 
-all:
-	@$(MAKE) -C $(LIBDIR) all
+obj/%.js : lib/lumen/%.l
+	@echo "    $*"
+	@$(LUMEN) -c $< -o obj/$*.js -t js
 
-cross:
-	@$(MAKE) -C $(LIBDIR) cross
+obj/%.lua : lib/lumen/%.l
+	@echo "    $*"
+	@$(LUMEN) -c $< -o obj/$*.lua -t lua
 
-test:
-	@$(MAKE) -C $(LIBDIR) test
+$(JS):			\
+obj/init.js		\
+obj/runtime.js		\
+obj/nlib.js		\
+obj/reader.js		\
+obj/ncompiler.js	\
+obj/special.js		\
+obj/core.js		\
+obj/nmain.js
+	@cat $^ > $@
 
-profile:
-	@$(MAKE) -C $(LIBDIR) profile
+$(LUA):			\
+obj/init.lua		\
+obj/runtime.lua		\
+obj/nlib.lua		\
+obj/reader.lua		\
+obj/ncompiler.lua	\
+obj/special.lua		\
+obj/core.lua		\
+obj/nmain.lua
+	@cat $^ > $@
 
 clean:
 	@git checkout bin/lumen.*
+	@rm -f obj/*

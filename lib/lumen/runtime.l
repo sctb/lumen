@@ -52,6 +52,7 @@
            cat
            + - * / %
            > < = >= <=
+           filename
            read-file
            write-file
            write
@@ -68,6 +69,8 @@
            module-key
            module
            setenv))
+
+(define-global new-compiler)
 
 (define nil? (x)
   (target
@@ -103,9 +106,11 @@
 (define hd= (l x)
   (and (list? l) (= (hd l) x)))
 
+(target lua: (define strlib string))
+
 (define substring (s from upto)
   (target js: (s.substring from upto)
-          lua: (string.sub s (+ from 1) upto)))
+          lua: (strlib.sub s (+ from 1) upto)))
 
 (define sub (x from upto)
   (if (string? x)
@@ -141,7 +146,7 @@
 (define code (s n)
   (target
     js: (s.charCodeAt n)
-    lua: (string.byte s (if n (+ n 1)))))
+    lua: (strlib.byte s (if n (+ n 1)))))
 
 (define string-literal? (x)
   (and (string? x) (= (char x 0) "\"")))
@@ -282,7 +287,7 @@
     js: (let (i (s.indexOf pattern start))
           (if (>= i 0) i))
     lua: (let (start (if start (+ start 1))
-               i (string.find s pattern start true))
+               i (strlib.find s pattern start true))
            (and i (- i 1)))))
 
 (define split (s sep)
@@ -323,6 +328,17 @@
 
 (target js: (define-global require require))
 (target js: (define fs (require 'fs)))
+
+(define filename (path)
+  (let (from 0 to nil
+        i (- (length path) 1))
+    (while (>= i 0)
+      (let (c (char path i))
+        (if (= c "/") (break)
+            (and (= c ".") (nil? to)) (set to i)
+          (set start i)))
+      (dec i))
+    (sub path start to)))
 
 (define read-file (path)
   (target
@@ -424,11 +440,17 @@
 
 (define setenv (k rest: keys)
   (when (string? k)
+    (when new-compiler
+      (let (frame (last env)
+            entry (or (get frame k) (table)))
+        (all (k v) keys
+          (set (get entry k) v))
+        (set (get frame k) entry)))
     (let (frame (last environment)
           x (or (get frame k) (table)))
       (all (k v) keys
         (set (get x k) v))
-      (when (toplevel?)
+      (when (and current-module (toplevel?))
         (let (m (module current-module))
           (set (get m.export k) x)))
       (set (get frame k) x))))

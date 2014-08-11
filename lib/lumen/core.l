@@ -89,29 +89,33 @@
              (let ,(sub bindings 2) ,@body))))))
 
 (define-macro define-module (spec rest: body)
-  (let ((import: imp export: exp :alias) body
-        (imports bindings) (import-modules imp)
-        k (module-key spec))
-    (set current-module spec)
-    (set (get modules k)
-         (table import: imports export: (table) alias: alias))
-    (all (_ x) (or exp ())
-      (setenv x :export))
-    `(do (set (get nexus ',k) (table)) ,@bindings)))
+  (unless new-compiler
+    (let ((import: imp export: exp :alias) body
+          (imports bindings) (import-modules imp)
+          k (module-key spec))
+      (set current-module spec)
+      (set (get modules k)
+           (table import: imports export: (table) alias: alias))
+      (all (_ x) (or exp ())
+        (setenv x :export))
+      `(do (set (get nexus ',k) (table)) ,@bindings))))
 
 (define-macro define-macro (name args rest: body)
   (let (form `(fn ,args ,@body))
     (eval `(setenv ',name macro: ,form form: ',form)))
-  nil)
+  (when new-compiler
+    `(setenv ',name macro: ,form)))
 
 (define-macro define-special (name args rest: body)
   (let (form `(fn ,args ,@body))
     (eval `(setenv ',name special: ,form form: ',form ,@(keys body))))
-  nil)
+  (when new-compiler
+    `(setenv ',name special: ,form ,@(keys body))))
 
 (define-macro define-symbol (name expansion)
   (setenv name symbol: expansion)
-  nil)
+  (when new-compiler
+    `(setenv ,name symbol: ,expansion)))
 
 (define-macro define-global (name x rest: body)
   (setenv name :global :export)
@@ -124,17 +128,24 @@
 
 (define-macro define (name x rest: body)
   (setenv name :variable)
-  (if (and (some? body) (= target 'js))
-      (link name `(%local ,name (fn ,x ,@body)))
-      (some? body)
-      (let ((args body) (bind* x body))
-        (link name `(%local-function ,name ,args ,@body)))
-    (link name `(%local ,name ,x))))
+  (if new-compiler
+      (if (some? body)
+          (let ((args body) (bind* x body))
+            `(%global-function ,name ,args ,@body))
+        `(%local ,name ,x))
+      (if (and (some? body) (= target 'js))
+          (link name `(%local ,name (fn ,x ,@body)))
+          (some? body)
+          (let ((args body) (bind* x body))
+            (link name `(%local-function ,name ,args ,@body)))
+        (link name `(%local ,name ,x)))))
 
 (define-macro redefine (name x rest: body)
   (when (some? body)
     (set x `(fn ,x ,@body)))
-  (link name `(set ,name ,x)))
+  (if new-compiler
+      `(set ,name ,x)
+    (link name `(set ,name ,x))))
 
 (define-macro with-frame (rest: body :scope)
   (let (x (unique))

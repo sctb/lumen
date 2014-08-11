@@ -727,3 +727,11 @@
   (test= "foo" (module-key 'foo))
   (test= "foo/bar" (module-key '(foo bar)))
   (test= "foo/bar/baz" (module-key '(foo (bar baz)))))
+
+(define-test file ()
+  (test= "foo" (filename "foo"))
+  (test= "foo" (filename "foo.txt"))
+  (test= "foo" (filename "bar/foo.txt"))
+  (test= "foo" (filename "frobber/bar/foo.txt"))
+  (test= "foo" (filename "bar/foo"))
+  (test= "foo.bar" (filename "/bar/foo.bar.txt")))
