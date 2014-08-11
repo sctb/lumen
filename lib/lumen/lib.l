@@ -235,7 +235,7 @@
         (quasiexpand (at form 1) 1)
       (map (fn (x) (quasiexpand x depth)) form))))
 
-(define* indent-level 0)
+(define-global indent-level 0)
 
 (define indentation ()
   (apply cat (replicate indent-level "  ")))

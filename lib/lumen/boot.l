@@ -11,5 +11,5 @@
 (define-macro %initial-modules ()
   (quote-modules))
 
-(define* modules (%initial-modules))
-(define* environment (%initial-environment))
+(define-global modules (%initial-modules))
+(define-global environment (%initial-environment))

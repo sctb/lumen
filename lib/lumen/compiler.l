@@ -251,7 +251,7 @@
 (define process (form)
   (lower (macroexpand form)))
 
-(define* current-module)
+(define-global current-module)
 
 (define module-path (spec)
   (cat (module-key spec) ".l"))
@@ -345,7 +345,7 @@
             m.import)
     (join imports (imported current-module :private))))
 
-(define* %result)
+(define-global %result)
 
 (define eval (form)
   (let (previous target)

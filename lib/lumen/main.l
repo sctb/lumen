@@ -6,7 +6,7 @@
            (lumen compiler)))
 
 (let-macro ((init ()
-              (declare '(define* nexus (table)))))
+              (declare '(define-global nexus (table)))))
   (init))
 
 (let-macro ((save (specs)

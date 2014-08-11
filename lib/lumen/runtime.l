@@ -321,7 +321,7 @@
 (define >= (a b) (>= a b))
 (define <= (a b) (<= a b))
 
-(target js: (define* require require))
+(target js: (define-global require require))
 (target js: (define fs (require 'fs)))
 
 (define read-file (path)
@@ -336,7 +336,7 @@
     lua: (let (f (io.open path 'w))
            (f.write f data))))
 
-(target js: (define* print (x) (console.log x)))
+(target js: (define-global print (x) (console.log x)))
 (target js: (define type (x) (typeof x)))
 
 (define write (x)
