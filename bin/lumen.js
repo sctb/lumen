@@ -3599,8 +3599,8 @@ global.nexus = {};
       try {
         return([true, eval(read_from_string(s))]);
       }
-      catch (_u2194) {
-        return([false, _u2194.message]);
+      catch (_u2195) {
+        return([false, _u2195.message]);
       }
     })();
     var _u1 = _u2187[0];
@@ -3611,11 +3611,14 @@ global.nexus = {};
   };
   nexus["lumen/main"].rep = rep;
   var repl = function () {
+    var prompt = function () {
+      return(write(current_module + "> "));
+    };
     var step = function (s) {
       rep(s);
-      return(write("> "));
+      return(prompt());
     };
-    write("> ");
+    prompt();
     process.stdin.setEncoding("utf8");
     return(process.stdin.on("data", step));
   };

@@ -25,10 +25,12 @@
     (if (is? x) (pr x))))
 
 (define repl ()
+  (define prompt ()
+    (write (cat current-module "> ")))
   (define step (s)
     (rep s)
-    (write "> "))
-  (write "> ")
+    (prompt))
+  (prompt)
   (target
    js: (do (process.stdin.setEncoding 'utf8)
            (process.stdin.on 'data step))
