@@ -185,55 +185,53 @@
 (define quasiexpand)
 (define quasiquote-list)
 
-(set* quasiquote-list
-  (fn (form depth)
-    (let (xs (list '(list)))
-      (all (k v) form
-        (unless (number? k)
-          (let (v (if (quasisplice? v depth)
-                      ;; don't splice, just expand
-                      (quasiexpand (at v 1))
-                    (quasiexpand v depth)))
-            (set (get (last xs) k) v))))
-      ;; collect sibling lists
-      (series
-       (fn (x)
-         (if (quasisplice? x depth)
-             (let (x (quasiexpand (at x 1)))
-               (add xs x)
-               (add xs '(list)))
-           (add (last xs) (quasiexpand x depth))))
-       form)
-      (let (pruned
-            (keep (fn (x)
-                    (or (> (length x) 1)
-                        (not (= (hd x) 'list))
-                        (keys? x)))
-                  xs))
-        `(join* ,@pruned)))))
+(redefine quasiquote-list (form depth)
+  (let (xs (list '(list)))
+    (all (k v) form
+      (unless (number? k)
+        (let (v (if (quasisplice? v depth)
+                    ;; don't splice, just expand
+                    (quasiexpand (at v 1))
+                  (quasiexpand v depth)))
+          (set (get (last xs) k) v))))
+    ;; collect sibling lists
+    (series
+     (fn (x)
+       (if (quasisplice? x depth)
+           (let (x (quasiexpand (at x 1)))
+             (add xs x)
+             (add xs '(list)))
+         (add (last xs) (quasiexpand x depth))))
+     form)
+    (let (pruned
+          (keep (fn (x)
+                  (or (> (length x) 1)
+                      (not (= (hd x) 'list))
+                      (keys? x)))
+                xs))
+      `(join* ,@pruned))))
 
-(set* quasiexpand
-  (fn (form depth)
-    (if (quasiquoting? depth)
-        (if (atom? form) (list 'quote form)
-            ;; unquote
-            (and (can-unquote? depth)
-                 (= (hd form) 'unquote))
-            (quasiexpand (at form 1))
-            ;; decrease quasiquoting depth
-            (or (= (hd form) 'unquote)
-                (= (hd form) 'unquote-splicing))
-            (quasiquote-list form (- depth 1))
-            ;; increase quasiquoting depth
-            (= (hd form) 'quasiquote)
-            (quasiquote-list form (+ depth 1))
-            (quasiquote-list form depth))
-        (atom? form) form
-        (= (hd form) 'quote) form
-        (= (hd form) 'quasiquote)
-        ;; start quasiquoting
-        (quasiexpand (at form 1) 1)
-      (map (fn (x) (quasiexpand x depth)) form))))
+(redefine quasiexpand (form depth)
+  (if (quasiquoting? depth)
+      (if (atom? form) (list 'quote form)
+          ;; unquote
+          (and (can-unquote? depth)
+               (= (hd form) 'unquote))
+          (quasiexpand (at form 1))
+          ;; decrease quasiquoting depth
+          (or (= (hd form) 'unquote)
+              (= (hd form) 'unquote-splicing))
+          (quasiquote-list form (- depth 1))
+          ;; increase quasiquoting depth
+          (= (hd form) 'quasiquote)
+          (quasiquote-list form (+ depth 1))
+        (quasiquote-list form depth))
+      (atom? form) form
+      (= (hd form) 'quote) form
+      (= (hd form) 'quasiquote)
+      ;; start quasiquoting
+      (quasiexpand (at form 1) 1)
+    (map (fn (x) (quasiexpand x depth)) form)))
 
 (define-global indent-level 0)
 

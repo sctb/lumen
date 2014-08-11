@@ -19,7 +19,7 @@
            define-symbol
            define-global
            define
-           set*
+           redefine
            with-bindings
            let-macro
            let-symbol
@@ -134,8 +134,10 @@
         (link name `(%local-function ,name ,args ,@body)))
     (link name `(%local ,name ,x))))
 
-(define-macro set* (name value)
-  (link name `(set ,name ,value)))
+(define-macro redefine (name x &: body)
+  (when (some? body)
+    (set x `(fn ,x ,@body)))
+  (link name `(set ,name ,x)))
 
 (define-macro with-frame (&: body :scope)
   (let (x (unique))
