@@ -55,7 +55,7 @@
 
 (define read-from-string (str)
   (let (x (read (make-stream str)))
-    (if (~= x eof) x)))
+    (unless (= x eof) x)))
 
 (define key? (atom)
   (and (string? atom)

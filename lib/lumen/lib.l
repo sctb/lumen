@@ -112,7 +112,7 @@
 
 (define bias (k)
   (when (and (number? k)
-             (~= target (language)))
+             (not (= target (language))))
     (if (= target 'js)
         (dec k)
       (inc k)))

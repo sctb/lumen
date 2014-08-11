@@ -68,7 +68,7 @@
 		          (= arg "-t") (set target1 val)
 		          (= arg "-e") (set expr val)))))
 	      (and (nil? spec)
-                   (~= "-" (char arg 0)))
+                   (not (= "-" (char arg 0))))
               (set spec arg))
           (inc i)))
       (if output
