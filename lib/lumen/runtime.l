@@ -423,7 +423,7 @@
 (define module (spec)
   (get modules (module-key spec)))
 
-(define setenv (k &: keys)
+(define setenv (k rest: keys)
   (when (string? k)
     (let (frame (last environment)
           x (or (get frame k) (table)))
