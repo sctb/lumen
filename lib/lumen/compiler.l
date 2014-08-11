@@ -25,8 +25,7 @@
     (or: (js: ,"||" lua: or))))
 
 (define unary? (form)
-  (let ((op rest: args) form)
-    (and (one? args) (in? op '(not -)))))
+  (and (= (length form) 2) (in? (hd form) '(not -))))
 
 (define precedence (form)
   (when (and (list? form) (not (unary? form)))
