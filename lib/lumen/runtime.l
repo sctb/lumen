@@ -387,14 +387,14 @@
       (cat s  ")"))))
 
 (define space (xs)
-  (define string (x)
-    (if (or (string-literal? x) (hd= x 'cat))
-        x
-      `(string ,x)))
-  (if (one? xs) (string (hd xs))
-    (reduce (fn (a b)
-              `(cat ,(string a) " " ,(string b)))
-            xs)))
+  (let (string (fn (x)
+                 (if (or (string-literal? x) (hd= x 'cat))
+                     x
+                   `(string ,x))))
+    (if (one? xs) (string (hd xs))
+      (reduce (fn (a b)
+                `(cat ,(string a) " " ,(string b)))
+              xs))))
 
 (define apply (f args)
   (let (args (stash args))

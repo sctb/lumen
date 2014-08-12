@@ -60,10 +60,7 @@
       `(%array ,@l))))
 
 (define-macro if branches
-  (define step ((a b rest: c))
-    (if (is? b) `((%if ,a ,b ,@(step c)))
-        (is? a) (list a)))
-  (hd (step branches)))
+  (hd (expand-if branches)))
 
 (define-macro when (cond rest: body)
   `(if ,cond (do ,@body)))

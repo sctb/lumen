@@ -25,18 +25,14 @@
     (if (is? x) (pr x))))
 
 (define repl ()
-  (define prompt ()
-    (write (cat current-module "> ")))
-  (define step (s)
-    (rep s)
-    (prompt))
-  (prompt)
-  (target
-   js: (do (process.stdin.setEncoding 'utf8)
-           (process.stdin.on 'data step))
-   lua: (while true
-          (let (s (io.read))
-            (if s (step s) (break))))))
+  (write "> ")
+  (let (rep1 (fn (s) (rep s) (write "> ")))
+   (target
+     js: (do (process.stdin.setEncoding 'utf8)
+             (process.stdin.on 'data rep1))
+     lua: (while true
+            (let (s (io.read))
+              (if s (rep1 s) (break)))))))
 
 (define usage ()
   (pr "usage: lumen [options] <module>")

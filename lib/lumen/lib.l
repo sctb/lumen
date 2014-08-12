@@ -19,6 +19,7 @@
            bind*
            quasiexpand
            macroexpand
+           expand-if
            indentation
            with-indent
            reserved?
@@ -133,11 +134,12 @@
       bs)))
 
 (define bind* (args body)
-  (let (args1 ())
-    (define rest ()
-      (if (= target 'js)
-          `(unstash (Array.prototype.slice.call arguments ,(length args1)))
-        (do (add args1 '|...|) '(unstash (list |...|)))))
+  (let (args1 ()
+        rest (fn ()
+               (if (= target 'js)
+                   `(unstash 
+                     (Array.prototype.slice.call arguments ,(length args1)))
+                 (do (add args1 '|...|) '(unstash (list |...|))))))
     (if (atom? args)
         (list args1 `((let ,(list args (rest)) ,@body)))
       (let (bs () k? (keys? args) r (unique))
@@ -233,6 +235,10 @@
       (quasiexpand (at form 1) 1)
     (map (fn (x) (quasiexpand x depth)) form)))
 
+(define expand-if ((a b rest: c))
+  (if (is? b) `((%if ,a ,b ,@(expand-if c)))
+      (is? a) (list a)))
+
 (define-global indent-level 0)
 
 (define indentation ()
@@ -294,10 +300,10 @@
     id1))
 
 (define key (k)
-  (define wrap (s)
-    (if (= target 'lua) (cat "[" s "]") s))
   (let (i (inner k))
-    (if (valid-id? i) i (wrap k))))
+    (if (valid-id? i) i
+        (= target 'js) k
+      (cat "[" k "]"))))
 
 (define imported (spec :private)
   (let (m (unique)
