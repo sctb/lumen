@@ -368,17 +368,8 @@
 
 (define setenv (k rest: keys)
   (when (string? k)
-    (when new-compiler
-      (let (frame (last env)
-            entry (or (get frame k) (table)))
-        (all (k v) keys
-          (set (get entry k) v))
-        (set (get frame k) entry)))
     (let (frame (last environment)
-          x (or (get frame k) (table)))
+          entry (or (get frame k) (table)))
       (all (k v) keys
-        (set (get x k) v))
-      (when (and current-module (toplevel?))
-        (let (m (module current-module))
-          (set (get m.export k) x)))
-      (set (get frame k) x))))
+        (set (get entry k) v))
+      (set (get frame k) entry))))

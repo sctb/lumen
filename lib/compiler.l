@@ -252,9 +252,6 @@
   (run (read-file path)))
 
 (define compile-file (input output)
-  (set new-compiler true)
-  (unless (empty? modules)
-    (in-module 'user))
   (let (s (stream (read-file input))
         body (read-all s)
         form (expand `(do ,@body)))
