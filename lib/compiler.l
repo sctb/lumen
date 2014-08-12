@@ -88,9 +88,8 @@
         (cat op ao a ac)
       (cat ao a ac " " op " " bo b bc))))
 
-(define compile-function (args body :name :prefix)
+(define compile-function (args body :name)
   (let (id (if name (compile name) "")
-        prefix (or prefix "")
         args (compile-args args)
         body (with-indent (compile body :stmt))
         ind (indentation)
@@ -98,7 +97,7 @@
     (if name (cat! tr "\n"))
     (if (= target 'js)
         (cat "function " id args " {\n" body ind "}" tr)
-      (cat prefix "function " id args "\n" body ind tr))))
+      (cat "function " id args "\n" body ind tr))))
 
 (define can-return? (form)
   (and (is? form)
@@ -220,7 +219,7 @@
           (= x 'while) (lower-while args hoist)
           (= x '%for) (lower-for args hoist)
           (= x '%function) (lower-function args)
-          (in? x '(%local-function %global-function))
+          (in? x '(%function-definition %global-function))
           (lower-definition x args hoist)
           (in? x '(and or))
           (lower-short x args hoist)

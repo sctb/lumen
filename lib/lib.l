@@ -138,7 +138,7 @@
           (let ((_ args rest: body) form)
             (with-bindings (args)
               `(%function ,args ,@(macroexpand body))))
-          (or (= x '%local-function)
+          (or (= x '%function-definition)
               (= x '%global-function))
           (let ((_ name args rest: body) form)
             (with-bindings (args)

@@ -60,8 +60,8 @@
         (cat (indentation) x))
     (compile `(set ,name (%function ,args ,body)) :stmt)))
 
-(define-special %local-function (name args body) :stmt :tr
-  (let (x (compile-function args body name: name prefix: "local "))
+(define-special %function-definition (name args body) :stmt :tr
+  (let (x (compile-function args body name: name))
     (cat (indentation) x)))
 
 (define-special return (x) :stmt
