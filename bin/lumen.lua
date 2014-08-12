@@ -2396,11 +2396,11 @@ function main()
     end
     i = i + 1
   end
+  series(load_file, load)
   if input and output then
     if target1 then
       target = target1
     end
-    series(load_file, load)
     return(compile_file(input, output))
   else
     if expr then

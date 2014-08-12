@@ -49,9 +49,9 @@
 	      (not (= "-" (char arg 0)))
               (add load arg))
           (inc i)))
+      (series load-file load)
       (if (and input output)
           (do (if target1 (set target target1))
-              (series load-file load)
               (compile-file input output))
         (if expr (rep expr) (repl))))))
 

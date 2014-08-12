@@ -2663,11 +2663,11 @@ main = function () {
     }
     i = i + 1;
   }
+  series(load_file, load);
   if (input && output) {
     if (target1) {
       target = target1;
     }
-    series(load_file, load);
     return(compile_file(input, output));
   } else {
     if (expr) {

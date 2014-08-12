@@ -28,7 +28,7 @@
 (define-macro define-test (name _ rest: body)
   `(add tests (list ',name (fn () ,@body))))
 
-(define run ()
+(define run-tests ()
   (pr (cat (language) ":"))
   (all (_ test) tests
     (let (name (at test 0)
