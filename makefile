@@ -4,34 +4,34 @@ LUMEN := bin/lumen
 JS := bin/lumen.js
 LUA := bin/lumen.lua
 
-obj/%.js : lib/lumen/%.l
+obj/%.js : lib/%.l
 	@echo "    $*"
 	@$(LUMEN) -c $< -o obj/$*.js -t js
 
-obj/%.lua : lib/lumen/%.l
+obj/%.lua : lib/%.l
 	@echo "    $*"
 	@$(LUMEN) -c $< -o obj/$*.lua -t lua
 
 $(JS):			\
 obj/init.js		\
 obj/runtime.js		\
-obj/nlib.js		\
+obj/lib.js		\
 obj/reader.js		\
-obj/ncompiler.js	\
+obj/compiler.js	\
 obj/special.js		\
 obj/core.js		\
-obj/nmain.js
+obj/main.js
 	@cat $^ > $@
 
 $(LUA):			\
 obj/init.lua		\
 obj/runtime.lua		\
-obj/nlib.lua		\
+obj/lib.lua		\
 obj/reader.lua		\
-obj/ncompiler.lua	\
+obj/compiler.lua	\
 obj/special.lua		\
 obj/core.lua		\
-obj/nmain.lua
+obj/main.lua
 	@cat $^ > $@
 
 clean:
