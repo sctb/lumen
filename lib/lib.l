@@ -203,13 +203,6 @@
 (define indentation ()
   (apply cat (replicate indent-level "  ")))
 
-(define-macro with-indent (form)
-  (let (result (unique))
-    `(do (inc indent-level)
-         (let (,result ,form)
-           (dec indent-level)
-           ,result))))
-
 (define reserved
   (set-of "=" "==" "+" "-" "%" "*" "/" "<" ">" "<=" ">="
           ;; js

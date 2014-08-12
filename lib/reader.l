@@ -58,9 +58,6 @@
        (> (length atom) 1)
        (= (char atom 0) ":")))
 
-(define-macro define-reader ((char s) rest: body)
-  `(set (get read-table ,char) (fn (,s) ,@body)))
-
 (define-reader ("" s) ; atom
   (let (str "" dot? false)
     (while true

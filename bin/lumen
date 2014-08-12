@@ -1,16 +1,17 @@
 #!/bin/sh
 
-HOST=${LUMEN_HOST:-lua}
-FILE=lumen.lua
-
-if [ "$HOST" = "node" ]
-then
-    FILE=lumen.js
-fi
-
 DIR=`pwd`
 cd "`dirname $0`"
 HOME=`pwd`
 cd $DIR
 
-exec $HOST $HOME/$FILE "$@"
+HOST=${LUMEN_HOST:-lua}
+CODE=lumen.lua
+
+if [ "$HOST" = "node" ]
+then
+    CODE=lumen.js
+    RUNTIME=$HOME/../obj/runtime.js
+fi
+
+exec $HOST $HOME/$CODE $RUNTIME "$@"

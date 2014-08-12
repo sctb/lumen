@@ -66,6 +66,9 @@
   (setenv name symbol: expansion)
   `(setenv ,name symbol: ,expansion))
 
+(define-macro define-reader ((char s) rest: body)
+  `(set (get read-table ,char) (fn (,s) ,@body)))
+
 (define-macro define (name x rest: body)
   (setenv name :variable)
   (if (some? body)
@@ -151,3 +154,10 @@
 
 (define-macro pr xs
   `(print ,(space xs)))
+
+(define-macro with-indent (form)
+  (let (result (unique))
+    `(do (inc indent-level)
+         (let (,result ,form)
+           (dec indent-level)
+           ,result))))
