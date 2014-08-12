@@ -54,13 +54,7 @@
 (define-special %function (args body)
   (compile-function args body))
 
-(define-special %global-function (name args body) :stmt :tr
-  (if (= target 'lua)
-      (let (x (compile-function args body name: name))
-        (cat (indentation) x))
-    (compile `(set ,name (%function ,args ,body)) :stmt)))
-
-(define-special %function-definition (name args body) :stmt :tr
+(define-special %definition (name args body) :stmt :tr
   (let (x (compile-function args body name: name))
     (cat (indentation) x)))
 

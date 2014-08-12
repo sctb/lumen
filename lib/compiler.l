@@ -219,7 +219,7 @@
           (= x 'while) (lower-while args hoist)
           (= x '%for) (lower-for args hoist)
           (= x '%function) (lower-function args)
-          (in? x '(%function-definition %global-function))
+          (= x '%definition)
           (lower-definition x args hoist)
           (in? x '(and or))
           (lower-short x args hoist)
