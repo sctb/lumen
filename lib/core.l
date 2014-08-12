@@ -1,41 +1,5 @@
 ;; -*- mode: lisp -*-
 
-(define-module (lumen core)
-  import: ((lumen)
-           (lumen lib)
-           (lumen compiler))
-  export: (quote
-           quasiquote
-           at
-           list
-           if
-           when
-           unless
-           table
-           let
-           define-module
-           define-macro
-           define-special
-           define-symbol
-           define-global
-           define
-           redefine
-           with-bindings
-           let-macro
-           let-symbol
-           fn
-           guard
-           all
-           set-of
-           language
-           target
-           join*
-           join!
-           cat!
-           inc
-           dec
-           pr))
-
 (define-macro quote (form)
   (quoted form))
 
@@ -88,34 +52,19 @@
            (let-symbol ,renames
              (let ,(sub bindings 2) ,@body))))))
 
-(define-macro define-module (spec rest: body)
-  (unless new-compiler
-    (let ((import: imp export: exp :alias) body
-          (imports bindings) (import-modules imp)
-          k (module-key spec))
-      (set current-module spec)
-      (set (get modules k)
-           (table import: imports export: (table) alias: alias))
-      (all (_ x) (or exp ())
-        (setenv x :export))
-      `(do (set (get nexus ',k) (table)) ,@bindings))))
-
 (define-macro define-macro (name args rest: body)
-  (let (form `(fn ,args ,@body))
-    (eval `(setenv ',name macro: ,form form: ',form)))
-  (when new-compiler
-    `(setenv ',name macro: ,form)))
+  (let (form `(setenv ',name macro: (fn ,args ,@body)))
+    (eval form)
+    form))
 
 (define-macro define-special (name args rest: body)
-  (let (form `(fn ,args ,@body))
-    (eval `(setenv ',name special: ,form form: ',form ,@(keys body))))
-  (when new-compiler
-    `(setenv ',name special: ,form ,@(keys body))))
+  (let (form `(setenv ',name special: (fn ,args ,@body) ,@(keys body)))
+    (eval form)
+    form))
 
 (define-macro define-symbol (name expansion)
   (setenv name symbol: expansion)
-  (when new-compiler
-    `(setenv ,name symbol: ,expansion)))
+  `(setenv ,name symbol: ,expansion))
 
 (define-macro define-global (name x rest: body)
   (setenv name :global :export)

@@ -238,7 +238,7 @@
     lua: (let (|f,e| (load code))
            (if f (f) (error (cat e " in " code))))))
 
-(define-global %result)
+(define %result)
 
 (define eval (form)
   (let (previous target)

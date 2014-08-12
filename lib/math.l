@@ -1,29 +1,5 @@
 ;; -*- mode: lisp -*-
 
-(define-module (lumen math)
-  import: ((lumen special) (lumen core))
-  export: (max
-           min
-           abs
-           acos
-           asin
-           atan
-           atan2
-           ceil
-           cos
-           floor
-           log
-           log10
-           max
-           min
-           pow
-           random
-           sin
-           sinh
-           sqrt
-           tan
-           tanh))
-
 (define math (target js: Math lua: math))
 
 (define abs math.abs)

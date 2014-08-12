@@ -1,14 +1,5 @@
 ;; -*- mode: lisp -*-
 
-(define-module (lumen reader)
-  import: (lumen)
-  export: (stream
-           read-table
-           define-reader
-           read
-           read-all
-           read-from-string))
-
 (define delimiters (set-of "(" ")" ";" "\n"))
 (define whitespace (set-of " " "\t" "\n"))
 

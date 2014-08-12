@@ -1,27 +1,5 @@
 ;; -*- mode: lisp -*-
 
-(define-module (lumen special)
-  import: ((lumen)
-           (lumen lib)
-           (lumen compiler))
-  export: (do
-           %if
-           while
-           %for
-           %try
-           break
-           %function
-           %global-function
-           %local-function
-           return
-           error
-           %local
-           set
-           get
-           not
-           %array
-           %object))
-
 (define-special do forms :stmt :tr
   (let (s "")
     (series (fn (x)

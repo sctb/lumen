@@ -1,12 +1,5 @@
 ;; -*- mode: lisp -*-
 
-(define-module (lumen test)
-  import: ((lumen)
-           (lumen lib)
-           (lumen math)
-           (lumen reader)
-           (lumen compiler)))
-
 (define passed 0)
 (define failed 0)
 (define tests ())
