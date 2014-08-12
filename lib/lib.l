@@ -286,26 +286,6 @@
         `(do ,form (set (get (get nexus ',k) ',name) ,name)))
     form))
 
-(define extend (t rest: xs)
-  (join t xs))
-
-(define exclude (t rest: keys)
-  (let (t1 ())
-    (all (k v) t
-      (unless (get keys k)
-        (set (get t1 k) v)))
-    t1))
-
-(define quote-binding (b)
-  (if (is? b.symbol)
-      (extend b symbol: `',b.symbol)
-      (and b.macro b.form)
-      (exclude (extend b macro: b.form) :form)
-      (and b.special b.form)
-      (exclude (extend b special: b.form) :form)
-      (is? b.variable) b
-      (is? b.global) b))
-
 (define mapo (f t)
   (let (o ())
     (all (k v) t
@@ -314,20 +294,3 @@
           (add o (literal k))
           (add o x))))
     o))
-
-(define quote-frame (t)
-  `(%object ,@(mapo (fn (b) `(table ,@(quote-binding b))) t)))
-
-(define quote-environment (env)
-  `(list ,@(map quote-frame env)))
-
-(define quote-module (m)
-  `(table import: ,(quoted m.import)
-          alias: ,(quoted m.alias)
-          export: ,(quote-frame m.export)))
-
-(define quote-modules ()
-  `(table ,@(map quote-module modules)))
-
-(define initial-environment ()
-  (list (table define-module: (getenv 'define-module))))
