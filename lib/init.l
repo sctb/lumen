@@ -1,5 +1,4 @@
 ;; -*- mode: lisp -*-
 
-(set environment (list (table)))
-(set current-module nil)
-(set modules (table))
+(define environment (list (table)))
+(define target (language))

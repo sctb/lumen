@@ -129,7 +129,6 @@
       (set (get l x) true))
     `(table ,@l)))
 
-(define target (language))
 (define-macro language () `',target)
 
 (define-macro target clauses

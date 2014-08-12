@@ -357,15 +357,6 @@
 (define toplevel? ()
   (one? environment))
 
-(define module-key (spec)
-  (if (atom? spec) (string spec)
-    (reduce (fn (a b)
-              (cat (module-key a) "/" (module-key b)))
-            spec)))
-
-(define module (spec)
-  (get modules (module-key spec)))
-
 (define setenv (k rest: keys)
   (when (string? k)
     (let (frame (last environment)
