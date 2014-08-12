@@ -333,11 +333,10 @@
   (let (args (stash args))
     (target js: (f.apply f args) lua: (f (unpack args)))))
 
-(define id-count 0)
-
-(define unique ()
-  (inc id-count)
-  (cat "_u" id-count))
+(let (count 0)
+  (define unique ()
+    (inc count)
+    (cat "_u" count)))
 
 (define %message-handler (msg)
   (let (i (search msg ": "))
@@ -348,7 +347,9 @@
 
 (define setenv (k rest: keys)
   (when (string? k)
-    (let (frame (last environment)
+    (let (frame (if keys.toplevel
+                    (hd environment)
+                  (last environment))
           entry (or (get frame k) (table)))
       (all (k v) keys
         (set (get entry k) v))

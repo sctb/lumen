@@ -70,7 +70,7 @@
   `(set (get read-table ,char) (fn (,s) ,@body)))
 
 (define-macro define (name x rest: body)
-  (setenv name :variable)
+  (setenv name :toplevel :variable)
   (if (some? body)
       (let ((args body) (bind* x body))
         `(%definition ,name ,args ,@body))
