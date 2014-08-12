@@ -716,15 +716,3 @@
   (let (f (fn (a bar: b (:foo)) (list a b foo)))
     (test= '(10 20 42) (f 10 bar: 20 (list foo: 42)))))
 
-(define-test module ()
-  (test= "foo" (module-key 'foo))
-  (test= "foo/bar" (module-key '(foo bar)))
-  (test= "foo/bar/baz" (module-key '(foo (bar baz)))))
-
-(define-test file ()
-  (test= "foo" (filename "foo"))
-  (test= "foo" (filename "foo.txt"))
-  (test= "foo" (filename "bar/foo.txt"))
-  (test= "foo" (filename "frobber/bar/foo.txt"))
-  (test= "foo" (filename "bar/foo"))
-  (test= "foo.bar" (filename "/bar/foo.bar.txt")))

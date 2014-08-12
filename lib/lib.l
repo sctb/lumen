@@ -35,15 +35,11 @@
                 (reverse environment)))
     (and (table? b) (is? b.variable))))
 
-(define global? (k)
-  (getenv k 'global))
-
 (define bound? (x)
   (or (macro? x)
       (special? x)
       (symbol? x)
-      (variable? x)
-      (global? x)))
+      (variable? x)))
 
 (define escape (s)
   (let (s1 "\"" i 0)
@@ -268,23 +264,6 @@
     (if (valid-id? i) i
         (= target 'js) k
       (cat "[" k "]"))))
-
-(define imported (spec :private)
-  (let (m (unique)
-        k (module-key spec)
-        imports ())
-    (when (get nexus k)
-      (all (k v) (get (module spec) 'export)
-        (when (and v.variable (or private v.export))
-          (add imports `(%local ,k (get ,m ',k))))))
-    (when (some? imports)
-      `((%local ,m (get nexus ',k)) ,@imports))))
-
-(define link (name form)
-  (if (toplevel?)
-      (let (k (module-key current-module))
-        `(do ,form (set (get (get nexus ',k) ',name) ,name)))
-    form))
 
 (define mapo (f t)
   (let (o ())
