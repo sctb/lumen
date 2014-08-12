@@ -257,17 +257,6 @@
 (target js: (set global.require require))
 (target js: (define fs (require 'fs)))
 
-(define filename (path)
-  (let (from 0 to nil
-        i (- (length path) 1))
-    (while (>= i 0)
-      (let (c (char path i))
-        (if (= c "/") (break)
-            (and (= c ".") (nil? to)) (set to i)
-          (set start i)))
-      (dec i))
-    (sub path start to)))
-
 (define read-file (path)
   (target
     js: (fs.readFileSync path 'utf8)

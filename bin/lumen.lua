@@ -58,21 +58,21 @@ function sub(x, from, upto)
   else
     local l = {}
     local j = 0
-    local _u130
+    local _u129
     if nil63(from) or from < 0 then
-      _u130 = 0
+      _u129 = 0
     else
-      _u130 = from
+      _u129 = from
     end
-    local i = _u130
+    local i = _u129
     local n = length(x)
-    local _u131
+    local _u130
     if nil63(upto) or upto > n then
-      _u131 = n
+      _u130 = n
     else
-      _u131 = upto
+      _u130 = upto
     end
-    local _u25 = _u131
+    local _u25 = _u130
     while i < _u25 do
       l[j + 1] = x[i + 1]
       i = i + 1
@@ -111,11 +111,11 @@ function char(s, n)
   return(sub(s, n, n + 1))
 end
 function code(s, n)
-  local _u132
+  local _u131
   if n then
-    _u132 = n + 1
+    _u131 = n + 1
   end
-  return(strlib.byte(s, _u132))
+  return(strlib.byte(s, _u131))
 end
 function string_literal63(x)
   return(string63(x) and char(x, 0) == "\"")
@@ -332,11 +332,11 @@ function unstash(args)
   end
 end
 function search(s, pattern, start)
-  local _u133
+  local _u132
   if start then
-    _u133 = start + 1
+    _u132 = start + 1
   end
-  local _u83 = _u133
+  local _u83 = _u132
   local i = strlib.find(s, pattern, _u83, true)
   return(i and i - 1)
 end
@@ -413,25 +413,6 @@ end
 function _6061(a, b)
   return(a <= b)
 end
-function filename(path)
-  local from = 0
-  local to = nil
-  local i = length(path) - 1
-  while i >= 0 do
-    local c = char(path, i)
-    if c == "/" then
-      break
-    else
-      if c == "." and nil63(to) then
-        to = i
-      else
-        start = i
-      end
-    end
-    i = i - 1
-  end
-  return(sub(path, start, to))
-end
 function read_file(path)
   local f = io.open(path)
   return(f.read(f, "*a"))
@@ -480,10 +461,10 @@ function string(x, depth)
             local xs = {}
             local ks = {}
             local d = (depth or 0) + 1
-            local _u111 = x
+            local _u110 = x
             local k = nil
-            for k in next, _u111 do
-              local v = _u111[k]
+            for k in next, _u110 do
+              local v = _u110[k]
               if number63(k) then
                 xs[k] = string(v, d)
               else
@@ -491,10 +472,10 @@ function string(x, depth)
                 add(ks, string(v, d))
               end
             end
-            local _u113 = join(xs, ks)
+            local _u112 = join(xs, ks)
             local _u6 = nil
-            for _u6 in next, _u113 do
-              local v = _u113[_u6]
+            for _u6 in next, _u112 do
+              local v = _u112[_u6]
               s = s .. sp .. v
               sp = " "
             end
@@ -522,8 +503,8 @@ function space(xs)
   end
 end
 function apply(f, args)
-  local _u121 = stash(args)
-  return(f(unpack(_u121)))
+  local _u120 = stash(args)
+  return(f(unpack(_u120)))
 end
 id_count = 0
 function unique()
@@ -538,16 +519,16 @@ function toplevel63()
   return(one63(environment))
 end
 function setenv(k, ...)
-  local _u125 = unstash({...})
-  local keys = sub(_u125, 0)
+  local _u124 = unstash({...})
+  local keys = sub(_u124, 0)
   if string63(k) then
     local frame = last(environment)
     local entry = frame[k] or {}
-    local _u127 = keys
-    local _u129 = nil
-    for _u129 in next, _u127 do
-      local v = _u127[_u129]
-      entry[_u129] = v
+    local _u126 = keys
+    local _u128 = nil
+    for _u128 in next, _u126 do
+      local v = _u126[_u128]
+      entry[_u128] = v
     end
     frame[k] = entry
   end
@@ -901,7 +882,7 @@ setenv("with-indent", {_stash = true, macro = function (form)
   local result = unique()
   return({"do", {"inc", "indent-level"}, {"let", {result, form}, {"dec", "indent-level"}, result}})
 end})
-reserved = {["-"] = true, ["default"] = true, ["break"] = true, ["else"] = true, ["var"] = true, ["/"] = true, ["finally"] = true, ["void"] = true, ["<="] = true, ["case"] = true, ["false"] = true, ["new"] = true, ["try"] = true, ["or"] = true, ["delete"] = true, ["typeof"] = true, ["this"] = true, ["function"] = true, ["end"] = true, [">="] = true, ["repeat"] = true, ["*"] = true, ["throw"] = true, ["debugger"] = true, ["until"] = true, ["catch"] = true, ["+"] = true, ["and"] = true, ["then"] = true, ["do"] = true, ["<"] = true, ["elseif"] = true, ["true"] = true, ["=="] = true, ["for"] = true, ["return"] = true, ["continue"] = true, ["in"] = true, [">"] = true, ["not"] = true, ["switch"] = true, ["local"] = true, ["nil"] = true, ["while"] = true, ["%"] = true, ["with"] = true, ["if"] = true, ["="] = true, ["instanceof"] = true}
+reserved = {["case"] = true, ["true"] = true, ["catch"] = true, ["break"] = true, ["finally"] = true, ["else"] = true, ["*"] = true, [">="] = true, ["nil"] = true, ["switch"] = true, ["="] = true, ["instanceof"] = true, ["function"] = true, ["for"] = true, ["debugger"] = true, ["elseif"] = true, ["in"] = true, ["throw"] = true, ["/"] = true, ["local"] = true, ["try"] = true, ["and"] = true, ["until"] = true, ["end"] = true, ["or"] = true, ["=="] = true, ["do"] = true, ["void"] = true, ["continue"] = true, ["-"] = true, ["if"] = true, ["+"] = true, ["default"] = true, ["with"] = true, [">"] = true, ["false"] = true, ["<"] = true, ["this"] = true, ["%"] = true, ["var"] = true, ["repeat"] = true, ["<="] = true, ["return"] = true, ["not"] = true, ["delete"] = true, ["then"] = true, ["typeof"] = true, ["new"] = true, ["while"] = true}
 function reserved63(x)
   return(reserved[x])
 end
@@ -981,10 +962,10 @@ function mapo(f, t)
   end
   return(o)
 end
-delimiters = {["\n"] = true, [";"] = true, [")"] = true, ["("] = true}
-whitespace = {[" "] = true, ["\n"] = true, ["\t"] = true}
+delimiters = {[")"] = true, [";"] = true, ["\n"] = true, ["("] = true}
+whitespace = {["\t"] = true, [" "] = true, ["\n"] = true}
 function stream(str)
-  return({len = length(str), string = str, pos = 0})
+  return({string = str, pos = 0, len = length(str)})
 end
 function peek_char(s)
   if s.pos < s.len then
@@ -1191,40 +1172,40 @@ read_table[","] = function (s)
 end
 local _u3 = {}
 local _u4 = {}
-_u4.js = "!"
 _u4.lua = "not "
+_u4.js = "!"
 _u3["not"] = _u4
 local _u6 = {}
+_u6["/"] = true
 _u6["%"] = true
 _u6["*"] = true
-_u6["/"] = true
 local _u8 = {}
 _u8["+"] = true
 _u8["-"] = true
 local _u10 = {}
 local _u11 = {}
-_u11.js = "+"
 _u11.lua = ".."
+_u11.js = "+"
 _u10.cat = _u11
 local _u13 = {}
-_u13["<"] = true
 _u13["<="] = true
-_u13[">"] = true
+_u13["<"] = true
 _u13[">="] = true
+_u13[">"] = true
 local _u15 = {}
 local _u16 = {}
-_u16.js = "==="
 _u16.lua = "=="
+_u16.js = "==="
 _u15["="] = _u16
 local _u18 = {}
 local _u19 = {}
-_u19.js = "&&"
 _u19.lua = "and"
+_u19.js = "&&"
 _u18["and"] = _u19
 local _u21 = {}
 local _u22 = {}
-_u22.js = "||"
 _u22.lua = "or"
+_u22.js = "||"
 _u21["or"] = _u22
 infix = {_u3, _u6, _u8, _u10, _u13, _u15, _u18, _u21}
 function unary63(form)
@@ -1317,9 +1298,9 @@ function compile_special(form, stmt63)
   local x = form[1]
   local args = sub(form, 1)
   local _u36 = getenv(x)
-  local self_tr63 = _u36.tr
   local stmt = _u36.stmt
   local special = _u36.special
+  local self_tr63 = _u36.tr
   local tr = terminator(stmt63 and not self_tr63)
   return(apply(special, args) .. tr)
 end
@@ -1645,15 +1626,15 @@ function compile_file(input, output)
   local form = expand(join({"do"}, body))
   return(write_file(output, compile(form)))
 end
-setenv("do", {_stash = true, special = function (...)
+setenv("do", {_stash = true, tr = true, special = function (...)
   local forms = unstash({...})
   local s = ""
   series(function (x)
     s = s .. compile(x, {_stash = true, stmt = true})
   end, forms)
   return(s)
-end, tr = true, stmt = true})
-setenv("%if", {_stash = true, special = function (cond, cons, alt)
+end, stmt = true})
+setenv("%if", {_stash = true, tr = true, special = function (cond, cons, alt)
   local _u13 = compile(cond)
   indent_level = indent_level + 1
   local _u15 = compile(cons, {_stash = true, stmt = true})
@@ -1686,8 +1667,8 @@ setenv("%if", {_stash = true, special = function (cond, cons, alt)
   else
     return(s .. "\n")
   end
-end, tr = true, stmt = true})
-setenv("while", {_stash = true, special = function (cond, form)
+end, stmt = true})
+setenv("while", {_stash = true, tr = true, special = function (cond, form)
   local _u22 = compile(cond)
   indent_level = indent_level + 1
   local _u23 = compile(form, {_stash = true, stmt = true})
@@ -1699,8 +1680,8 @@ setenv("while", {_stash = true, special = function (cond, form)
   else
     return(ind .. "while " .. _u22 .. " do\n" .. body .. ind .. "end\n")
   end
-end, tr = true, stmt = true})
-setenv("%for", {_stash = true, special = function (t, k, form)
+end, stmt = true})
+setenv("%for", {_stash = true, tr = true, special = function (t, k, form)
   local _u28 = compile(t)
   local ind = indentation()
   indent_level = indent_level + 1
@@ -1712,8 +1693,8 @@ setenv("%for", {_stash = true, special = function (t, k, form)
   else
     return(ind .. "for (" .. k .. " in " .. _u28 .. ") {\n" .. body .. ind .. "}\n")
   end
-end, tr = true, stmt = true})
-setenv("%try", {_stash = true, special = function (form)
+end, stmt = true})
+setenv("%try", {_stash = true, tr = true, special = function (form)
   local ind = indentation()
   indent_level = indent_level + 1
   local _u37 = compile(form, {_stash = true, stmt = true})
@@ -1726,17 +1707,17 @@ setenv("%try", {_stash = true, special = function (form)
   indent_level = indent_level - 1
   local h = _u41
   return(ind .. "try {\n" .. body .. ind .. "}\n" .. ind .. "catch (" .. e .. ") {\n" .. h .. ind .. "}\n")
-end, tr = true, stmt = true})
+end, stmt = true})
 setenv("break", {_stash = true, special = function ()
   return(indentation() .. "break")
 end, stmt = true})
 setenv("%function", {_stash = true, special = function (args, body)
   return(compile_function(args, body))
 end})
-setenv("%definition", {_stash = true, special = function (name, args, body)
+setenv("%definition", {_stash = true, tr = true, special = function (name, args, body)
   local x = compile_function(args, body, {_stash = true, name = name})
   return(indentation() .. x)
-end, tr = true, stmt = true})
+end, stmt = true})
 setenv("return", {_stash = true, special = function (x)
   local _u93
   if nil63(x) then
