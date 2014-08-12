@@ -66,35 +66,12 @@
   (setenv name symbol: expansion)
   `(setenv ,name symbol: ,expansion))
 
-(define-macro define-global (name x rest: body)
-  (setenv name :global :export)
+(define-macro define (name x rest: body)
+  (setenv name :variable)
   (if (some? body)
       (let ((args body) (bind* x body))
         `(%global-function ,name ,args ,@body))
-      (= target 'js)
-      `(set (get global ',(id name)) ,x)
     `(set ,name ,x)))
-
-(define-macro define (name x rest: body)
-  (setenv name :variable)
-  (if new-compiler
-      (if (some? body)
-          (let ((args body) (bind* x body))
-            `(%global-function ,name ,args ,@body))
-        `(%local ,name ,x))
-      (if (and (some? body) (= target 'js))
-          (link name `(%local ,name (fn ,x ,@body)))
-          (some? body)
-          (let ((args body) (bind* x body))
-            (link name `(%local-function ,name ,args ,@body)))
-        (link name `(%local ,name ,x)))))
-
-(define-macro redefine (name x rest: body)
-  (when (some? body)
-    (set x `(fn ,x ,@body)))
-  (if new-compiler
-      `(set ,name ,x)
-    (link name `(set ,name ,x))))
 
 (define-macro with-frame (rest: body :scope)
   (let (x (unique))
@@ -152,7 +129,7 @@
       (set (get l x) true))
     `(table ,@l)))
 
-(define-global target (language))
+(define target (language))
 (define-macro language () `',target)
 
 (define-macro target clauses

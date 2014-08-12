@@ -254,7 +254,7 @@
 (define >= (a b) (>= a b))
 (define <= (a b) (<= a b))
 
-(target js: (define-global require require))
+(target js: (set global.require require))
 (target js: (define fs (require 'fs)))
 
 (define filename (path)
@@ -280,7 +280,7 @@
     lua: (let (f (io.open path 'w))
            (f.write f data))))
 
-(target js: (define-global print (x) (console.log x)))
+(target js: (define print (x) (console.log x)))
 
 (define write (x)
   (target js: (process.stdout.write x) lua: (io.write x)))
