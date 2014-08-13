@@ -229,13 +229,11 @@
 (define expand (form)
   (lower (macroexpand form)))
 
-(target js: (define vm (require 'vm)))
-
-(define run (code)
-  (target
-    js: (vm.runInThisContext code)
-    lua: (let (|f,e| (load code))
-           (if f (f) (error (cat e " in " code))))))
+(target js: (define run eval))
+(target lua:
+  (define run (code)
+    (let (|f,e| (load code))
+      (if f (f) (error (cat e " in " code))))))
 
 (define %result)
 

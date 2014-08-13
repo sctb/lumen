@@ -1406,13 +1406,13 @@ precedence = function (form) {
     for (k in _u26) {
       var v = _u26[k];
       var _u27 = parseInt(k);
-      var _u113;
+      var _u112;
       if (isNaN(_u27)) {
-        _u113 = k;
+        _u112 = k;
       } else {
-        _u113 = _u27;
+        _u112 = _u27;
       }
-      var _u28 = _u113;
+      var _u28 = _u112;
       if (v[hd(form)]) {
         return(index(_u28));
       }
@@ -1516,13 +1516,13 @@ compile_call = function (form) {
 op_delims = function (parent, child) {
   var _u40 = unstash(Array.prototype.slice.call(arguments, 2));
   var right = _u40.right;
-  var _u114;
+  var _u113;
   if (right) {
-    _u114 = _6261;
+    _u113 = _6261;
   } else {
-    _u114 = _62;
+    _u113 = _62;
   }
-  if (_u114(precedence(child), precedence(parent))) {
+  if (_u113(precedence(child), precedence(parent))) {
     return(["(", ")"]);
   } else {
     return(["", ""]);
@@ -1551,26 +1551,26 @@ compile_infix = function (form) {
 compile_function = function (args, body) {
   var _u50 = unstash(Array.prototype.slice.call(arguments, 2));
   var name = _u50.name;
-  var _u115;
+  var _u114;
   if (name) {
-    _u115 = compile(name);
+    _u114 = compile(name);
   } else {
-    _u115 = "";
+    _u114 = "";
   }
-  var id = _u115;
+  var id = _u114;
   var _u51 = compile_args(args);
   indent_level = indent_level + 1;
   var _u53 = compile(body, {_stash: true, stmt: true});
   indent_level = indent_level - 1;
   var _u52 = _u53;
   var ind = indentation();
-  var _u116;
+  var _u115;
   if (target === "js") {
-    _u116 = "";
+    _u115 = "";
   } else {
-    _u116 = "end";
+    _u115 = "end";
   }
-  var tr = _u116;
+  var tr = _u115;
   if (name) {
     tr = tr + "\n";
   }
@@ -1593,26 +1593,26 @@ compile = function (form) {
       return(compile_special(form, stmt));
     } else {
       var tr = terminator(stmt);
-      var _u117;
+      var _u116;
       if (stmt) {
-        _u117 = indentation();
+        _u116 = indentation();
       } else {
-        _u117 = "";
+        _u116 = "";
       }
-      var ind = _u117;
-      var _u118;
+      var ind = _u116;
+      var _u117;
       if (atom63(form)) {
-        _u118 = compile_atom(form);
+        _u117 = compile_atom(form);
       } else {
-        var _u119;
+        var _u118;
         if (infix63(hd(form))) {
-          _u119 = compile_infix(form);
+          _u118 = compile_infix(form);
         } else {
-          _u119 = compile_call(form);
+          _u118 = compile_call(form);
         }
-        _u118 = _u119;
+        _u117 = _u118;
       }
-      var _u56 = _u118;
+      var _u56 = _u117;
       return(ind + _u56 + tr);
     }
   }
@@ -1653,19 +1653,19 @@ lower_if = function (args, hoist, stmt63, tail63) {
   var _u67 = args[1];
   var _u68 = args[2];
   if (stmt63 || tail63) {
-    var _u121;
+    var _u120;
     if (_u68) {
-      _u121 = [lower_body([_u68], tail63)];
+      _u120 = [lower_body([_u68], tail63)];
     }
-    return(add(hoist, join(["%if", lower(cond, hoist), lower_body([_u67], tail63)], _u121)));
+    return(add(hoist, join(["%if", lower(cond, hoist), lower_body([_u67], tail63)], _u120)));
   } else {
     var e = unique();
     add(hoist, ["%local", e]);
-    var _u120;
+    var _u119;
     if (_u68) {
-      _u120 = [lower(["set", e, _u68])];
+      _u119 = [lower(["set", e, _u68])];
     }
-    add(hoist, join(["%if", lower(cond, hoist), lower(["set", e, _u67])], _u120));
+    add(hoist, join(["%if", lower(cond, hoist), lower(["set", e, _u67])], _u119));
     return(e);
   }
 };
@@ -1676,13 +1676,13 @@ lower_short = function (x, args, hoist) {
   var b1 = lower(b, hoist1);
   if (some63(hoist1)) {
     var id = unique();
-    var _u122;
+    var _u121;
     if (x === "and") {
-      _u122 = ["%if", id, b, id];
+      _u121 = ["%if", id, b, id];
     } else {
-      _u122 = ["%if", id, id, b];
+      _u121 = ["%if", id, id, b];
     }
-    return(lower(["do", ["%local", id, a], _u122], hoist));
+    return(lower(["do", ["%local", id, a], _u121], hoist));
   } else {
     return([x, lower(a, hoist), b1]);
   }
@@ -1796,10 +1796,7 @@ lower = function (form, hoist, stmt63, tail63) {
 expand = function (form) {
   return(lower(macroexpand(form)));
 };
-vm = require("vm");
-run = function (code) {
-  return(vm.runInThisContext(code));
-};
+run = eval;
 _37result = undefined;
 eval = function (form) {
   var previous = target;
