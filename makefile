@@ -1,4 +1,4 @@
-.PHONY: clean
+.PHONY: all clean
 
 LUMEN_LUA  ?= lua
 LUMEN_NODE ?= node
@@ -6,57 +6,54 @@ LUMEN_HOST ?= $(LUMEN_LUA)
 
 LUMEN := LUMEN_HOST=$(LUMEN_HOST) bin/lumen
 
-JS := bin/lumen.js
-LUA := bin/lumen.lua
+OBJS :=	obj/init.o	\
+	obj/runtime.o	\
+	obj/lib.o	\
+	obj/reader.o	\
+	obj/compiler.o	\
+	obj/special.o	\
+	obj/core.o	\
+	obj/main.o
 
-obj/%.js : lib/%.l
-	@echo "   $*"
-	@$(LUMEN) -c $< -o $@ -t js
-
-obj/%.lua : lib/%.l
-	@echo "   $*"
-	@$(LUMEN) -c $< -o $@ -t lua
-
-ifeq ($(LUMEN_HOST), $(LUMEN_NODE))
-obj/core.js: lib/core.l obj/runtime.js obj/lib.js
-	@echo "   core*"
-	@$(LUMEN) obj/lib.js -c $< -o $@ -t js
-
-obj/special.js: lib/special.l obj/runtime.js obj/lib.js obj/compiler.js
-	@echo "   special*"
-	@$(LUMEN) obj/lib.js obj/compiler.js -c $< -o $@ -t js
-
-obj/core.lua: lib/core.l obj/runtime.js obj/lib.js
-	@echo "   core*"
-	@$(LUMEN) obj/lib.js -c $< -o $@ -t lua
-
-obj/special.lua: lib/special.l obj/runtime.js obj/lib.js obj/compiler.js
-	@echo "   special*"
-	@$(LUMEN) obj/lib.js obj/compiler.js -c $< -o $@ -t lua
-endif
-
-$(JS):			\
-obj/init.js		\
-obj/runtime.js		\
-obj/lib.js		\
-obj/reader.js		\
-obj/compiler.js		\
-obj/special.js		\
-obj/core.js		\
-obj/main.js
-	@cat $^ > $@
-
-$(LUA):			\
-obj/init.lua		\
-obj/runtime.lua		\
-obj/lib.lua		\
-obj/reader.lua		\
-obj/compiler.lua	\
-obj/special.lua		\
-obj/core.lua		\
-obj/main.lua
-	@cat $^ > $@
+all: bin/lumen.lua bin/lumen.js
 
 clean:
 	@git checkout bin/lumen.*
 	@rm -f obj/*
+
+bin/lumen.js: $(OBJS:.o=.js)
+	@echo $@
+	@cat $^ > $@
+
+bin/lumen.lua: $(OBJS:.o=.lua)
+	@echo $@
+	@cat $^ > $@
+
+obj/%.js : lib/%.l
+	@echo "  $@"
+	@$(LUMEN) -c $< -o $@ -t js
+
+obj/%.lua : lib/%.l
+	@echo "  $@"
+	@$(LUMEN) -c $< -o $@ -t lua
+
+CORE_PREREQ := obj/runtime.js obj/lib.js
+SPECIAL_PREREQ := $(CORE_PREREQ) obj/compiler.js
+
+ifeq ($(LUMEN_HOST), $(LUMEN_NODE))
+obj/core.js: lib/core.l $(CORE_PREREQ)
+	@echo " *$@"
+	@$(LUMEN) $(CORE_PREREQ) -c $< -o $@ -t js
+
+obj/special.js: lib/special.l $(SPECIAL_PREREQ)
+	@echo " *$@"
+	@$(LUMEN) $(SPECIAL_PREREQ) -c $< -o $@ -t js
+
+obj/core.lua: lib/core.l $(CORE_PREREQ)
+	@echo " *$@"
+	@$(LUMEN) $(CORE_PREREQ) -c $< -o $@ -t lua
+
+obj/special.lua: lib/special.l $(SPECIAL_PREREQ)
+	@echo " *$@"
+	@$(LUMEN) $(SPECIAL_PREREQ) -c $< -o $@ -t lua
+endif
