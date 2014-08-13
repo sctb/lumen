@@ -36,24 +36,3 @@ obj/%.js : lib/%.l
 obj/%.lua : lib/%.l
 	@echo "  $@"
 	@$(LUMEN) -c $< -o $@ -t lua
-
-CORE_PREREQ := obj/runtime.js obj/lib.js
-SPECIAL_PREREQ := $(CORE_PREREQ) obj/compiler.js
-
-ifeq ($(LUMEN_HOST), $(LUMEN_NODE))
-obj/core.js: lib/core.l $(CORE_PREREQ)
-	@echo " *$@"
-	@$(LUMEN) $(CORE_PREREQ) -c $< -o $@ -t js
-
-obj/special.js: lib/special.l $(SPECIAL_PREREQ)
-	@echo " *$@"
-	@$(LUMEN) $(SPECIAL_PREREQ) -c $< -o $@ -t js
-
-obj/core.lua: lib/core.l $(CORE_PREREQ)
-	@echo " *$@"
-	@$(LUMEN) $(CORE_PREREQ) -c $< -o $@ -t lua
-
-obj/special.lua: lib/special.l $(SPECIAL_PREREQ)
-	@echo " *$@"
-	@$(LUMEN) $(SPECIAL_PREREQ) -c $< -o $@ -t lua
-endif
