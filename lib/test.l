@@ -23,10 +23,8 @@
 
 (define run-tests ()
   (pr (cat (language) ":"))
-  (all (_ test) tests
-    (let (name (at test 0)
-	  f (at test 1)
-	  result (f))
+  (all (_ (name f)) tests
+    (let (result (f))
       (when (string? result)
         (pr "  " name result))))
   (pr "  " passed "passed," failed "failed"))
