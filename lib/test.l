@@ -562,7 +562,10 @@
   (test= '(a b :b) (join '(a) '(b :b)))
   (test= '(a b: 10) (join '(a :b) (table b: 10)))
   (test= '(b: 10) (join (table :b) '(b: 10)))
-  (test= '(a b b: 1 c: 2) (join '(a b: 1) '(b c: 2))))
+  (let (t (join '(a b: 1) '(b c: 2)))
+    (test= 1 t.b)
+    (test= 2 t.c)
+    (test= 'b (at t 1))))
 
 (define-test reverse ()
   (test= () (reverse ()))

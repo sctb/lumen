@@ -1,4 +1,4 @@
-.PHONY: all clean
+.PHONY: all clean test
 
 LUMEN_LUA  ?= lua
 LUMEN_NODE ?= node
@@ -36,3 +36,9 @@ obj/%.js : lib/%.l
 obj/%.lua : lib/%.l
 	@echo "  $@"
 	@$(LUMEN) -c $< -o $@ -t lua
+
+TESTOBJS := obj/math.o obj/test.o
+
+test: all $(TESTOBJS:.o=.js) $(TESTOBJS:.o=.lua)
+	@LUMEN_HOST=$(LUMEN_NODE) bin/lumen $(TESTOBJS:.o=.js) -e '(run-tests)'
+	@LUMEN_HOST=$(LUMEN_LUA) bin/lumen $(TESTOBJS:.o=.lua) -e '(run-tests)'
