@@ -23,11 +23,13 @@ clean:
 
 bin/lumen.js: $(OBJS:.o=.js)
 	@echo $@
-	@cat $^ > $@
+	@cat $^ > $@.tmp
+	@mv $@.tmp $@
 
 bin/lumen.lua: $(OBJS:.o=.lua)
 	@echo $@
-	@cat $^ > $@
+	@cat $^ > $@.tmp
+	@mv $@.tmp $@
 
 obj/%.js : lib/%.l
 	@echo "  $@"
