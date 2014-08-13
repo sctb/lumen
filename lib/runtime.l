@@ -1,5 +1,8 @@
 ;; -*- mode: lisp -*-
 
+(define environment (list (table)))
+(define target (language))
+
 (define nil? (x)
   (target
     js: (or (= x nil) (= x null))

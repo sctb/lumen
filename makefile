@@ -6,8 +6,7 @@ LUMEN_HOST ?= $(LUMEN_LUA)
 
 LUMEN := LUMEN_HOST=$(LUMEN_HOST) bin/lumen
 
-OBJS :=	obj/init.o	\
-	obj/runtime.o	\
+OBJS :=	obj/runtime.o	\
 	obj/lib.o	\
 	obj/reader.o	\
 	obj/compiler.o	\
