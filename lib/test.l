@@ -645,7 +645,10 @@
   (test= 7 (find (fn (x) x) '(7)))
   (test= true (find (fn (x) (= x 7)) '(2 4 7)))
   (test= true (find (fn (x) (= x 7)) '(2 4 foo: 7)))
-  (test= true (find (fn (x) (= x true)) '(2 4 :bar))))
+  (test= true (find (fn (x) (= x true)) '(2 4 :bar)))
+  (test= true (in? 7 '(2 4 7)))
+  (test= true (in? 7 '(2 4 foo: 7)))
+  (test= true (in? true '(2 4 :bar))))
 
 (define-test find ()
   (test= nil (first (fn (x) x) ()))

@@ -133,14 +133,13 @@
         (inc o)))
     t))
 
-(define in? (x t)
-  (all (_ y) t
-    (when (= x y) (return true))))
-
 (define find (f t)
   (all (_ x) t
     (let (x (f x))
       (if x (return x)))))
+
+(define in? (x t)
+  (find (fn (y) (= x y)) t))
 
 (define pair (l)
   (let (i 0 l1 ())
