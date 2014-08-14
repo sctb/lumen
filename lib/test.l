@@ -643,7 +643,15 @@
 (define-test find ()
   (test= nil (find (fn (x) x) ()))
   (test= 7 (find (fn (x) x) '(7)))
-  (test= true (find (fn (x) (= x 7)) '(2 4 7))))
+  (test= true (find (fn (x) (= x 7)) '(2 4 7)))
+  (test= true (find (fn (x) (= x 7)) '(2 4 foo: 7)))
+  (test= true (find (fn (x) (= x true)) '(2 4 :bar))))
+
+(define-test find ()
+  (test= nil (first (fn (x) x) ()))
+  (test= 7 (first (fn (x) x) '(7)))
+  (test= true (first (fn (x) (= x 7)) '(2 4 7)))
+  (test= 4 (first (fn (x) (and (> x 3) x)) '(1 2 3 4 5 6))))
 
 (define-test sort ()
   (test= '(a b c) (sort '(c a b)))

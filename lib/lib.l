@@ -30,9 +30,9 @@
   (is? (symbol-expansion k)))
 
 (define variable? (k)
-  (let (b (find (fn (frame)
-                  (or (get frame k) frame._scope))
-                (reverse environment)))
+  (let (b (first (fn (frame)
+                   (or (get frame k) frame._scope))
+                 (reverse environment)))
     (and (table? b) (is? b.variable))))
 
 (define bound? (x)

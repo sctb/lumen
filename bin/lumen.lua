@@ -58,21 +58,21 @@ function sub(x, from, upto)
   else
     local l = {}
     local j = 0
-    local _u131
-    if nil63(from) or from < 0 then
-      _u131 = 0
-    else
-      _u131 = from
-    end
-    local i = _u131
-    local n = length(x)
     local _u132
-    if nil63(upto) or upto > n then
-      _u132 = n
+    if nil63(from) or from < 0 then
+      _u132 = 0
     else
-      _u132 = upto
+      _u132 = from
     end
-    local _u26 = _u132
+    local i = _u132
+    local n = length(x)
+    local _u133
+    if nil63(upto) or upto > n then
+      _u133 = n
+    else
+      _u133 = upto
+    end
+    local _u26 = _u133
     while i < _u26 do
       l[j + 1] = x[i + 1]
       i = i + 1
@@ -111,11 +111,11 @@ function char(s, n)
   return(sub(s, n, n + 1))
 end
 function code(s, n)
-  local _u133
+  local _u134
   if n then
-    _u133 = n + 1
+    _u134 = n + 1
   end
-  return(strlib.byte(s, _u133))
+  return(strlib.byte(s, _u134))
 end
 function string_literal63(x)
   return(string63(x) and char(x, 0) == "\"")
@@ -254,13 +254,24 @@ function series(f, l)
     return(f(l[i + 1]))
   end, length(l)))
 end
+function first(f, l)
+  local i = 0
+  local n = length(l)
+  while i < n do
+    local x = f(l[i + 1])
+    if x then
+      return(x)
+    end
+    i = i + 1
+  end
+end
 function map(f, x)
   local t = {}
   local o = 0
-  local _u69 = x
+  local _u70 = x
   local k = nil
-  for k in next, _u69 do
-    local v = _u69[k]
+  for k in next, _u70 do
+    local v = _u70[k]
     local y = f(v)
     if is63(y) then
       t[shift(k, o)] = y
@@ -272,10 +283,10 @@ function map(f, x)
 end
 function keys63(t)
   local b = false
-  local _u72 = t
+  local _u73 = t
   local k = nil
-  for k in next, _u72 do
-    local _u3 = _u72[k]
+  for k in next, _u73 do
+    local _u3 = _u73[k]
     if not number63(k) then
       b = true
       break
@@ -285,10 +296,10 @@ function keys63(t)
 end
 function empty63(t)
   local b = true
-  local _u75 = t
+  local _u76 = t
   local _u4 = nil
-  for _u4 in next, _u75 do
-    local _u5 = _u75[_u4]
+  for _u4 in next, _u76 do
+    local _u5 = _u76[_u4]
     b = false
     break
   end
@@ -297,10 +308,10 @@ end
 function stash(args)
   if keys63(args) then
     local p = {}
-    local _u78 = args
+    local _u79 = args
     local k = nil
-    for k in next, _u78 do
-      local v = _u78[k]
+    for k in next, _u79 do
+      local v = _u79[k]
       if not number63(k) then
         p[k] = v
       end
@@ -317,10 +328,10 @@ function unstash(args)
     local l = last(args)
     if table63(l) and l._stash then
       local args1 = butlast(args)
-      local _u81 = l
+      local _u82 = l
       local k = nil
-      for k in next, _u81 do
-        local v = _u81[k]
+      for k in next, _u82 do
+        local v = _u82[k]
         if not (k == "_stash") then
           args1[k] = v
         end
@@ -332,12 +343,12 @@ function unstash(args)
   end
 end
 function search(s, pattern, start)
-  local _u134
+  local _u135
   if start then
-    _u134 = start + 1
+    _u135 = start + 1
   end
-  local _u84 = _u134
-  local i = strlib.find(s, pattern, _u84, true)
+  local _u85 = _u135
+  local i = strlib.find(s, pattern, _u85, true)
   return(i and i - 1)
 end
 function split(s, sep)
@@ -461,10 +472,10 @@ function string(x, depth)
             local xs = {}
             local ks = {}
             local d = (depth or 0) + 1
-            local _u111 = x
+            local _u112 = x
             local k = nil
-            for k in next, _u111 do
-              local v = _u111[k]
+            for k in next, _u112 do
+              local v = _u112[k]
               if number63(k) then
                 xs[k] = string(v, d)
               else
@@ -472,10 +483,10 @@ function string(x, depth)
                 add(ks, string(v, d))
               end
             end
-            local _u113 = join(xs, ks)
+            local _u114 = join(xs, ks)
             local _u6 = nil
-            for _u6 in next, _u113 do
-              local v = _u113[_u6]
+            for _u6 in next, _u114 do
+              local v = _u114[_u6]
               s = s .. sp .. v
               sp = " "
             end
@@ -503,13 +514,13 @@ function space(xs)
   end
 end
 function apply(f, args)
-  local _u121 = stash(args)
-  return(f(unpack(_u121)))
+  local _u122 = stash(args)
+  return(f(unpack(_u122)))
 end
-local _u122 = 0
+local _u123 = 0
 function unique()
-  _u122 = _u122 + 1
-  return("_u" .. _u122)
+  _u123 = _u123 + 1
+  return("_u" .. _u123)
 end
 function _37message_handler(msg)
   local i = search(msg, ": ")
@@ -519,22 +530,22 @@ function toplevel63()
   return(one63(environment))
 end
 function setenv(k, ...)
-  local _u126 = unstash({...})
-  local keys = sub(_u126, 0)
+  local _u127 = unstash({...})
+  local keys = sub(_u127, 0)
   if string63(k) then
-    local _u135
+    local _u136
     if keys.toplevel then
-      _u135 = hd(environment)
+      _u136 = hd(environment)
     else
-      _u135 = last(environment)
+      _u136 = last(environment)
     end
-    local frame = _u135
+    local frame = _u136
     local entry = frame[k] or {}
-    local _u128 = keys
-    local _u130 = nil
-    for _u130 in next, _u128 do
-      local v = _u128[_u130]
-      entry[_u130] = v
+    local _u129 = keys
+    local _u131 = nil
+    for _u131 in next, _u129 do
+      local v = _u129[_u131]
+      entry[_u131] = v
     end
     frame[k] = entry
   end
@@ -575,7 +586,7 @@ function symbol63(k)
   return(is63(symbol_expansion(k)))
 end
 function variable63(k)
-  local b = find(function (frame)
+  local b = first(function (frame)
     return(frame[k] or frame._scope)
   end, reverse(environment))
   return(table63(b) and is63(b.variable))

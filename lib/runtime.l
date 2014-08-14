@@ -168,6 +168,13 @@
 (define series (f l)
   (iterate (fn (i) (f (at l i))) (length l)))
 
+(define first (f l)
+  (let (i 0 n (length l))
+    (while (< i n)
+      (let (x (f (at l i)))
+        (if x (return x)))
+      (inc i))))
+
 (define map (f x)
   (let (t () o 0)
     (all (k v) x
