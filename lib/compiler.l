@@ -229,7 +229,9 @@
 (define expand (form)
   (lower (macroexpand form)))
 
+(target js: (set global.require require))
 (target js: (define run eval))
+
 (target lua:
   (define run (code)
     (let (|f,e| (load code))
