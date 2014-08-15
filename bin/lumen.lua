@@ -1866,10 +1866,10 @@ setenv("list", {_stash = true, macro = function (...)
   local l = {}
   local forms = {}
   local id = unique()
-  local _u26 = body
+  local _u25 = body
   local k = nil
-  for k in next, _u26 do
-    local v = _u26[k]
+  for k in next, _u25 do
+    local v = _u25[k]
     if number63(k) then
       l[k] = v
     else
@@ -1887,13 +1887,13 @@ setenv("if", {_stash = true, macro = function (...)
   return(hd(expand_if(branches)))
 end})
 setenv("when", {_stash = true, macro = function (cond, ...)
-  local _u40 = unstash({...})
-  local body = sub(_u40, 0)
+  local _u41 = unstash({...})
+  local body = sub(_u41, 0)
   return({"if", cond, join({"do"}, body)})
 end})
 setenv("unless", {_stash = true, macro = function (cond, ...)
-  local _u48 = unstash({...})
-  local body = sub(_u48, 0)
+  local _u50 = unstash({...})
+  local body = sub(_u50, 0)
   return({"if", {"not", cond}, join({"do"}, body)})
 end})
 setenv("table", {_stash = true, macro = function (...)
@@ -1903,8 +1903,8 @@ setenv("table", {_stash = true, macro = function (...)
   end, body)))
 end})
 setenv("let", {_stash = true, macro = function (bindings, ...)
-  local _u70 = unstash({...})
-  local body = sub(_u70, 0)
+  local _u72 = unstash({...})
+  local body = sub(_u72, 0)
   if length(bindings) < 2 then
     return(join({"do"}, body))
   else
@@ -1912,12 +1912,12 @@ setenv("let", {_stash = true, macro = function (bindings, ...)
     local locals = {}
     local lh = bindings[1]
     local rh = bindings[2]
-    local _u73 = bind(lh, rh)
+    local _u75 = bind(lh, rh)
     local k = nil
-    for k in next, _u73 do
-      local _u75 = _u73[k]
-      local id = _u75[1]
-      local val = _u75[2]
+    for k in next, _u75 do
+      local _u77 = _u75[k]
+      local id = _u77[1]
+      local val = _u77[2]
       if number63(k) then
         if bound63(id) or reserved63(id) or toplevel63() then
           local id1 = unique()
@@ -1934,100 +1934,108 @@ setenv("let", {_stash = true, macro = function (bindings, ...)
   end
 end})
 setenv("define-macro", {_stash = true, macro = function (name, args, ...)
-  local _u85 = unstash({...})
-  local body = sub(_u85, 0)
-  local _u87 = {"setenv", {"quote", name}}
-  _u87.macro = join({"fn", args}, body)
-  local form = _u87
+  local _u88 = unstash({...})
+  local body = sub(_u88, 0)
+  local _u90 = {"setenv", {"quote", name}}
+  _u90.macro = join({"fn", args}, body)
+  local form = _u90
   eval(form)
   return(form)
 end})
 setenv("define-special", {_stash = true, macro = function (name, args, ...)
-  local _u94 = unstash({...})
-  local body = sub(_u94, 0)
-  local _u96 = {"setenv", {"quote", name}}
-  _u96.special = join({"fn", args}, body)
-  local form = join(_u96, keys(body))
+  local _u98 = unstash({...})
+  local body = sub(_u98, 0)
+  local _u100 = {"setenv", {"quote", name}}
+  _u100.special = join({"fn", args}, body)
+  local form = join(_u100, keys(body))
   eval(form)
   return(form)
 end})
 setenv("define-symbol", {_stash = true, macro = function (name, expansion)
   setenv(name, {_stash = true, symbol = expansion})
-  local _u102 = {"setenv", name}
-  _u102.symbol = expansion
-  return(_u102)
+  local _u106 = {"setenv", name}
+  _u106.symbol = expansion
+  return(_u106)
 end})
-setenv("define-reader", {_stash = true, macro = function (_u110, ...)
-  local char = _u110[1]
-  local s = _u110[2]
-  local _u109 = unstash({...})
-  local body = sub(_u109, 0)
+setenv("define-reader", {_stash = true, macro = function (_u115, ...)
+  local char = _u115[1]
+  local s = _u115[2]
+  local _u114 = unstash({...})
+  local body = sub(_u114, 0)
   return({"set", {"get", "read-table", char}, join({"fn", {s}}, body)})
 end})
 setenv("define", {_stash = true, macro = function (name, x, ...)
-  local _u121 = unstash({...})
-  local body = sub(_u121, 0)
+  local _u127 = unstash({...})
+  local body = sub(_u127, 0)
   setenv(name, {_stash = true, toplevel = true, variable = true})
   if some63(body) then
-    local _u123 = bind42(x, body)
-    local args = _u123[1]
-    local _u124 = _u123[2]
-    return(join({"%definition", name, args}, _u124))
+    local _u129 = bind42(x, body)
+    local args = _u129[1]
+    local _u130 = _u129[2]
+    return(join({"%definition", name, args}, _u130))
   else
     return({"set", name, x})
   end
 end})
 setenv("with-frame", {_stash = true, macro = function (...)
-  local _u135 = unstash({...})
-  local body = sub(_u135, 0)
-  local scope = _u135.scope
+  local _u142 = unstash({...})
+  local scope = _u142.scope
+  local body = sub(_u142, 0)
   local x = unique()
-  local _u139 = {"table"}
-  _u139._scope = scope
-  return({"do", {"add", "environment", _u139}, {"let", {x, join({"do"}, body)}, {"drop", "environment"}, x}})
+  local _u146 = {"table"}
+  _u146._scope = scope
+  return({"do", {"add", "environment", _u146}, {"let", {x, join({"do"}, body)}, {"drop", "environment"}, x}})
 end})
-setenv("with-bindings", {_stash = true, macro = function (_u151, ...)
-  local names = _u151[1]
-  local _u150 = unstash({...})
-  local body = sub(_u150, 0)
+setenv("with-bindings", {_stash = true, macro = function (_u159, ...)
+  local names = _u159[1]
+  local _u158 = unstash({...})
+  local body = sub(_u158, 0)
   local x = unique()
-  local _u156 = {"setenv", x}
-  _u156.variable = true
-  local _u153 = {"with-frame", {"all", {"_u1", x}, names, _u156}}
-  _u153.scope = true
-  return(join(_u153, body))
+  local _u164 = {"setenv", x}
+  _u164.variable = true
+  local _u161 = {"with-frame", {"all", {"_u1", x}, names, _u164}}
+  _u161.scope = true
+  return(join(_u161, body))
+end})
+setenv("let-fn", {_stash = true, macro = function (_u172, ...)
+  local name = _u172[1]
+  local args = _u172[2]
+  local fn_body = sub(_u172, 2)
+  local _u171 = unstash({...})
+  local body = sub(_u171, 0)
+  return(join({"let", {name, join({"fn", args}, fn_body)}}, body))
 end})
 setenv("let-macro", {_stash = true, macro = function (definitions, ...)
-  local _u162 = unstash({...})
-  local body = sub(_u162, 0)
+  local _u183 = unstash({...})
+  local body = sub(_u183, 0)
   add(environment, {})
   map(function (m)
     return(macroexpand(join({"define-macro"}, m)))
   end, definitions)
-  local _u164 = join({"do"}, macroexpand(body))
+  local _u185 = join({"do"}, macroexpand(body))
   drop(environment)
-  return(_u164)
+  return(_u185)
 end})
 setenv("let-symbol", {_stash = true, macro = function (expansions, ...)
-  local _u174 = unstash({...})
-  local body = sub(_u174, 0)
+  local _u196 = unstash({...})
+  local body = sub(_u196, 0)
   add(environment, {})
-  map(function (_u178)
-    local name = _u178[1]
-    local exp = _u178[2]
+  map(function (_u200)
+    local name = _u200[1]
+    local exp = _u200[2]
     return(macroexpand({"define-symbol", name, exp}))
   end, pair(expansions))
-  local _u176 = join({"do"}, macroexpand(body))
+  local _u198 = join({"do"}, macroexpand(body))
   drop(environment)
-  return(_u176)
+  return(_u198)
 end})
 setenv("fn", {_stash = true, macro = function (args, ...)
-  local _u186 = unstash({...})
-  local body = sub(_u186, 0)
-  local _u188 = bind42(args, body)
-  local _u189 = _u188[1]
-  local _u190 = _u188[2]
-  return(join({"%function", _u189}, _u190))
+  local _u209 = unstash({...})
+  local body = sub(_u209, 0)
+  local _u211 = bind42(args, body)
+  local _u212 = _u211[1]
+  local _u213 = _u211[2]
+  return(join({"%function", _u212}, _u213))
 end})
 setenv("guard", {_stash = true, macro = function (expr)
   if target == "js" then
@@ -2039,28 +2047,28 @@ setenv("guard", {_stash = true, macro = function (expr)
     return({"let", {ex, {"xpcall", {"fn", {}, expr}, "%message-handler"}}, {"list", e, x}})
   end
 end})
-setenv("all", {_stash = true, macro = function (_u228, t, ...)
-  local k = _u228[1]
-  local v = _u228[2]
-  local _u227 = unstash({...})
-  local body = sub(_u227, 0)
+setenv("all", {_stash = true, macro = function (_u252, t, ...)
+  local k = _u252[1]
+  local v = _u252[2]
+  local _u251 = unstash({...})
+  local body = sub(_u251, 0)
   local x = unique()
   local n = unique()
-  local _u302
+  local _u330
   if target == "lua" then
-    _u302 = body
+    _u330 = body
   else
-    _u302 = {join({"let", {n, {"parseInt", k}, k, {"if", {"isNaN", n}, k, n}}}, body)}
+    _u330 = {join({"let", {n, {"parseInt", k}, k, {"if", {"isNaN", n}, k, n}}}, body)}
   end
-  return({"let", {x, t, k, "nil"}, {"%for", x, k, join({"let", {v, {"get", x, k}}}, _u302)}})
+  return({"let", {x, t, k, "nil"}, {"%for", x, k, join({"let", {v, {"get", x, k}}}, _u330)}})
 end})
 setenv("set-of", {_stash = true, macro = function (...)
   local xs = unstash({...})
   local l = {}
-  local _u248 = xs
+  local _u271 = xs
   local _u2 = nil
-  for _u2 in next, _u248 do
-    local x = _u248[_u2]
+  for _u2 in next, _u271 do
+    local x = _u271[_u2]
     l[x] = true
   end
   return(join({"table"}, l))
@@ -2079,13 +2087,13 @@ setenv("join*", {_stash = true, macro = function (...)
   end, xs))
 end})
 setenv("join!", {_stash = true, macro = function (a, ...)
-  local _u264 = unstash({...})
-  local bs = sub(_u264, 0)
+  local _u290 = unstash({...})
+  local bs = sub(_u290, 0)
   return({"set", a, join({"join*", a}, bs)})
 end})
 setenv("cat!", {_stash = true, macro = function (a, ...)
-  local _u271 = unstash({...})
-  local bs = sub(_u271, 0)
+  local _u298 = unstash({...})
+  local bs = sub(_u298, 0)
   return({"set", a, join({"cat", a}, bs)})
 end})
 setenv("inc", {_stash = true, macro = function (n, by)
