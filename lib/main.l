@@ -6,7 +6,7 @@
 
 (define repl ()
   (write "> ")
-  (let (rep1 (fn (s) (rep s) (write "> ")))
+  (let-fn (rep1 (s) (rep s) (write "> "))
     (target
       js: (do (process.stdin.setEncoding 'utf8)
               (process.stdin.on 'data rep1))
