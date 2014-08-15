@@ -59,7 +59,7 @@
     (cat (apply special args) tr)))
 
 (define parenthesize-call? (x)
-  (or (hd= x '%function)
+  (or (and (list? x) (= (hd x) '%function))
       (> (precedence x) 0)))
 
 (define compile-call (form)

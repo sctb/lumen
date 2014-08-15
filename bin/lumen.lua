@@ -45,9 +45,6 @@ end
 function list63(x)
   return(composite63(x) and is63(hd(x)))
 end
-function hd61(l, x)
-  return(list63(l) and hd(l) == x)
-end
 strlib = string
 function substring(s, from, upto)
   return(strlib.sub(s, from + 1, upto))
@@ -72,16 +69,16 @@ function sub(x, from, upto)
     else
       _u127 = upto
     end
-    local _u25 = _u127
-    while i < _u25 do
+    local _u24 = _u127
+    while i < _u24 do
       l[j + 1] = x[i + 1]
       i = i + 1
       j = j + 1
     end
-    local _u26 = x
+    local _u25 = x
     local k = nil
-    for k in next, _u26 do
-      local v = _u26[k]
+    for k in next, _u25 do
+      local v = _u25[k]
       if not number63(k) then
         l[k] = v
       end
@@ -91,10 +88,10 @@ function sub(x, from, upto)
 end
 function keys(x)
   local t = {}
-  local _u29 = x
+  local _u28 = x
   local k = nil
-  for k in next, _u29 do
-    local v = _u29[k]
+  for k in next, _u28 do
+    local v = _u28[k]
     if not number63(k) then
       t[k] = v
     end
@@ -148,16 +145,16 @@ function join(a, b)
   if a and b then
     local c = {}
     local o = length(a)
-    local _u43 = a
+    local _u42 = a
     local k = nil
-    for k in next, _u43 do
-      local v = _u43[k]
+    for k in next, _u42 do
+      local v = _u42[k]
       c[k] = v
     end
-    local _u45 = b
+    local _u44 = b
     local k = nil
-    for k in next, _u45 do
-      local v = _u45[k]
+    for k in next, _u44 do
+      local v = _u44[k]
       if number63(k) then
         k = k + o
       end
@@ -189,10 +186,10 @@ end
 function keep(f, x)
   local t = {}
   local o = 0
-  local _u50 = x
+  local _u49 = x
   local k = nil
-  for k in next, _u50 do
-    local v = _u50[k]
+  for k in next, _u49 do
+    local v = _u49[k]
     if f(v) then
       t[shift(k, o)] = v
     else
@@ -202,13 +199,13 @@ function keep(f, x)
   return(t)
 end
 function find(f, t)
-  local _u53 = t
+  local _u52 = t
   local _u1 = nil
-  for _u1 in next, _u53 do
-    local x = _u53[_u1]
-    local _u55 = f(x)
-    if _u55 then
-      return(_u55)
+  for _u1 in next, _u52 do
+    local x = _u52[_u1]
+    local _u54 = f(x)
+    if _u54 then
+      return(_u54)
     end
   end
 end
@@ -263,10 +260,10 @@ end
 function map(f, x)
   local t = {}
   local o = 0
-  local _u68 = x
+  local _u67 = x
   local k = nil
-  for k in next, _u68 do
-    local v = _u68[k]
+  for k in next, _u67 do
+    local v = _u67[k]
     local y = f(v)
     if is63(y) then
       t[shift(k, o)] = y
@@ -278,10 +275,10 @@ function map(f, x)
 end
 function keys63(t)
   local b = false
-  local _u71 = t
+  local _u70 = t
   local k = nil
-  for k in next, _u71 do
-    local _u2 = _u71[k]
+  for k in next, _u70 do
+    local _u2 = _u70[k]
     if not number63(k) then
       b = true
       break
@@ -291,10 +288,10 @@ function keys63(t)
 end
 function empty63(t)
   local b = true
-  local _u74 = t
+  local _u73 = t
   local _u3 = nil
-  for _u3 in next, _u74 do
-    local _u4 = _u74[_u3]
+  for _u3 in next, _u73 do
+    local _u4 = _u73[_u3]
     b = false
     break
   end
@@ -303,10 +300,10 @@ end
 function stash(args)
   if keys63(args) then
     local p = {}
-    local _u77 = args
+    local _u76 = args
     local k = nil
-    for k in next, _u77 do
-      local v = _u77[k]
+    for k in next, _u76 do
+      local v = _u76[k]
       if not number63(k) then
         p[k] = v
       end
@@ -323,10 +320,10 @@ function unstash(args)
     local l = last(args)
     if table63(l) and l._stash then
       local args1 = butlast(args)
-      local _u80 = l
+      local _u79 = l
       local k = nil
-      for k in next, _u80 do
-        local v = _u80[k]
+      for k in next, _u79 do
+        local v = _u79[k]
         if not (k == "_stash") then
           args1[k] = v
         end
@@ -342,8 +339,8 @@ function search(s, pattern, start)
   if start then
     _u129 = start + 1
   end
-  local _u83 = _u129
-  local i = strlib.find(s, pattern, _u83, true)
+  local _u82 = _u129
+  local i = strlib.find(s, pattern, _u82, true)
   return(i and i - 1)
 end
 function split(s, sep)
@@ -453,10 +450,10 @@ function string(x, depth)
             local xs = {}
             local ks = {}
             local d = (depth or 0) + 1
-            local _u106 = x
+            local _u105 = x
             local k = nil
-            for k in next, _u106 do
-              local v = _u106[k]
+            for k in next, _u105 do
+              local v = _u105[k]
               if number63(k) then
                 xs[k] = string(v, d)
               else
@@ -464,10 +461,10 @@ function string(x, depth)
                 add(ks, string(v, d))
               end
             end
-            local _u108 = join(xs, ks)
+            local _u107 = join(xs, ks)
             local _u5 = nil
-            for _u5 in next, _u108 do
-              local v = _u108[_u5]
+            for _u5 in next, _u107 do
+              local v = _u107[_u5]
               s = s .. sp .. v
               sp = " "
             end
@@ -478,9 +475,12 @@ function string(x, depth)
     end
   end
 end
+function produces_string63(x)
+  return(string_literal63(x) or list63(x) and (hd(x) == "cat" or hd(x) == "string"))
+end
 function space(xs)
   local string = function (x)
-    if string_literal63(x) or hd61(x, "cat") then
+    if produces_string63(x) then
       return(x)
     else
       return({"string", x})
@@ -1309,7 +1309,7 @@ function compile_special(form, stmt63)
   return(apply(special, args) .. tr)
 end
 function parenthesize_call63(x)
-  return(hd61(x, "%function") or precedence(x) > 0)
+  return(list63(x) and hd(x) == "%function" or precedence(x) > 0)
 end
 function compile_call(form)
   local f = hd(form)

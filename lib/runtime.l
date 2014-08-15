@@ -34,9 +34,6 @@
 (define table? (x) (and (composite? x) (nil? (hd x))))
 (define list? (x) (and (composite? x) (is? (hd x))))
 
-(define hd= (l x)
-  (and (list? l) (= (hd l) x)))
-
 (target lua: (define strlib string))
 
 (define substring (s from upto)
@@ -305,11 +302,14 @@
         (set sp " "))
       (cat s  ")"))))
 
+(define produces-string? (x)
+  (or (string-literal? x)
+      (and (list? x)
+           (or (= (hd x) 'cat)
+               (= (hd x) 'string)))))
+
 (define space (xs)
-  (let (string (fn (x)
-                 (if (or (string-literal? x) (hd= x 'cat))
-                     x
-                   `(string ,x))))
+  (let (string (fn (x) (if (produces-string? x) x `(string ,x))))
     (if (one? xs) (string (hd xs))
       (reduce (fn (a b)
                 `(cat ,(string a) " " ,(string b)))
