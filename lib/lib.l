@@ -92,7 +92,7 @@
         (let (x (if (= k 'rest)
                     `(cut ,rh ,(length lh))
                   `(get ,rh ',(bias k))))
-          (let (k (if (= v true) k v))
+          (let (k (if (= v #t) k v))
             (join! bs (bind k x)))))
       bs)))
 
@@ -230,13 +230,13 @@
 
 (define valid-id? (id)
   (if (or (none? id) (reserved? id))
-      false
+      #f
     (let (i 0)
       (while (< i (length id))
         (unless (valid-code? (code id i))
-          (return false))
+          (return #f))
         (inc i))
-      true)))
+      #t)))
 
 (define id (id)
   (let (id1 "" i 0)

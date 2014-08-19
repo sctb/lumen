@@ -133,7 +133,7 @@
 (define-macro set-of xs
   (let (l ())
     (all (_ x) xs
-      (set (get l x) true))
+      (set (get l x) #t))
     `(table ,@l)))
 
 (define-macro language () `',target)

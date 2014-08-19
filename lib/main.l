@@ -10,7 +10,7 @@
     (target
       js: (do (process.stdin.setEncoding 'utf8)
               (process.stdin.on 'data rep1))
-      lua: (while true
+      lua: (while #t
              (let (s (io.read))
                (if s (rep1 s) (break)))))))
 

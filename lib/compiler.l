@@ -22,7 +22,7 @@
 (define getop (op)
   (find (fn (level)
           (let (x (get level op))
-            (if (= x true) op
+            (if (= x #t) op
                 (is? x) (get x target))))
         infix))
 
@@ -118,7 +118,7 @@
 
 (define lower-statement (form tail?)
   (let (hoist ()
-        e (lower form hoist true tail?))
+        e (lower form hoist #t tail?))
     (if (and (some? hoist) (is? e))
         `(do ,@hoist ,e)
         (is? e) e
@@ -183,11 +183,11 @@
 
 (define lower-function (args)
   (let ((a rest: body) args)
-    `(%function ,a ,(lower-body body true))))
+    `(%function ,a ,(lower-body body #t))))
 
 (define lower-definition (kind args hoist)
   (let ((name args rest: body) args)
-    (add hoist `(,kind ,name ,args ,(lower-body body true)))))
+    (add hoist `(,kind ,name ,args ,(lower-body body #t)))))
 
 (define lower-call (form hoist)
   (let (form (map (fn (x) (lower x hoist)) form))

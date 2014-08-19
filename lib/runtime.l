@@ -187,17 +187,17 @@
     t))
 
 (define keys? (t)
-  (let (b false)
+  (let (b #f)
     (all (k _) t
       (unless (number? k)
-        (set b true)
+        (set b #t)
         (break)))
     b))
 
 (define empty? (t)
-  (let (b true)
+  (let (b #t)
     (all (_ _) t
-      (set b false)
+      (set b #f)
       (break))
     b))
 
@@ -207,7 +207,7 @@
       (all (k v) args
         (unless (number? k)
           (set (get p k) v)))
-      (set (get p '_stash) true)
+      (set (get p '_stash) #t)
       (add args p)))
   args)
 
@@ -227,13 +227,13 @@
     js: (let (i (s.indexOf pattern start))
           (if (>= i 0) i))
     lua: (let (start (if start (+ start 1))
-               i (strlib.find s pattern start true))
+               i (strlib.find s pattern start #t))
            (and i (- i 1)))))
 
 (define split (s sep)
   (if (or (= s "") (= sep "")) ()
     (let (l ())
-      (while true
+      (while #t
         (let (i (search s sep))
           (if (nil? i) (break)
             (do (add l (snip s 0 i))
@@ -295,7 +295,7 @@
       (nan? x) "#nan"
       (= x #+inf) "#+inf"
       (= x #-inf) "#-inf"
-      (boolean? x) (if x "true" "false")
+      (boolean? x) (if x "#t" "#f")
       (function? x) "#<function>"
       (atom? x) (cat x "")
     (let (s "(" sp ""

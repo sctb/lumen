@@ -14,7 +14,7 @@
     (if c (do (inc s.pos) c))))
 
 (define skip-non-code (s)
-  (while true
+  (while #t
     (let (c (peek-char s))
       (if (nil? c) (break)
           (get whitespace c) (read-char s)
@@ -38,7 +38,7 @@
 
 (define read-all (s)
   (let (l ())
-    (while true
+    (while #t
       (let (form (read s))
         (if (= form eof) (break))
         (add l form)))
@@ -59,19 +59,19 @@
        (= (char atom 0) ":")))
 
 (define-reader ("" s) ; atom
-  (let (str "" dot? false)
-    (while true
+  (let (str "" dot? #f)
+    (while #t
       (let (c (peek-char s))
 	(if (and c (and (not (get whitespace c))
 			(not (get delimiters c))))
-	    (do (if (= c ".") (set dot? true))
+	    (do (if (= c ".") (set dot? #t))
                 (cat! str c)
 		(read-char s))
 	  (break))))
     (let (n (number str))
       (if (is? n) n
-	  (= str "true") true
-	  (= str "false") false
+	  (= str "true") #t
+	  (= str "false") #f
           (= str "_") (unique)
           (and dot? (not (one? str)))
           (reduce (fn (a b)
@@ -82,7 +82,7 @@
 (define-reader ("(" s)
   (read-char s)
   (let (l ())
-    (while true
+    (while #t
       (skip-non-code s)
       (let (c (peek-char s))
 	(if (and c (not (= c ")")))
@@ -91,7 +91,7 @@
 		  (let (k (snip x 0 (edge x))
                         v (read s))
 		    (set (get l k) v))
-                  (flag? x) (set (get l (snip x 1)) true)
+                  (flag? x) (set (get l (snip x 1)) #t)
 		(add l x)))
 	    c (do (read-char s) (break)) ; )
 	  (error (cat "Expected ) at " s.pos)))))
@@ -103,7 +103,7 @@
 (define-reader ("\"" s)
   (read-char s)
   (let (str "\"")
-    (while true
+    (while #t
       (let (c (peek-char s))
 	(if (and c (not (= c "\"")))
 	    (do (if (= c "\\") (cat! str (read-char s)))
@@ -115,7 +115,7 @@
 (define-reader ("|" s)
   (read-char s)
   (let (str "|")
-    (while true
+    (while #t
       (let (c (peek-char s))
 	(if (and c (not (= c "|")))
 	    (cat! str (read-char s))
