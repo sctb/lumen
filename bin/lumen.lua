@@ -52,7 +52,7 @@ function inf63(n)
   return(n == 1 / 0 or n == -(1 / 0))
 end
 strlib = string
-function snip(s, from, upto)
+function clip(s, from, upto)
   return(strlib.sub(s, from + 1, upto))
 end
 function cut(x, from, upto)
@@ -104,13 +104,13 @@ function edge(x)
   return(length(x) - 1)
 end
 function inner(x)
-  return(snip(x, 1, edge(x)))
+  return(clip(x, 1, edge(x)))
 end
 function tl(l)
   return(cut(l, 1))
 end
 function char(s, n)
-  return(snip(s, n, n + 1))
+  return(clip(s, n, n + 1))
 end
 function code(s, n)
   local _u131
@@ -358,8 +358,8 @@ function split(s, sep)
       if nil63(i) then
         break
       else
-        add(l, snip(s, 0, i))
-        s = snip(s, i + 1)
+        add(l, clip(s, 0, i))
+        s = clip(s, i + 1)
       end
     end
     add(l, s)
@@ -522,7 +522,7 @@ function unique()
 end
 function _37message_handler(msg)
   local i = search(msg, ": ")
-  return(snip(msg, i + 2))
+  return(clip(msg, i + 2))
 end
 function toplevel63()
   return(one63(environment))
@@ -1111,12 +1111,12 @@ read_table["("] = function (s)
     if c and not (c == ")") then
       local x = read(s)
       if key63(x) then
-        local k = snip(x, 0, edge(x))
+        local k = clip(x, 0, edge(x))
         local v = read(s)
         l[k] = v
       else
         if flag63(x) then
-          l[snip(x, 1)] = true
+          l[clip(x, 1)] = true
         else
           add(l, x)
         end

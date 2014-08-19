@@ -42,7 +42,7 @@
 
 (target lua: (define strlib string))
 
-(define snip (s from upto)
+(define clip (s from upto)
   (target js: (s.substring from upto)
           lua: (strlib.sub s (+ from 1) upto)))
 
@@ -71,12 +71,12 @@
   (- (length x) 1))
 
 (define inner (x)
-  (snip x 1 (edge x)))
+  (clip x 1 (edge x)))
 
 (define tl (l) (cut l 1))
 
 (define char (s n)
-  (target js: (s.charAt n) lua: (snip s n (+ n 1))))
+  (target js: (s.charAt n) lua: (clip s n (+ n 1))))
 
 (define code (s n)
   (target
@@ -236,8 +236,8 @@
       (while #t
         (let (i (search s sep))
           (if (nil? i) (break)
-            (do (add l (snip s 0 i))
-                (set s (snip s (+ i 1)))))))
+            (do (add l (clip s 0 i))
+                (set s (clip s (+ i 1)))))))
       (add l s)
       l)))
 
@@ -335,7 +335,7 @@
 
 (define %message-handler (msg)
   (let (i (search msg ": "))
-    (snip msg (+ i 2))))
+    (clip msg (+ i 2))))
 
 (define toplevel? ()
   (one? environment))

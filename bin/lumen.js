@@ -54,7 +54,7 @@ nan63 = function (n) {
 inf63 = function (n) {
   return(n === 1 / 0 || n === -(1 / 0));
 };
-snip = function (s, from, upto) {
+clip = function (s, from, upto) {
   return(s.substring(from, upto));
 };
 cut = function (x, from, upto) {
@@ -122,7 +122,7 @@ edge = function (x) {
   return(length(x) - 1);
 };
 inner = function (x) {
-  return(snip(x, 1, edge(x)));
+  return(clip(x, 1, edge(x)));
 };
 tl = function (l) {
   return(cut(l, 1));
@@ -451,8 +451,8 @@ split = function (s, sep) {
       if (nil63(i)) {
         break;
       } else {
-        add(l, snip(s, 0, i));
-        s = snip(s, i + 1);
+        add(l, clip(s, 0, i));
+        s = clip(s, i + 1);
       }
     }
     add(l, s);
@@ -642,7 +642,7 @@ unique = function () {
 };
 _37message_handler = function (msg) {
   var i = search(msg, ": ");
-  return(snip(msg, i + 2));
+  return(clip(msg, i + 2));
 };
 toplevel63 = function () {
   return(one63(environment));
@@ -1295,12 +1295,12 @@ read_table["("] = function (s) {
     if (c && !(c === ")")) {
       var x = read(s);
       if (key63(x)) {
-        var k = snip(x, 0, edge(x));
+        var k = clip(x, 0, edge(x));
         var v = read(s);
         l[k] = v;
       } else {
         if (flag63(x)) {
-          l[snip(x, 1)] = true;
+          l[clip(x, 1)] = true;
         } else {
           add(l, x);
         }
