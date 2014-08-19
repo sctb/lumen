@@ -23,4 +23,4 @@
   (target js: (process.exit code) lua: (os.exit code)))
 
 (define argv ()
-  (target js: (sub process.argv 2) lua: arg))
+  (target js: (cut process.argv 2) lua: arg))

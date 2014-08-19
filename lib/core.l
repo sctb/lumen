@@ -50,7 +50,7 @@
           (add locals `(%local ,id ,val))))
       `(do ,@locals
            (let-symbol ,renames
-             (let ,(sub bindings 2) ,@body))))))
+             (let ,(cut bindings 2) ,@body))))))
 
 (define-macro define-macro (name args rest: body)
   (let (form `(setenv ',name macro: (fn ,args ,@body)))

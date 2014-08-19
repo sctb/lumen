@@ -90,7 +90,7 @@
     (let (bs ())
       (all (k v) lh
         (let (x (if (= k 'rest)
-                    `(sub ,rh ,(length lh))
+                    `(cut ,rh ,(length lh))
                   `(get ,rh ',(bias k))))
           (let (k (if (= v true) k v))
             (join! bs (bind k x)))))

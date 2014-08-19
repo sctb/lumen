@@ -36,25 +36,23 @@
 
 (target lua: (define strlib string))
 
-(define substring (s from upto)
+(define snip (s from upto)
   (target js: (s.substring from upto)
           lua: (strlib.sub s (+ from 1) upto)))
 
-(define sub (x from upto)
-  (if (string? x)
-      (substring x (or from 0) upto)
-    (let (l () j 0
-          i (if (or (nil? from) (< from 0)) 0 from)
-          n (length x)
-          upto (if (or (nil? upto) (> upto n)) n upto))
-      (while (< i upto)
-        (set (at l j) (at x i))
-        (inc i)
-        (inc j))
-      (all (k v) x
-        (unless (number? k)
-          (set (get l k) v)))
-      l)))
+(define cut (x from upto)
+  (let (l () j 0
+        i (if (or (nil? from) (< from 0)) 0 from)
+        n (length x)
+        upto (if (or (nil? upto) (> upto n)) n upto))
+    (while (< i upto)
+      (set (at l j) (at x i))
+      (inc i)
+      (inc j))
+    (all (k v) x
+      (unless (number? k)
+        (set (get l k) v)))
+    l))
 
 (define keys (x)
   (let (t ())
@@ -64,12 +62,12 @@
     t))
 
 (define inner (x)
-  (sub x 1 (- (length x) 1)))
+  (snip x 1 (- (length x) 1)))
 
-(define tl (l) (sub l 1))
+(define tl (l) (cut l 1))
 
 (define char (s n)
-  (target js: (s.charAt n) lua: (sub s n (+ n 1))))
+  (target js: (s.charAt n) lua: (snip s n (+ n 1))))
 
 (define code (s n)
   (target
@@ -92,7 +90,7 @@
   (at l (- (length l) 1)))
 
 (define butlast (l)
-  (sub l 0 (- (length l) 1)))
+  (cut l 0 (- (length l) 1)))
 
 (define reverse (l)
   (let (l1 (keys l)
@@ -230,8 +228,8 @@
       (while true
         (let (i (search s sep))
           (if (nil? i) (break)
-            (do (add l (sub s 0 i))
-                (set s (sub s (+ i 1)))))))
+            (do (add l (snip s 0 i))
+                (set s (snip s (+ i 1)))))))
       (add l s)
       l)))
 
@@ -326,7 +324,7 @@
 
 (define %message-handler (msg)
   (let (i (search msg ": "))
-    (sub msg (+ i 2))))
+    (snip msg (+ i 2))))
 
 (define toplevel? ()
   (one? environment))
