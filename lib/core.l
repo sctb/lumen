@@ -64,7 +64,7 @@
 
 (define-macro define-symbol (name expansion)
   (setenv name symbol: expansion)
-  `(setenv ,name symbol: ,expansion))
+  `(setenv ',name symbol: ',expansion))
 
 (define-macro define-reader ((char s) rest: body)
   `(set (get read-table ,char) (fn (,s) ,@body)))
@@ -165,3 +165,10 @@
          (let (,result ,form)
            (dec indent-level)
            ,result))))
+
+(define-symbol #t true)
+(define-symbol #f false)
+
+(define-symbol #nan (/ 0 0))
+(define-symbol #+inf (/ 1 0))
+(define-symbol #-inf (- (/ 1 0)))

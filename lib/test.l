@@ -528,6 +528,15 @@
       (test= 42 d))
     (test= 40 d)))
 
+(define-test symbols ()
+  (test= true #t)
+  (test= false #f)
+  (test= true (< #-inf -1e10))
+  (test= false (< #+inf -1e10))
+  (test= false (= #nan #nan))
+  (test= true (nan? #nan))
+  (test= true (nan? (* #nan 20))))
+
 (define-test add ()
   (let (l ())
     (add l 'a)

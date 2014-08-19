@@ -34,6 +34,12 @@
 (define table? (x) (and (composite? x) (nil? (hd x))))
 (define list? (x) (and (composite? x) (is? (hd x))))
 
+(define nan? (n)
+  (not (= n n)))
+
+(define inf? (n)
+  (or (= n #+inf) (= n #-inf)))
+
 (target lua: (define strlib string))
 
 (define snip (s from upto)
@@ -286,6 +292,9 @@
 (define string (x depth)
   (if (and depth (> depth 5)) "#<circular>"
       (nil? x) "nil"
+      (nan? x) "#nan"
+      (= x #+inf) "#+inf"
+      (= x #-inf) "#-inf"
       (boolean? x) (if x "true" "false")
       (function? x) "#<function>"
       (atom? x) (cat x "")
