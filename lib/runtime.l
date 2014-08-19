@@ -61,8 +61,11 @@
         (set (get t k) v)))
     t))
 
+(define edge (x)
+  (- (length x) 1))
+
 (define inner (x)
-  (snip x 1 (- (length x) 1)))
+  (snip x 1 (edge x)))
 
 (define tl (l) (cut l 1))
 
@@ -87,14 +90,13 @@
   (target js: (l.pop) lua: (table.remove l)))
 
 (define last (l)
-  (at l (- (length l) 1)))
+  (at l (edge l)))
 
 (define butlast (l)
-  (cut l 0 (- (length l) 1)))
+  (cut l 0 (edge l)))
 
 (define reverse (l)
-  (let (l1 (keys l)
-        i (- (length l) 1))
+  (let (l1 (keys l) i (edge l))
     (while (>= i 0)
       (add l1 (at l i))
       (dec i))

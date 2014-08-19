@@ -51,7 +51,7 @@
 (define key? (atom)
   (and (string? atom)
        (> (length atom) 1)
-       (= (char atom (- (length atom) 1)) ":")))
+       (= (char atom (edge atom)) ":")))
 
 (define flag? (atom)
   (and (string? atom)
@@ -88,7 +88,7 @@
 	(if (and c (not (= c ")")))
 	    (let (x (read s))
 	      (if (key? x)
-		  (let (k (snip x 0 (- (length x) 1))
+		  (let (k (snip x 0 (edge x))
                         v (read s))
 		    (set (get l k) v))
                   (flag? x) (set (get l (snip x 1)) true)
