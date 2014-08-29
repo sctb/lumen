@@ -22,12 +22,11 @@
   `(add tests (list ',name (fn () ,@body))))
 
 (define run-tests ()
-  (pr (cat (language) ":"))
   (all (_ (name f)) tests
     (let (result (f))
       (when (string? result)
-        (pr "  " name result))))
-  (pr "  " passed "passed," failed "failed"))
+        (pr " " name result))))
+  (pr " " passed "passed," failed "failed"))
 
 (define-test reader ()
   (test= nil (read-from-string ""))

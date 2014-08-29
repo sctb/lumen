@@ -42,5 +42,7 @@ obj/%.lua : lib/%.l
 TESTOBJS := obj/math.o obj/test.o
 
 test: all $(TESTOBJS:.o=.js) $(TESTOBJS:.o=.lua)
+	@echo js:
 	@LUMEN_HOST=$(LUMEN_NODE) bin/lumen $(TESTOBJS:.o=.js) -e '(run-tests)'
+	@echo lua:
 	@LUMEN_HOST=$(LUMEN_LUA) bin/lumen $(TESTOBJS:.o=.lua) -e '(run-tests)'
