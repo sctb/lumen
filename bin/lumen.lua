@@ -1071,8 +1071,7 @@ read_table[""] = function (s)
       if c == "." then
         dot63 = true
       end
-      str = str .. c
-      read_char(s)
+      str = str .. read_char(s)
     else
       break
     end

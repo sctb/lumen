@@ -65,8 +65,7 @@
 	(if (and c (and (not (get whitespace c))
 			(not (get delimiters c))))
 	    (do (if (= c ".") (set dot? #t))
-                (cat! str c)
-		(read-char s))
+                (cat! str (read-char s)))
 	  (break))))
     (let (n (number str))
       (if (is? n) n

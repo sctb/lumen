@@ -1255,8 +1255,7 @@ read_table[""] = function (s) {
       if (c === ".") {
         dot63 = true;
       }
-      str = str + c;
-      read_char(s);
+      str = str + read_char(s);
     } else {
       break;
     }
