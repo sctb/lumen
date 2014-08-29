@@ -49,7 +49,7 @@
 	      (not (= "-" (char a 0)))
               (add load a))
           (inc i)))
-      (series load-file load)
+      (series run-file load)
       (if (and input output)
           (do (if target1 (set target target1))
               (compile-file input output))

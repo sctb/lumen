@@ -1193,40 +1193,40 @@ read_table[","] = function (s)
 end
 local _u3 = {}
 local _u4 = {}
-_u4.lua = "not "
 _u4.js = "!"
+_u4.lua = "not "
 _u3["not"] = _u4
 local _u6 = {}
-_u6["/"] = true
 _u6["*"] = true
+_u6["/"] = true
 _u6["%"] = true
 local _u8 = {}
 _u8["+"] = true
 _u8["-"] = true
 local _u10 = {}
 local _u11 = {}
-_u11.lua = ".."
 _u11.js = "+"
+_u11.lua = ".."
 _u10.cat = _u11
 local _u13 = {}
-_u13["<="] = true
-_u13[">="] = true
 _u13["<"] = true
 _u13[">"] = true
+_u13["<="] = true
+_u13[">="] = true
 local _u15 = {}
 local _u16 = {}
-_u16.lua = "=="
 _u16.js = "==="
+_u16.lua = "=="
 _u15["="] = _u16
 local _u18 = {}
 local _u19 = {}
-_u19.lua = "and"
 _u19.js = "&&"
+_u19.lua = "and"
 _u18["and"] = _u19
 local _u21 = {}
 local _u22 = {}
-_u22.lua = "or"
 _u22.js = "||"
+_u22.lua = "or"
 _u21["or"] = _u22
 infix = {_u3, _u6, _u8, _u10, _u13, _u15, _u18, _u21}
 function unary63(form)
@@ -1335,9 +1335,9 @@ function compile_special(form, stmt63)
   local x = form[1]
   local args = cut(form, 1)
   local _u37 = getenv(x)
-  local self_tr63 = _u37.tr
-  local stmt = _u37.stmt
   local special = _u37.special
+  local stmt = _u37.stmt
+  local self_tr63 = _u37.tr
   local tr = terminator(stmt63 and not self_tr63)
   return(apply(special, args) .. tr)
 end
@@ -1654,7 +1654,7 @@ function eval(form)
   run(code)
   return(_37result)
 end
-function load_file(path)
+function run_file(path)
   return(run(read_file(path)))
 end
 function compile_file(input, output)
@@ -2226,7 +2226,7 @@ function main()
     end
     i = i + 1
   end
-  series(load_file, load)
+  series(run_file, load)
   if input and output then
     if target1 then
       target = target1

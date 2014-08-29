@@ -255,7 +255,7 @@
       (run code)
       %result)))
 
-(define load-file (path)
+(define run-file (path)
   (run (read-file path)))
 
 (define compile-file (input output)

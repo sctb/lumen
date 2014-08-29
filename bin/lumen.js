@@ -1377,40 +1377,40 @@ read_table[","] = function (s) {
 };
 var _u3 = [];
 var _u4 = [];
-_u4.lua = "not ";
 _u4.js = "!";
+_u4.lua = "not ";
 _u3["not"] = _u4;
 var _u6 = [];
-_u6["/"] = true;
 _u6["*"] = true;
+_u6["/"] = true;
 _u6["%"] = true;
 var _u8 = [];
 _u8["+"] = true;
 _u8["-"] = true;
 var _u10 = [];
 var _u11 = [];
-_u11.lua = "..";
 _u11.js = "+";
+_u11.lua = "..";
 _u10.cat = _u11;
 var _u13 = [];
-_u13["<="] = true;
-_u13[">="] = true;
 _u13["<"] = true;
 _u13[">"] = true;
+_u13["<="] = true;
+_u13[">="] = true;
 var _u15 = [];
 var _u16 = [];
-_u16.lua = "==";
 _u16.js = "===";
+_u16.lua = "==";
 _u15["="] = _u16;
 var _u18 = [];
 var _u19 = [];
-_u19.lua = "and";
 _u19.js = "&&";
+_u19.lua = "and";
 _u18["and"] = _u19;
 var _u21 = [];
 var _u22 = [];
-_u22.lua = "or";
 _u22.js = "||";
+_u22.lua = "or";
 _u21["or"] = _u22;
 infix = [_u3, _u6, _u8, _u10, _u13, _u15, _u18, _u21];
 unary63 = function (form) {
@@ -1527,9 +1527,9 @@ compile_special = function (form, stmt63) {
   var x = form[0];
   var args = cut(form, 1);
   var _u38 = getenv(x);
-  var self_tr63 = _u38.tr;
-  var stmt = _u38.stmt;
   var special = _u38.special;
+  var stmt = _u38.stmt;
+  var self_tr63 = _u38.tr;
   var tr = terminator(stmt63 && !self_tr63);
   return(apply(special, args) + tr);
 };
@@ -1840,7 +1840,7 @@ eval = function (form) {
   run(code);
   return(_37result);
 };
-load_file = function (path) {
+run_file = function (path) {
   return(run(read_file(path)));
 };
 compile_file = function (input, output) {
@@ -2450,7 +2450,7 @@ main = function () {
     }
     i = i + 1;
   }
-  series(load_file, load);
+  series(run_file, load);
   if (input && output) {
     if (target1) {
       target = target1;
