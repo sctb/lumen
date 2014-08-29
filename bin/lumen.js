@@ -58,7 +58,7 @@ clip = function (s, from, upto) {
   return(s.substring(from, upto));
 };
 replace = function (s, a, b) {
-  return(s.replace(a, b));
+  return(s.replace(a, b, "g"));
 };
 cut = function (x, from, upto) {
   var l = [];

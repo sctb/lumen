@@ -47,7 +47,7 @@
           lua: (strlib.sub s (+ from 1) upto)))
 
 (define replace (s a b)
-  (target js: (s.replace a b) lua: (strlib.gsub s a b)))
+  (target js: (s.replace a b 'g) lua: (strlib.gsub s a b)))
 
 (define cut (x from upto)
   (let (l () j 0

@@ -111,6 +111,10 @@
   (let (s "a
 b")
     (test= 3 (length s)))
+(let (s "a
+b
+c")
+    (test= 5 (length s)))
   (test= 3 (length "a\nb"))
   (test= 3 (length "a\\b")))
 
