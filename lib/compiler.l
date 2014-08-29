@@ -37,11 +37,14 @@
             args)
     (cat s ")")))
 
+(define escape-newlines (s)
+  (replace s "\n" "\\n"))
+
 (define compile-atom (x)
   (if (and (= x "nil") (= target 'lua)) x
       (= x "nil") "undefined"
       (id-literal? x) (inner x)
-      (string-literal? x) x
+      (string-literal? x) (escape-newlines x)
       (string? x) (id x)
       (boolean? x) (if x "true" "false")
       (number? x) (cat x "")

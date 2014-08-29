@@ -107,7 +107,12 @@
   (test= 3 (length "foo"))
   (test= 3 (length "\"a\""))
   (test= 'a "a")
-  (test= "a" (char "bar" 1)))
+  (test= "a" (char "bar" 1))
+  (let (s "a
+b")
+    (test= 3 (length s)))
+  (test= 3 (length "a\nb"))
+  (test= 3 (length "a\\b")))
 
 (define-test quote ()
   (test= 7 (quote 7))
