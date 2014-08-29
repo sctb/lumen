@@ -240,9 +240,10 @@
 (target js: (set global.require require))
 (target js: (define run eval))
 
+(target lua: (define load1 load))
 (target lua:
   (define run (code)
-    (let (|f,e| (load code))
+    (let (|f,e| (load1 code))
       (if f (f) (error (cat e " in " code))))))
 
 (define %result)
@@ -258,8 +259,11 @@
 (define run-file (path)
   (run (read-file path)))
 
-(define compile-file (input output)
-  (let (s (stream (read-file input))
+(define compile-file (path)
+  (let (s (stream (read-file path))
         body (read-all s)
         form (expand `(do ,@body)))
-    (write-file output (compile form))))
+    (compile form)))
+
+(define load (path)
+  (run (compile-file path)))

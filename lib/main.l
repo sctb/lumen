@@ -28,7 +28,7 @@
     (when (or (= (hd as) "-h")
               (= (hd as) "--help"))
       (usage))
-    (let (load ()
+    (let (pre ()
           input nil
           output nil
           target1 nil
@@ -47,12 +47,13 @@
 		          (= a "-t") (set target1 val)
 		          (= a "-e") (set expr val)))))
 	      (not (= "-" (char a 0)))
-              (add load a))
+              (add pre a))
           (inc i)))
-      (series run-file load)
+      (series run-file pre)
       (if (and input output)
           (do (if target1 (set target target1))
-              (compile-file input output))
+              (let (code (compile-file input))
+                (write-file output code)))
         (if expr (rep expr) (repl))))))
 
 (main)
