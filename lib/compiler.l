@@ -38,7 +38,12 @@
     (cat s ")")))
 
 (define escape-newlines (s)
-  (replace s "\n" "\\n"))
+  (let (s1 "" i 0)
+    (while (< i (length s))
+      (let (c (char s i))
+        (cat! s1 (if (= c "\n") "\\n" c)))
+      (inc i))
+    (cat s1 "")))
 
 (define compile-atom (x)
   (if (and (= x "nil") (= target 'lua)) x
