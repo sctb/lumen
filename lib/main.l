@@ -1,10 +1,10 @@
 ;; -*- mode: lisp -*-
 
-(define rep (s)
+(define-local rep (s)
   (let ((_ x) (guard (eval (read-from-string s))))
     (if (is? x) (pr x))))
 
-(define repl ()
+(define-local repl ()
   (write "> ")
   (let-fn (rep1 (s) (rep s) (write "> "))
     (target
@@ -14,7 +14,7 @@
              (let (s (io.read))
                (if s (rep1 s) (break)))))))
 
-(define usage ()
+(define-local usage ()
   (pr "usage: lumen [options] <object files>")
   (pr "options:")
   (pr "  -c <input>\tInput file")
@@ -23,7 +23,7 @@
   (pr "  -e <expr>\tExpression to evaluate")
   (exit))
 
-(define main ()
+(define-local main ()
   (let (as (argv))
     (when (or (= (hd as) "-h")
               (= (hd as) "--help"))

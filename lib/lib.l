@@ -8,28 +8,28 @@
       (when (is? b)
         (if p (get b p) b)))))
 
-(define macro-function (k)
+(define-local macro-function (k)
   (getenv k 'macro))
 
-(define macro? (k)
+(define-local macro? (k)
   (is? (macro-function k)))
 
-(define special? (k)
+(define-local special? (k)
   (is? (getenv k 'special)))
 
-(define special-form? (form)
+(define-local special-form? (form)
   (and (list? form) (special? (hd form))))
 
-(define statement? (k)
+(define-local statement? (k)
   (and (special? k) (getenv k 'stmt)))
 
-(define symbol-expansion (k)
+(define-local symbol-expansion (k)
   (getenv k 'symbol))
 
-(define symbol? (k)
+(define-local symbol? (k)
   (is? (symbol-expansion k)))
 
-(define variable? (k)
+(define-local variable? (k)
   (let (b (first (fn (frame)
                    (or (get frame k) frame._scope))
                  (reverse environment)))
@@ -41,7 +41,7 @@
       (symbol? x)
       (variable? x)))
 
-(define escape (s)
+(define-local escape (s)
   (let (s1 "\"" i 0)
     (while (< i (length s))
       (let (c (char s i)
@@ -58,10 +58,10 @@
       (atom? form) form
     `(list ,@(map quoted form))))
 
-(define literal (s)
+(define-local literal (s)
   (if (string-literal? s) s (quoted s)))
 
-(define stash* (args)
+(define-local stash* (args)
   (if (keys? args)
       (let (l `(%object "_stash" true))
         (all (k v) args
@@ -71,10 +71,7 @@
         (join args (list l)))
     args))
 
-(define index (k)
-  (target js: k lua: (when (number? k) (- k 1))))
-
-(define bias (k)
+(define-local bias (k)
   (when (and (number? k)
              (not (= target (language))))
     (if (= target 'js)
@@ -83,7 +80,7 @@
   k)
 
 (define bind (lh rh)
-  (if (and (composite? lh) (list? rh)) ; list lh?
+  (if (and (list? lh) (list? rh))
       (let (id (unique))
 	`((,id ,rh) ,@(bind lh id)))
       (atom? lh) `((,lh ,rh))
@@ -97,12 +94,12 @@
       bs)))
 
 (define bind* (args body)
-  (let (args1 ()
-        rest (fn ()
-               (if (= target 'js)
-                   `(unstash 
-                     (Array.prototype.slice.call arguments ,(length args1)))
-                 (do (add args1 '|...|) '(unstash (list |...|))))))
+  (let (args1 ())
+    (define-local rest ()
+      (if (= target 'js)
+          `(unstash 
+            (Array.prototype.slice.call arguments ,(length args1)))
+        (do (add args1 '|...|) '(unstash (list |...|)))))
     (if (atom? args)
         (list args1 `((let ,(list args (rest)) ,@body)))
       (let (bs () k? (keys? args) r (unique))
@@ -117,11 +114,16 @@
           (join! bs (list (keys args) r)))
         (list args1 `((let ,bs ,@body)))))))
 
-(define quoting? (depth) (number? depth))
-(define quasiquoting? (depth) (and (quoting? depth) (> depth 0)))
-(define can-unquote? (depth) (and (quoting? depth) (= depth 1)))
+(define-local quoting? (depth)
+  (number? depth))
 
-(define quasisplice? (x depth)
+(define-local quasiquoting? (depth)
+  (and (quoting? depth) (> depth 0)))
+
+(define-local can-unquote? (depth)
+  (and (quoting? depth) (= depth 1)))
+
+(define-local quasisplice? (x depth)
   (and (list? x)
        (can-unquote? depth)
        (= (hd x) 'unquote-splicing)))
@@ -204,7 +206,7 @@
 (define indentation ()
   (apply cat (replicate indent-level "  ")))
 
-(define reserved
+(define-local reserved
   (set-of "=" "==" "+" "-" "%" "*" "/" "<" ">" "<=" ">="
           ;; js
           "break" "case" "catch" "continue" "debugger"
@@ -220,10 +222,10 @@
 (define reserved? (x)
   (get reserved x))
 
-(define numeric? (n)
+(define-local numeric? (n)
   (and (> n 47) (< n 58)))
 
-(define valid-code? (n)
+(define-local valid-code? (n)
   (or (numeric? n)             ; 0-9
       (and (> n 64) (< n 91))  ; A-Z
       (and (> n 96) (< n 123)) ; a-z
@@ -238,19 +240,6 @@
           (return #f))
         (inc i))
       #t)))
-
-(define id (id)
-  (let (id1 "" i 0)
-    (while (< i (length id))
-      (let (c (char id i)
-            n (code c)
-            c1 (if (= c "-") "_"
-                   (valid-code? n) c
-                   (= i 0) (cat "_" n)
-                 n))
-        (cat! id1 c1))
-      (inc i))
-    id1))
 
 (define key (k)
   (let (i (inner k))

@@ -1,7 +1,7 @@
 ;; -*- mode: lisp -*-
 
-(define delimiters (set-of "(" ")" ";" "\n"))
-(define whitespace (set-of " " "\t" "\n"))
+(define-local delimiters (set-of "(" ")" ";" "\n"))
+(define-local whitespace (set-of " " "\t" "\n"))
 
 (define stream (str)
   (table pos: 0 string: str len: (length str)))
@@ -13,7 +13,7 @@
   (let (c (peek-char s))
     (if c (do (inc s.pos) c))))
 
-(define skip-non-code (s)
+(define-local skip-non-code (s)
   (while #t
     (let (c (peek-char s))
       (if (nil? c) (break)
@@ -48,12 +48,12 @@
   (let (x (read (stream str)))
     (unless (= x eof) x)))
 
-(define key? (atom)
+(define-local key? (atom)
   (and (string? atom)
        (> (length atom) 1)
        (= (char atom (edge atom)) ":")))
 
-(define flag? (atom)
+(define-local flag? (atom)
   (and (string? atom)
        (> (length atom) 1)
        (= (char atom 0) ":")))

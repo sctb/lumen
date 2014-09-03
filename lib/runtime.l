@@ -26,7 +26,7 @@
 (define boolean? (x) (= (type x) 'boolean))
 (define function? (x) (= (type x) 'function))
 
-(define composite? (x)
+(define-local composite? (x)
   (and (is? x)
        (= (type x) (target js: 'object lua: 'table))))
 
@@ -40,7 +40,7 @@
 (define inf? (n)
   (or (= n #+inf) (= n #-inf)))
 
-(target lua: (define strlib string))
+(target lua: (define-local strlib string))
 
 (define clip (s from upto)
   (target js: (s.substring from upto)
@@ -311,7 +311,7 @@
         (set sp " "))
       (cat s  ")"))))
 
-(define produces-string? (x)
+(define-local produces-string? (x)
   (or (string-literal? x)
       (and (list? x)
            (or (= (hd x) 'cat)
