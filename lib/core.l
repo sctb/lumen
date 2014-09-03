@@ -73,7 +73,7 @@
   (setenv name :toplevel :variable)
   (if (some? body)
       (let ((args body) (bind* x body))
-        `(%definition ,name ,args ,@body))
+        `(%global-function ,name ,args ,@body))
     `(set ,name ,x)))
 
 (define-macro with-frame (rest: body :scope)
