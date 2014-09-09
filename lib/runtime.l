@@ -290,7 +290,7 @@
     lua: (tonumber s)))
 
 (define string (x depth)
-  (if (and depth (> depth 5)) "#<circular>"
+  (if (and depth (> depth 7)) "#<circular>"
       (nil? x) "nil"
       (nan? x) "#nan"
       (= x #+inf) "#+inf"

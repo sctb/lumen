@@ -535,7 +535,7 @@ number = function (s) {
   }
 };
 string = function (x, depth) {
-  if (depth && depth > 5) {
+  if (depth && depth > 7) {
     return("#<circular>");
   } else {
     if (nil63(x)) {

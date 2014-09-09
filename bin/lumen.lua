@@ -431,7 +431,7 @@ function number(s)
   return(tonumber(s))
 end
 function string(x, depth)
-  if depth and depth > 5 then
+  if depth and depth > 7 then
     return("#<circular>")
   else
     if nil63(x) then
