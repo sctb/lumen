@@ -759,5 +759,7 @@ c")
   (test= 42 ((fn (:foo) foo) foo: 42))
   (test= 42 ((fn ((:foo)) foo) (list foo: 42)))
   (let (f (fn (a bar: b (:foo)) (list a b foo)))
-    (test= '(10 20 42) (f 10 bar: 20 (list foo: 42)))))
+    (test= '(10 20 42) (f 10 bar: 20 (list foo: 42))))
+  (let (f (fn args args))
+    (test= '(1 2 3) (f 1 2 3))))
 
