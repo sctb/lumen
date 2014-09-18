@@ -48,6 +48,9 @@
     (cat ind "try {\n" body ind "}\n"
          ind "catch (" e ") {\n" h ind "}\n")))
 
+(define-special %delete (place) :stmt
+  (cat (indentation) "delete " (compile place)))
+
 (define-special break () :stmt
   (cat (indentation) "break"))
 

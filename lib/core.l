@@ -13,6 +13,11 @@
       (set i `(+ ,i 1)))
   `(get ,l ,i))
 
+(define-macro wipe (place)
+  (if (= target 'lua)
+      `(set ,place nil)
+    `(%delete ,place)))
+
 (define-macro list body
   (let (l () forms () id (unique))
     (all (k v) body
