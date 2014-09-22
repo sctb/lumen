@@ -747,25 +747,25 @@ var escape = function (s) {
   var i = 0;
   while (i < length(s)) {
     var c = char(s, i);
-    var _u117;
+    var _u113;
     if (c === "\n") {
-      _u117 = "\\n";
+      _u113 = "\\n";
     } else {
-      var _u118;
+      var _u114;
       if (c === "\"") {
-        _u118 = "\\\"";
+        _u114 = "\\\"";
       } else {
-        var _u119;
+        var _u115;
         if (c === "\\") {
-          _u119 = "\\\\";
+          _u115 = "\\\\";
         } else {
-          _u119 = c;
+          _u115 = c;
         }
-        _u118 = _u119;
+        _u114 = _u115;
       }
-      _u117 = _u118;
+      _u113 = _u114;
     }
-    var c1 = _u117;
+    var c1 = _u113;
     s1 = s1 + c1;
     i = i + 1;
   }
@@ -797,13 +797,13 @@ var stash42 = function (args) {
     for (k in _u22) {
       var v = _u22[k];
       var _u23 = parseInt(k);
-      var _u120;
+      var _u116;
       if (isNaN(_u23)) {
-        _u120 = k;
+        _u116 = k;
       } else {
-        _u120 = _u23;
+        _u116 = _u23;
       }
-      var _u24 = _u120;
+      var _u24 = _u116;
       if (!number63(_u24)) {
         add(l, literal(_u24));
         add(l, v);
@@ -838,28 +838,30 @@ bind = function (lh, rh) {
       for (k in _u32) {
         var v = _u32[k];
         var _u33 = parseInt(k);
-        var _u121;
+        var _u117;
         if (isNaN(_u33)) {
-          _u121 = k;
+          _u117 = k;
         } else {
-          _u121 = _u33;
+          _u117 = _u33;
         }
-        var _u34 = _u121;
-        var _u122;
+        var _u34 = _u117;
+        var _u118;
         if (_u34 === "rest") {
-          _u122 = ["cut", rh, length(lh)];
+          _u118 = ["cut", rh, length(lh)];
         } else {
-          _u122 = ["get", rh, ["quote", bias(_u34)]];
+          _u118 = ["get", rh, ["quote", bias(_u34)]];
         }
-        var x = _u122;
-        var _u123;
-        if (v === true) {
-          _u123 = _u34;
-        } else {
-          _u123 = v;
+        var x = _u118;
+        if (is63(_u34)) {
+          var _u119;
+          if (v === true) {
+            _u119 = _u34;
+          } else {
+            _u119 = v;
+          }
+          var _u38 = _u119;
+          bs = join(bs, bind(_u38, x));
         }
-        var _u38 = _u123;
-        bs = join(bs, bind(_u38, x));
       }
       return(bs);
     }
@@ -886,13 +888,13 @@ bind42 = function (args, body) {
     for (k in _u55) {
       var v = _u55[k];
       var _u56 = parseInt(k);
-      var _u124;
+      var _u120;
       if (isNaN(_u56)) {
-        _u124 = k;
+        _u120 = k;
       } else {
-        _u124 = _u56;
+        _u120 = _u56;
       }
-      var _u57 = _u124;
+      var _u57 = _u120;
       if (number63(_u57)) {
         if (atom63(v)) {
           add(args1, v);
@@ -942,17 +944,17 @@ macroexpand = function (form) {
           var body = cut(form, 2);
           add(environment, {_scope: true});
           var _u72 = args;
-          var _u74 = undefined;
-          for (_u74 in _u72) {
-            var _u70 = _u72[_u74];
-            var _u73 = parseInt(_u74);
-            var _u126;
+          var _u1 = undefined;
+          for (_u1 in _u72) {
+            var _u70 = _u72[_u1];
+            var _u73 = parseInt(_u1);
+            var _u122;
             if (isNaN(_u73)) {
-              _u126 = _u74;
+              _u122 = _u1;
             } else {
-              _u126 = _u73;
+              _u122 = _u73;
             }
-            var _u75 = _u126;
+            var _u1 = _u122;
             setenv(_u70, {_stash: true, variable: true});
           }
           var _u71 = join(["%function", args], macroexpand(body));
@@ -961,27 +963,27 @@ macroexpand = function (form) {
         } else {
           if (x === "%local-function" || x === "%global-function") {
             var _u3 = form[0];
-            var _u77 = form[1];
-            var _u78 = form[2];
-            var _u79 = cut(form, 3);
+            var _u75 = form[1];
+            var _u76 = form[2];
+            var _u77 = cut(form, 3);
             add(environment, {_scope: true});
-            var _u82 = _u78;
-            var _u84 = undefined;
-            for (_u84 in _u82) {
-              var _u80 = _u82[_u84];
-              var _u83 = parseInt(_u84);
-              var _u125;
-              if (isNaN(_u83)) {
-                _u125 = _u84;
+            var _u80 = _u76;
+            var _u1 = undefined;
+            for (_u1 in _u80) {
+              var _u78 = _u80[_u1];
+              var _u81 = parseInt(_u1);
+              var _u121;
+              if (isNaN(_u81)) {
+                _u121 = _u1;
               } else {
-                _u125 = _u83;
+                _u121 = _u81;
               }
-              var _u85 = _u125;
-              setenv(_u80, {_stash: true, variable: true});
+              var _u1 = _u121;
+              setenv(_u78, {_stash: true, variable: true});
             }
-            var _u81 = join([x, _u77, _u78], macroexpand(_u79));
+            var _u79 = join([x, _u75, _u76], macroexpand(_u77));
             drop(environment);
-            return(_u81);
+            return(_u79);
           } else {
             if (macro63(x)) {
               return(macroexpand(apply(macro_function(x), tl(form))));
@@ -996,33 +998,33 @@ macroexpand = function (form) {
 };
 quasiquote_list = function (form, depth) {
   var xs = [["list"]];
-  var _u90 = form;
+  var _u86 = form;
   var k = undefined;
-  for (k in _u90) {
-    var v = _u90[k];
-    var _u91 = parseInt(k);
-    var _u127;
-    if (isNaN(_u91)) {
-      _u127 = k;
+  for (k in _u86) {
+    var v = _u86[k];
+    var _u87 = parseInt(k);
+    var _u123;
+    if (isNaN(_u87)) {
+      _u123 = k;
     } else {
-      _u127 = _u91;
+      _u123 = _u87;
     }
-    var _u92 = _u127;
-    if (!number63(_u92)) {
-      var _u128;
+    var _u88 = _u123;
+    if (!number63(_u88)) {
+      var _u124;
       if (quasisplice63(v, depth)) {
-        _u128 = quasiexpand(v[1]);
+        _u124 = quasiexpand(v[1]);
       } else {
-        _u128 = quasiexpand(v, depth);
+        _u124 = quasiexpand(v, depth);
       }
-      var _u93 = _u128;
-      last(xs)[_u92] = _u93;
+      var _u89 = _u124;
+      last(xs)[_u88] = _u89;
     }
   }
   series(function (x) {
     if (quasisplice63(x, depth)) {
-      var _u95 = quasiexpand(x[1]);
-      add(xs, _u95);
+      var _u91 = quasiexpand(x[1]);
+      add(xs, _u91);
       return(add(xs, ["list"]));
     } else {
       return(add(last(xs), quasiexpand(x, depth)));
@@ -1070,10 +1072,10 @@ quasiexpand = function (form, depth) {
     }
   }
 };
-expand_if = function (_u103) {
-  var a = _u103[0];
-  var b = _u103[1];
-  var c = cut(_u103, 2);
+expand_if = function (_u99) {
+  var a = _u99[0];
+  var b = _u99[1];
+  var c = cut(_u99, 2);
   if (is63(b)) {
     return([join(["%if", a, b], expand_if(c))]);
   } else {
@@ -1124,21 +1126,21 @@ key = function (k) {
 };
 mapo = function (f, t) {
   var o = [];
-  var _u114 = t;
+  var _u110 = t;
   var k = undefined;
-  for (k in _u114) {
-    var v = _u114[k];
-    var _u115 = parseInt(k);
-    var _u129;
-    if (isNaN(_u115)) {
-      _u129 = k;
+  for (k in _u110) {
+    var v = _u110[k];
+    var _u111 = parseInt(k);
+    var _u125;
+    if (isNaN(_u111)) {
+      _u125 = k;
     } else {
-      _u129 = _u115;
+      _u125 = _u111;
     }
-    var _u116 = _u129;
+    var _u112 = _u125;
     var x = f(v);
     if (is63(x)) {
-      add(o, literal(_u116));
+      add(o, literal(_u112));
       add(o, x);
     }
   }

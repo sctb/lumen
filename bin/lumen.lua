@@ -617,25 +617,25 @@ local function escape(s)
   local i = 0
   while i < length(s) do
     local c = char(s, i)
-    local _u110
+    local _u108
     if c == "\n" then
-      _u110 = "\\n"
+      _u108 = "\\n"
     else
-      local _u111
+      local _u109
       if c == "\"" then
-        _u111 = "\\\""
+        _u109 = "\\\""
       else
-        local _u112
+        local _u110
         if c == "\\" then
-          _u112 = "\\\\"
+          _u110 = "\\\\"
         else
-          _u112 = c
+          _u110 = c
         end
-        _u111 = _u112
+        _u109 = _u110
       end
-      _u110 = _u111
+      _u108 = _u109
     end
-    local c1 = _u110
+    local c1 = _u108
     s1 = s1 .. c1
     i = i + 1
   end
@@ -699,21 +699,23 @@ function bind(lh, rh)
       local k = nil
       for k in next, _u31 do
         local v = _u31[k]
-        local _u113
+        local _u111
         if k == "rest" then
-          _u113 = {"cut", rh, length(lh)}
+          _u111 = {"cut", rh, length(lh)}
         else
-          _u113 = {"get", rh, {"quote", bias(k)}}
+          _u111 = {"get", rh, {"quote", bias(k)}}
         end
-        local x = _u113
-        local _u114
-        if v == true then
-          _u114 = k
-        else
-          _u114 = v
+        local x = _u111
+        if is63(k) then
+          local _u112
+          if v == true then
+            _u112 = k
+          else
+            _u112 = v
+          end
+          local _u36 = _u112
+          bs = join(bs, bind(_u36, x))
         end
-        local _u36 = _u114
-        bs = join(bs, bind(_u36, x))
       end
       return(bs)
     end
@@ -788,9 +790,9 @@ function macroexpand(form)
           local body = cut(form, 2)
           add(environment, {_scope = true})
           local _u69 = args
-          local _u71 = nil
-          for _u71 in next, _u69 do
-            local _u67 = _u69[_u71]
+          local _u1 = nil
+          for _u1 in next, _u69 do
+            local _u67 = _u69[_u1]
             setenv(_u67, {_stash = true, variable = true})
           end
           local _u68 = join({"%function", args}, macroexpand(body))
@@ -799,19 +801,19 @@ function macroexpand(form)
         else
           if x == "%local-function" or x == "%global-function" then
             local _u3 = form[1]
-            local _u73 = form[2]
-            local _u74 = form[3]
-            local _u75 = cut(form, 3)
+            local _u72 = form[2]
+            local _u73 = form[3]
+            local _u74 = cut(form, 3)
             add(environment, {_scope = true})
-            local _u78 = _u74
-            local _u80 = nil
-            for _u80 in next, _u78 do
-              local _u76 = _u78[_u80]
-              setenv(_u76, {_stash = true, variable = true})
+            local _u77 = _u73
+            local _u1 = nil
+            for _u1 in next, _u77 do
+              local _u75 = _u77[_u1]
+              setenv(_u75, {_stash = true, variable = true})
             end
-            local _u77 = join({x, _u73, _u74}, macroexpand(_u75))
+            local _u76 = join({x, _u72, _u73}, macroexpand(_u74))
             drop(environment)
-            return(_u77)
+            return(_u76)
           else
             if macro63(x) then
               return(macroexpand(apply(macro_function(x), tl(form))))
@@ -826,25 +828,25 @@ function macroexpand(form)
 end
 function quasiquote_list(form, depth)
   local xs = {{"list"}}
-  local _u85 = form
+  local _u83 = form
   local k = nil
-  for k in next, _u85 do
-    local v = _u85[k]
+  for k in next, _u83 do
+    local v = _u83[k]
     if not number63(k) then
-      local _u115
+      local _u113
       if quasisplice63(v, depth) then
-        _u115 = quasiexpand(v[2])
+        _u113 = quasiexpand(v[2])
       else
-        _u115 = quasiexpand(v, depth)
+        _u113 = quasiexpand(v, depth)
       end
-      local _u87 = _u115
-      last(xs)[k] = _u87
+      local _u85 = _u113
+      last(xs)[k] = _u85
     end
   end
   series(function (x)
     if quasisplice63(x, depth) then
-      local _u89 = quasiexpand(x[2])
-      add(xs, _u89)
+      local _u87 = quasiexpand(x[2])
+      add(xs, _u87)
       return(add(xs, {"list"}))
     else
       return(add(last(xs), quasiexpand(x, depth)))
@@ -892,10 +894,10 @@ function quasiexpand(form, depth)
     end
   end
 end
-function expand_if(_u97)
-  local a = _u97[1]
-  local b = _u97[2]
-  local c = cut(_u97, 2)
+function expand_if(_u95)
+  local a = _u95[1]
+  local b = _u95[2]
+  local c = cut(_u95, 2)
   if is63(b) then
     return({join({"%if", a, b}, expand_if(c))})
   else
@@ -946,10 +948,10 @@ function key(k)
 end
 function mapo(f, t)
   local o = {}
-  local _u108 = t
+  local _u106 = t
   local k = nil
-  for k in next, _u108 do
-    local v = _u108[k]
+  for k in next, _u106 do
+    local v = _u106[k]
     local x = f(v)
     if is63(x) then
       add(o, literal(k))

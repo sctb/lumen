@@ -89,8 +89,9 @@
         (let (x (if (= k 'rest)
                     `(cut ,rh ,(length lh))
                   `(get ,rh ',(bias k))))
-          (let (k (if (= v #t) k v))
-            (join! bs (bind k x)))))
+          (when (is? k)
+            (let (k (if (= v #t) k v))
+              (join! bs (bind k x))))))
       bs)))
 
 (define bind* (args body)
