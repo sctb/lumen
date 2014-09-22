@@ -454,6 +454,22 @@ c")
      (test= 20 zz))
    20))
 
+(define zzop 99)
+(define zzap 100)
+
+(let (zzop 10
+      zzap (+ zzop 10)
+      (zza zzb) '(1 2 3 a: 10 b: 20))
+  (define-test let-toplevel1 ()
+    (test= 10 zzop)
+    (test= 20 zzap)
+    (test= 1 zza)
+    (test= 2 zzb)))
+
+(define-test let-toplevel ()
+  (test= 99 zzop)
+  (test= 100 zzap))
+
 (define-test destructuring ()
   (let ((a b c) '(1 2 3))
     (test= 1 a)

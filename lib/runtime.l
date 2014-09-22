@@ -333,6 +333,9 @@
     (inc count)
     (cat "_u" count)))
 
+(define unique? (id)
+  (= "_u" (clip id 0 2)))
+
 (define %message-handler (msg)
   (let (i (search msg ": "))
     (clip msg (+ i 2))))

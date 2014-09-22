@@ -58,21 +58,21 @@ end
 function cut(x, from, upto)
   local l = {}
   local j = 0
-  local _u129
-  if nil63(from) or from < 0 then
-    _u129 = 0
-  else
-    _u129 = from
-  end
-  local i = _u129
-  local n = length(x)
   local _u130
-  if nil63(upto) or upto > n then
-    _u130 = n
+  if nil63(from) or from < 0 then
+    _u130 = 0
   else
-    _u130 = upto
+    _u130 = from
   end
-  local _u26 = _u130
+  local i = _u130
+  local n = length(x)
+  local _u131
+  if nil63(upto) or upto > n then
+    _u131 = n
+  else
+    _u131 = upto
+  end
+  local _u26 = _u131
   while i < _u26 do
     l[j + 1] = x[i + 1]
     i = i + 1
@@ -113,11 +113,11 @@ function char(s, n)
   return(clip(s, n, n + 1))
 end
 function code(s, n)
-  local _u131
+  local _u132
   if n then
-    _u131 = n + 1
+    _u132 = n + 1
   end
-  return(strlib.byte(s, _u131))
+  return(strlib.byte(s, _u132))
 end
 function string_literal63(x)
   return(string63(x) and char(x, 0) == "\"")
@@ -340,11 +340,11 @@ function unstash(args)
   end
 end
 function search(s, pattern, start)
-  local _u132
+  local _u133
   if start then
-    _u132 = start + 1
+    _u133 = start + 1
   end
-  local _u85 = _u132
+  local _u85 = _u133
   local i = strlib.find(s, pattern, _u85, true)
   return(i and i - 1)
 end
@@ -520,6 +520,9 @@ function unique()
   _u120 = _u120 + 1
   return("_u" .. _u120)
 end
+function unique63(id)
+  return("_u" == clip(id, 0, 2))
+end
 function _37message_handler(msg)
   local i = search(msg, ": ")
   return(clip(msg, i + 2))
@@ -528,22 +531,22 @@ function toplevel63()
   return(one63(environment))
 end
 function setenv(k, ...)
-  local _u124 = unstash({...})
-  local keys = cut(_u124, 0)
+  local _u125 = unstash({...})
+  local keys = cut(_u125, 0)
   if string63(k) then
-    local _u133
+    local _u134
     if keys.toplevel then
-      _u133 = hd(environment)
+      _u134 = hd(environment)
     else
-      _u133 = last(environment)
+      _u134 = last(environment)
     end
-    local frame = _u133
+    local frame = _u134
     local entry = frame[k] or {}
-    local _u126 = keys
-    local _u128 = nil
-    for _u128 in next, _u126 do
-      local v = _u126[_u128]
-      entry[_u128] = v
+    local _u127 = keys
+    local _u129 = nil
+    for _u129 in next, _u127 do
+      local v = _u127[_u129]
+      entry[_u129] = v
     end
     frame[k] = entry
   end
@@ -1980,7 +1983,7 @@ setenv("let", {_stash = true, macro = function (bindings, ...)
       local id = _u83[1]
       local val = _u83[2]
       if number63(k) then
-        if bound63(id) or reserved63(id) or toplevel63() then
+        if not unique63(id) and (bound63(id) or reserved63(id) or toplevel63()) then
           local id1 = unique()
           add(renames, id)
           add(renames, id1)
