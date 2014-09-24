@@ -109,7 +109,7 @@
   (let (open (if (= target 'lua) "{" "[")
 	close (if (= target 'lua) "}" "]")
 	s "" c "")
-    (all (k v) forms
+    (each (k v) forms
       (when (number? k)
         (cat! s c (compile v))
         (set c ", ")))
@@ -118,7 +118,7 @@
 (define-special %object forms
   (let (s "{" c ""
         sep (if (= target 'lua) " = " ": "))
-    (all (k v) (pair forms)
+    (each (k v) (pair forms)
       (when (number? k)
         (let ((k v) v)
           (unless (string? k)

@@ -64,7 +64,7 @@
 (define-local stash* (args)
   (if (keys? args)
       (let (l `(%object "_stash" true))
-        (all (k v) args
+        (each (k v) args
           (unless (number? k)
             (add l (literal k))
             (add l v)))
@@ -85,7 +85,7 @@
 	`((,id ,rh) ,@(bind lh id)))
       (atom? lh) `((,lh ,rh))
     (let (bs ())
-      (all (k v) lh
+      (each (k v) lh
         (let (x (if (= k 'rest)
                     `(cut ,rh ,(length lh))
                   `(get ,rh ',(bias k))))
@@ -104,7 +104,7 @@
     (if (atom? args)
         (list args1 `((let ,(list args (rest)) ,@body)))
       (let (bs () k? (keys? args) r (unique))
-        (all (k v) args
+        (each (k v) args
           (when (number? k)
             (if (atom? v) (add args1 v)
               (let (x (unique))
@@ -152,7 +152,7 @@
 
 (define quasiquote-list (form depth)
   (let (xs (list '(list)))
-    (all (k v) form
+    (each (k v) form
       (unless (number? k)
         (let (v (if (quasisplice? v depth)
                     ;; don't splice, just expand
@@ -250,7 +250,7 @@
 
 (define mapo (f t)
   (let (o ())
-    (all (k v) t
+    (each (k v) t
       (let (x (f v))
         (when (is? x)
           (add o (literal k))

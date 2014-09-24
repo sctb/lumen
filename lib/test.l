@@ -22,7 +22,7 @@
   `(add tests (list ',name (fn () ,@body))))
 
 (define run ()
-  (all (_ (name f)) tests
+  (each (_ (name f)) tests
     (let (result (f))
       (when (string? result)
         (pr " " name result))))
@@ -359,17 +359,17 @@ c")
       (test= 'bar (get t k)))
     (test= 'bar (get t (cat "f" "oo")))))
 
-(define-test all ()
+(define-test each ()
   (let (t '(1 2 3 :a b: #f))
     (let (a 0 b 0)
-      (all (k v) t
+      (each (k v) t
         (if (number? k)
             (inc a)
           (inc b)))
       (test= 3 a)
       (test= 2 b))
     (let (a 0)
-      (all (_ _) t (inc a))
+      (each (_ _) t (inc a))
       (test= 5 a))))
 
 (define-test fn ()

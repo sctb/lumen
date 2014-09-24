@@ -2273,7 +2273,7 @@ setenv("with-bindings", {_stash: true, macro: function (_u171) {
   var x = unique();
   var _u175 = ["setenv", x];
   _u175.variable = true;
-  var _u172 = ["with-frame", ["all", ["_u1", x], names, _u175]];
+  var _u172 = ["with-frame", ["each", ["_u1", x], names, _u175]];
   _u172.scope = true;
   return(join(_u172, body));
 }});
@@ -2327,7 +2327,7 @@ setenv("guard", {_stash: true, macro: function (expr) {
     return(["let", [ex, ["xpcall", ["fn", [], expr], "%message-handler"]], ["list", e, x]]);
   }
 }});
-setenv("all", {_stash: true, macro: function (_u259, t) {
+setenv("each", {_stash: true, macro: function (_u259, t) {
   var k = _u259[0];
   var v = _u259[1];
   var _u258 = unstash(Array.prototype.slice.call(arguments, 2));

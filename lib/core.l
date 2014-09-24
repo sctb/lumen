@@ -20,7 +20,7 @@
 
 (define-macro list body
   (let (l () forms () id (unique))
-    (all (k v) body
+    (each (k v) body
       (if (number? k)
           (set (get l k) v)
         (add forms `(set (get ,id ',k) ,v))))
@@ -44,7 +44,7 @@
   (if (< (length bindings) 2) `(do ,@body)
     (let (renames () locals ()
           (lh rh) bindings)
-      (all (k (id val)) (bind lh rh)
+      (each (k (id val)) (bind lh rh)
         (when (number? k)
           (if (and (not (unique? id))
                    (or (bound? id) (reserved? id) (toplevel?)))
@@ -99,7 +99,7 @@
 (define-macro with-bindings ((names) rest: body)
   (let (x (unique))
    `(with-frame :scope
-      (all (_ ,x) ,names
+      (each (_ ,x) ,names
         (setenv ,x :variable))
       ,@body)))
 
@@ -133,7 +133,7 @@
       `(let (,ex (xpcall (fn () ,expr) %message-handler))
          (list ,e ,x)))))
 
-(define-macro all ((k v) t rest: body)
+(define-macro each ((k v) t rest: body)
   (let (x (unique) n (unique))
     `(let (,x ,t ,k nil)
        (%for ,x ,k
@@ -145,7 +145,7 @@
 
 (define-macro set-of xs
   (let (l ())
-    (all (_ x) xs
+    (each (_ x) xs
       (set (get l x) #t))
     `(table ,@l)))
 

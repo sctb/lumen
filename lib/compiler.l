@@ -18,7 +18,7 @@
 
 (define-local precedence (form)
   (when (and (list? form) (not (unary? form)))
-    (all (k v) infix
+    (each (k v) infix
       (if (get v (hd form)) (return (index k)))))
   0)
 

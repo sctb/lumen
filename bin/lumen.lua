@@ -2064,7 +2064,7 @@ setenv("with-bindings", {_stash = true, macro = function (_u181, ...)
   local x = unique()
   local _u186 = {"setenv", x}
   _u186.variable = true
-  local _u183 = {"with-frame", {"all", {"_u1", x}, names, _u186}}
+  local _u183 = {"with-frame", {"each", {"_u1", x}, names, _u186}}
   _u183.scope = true
   return(join(_u183, body))
 end})
@@ -2118,7 +2118,7 @@ setenv("guard", {_stash = true, macro = function (expr)
     return({"let", {ex, {"xpcall", {"fn", {}, expr}, "%message-handler"}}, {"list", e, x}})
   end
 end})
-setenv("all", {_stash = true, macro = function (_u274, t, ...)
+setenv("each", {_stash = true, macro = function (_u274, t, ...)
   local k = _u274[1]
   local v = _u274[2]
   local _u273 = unstash({...})

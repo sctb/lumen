@@ -55,14 +55,14 @@
       (set (at l j) (at x i))
       (inc i)
       (inc j))
-    (all (k v) x
+    (each (k v) x
       (unless (number? k)
         (set (get l k) v)))
     l))
 
 (define keys (x)
   (let (t ())
-    (all (k v) x
+    (each (k v) x
       (unless (number? k)
         (set (get t k) v)))
     t))
@@ -111,9 +111,9 @@
 (define join (a b)
   (if (and a b)
       (let (c () o (length a))
-        (all (k v) a
+        (each (k v) a
           (set (get c k) v))
-        (all (k v) b
+        (each (k v) b
           (when (number? k)
             (inc k o))
           (set (get c k) v))
@@ -126,7 +126,7 @@
     (f (hd x) (reduce f (tl x)))))
 
 (define find (f t)
-  (all (_ x) t
+  (each (_ x) t
     (let (x (f x))
       (if x (return x)))))
 
@@ -171,7 +171,7 @@
 
 (define map (f x)
   (let (t () o 0)
-    (all (k v) x
+    (each (k v) x
       (let (y (f v))
         (if (is? y)
             (set (get t (shift k o)) y)
@@ -183,7 +183,7 @@
 
 (define keys? (t)
   (let (b #f)
-    (all (k _) t
+    (each (k _) t
       (unless (number? k)
         (set b #t)
         (break)))
@@ -191,7 +191,7 @@
 
 (define empty? (t)
   (let (b #t)
-    (all (_ _) t
+    (each (_ _) t
       (set b #f)
       (break))
     b))
@@ -199,7 +199,7 @@
 (define stash (args)
   (when (keys? args)
     (let (p ())
-      (all (k v) args
+      (each (k v) args
         (unless (number? k)
           (set (get p k) v)))
       (set (get p '_stash) #t)
@@ -211,7 +211,7 @@
     (let (l (last args))
       (if (and (table? l) l._stash)
           (let (args1 (butlast args))
-            (all (k v) l
+            (each (k v) l
               (unless (= k '_stash)
                 (set (get args1 k) v)))
             args1)
@@ -296,12 +296,12 @@
     (let (s "(" sp ""
           xs () ks ()
           d (+ (or depth 0) 1))
-      (all (k v) x
+      (each (k v) x
         (if (number? k)
             (set (get xs k) (string v d))
           (do (add ks (cat k ":"))
               (add ks (string v d)))))
-      (all (_ v) (join xs ks)
+      (each (_ v) (join xs ks)
         (cat! s sp v)
         (set sp " "))
       (cat s  ")"))))
@@ -344,6 +344,6 @@
                     (hd environment)
                   (last environment))
           entry (or (get frame k) (table)))
-      (all (k v) keys
+      (each (k v) keys
         (set (get entry k) v))
       (set (get frame k) entry))))
