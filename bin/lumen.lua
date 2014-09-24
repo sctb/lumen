@@ -181,7 +181,7 @@ function reduce(f, x)
     end
   end
 end
-function shift(k, n)
+local function shift(k, n)
   if number63(k) then
     return(k - n)
   else

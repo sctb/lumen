@@ -125,7 +125,7 @@
       (one? x) (hd x)
     (f (hd x) (reduce f (tl x)))))
 
-(define shift (k n)
+(define-local shift (k n)
   (if (number? k) (- k n) k))
 
 (define keep (f x)
