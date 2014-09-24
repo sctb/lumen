@@ -125,17 +125,6 @@
       (one? x) (hd x)
     (f (hd x) (reduce f (tl x)))))
 
-(define-local shift (k n)
-  (if (number? k) (- k n) k))
-
-(define keep (f x)
-  (let (t () o 0)
-    (all (k v) x
-      (if (f v)
-          (set (get t (shift k o)) v)
-        (inc o)))
-    t))
-
 (define find (f t)
   (all (_ x) t
     (let (x (f x))
@@ -177,6 +166,9 @@
         (if x (return x)))
       (inc i))))
 
+(define-local shift (k n)
+  (if (number? k) (- k n) k))
+
 (define map (f x)
   (let (t () o 0)
     (all (k v) x
@@ -185,6 +177,9 @@
             (set (get t (shift k o)) y)
           (inc o))))
     t))
+
+(define keep (f x)
+  (map (fn (v) (when (f v) v)) x))
 
 (define keys? (t)
   (let (b #f)
