@@ -39,9 +39,6 @@ end
 function atom63(x)
   return(nil63(x) or not composite63(x))
 end
-function list63(x)
-  return(composite63(x) and is63(hd(x)))
-end
 function nan63(n)
   return(not (n == n))
 end
@@ -55,30 +52,30 @@ end
 function cut(x, from, upto)
   local l = {}
   local j = 0
-  local _u128
+  local _u127
   if nil63(from) or from < 0 then
-    _u128 = 0
+    _u127 = 0
   else
-    _u128 = from
+    _u127 = from
   end
-  local i = _u128
+  local i = _u127
   local n = length(x)
-  local _u129
+  local _u128
   if nil63(upto) or upto > n then
-    _u129 = n
+    _u128 = n
   else
-    _u129 = upto
+    _u128 = upto
   end
-  local _u25 = _u129
-  while i < _u25 do
+  local _u24 = _u128
+  while i < _u24 do
     l[j + 1] = x[i + 1]
     i = i + 1
     j = j + 1
   end
-  local _u26 = x
+  local _u25 = x
   local k = nil
-  for k in next, _u26 do
-    local v = _u26[k]
+  for k in next, _u25 do
+    local v = _u25[k]
     if not number63(k) then
       l[k] = v
     end
@@ -87,10 +84,10 @@ function cut(x, from, upto)
 end
 function keys(x)
   local t = {}
-  local _u29 = x
+  local _u28 = x
   local k = nil
-  for k in next, _u29 do
-    local v = _u29[k]
+  for k in next, _u28 do
+    local v = _u28[k]
     if not number63(k) then
       t[k] = v
     end
@@ -110,11 +107,11 @@ function char(s, n)
   return(clip(s, n, n + 1))
 end
 function code(s, n)
-  local _u130
+  local _u129
   if n then
-    _u130 = n + 1
+    _u129 = n + 1
   end
-  return(strlib.byte(s, _u130))
+  return(strlib.byte(s, _u129))
 end
 function string_literal63(x)
   return(string63(x) and char(x, 0) == "\"")
@@ -147,16 +144,16 @@ function join(a, b)
   if a and b then
     local c = {}
     local o = length(a)
-    local _u44 = a
+    local _u43 = a
     local k = nil
-    for k in next, _u44 do
-      local v = _u44[k]
+    for k in next, _u43 do
+      local v = _u43[k]
       c[k] = v
     end
-    local _u46 = b
+    local _u45 = b
     local k = nil
-    for k in next, _u46 do
-      local v = _u46[k]
+    for k in next, _u45 do
+      local v = _u45[k]
       if number63(k) then
         k = k + o
       end
@@ -179,13 +176,13 @@ function reduce(f, x)
   end
 end
 function find(f, t)
-  local _u50 = t
+  local _u49 = t
   local _u1 = nil
-  for _u1 in next, _u50 do
-    local x = _u50[_u1]
-    local _u52 = f(x)
-    if _u52 then
-      return(_u52)
+  for _u1 in next, _u49 do
+    local x = _u49[_u1]
+    local _u51 = f(x)
+    if _u51 then
+      return(_u51)
     end
   end
 end
@@ -247,10 +244,10 @@ end
 function map(f, x)
   local t = {}
   local o = 0
-  local _u66 = x
+  local _u65 = x
   local k = nil
-  for k in next, _u66 do
-    local v = _u66[k]
+  for k in next, _u65 do
+    local v = _u65[k]
     local y = f(v)
     if is63(y) then
       t[shift(k, o)] = y
@@ -269,10 +266,10 @@ function keep(f, x)
 end
 function keys63(t)
   local b = false
-  local _u71 = t
+  local _u70 = t
   local k = nil
-  for k in next, _u71 do
-    local _u2 = _u71[k]
+  for k in next, _u70 do
+    local _u2 = _u70[k]
     if not number63(k) then
       b = true
       break
@@ -282,10 +279,10 @@ function keys63(t)
 end
 function empty63(t)
   local b = true
-  local _u74 = t
+  local _u73 = t
   local _u3 = nil
-  for _u3 in next, _u74 do
-    local _u4 = _u74[_u3]
+  for _u3 in next, _u73 do
+    local _u4 = _u73[_u3]
     b = false
     break
   end
@@ -294,10 +291,10 @@ end
 function stash(args)
   if keys63(args) then
     local p = {}
-    local _u77 = args
+    local _u76 = args
     local k = nil
-    for k in next, _u77 do
-      local v = _u77[k]
+    for k in next, _u76 do
+      local v = _u76[k]
       if not number63(k) then
         p[k] = v
       end
@@ -314,10 +311,10 @@ function unstash(args)
     local l = last(args)
     if composite63(l) and l._stash then
       local args1 = butlast(args)
-      local _u80 = l
+      local _u79 = l
       local k = nil
-      for k in next, _u80 do
-        local v = _u80[k]
+      for k in next, _u79 do
+        local v = _u79[k]
         if not (k == "_stash") then
           args1[k] = v
         end
@@ -329,12 +326,12 @@ function unstash(args)
   end
 end
 function search(s, pattern, start)
-  local _u131
+  local _u130
   if start then
-    _u131 = start + 1
+    _u130 = start + 1
   end
-  local _u83 = _u131
-  local i = strlib.find(s, pattern, _u83, true)
+  local _u82 = _u130
+  local i = strlib.find(s, pattern, _u82, true)
   return(i and i - 1)
 end
 function split(s, sep)
@@ -453,10 +450,10 @@ function string(x, depth)
                   local xs = {}
                   local ks = {}
                   local d = (depth or 0) + 1
-                  local _u106 = x
+                  local _u105 = x
                   local k = nil
-                  for k in next, _u106 do
-                    local v = _u106[k]
+                  for k in next, _u105 do
+                    local v = _u105[k]
                     if number63(k) then
                       xs[k] = string(v, d)
                     else
@@ -464,10 +461,10 @@ function string(x, depth)
                       add(ks, string(v, d))
                     end
                   end
-                  local _u108 = join(xs, ks)
+                  local _u107 = join(xs, ks)
                   local _u5 = nil
-                  for _u5 in next, _u108 do
-                    local v = _u108[_u5]
+                  for _u5 in next, _u107 do
+                    local v = _u107[_u5]
                     s = s .. sp .. v
                     sp = " "
                   end
@@ -482,7 +479,7 @@ function string(x, depth)
   end
 end
 local function produces_string63(x)
-  return(string_literal63(x) or list63(x) and (hd(x) == "cat" or hd(x) == "string"))
+  return(string_literal63(x) or composite63(x) and (hd(x) == "cat" or hd(x) == "string"))
 end
 function space(xs)
   local string = function (x)
@@ -501,13 +498,13 @@ function space(xs)
   end
 end
 function apply(f, args)
-  local _u117 = stash(args)
-  return(f(unpack(_u117)))
+  local _u116 = stash(args)
+  return(f(unpack(_u116)))
 end
-local _u118 = 0
+local _u117 = 0
 function unique()
-  _u118 = _u118 + 1
-  return("_u" .. _u118)
+  _u117 = _u117 + 1
+  return("_u" .. _u117)
 end
 function unique63(id)
   return("_u" == clip(id, 0, 2))
@@ -520,22 +517,22 @@ function toplevel63()
   return(one63(environment))
 end
 function setenv(k, ...)
-  local _u123 = unstash({...})
-  local keys = cut(_u123, 0)
+  local _u122 = unstash({...})
+  local keys = cut(_u122, 0)
   if string63(k) then
-    local _u132
+    local _u131
     if keys.toplevel then
-      _u132 = hd(environment)
+      _u131 = hd(environment)
     else
-      _u132 = last(environment)
+      _u131 = last(environment)
     end
-    local frame = _u132
+    local frame = _u131
     local entry = frame[k] or {}
-    local _u125 = keys
-    local _u127 = nil
-    for _u127 in next, _u125 do
-      local v = _u125[_u127]
-      entry[_u127] = v
+    local _u124 = keys
+    local _u126 = nil
+    for _u126 in next, _u124 do
+      local v = _u124[_u126]
+      entry[_u126] = v
     end
     frame[k] = entry
   end
@@ -581,7 +578,7 @@ local function special63(k)
   return(is63(getenv(k, "special")))
 end
 local function special_form63(form)
-  return(list63(form) and special63(hd(form)))
+  return(composite63(form) and special63(hd(form)))
 end
 local function statement63(k)
   return(special63(k) and getenv(k, "stmt"))
@@ -676,7 +673,7 @@ local function bias(k)
   return(k)
 end
 function bind(lh, rh)
-  if list63(lh) and list63(rh) then
+  if composite63(lh) and composite63(rh) then
     local id = unique()
     return(join({{id, rh}}, bind(lh, id)))
   else
@@ -757,7 +754,7 @@ local function can_unquote63(depth)
   return(quoting63(depth) and depth == 1)
 end
 local function quasisplice63(x, depth)
-  return(list63(x) and can_unquote63(depth) and hd(x) == "unquote-splicing")
+  return(can_unquote63(depth) and composite63(x) and hd(x) == "unquote-splicing")
 end
 function macroexpand(form)
   if symbol63(form) then
@@ -1196,7 +1193,7 @@ local function index(k)
   end
 end
 local function precedence(form)
-  if list63(form) and not unary63(form) then
+  if not (atom63(form) or unary63(form)) then
     local _u19 = infix
     local k = nil
     for k in next, _u19 do
@@ -1334,7 +1331,7 @@ local function compile_special(form, stmt63)
   return(apply(special, args) .. tr)
 end
 local function parenthesize_call63(x)
-  return(list63(x) and hd(x) == "%function" or precedence(x) > 0)
+  return(composite63(x) and hd(x) == "%function" or precedence(x) > 0)
 end
 local function compile_call(form)
   local f = hd(form)

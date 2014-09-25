@@ -17,7 +17,7 @@
   (target js: k lua: (when (number? k) (- k 1))))
 
 (define-local precedence (form)
-  (when (and (list? form) (not (unary? form)))
+  (unless (or (atom? form) (unary? form))
     (each (k v) infix
       (if (get v (hd form)) (return (index k)))))
   0)
@@ -83,7 +83,7 @@
     (cat (apply special args) tr)))
 
 (define-local parenthesize-call? (x)
-  (or (and (list? x) (= (hd x) '%function))
+  (or (and (composite? x) (= (hd x) '%function))
       (> (precedence x) 0)))
 
 (define-local compile-call (form)

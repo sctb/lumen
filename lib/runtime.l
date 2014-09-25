@@ -27,11 +27,10 @@
 (define function? (x) (= (type x) 'function))
 
 (define composite? (x)
-  (and (is? x)
-       (= (type x) (target js: 'object lua: 'table))))
+  (and (is? x) (= (type x) (target js: 'object lua: 'table))))
 
-(define atom? (x) (or (nil? x) (not (composite? x))))
-(define list? (x) (and (composite? x) (is? (hd x))))
+(define atom? (x)
+  (or (nil? x) (not (composite? x))))
 
 (define nan? (n)
   (not (= n n)))
@@ -307,7 +306,7 @@
 
 (define-local produces-string? (x)
   (or (string-literal? x)
-      (and (list? x)
+      (and (composite? x)
            (or (= (hd x) 'cat)
                (= (hd x) 'string)))))
 

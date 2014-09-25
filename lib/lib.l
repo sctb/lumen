@@ -18,7 +18,7 @@
   (is? (getenv k 'special)))
 
 (define-local special-form? (form)
-  (and (list? form) (special? (hd form))))
+  (and (composite? form) (special? (hd form))))
 
 (define-local statement? (k)
   (and (special? k) (getenv k 'stmt)))
@@ -80,7 +80,7 @@
   k)
 
 (define bind (lh rh)
-  (if (and (list? lh) (list? rh))
+  (if (and (composite? lh) (composite? rh))
       (let (id (unique))
 	`((,id ,rh) ,@(bind lh id)))
       (atom? lh) `((,lh ,rh))
@@ -125,8 +125,8 @@
   (and (quoting? depth) (= depth 1)))
 
 (define-local quasisplice? (x depth)
-  (and (list? x)
-       (can-unquote? depth)
+  (and (can-unquote? depth)
+       (composite? x)
        (= (hd x) 'unquote-splicing)))
 
 (define macroexpand (form)
