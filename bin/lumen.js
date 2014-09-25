@@ -225,6 +225,17 @@ find = function (f, t) {
     }
   }
 };
+first = function (f, l) {
+  var i = 0;
+  var n = length(l);
+  while (i < n) {
+    var x = f(l[i]);
+    if (x) {
+      return(x);
+    }
+    i = i + 1;
+  }
+};
 in63 = function (x, t) {
   return(find(function (y) {
     return(x === y);
@@ -270,17 +281,6 @@ step = function (f, l) {
   return(iterate(function (i) {
     return(f(l[i]));
   }, length(l)));
-};
-first = function (f, l) {
-  var i = 0;
-  var n = length(l);
-  while (i < n) {
-    var x = f(l[i]);
-    if (x) {
-      return(x);
-    }
-    i = i + 1;
-  }
 };
 map = function (f, x) {
   var t = [];

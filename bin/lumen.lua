@@ -186,6 +186,17 @@ function find(f, t)
     end
   end
 end
+function first(f, l)
+  local i = 0
+  local n = length(l)
+  while i < n do
+    local x = f(l[i + 1])
+    if x then
+      return(x)
+    end
+    i = i + 1
+  end
+end
 function in63(x, t)
   return(find(function (y)
     return(x == y)
@@ -222,17 +233,6 @@ function step(f, l)
   return(iterate(function (i)
     return(f(l[i + 1]))
   end, length(l)))
-end
-function first(f, l)
-  local i = 0
-  local n = length(l)
-  while i < n do
-    local x = f(l[i + 1])
-    if x then
-      return(x)
-    end
-    i = i + 1
-  end
 end
 function map(f, x)
   local t = {}
