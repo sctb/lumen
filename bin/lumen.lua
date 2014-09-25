@@ -1949,7 +1949,7 @@ setenv("unless", {_stash = true, macro = function (cond, ...)
   local body = cut(_u56, 0)
   return({"if", {"not", cond}, join({"do"}, body)})
 end})
-setenv("table", {_stash = true, macro = function (...)
+setenv("obj", {_stash = true, macro = function (...)
   local body = unstash({...})
   return(join({"%object"}, mapo(function (x)
     return(x)
@@ -2048,7 +2048,7 @@ setenv("with-frame", {_stash = true, macro = function (...)
   local scope = _u164.scope
   local body = cut(_u164, 0)
   local x = unique()
-  local _u168 = {"table"}
+  local _u168 = {"obj"}
   _u168._scope = scope
   return({"do", {"add", "environment", _u168}, {"let", {x, join({"do"}, body)}, {"drop", "environment"}, x}})
 end})
@@ -2137,7 +2137,7 @@ setenv("set-of", {_stash = true, macro = function (...)
     local x = _u293[_u2]
     l[x] = true
   end
-  return(join({"table"}, l))
+  return(join({"obj"}, l))
 end})
 setenv("language", {_stash = true, macro = function ()
   return({"quote", target})

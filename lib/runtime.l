@@ -1,6 +1,6 @@
 ;; -*- mode: lisp -*-
 
-(define environment (list (table)))
+(define environment (list (obj)))
 (define target (language))
 
 (define nil? (x)
@@ -341,7 +341,7 @@
     (let (frame (if keys.toplevel
                     (hd environment)
                   (last environment))
-          entry (or (get frame k) (table)))
+          entry (or (get frame k) (obj)))
       (each (k v) keys
         (set (get entry k) v))
       (set (get frame k) entry))))

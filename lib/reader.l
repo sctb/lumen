@@ -4,7 +4,7 @@
 (define-local whitespace (set-of " " "\t" "\n"))
 
 (define stream (str)
-  (table pos: 0 string: str len: (length str)))
+  (obj pos: 0 string: str len: (length str)))
 
 (define peek-char (s)
   (if (< s.pos s.len) (char s.string s.pos)))
@@ -24,8 +24,8 @@
               (skip-non-code s))
         (break)))))
 
-(define read-table (table))
-(define eof (table))
+(define read-table (obj))
+(define eof (obj))
 
 (define read (s)
   (skip-non-code s)

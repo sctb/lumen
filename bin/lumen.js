@@ -2150,7 +2150,7 @@ setenv("unless", {_stash: true, macro: function (cond) {
   var body = cut(_u54, 0);
   return(["if", ["not", cond], join(["do"], body)]);
 }});
-setenv("table", {_stash: true, macro: function () {
+setenv("obj", {_stash: true, macro: function () {
   var body = unstash(Array.prototype.slice.call(arguments, 0));
   return(join(["%object"], mapo(function (x) {
     return(x);
@@ -2257,7 +2257,7 @@ setenv("with-frame", {_stash: true, macro: function () {
   var scope = _u155.scope;
   var body = cut(_u155, 0);
   var x = unique();
-  var _u158 = ["table"];
+  var _u158 = ["obj"];
   _u158._scope = scope;
   return(["do", ["add", "environment", _u158], ["let", [x, join(["do"], body)], ["drop", "environment"], x]]);
 }});
@@ -2354,7 +2354,7 @@ setenv("set-of", {_stash: true, macro: function () {
     var _u2 = _u337;
     l[x] = true;
   }
-  return(join(["table"], l));
+  return(join(["obj"], l));
 }});
 setenv("language", {_stash: true, macro: function () {
   return(["quote", target]);

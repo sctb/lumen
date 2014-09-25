@@ -37,7 +37,7 @@
 (define-macro unless (cond rest: body)
   `(if (not ,cond) (do ,@body)))
 
-(define-macro table body
+(define-macro obj body
   `(%object ,@(mapo (fn (x) x) body)))
 
 (define-macro let (bindings rest: body)
@@ -91,7 +91,7 @@
 
 (define-macro with-frame (rest: body :scope)
   (let (x (unique))
-    `(do (add environment (table _scope: ,scope))
+    `(do (add environment (obj _scope: ,scope))
          (let (,x (do ,@body))
            (drop environment)
            ,x))))
@@ -147,7 +147,7 @@
   (let (l ())
     (each (_ x) xs
       (set (get l x) #t))
-    `(table ,@l)))
+    `(obj ,@l)))
 
 (define-macro language () `',target)
 
