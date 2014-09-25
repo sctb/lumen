@@ -236,28 +236,25 @@ function first(f, l)
 end
 function map(f, x)
   local t = {}
-  local a = {}
-  local _u64 = x
-  local k = nil
-  for k in next, _u64 do
-    local v = _u64[k]
-    local y = f(v)
-    if is63(y) then
-      if number63(k) then
-        a[k] = y
-      else
-        t[k] = y
-      end
-    end
-  end
   local i = 0
   local n = length(x)
   while i < n do
-    local y = a[i + 1]
+    local y = f(x[i + 1])
     if is63(y) then
       add(t, y)
     end
     i = i + 1
+  end
+  local _u64 = x
+  local k = nil
+  for k in next, _u64 do
+    local v = _u64[k]
+    if not number63(k) then
+      local y = f(v)
+      if is63(y) then
+        t[k] = y
+      end
+    end
   end
   return(t)
 end

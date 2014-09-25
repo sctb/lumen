@@ -165,19 +165,18 @@
       (inc i))))
 
 (define map (f x)
-  (let (t () a ())
-    (each (k v) x
-      (let (y (f v))
-        (when (is? y)
-          (if (number? k)
-              (set (get a k) y)
-            (set (get t k) y)))))
+  (let (t ())
     (let (i 0 n (length x))
       (while (< i n)
-        (let (y (at a i))
+        (let (y (f (at x i)))
           (when (is? y)
             (add t y)))
         (inc i)))
+    (each (k v) x
+      (unless (number? k)
+        (let (y (f v))
+          (when (is? y)
+            (set (get t k) y)))))
     t))
 
 (define keep (f x)

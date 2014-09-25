@@ -284,7 +284,15 @@ first = function (f, l) {
 };
 map = function (f, x) {
   var t = [];
-  var a = [];
+  var i = 0;
+  var n = length(x);
+  while (i < n) {
+    var y = f(x[i]);
+    if (is63(y)) {
+      add(t, y);
+    }
+    i = i + 1;
+  }
   var _u70 = x;
   var k = undefined;
   for (k in _u70) {
@@ -297,23 +305,12 @@ map = function (f, x) {
       _u139 = _u71;
     }
     var _u72 = _u139;
-    var y = f(v);
-    if (is63(y)) {
-      if (number63(_u72)) {
-        a[_u72] = y;
-      } else {
+    if (!number63(_u72)) {
+      var y = f(v);
+      if (is63(y)) {
         t[_u72] = y;
       }
     }
-  }
-  var i = 0;
-  var n = length(x);
-  while (i < n) {
-    var y = a[i];
-    if (is63(y)) {
-      add(t, y);
-    }
-    i = i + 1;
   }
   return(t);
 };
