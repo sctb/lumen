@@ -160,7 +160,7 @@
                   (quasiexpand v depth)))
           (set (get (last xs) k) v))))
     ;; collect sibling lists
-    (series
+    (step
      (fn (x)
        (if (quasisplice? x depth)
            (let (x (quasiexpand (at x 1)))

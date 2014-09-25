@@ -34,10 +34,10 @@
 
 (define-local compile-args (args)
   (let (s "(" c "")
-    (series (fn (x)
-              (cat! s c (compile x))
-              (set c ", "))
-            args)
+    (step (fn (x)
+            (cat! s c (compile x))
+            (set c ", "))
+          args)
     (cat s ")")))
 
 (define-local escape-newlines (s)
@@ -154,9 +154,9 @@
   (lower-statement `(do ,@body) tail?))
 
 (define-local lower-do (args hoist stmt? tail?)
-  (series (fn (x)
-            (add hoist (lower x hoist stmt?)))
-          (butlast args))
+  (step (fn (x)
+          (add hoist (lower x hoist stmt?)))
+        (butlast args))
   (let (e (lower (last args) hoist stmt? tail?))
     (if (and tail? (can-return? e))
         `(return ,e)

@@ -2,9 +2,9 @@
 
 (define-special do forms :stmt :tr
   (let (s "")
-    (series (fn (x)
-              (cat! s (compile x :stmt)))
-            forms)
+    (step (fn (x)
+            (cat! s (compile x :stmt)))
+          forms)
     s))
 
 (define-special %if (cond cons alt) :stmt :tr

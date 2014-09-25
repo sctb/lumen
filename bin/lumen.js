@@ -272,7 +272,7 @@ replicate = function (n, x) {
   }, n);
   return(l);
 };
-series = function (f, l) {
+step = function (f, l) {
   return(iterate(function (i) {
     return(f(l[i]));
   }, length(l)));
@@ -1005,7 +1005,7 @@ quasiquote_list = function (form, depth) {
       last(xs)[_u88] = _u89;
     }
   }
-  series(function (x) {
+  step(function (x) {
     if (quasisplice63(x, depth)) {
       var _u91 = quasiexpand(x[1]);
       add(xs, _u91);
@@ -1413,7 +1413,7 @@ var infix63 = function (x) {
 var compile_args = function (args) {
   var s = "(";
   var c = "";
-  series(function (x) {
+  step(function (x) {
     s = s + c + compile(x);
     c = ", ";
   }, args);
@@ -1666,7 +1666,7 @@ var lower_body = function (body, tail63) {
   return(lower_statement(join(["do"], body), tail63));
 };
 var lower_do = function (args, hoist, stmt63, tail63) {
-  series(function (x) {
+  step(function (x) {
     return(add(hoist, lower(x, hoist, stmt63)));
   }, butlast(args));
   var e = lower(last(args), hoist, stmt63, tail63);
@@ -1850,7 +1850,7 @@ load = function (path) {
 setenv("do", {_stash: true, tr: true, special: function () {
   var forms = unstash(Array.prototype.slice.call(arguments, 0));
   var s = "";
-  series(function (x) {
+  step(function (x) {
     s = s + compile(x, {_stash: true, stmt: true});
   }, forms);
   return(s);
@@ -2479,7 +2479,7 @@ var main = function () {
     }
     i = i + 1;
   }
-  series(run_file, pre);
+  step(run_file, pre);
   if (input && output) {
     if (target1) {
       target = target1;

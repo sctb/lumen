@@ -156,7 +156,7 @@
     (iterate (fn () (add l x)) n)
     l))
 
-(define series (f l)
+(define step (f l)
   (iterate (fn (i) (f (at l i))) (length l)))
 
 (define first (f l)

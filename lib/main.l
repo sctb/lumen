@@ -49,7 +49,7 @@
 	      (not (= "-" (char a 0)))
               (add pre a))
           (inc i)))
-      (series run-file pre)
+      (step run-file pre)
       (if (and input output)
           (do (if target1 (set target target1))
               (let (code (compile-file input))

@@ -224,7 +224,7 @@ function replicate(n, x)
   end, n)
   return(l)
 end
-function series(f, l)
+function step(f, l)
   return(iterate(function (i)
     return(f(l[i + 1]))
   end, length(l)))
@@ -835,7 +835,7 @@ function quasiquote_list(form, depth)
       last(xs)[k] = _u85
     end
   end
-  series(function (x)
+  step(function (x)
     if quasisplice63(x, depth) then
       local _u87 = quasiexpand(x[2])
       add(xs, _u87)
@@ -1229,7 +1229,7 @@ end
 local function compile_args(args)
   local s = "("
   local c = ""
-  series(function (x)
+  step(function (x)
     s = s .. c .. compile(x)
     c = ", "
   end, args)
@@ -1482,7 +1482,7 @@ local function lower_body(body, tail63)
   return(lower_statement(join({"do"}, body), tail63))
 end
 local function lower_do(args, hoist, stmt63, tail63)
-  series(function (x)
+  step(function (x)
     return(add(hoist, lower(x, hoist, stmt63)))
   end, butlast(args))
   local e = lower(last(args), hoist, stmt63, tail63)
@@ -1673,7 +1673,7 @@ end
 setenv("do", {_stash = true, tr = true, special = function (...)
   local forms = unstash({...})
   local s = ""
-  series(function (x)
+  step(function (x)
     s = s .. compile(x, {_stash = true, stmt = true})
   end, forms)
   return(s)
@@ -2264,7 +2264,7 @@ local function main()
     end
     i = i + 1
   end
-  series(run_file, pre)
+  step(run_file, pre)
   if input and output then
     if target1 then
       target = target1
