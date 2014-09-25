@@ -164,16 +164,20 @@
         (if x (return x)))
       (inc i))))
 
-(define-local shift (k n)
-  (if (number? k) (- k n) k))
-
 (define map (f x)
-  (let (t () o 0)
+  (let (t () a ())
     (each (k v) x
       (let (y (f v))
-        (if (is? y)
-            (set (get t (shift k o)) y)
-          (inc o))))
+        (when (is? y)
+          (if (number? k)
+              (set (get a k) y)
+            (set (get t k) y)))))
+    (let (i 0 n (length x))
+      (while (< i n)
+        (let (y (at a i))
+          (when (is? y)
+            (add t y)))
+        (inc i)))
     t))
 
 (define keep (f x)
