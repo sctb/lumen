@@ -265,28 +265,24 @@ function keep(f, x)
   end, x))
 end
 function keys63(t)
-  local b = false
   local _u70 = t
   local k = nil
   for k in next, _u70 do
     local _u2 = _u70[k]
     if not number63(k) then
-      b = true
-      break
+      return(true)
     end
   end
-  return(b)
+  return(false)
 end
 function empty63(t)
-  local b = true
   local _u73 = t
   local _u3 = nil
   for _u3 in next, _u73 do
     local _u4 = _u73[_u3]
-    b = false
-    break
+    return(false)
   end
-  return(b)
+  return(true)
 end
 function stash(args)
   if keys63(args) then
@@ -721,7 +717,6 @@ function bind42(args, body)
     return({args1, {join({"let", {args, rest()}}, body)}})
   else
     local bs = {}
-    local k63 = keys63(args)
     local r = unique()
     local _u53 = args
     local k = nil
@@ -737,7 +732,7 @@ function bind42(args, body)
         end
       end
     end
-    if k63 then
+    if keys63(args) then
       bs = join(bs, {r, rest()})
       bs = join(bs, {keys(args), r})
     end

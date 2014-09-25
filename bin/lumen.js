@@ -321,7 +321,6 @@ keep = function (f, x) {
   }, x));
 };
 keys63 = function (t) {
-  var b = false;
   var _u77 = t;
   var k = undefined;
   for (k in _u77) {
@@ -335,14 +334,12 @@ keys63 = function (t) {
     }
     var _u79 = _u141;
     if (!number63(_u79)) {
-      b = true;
-      break;
+      return(true);
     }
   }
-  return(b);
+  return(false);
 };
 empty63 = function (t) {
-  var b = true;
   var _u81 = t;
   var _u3 = undefined;
   for (_u3 in _u81) {
@@ -355,10 +352,9 @@ empty63 = function (t) {
       _u142 = _u82;
     }
     var _u3 = _u142;
-    b = false;
-    break;
+    return(false);
   }
-  return(b);
+  return(true);
 };
 stash = function (args) {
   if (keys63(args)) {
@@ -859,7 +855,6 @@ bind42 = function (args, body) {
     return([args1, [join(["let", [args, rest()]], body)]]);
   } else {
     var bs = [];
-    var k63 = keys63(args);
     var r = unique();
     var _u55 = args;
     var k = undefined;
@@ -883,7 +878,7 @@ bind42 = function (args, body) {
         }
       }
     }
-    if (k63) {
+    if (keys63(args)) {
       bs = join(bs, [r, rest()]);
       bs = join(bs, [keys(args), r]);
     }

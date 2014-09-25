@@ -180,19 +180,15 @@
   (map (fn (v) (when (f v) v)) x))
 
 (define keys? (t)
-  (let (b #f)
-    (each (k _) t
-      (unless (number? k)
-        (set b #t)
-        (break)))
-    b))
+  (each (k _) t
+    (unless (number? k)
+      (return #t)))
+  #f)
 
 (define empty? (t)
-  (let (b #t)
-    (each (_ _) t
-      (set b #f)
-      (break))
-    b))
+  (each (_ _) t
+    (return #f))
+  #t)
 
 (define stash (args)
   (when (keys? args)

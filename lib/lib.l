@@ -103,14 +103,14 @@
         (do (add args1 '|...|) '(unstash (list |...|)))))
     (if (atom? args)
         (list args1 `((let ,(list args (rest)) ,@body)))
-      (let (bs () k? (keys? args) r (unique))
+      (let (bs () r (unique))
         (each (k v) args
           (when (number? k)
             (if (atom? v) (add args1 v)
               (let (x (unique))
                 (add args1 x)
                 (join! bs (list v x))))))
-        (when k?
+        (when (keys? args)
           (join! bs (list r (rest)))
           (join! bs (list (keys args) r)))
         (list args1 `((let ,bs ,@body)))))))
