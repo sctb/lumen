@@ -33,7 +33,7 @@
   (let (b (first (fn (frame)
                    (or (get frame k) frame._scope))
                  (reverse environment)))
-    (and (table? b) (is? b.variable))))
+    (and (composite? b) (is? b.variable))))
 
 (define bound? (x)
   (or (macro? x)
