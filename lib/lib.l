@@ -18,7 +18,7 @@
   (is? (getenv k 'special)))
 
 (define-local special-form? (form)
-  (and (composite? form) (special? (hd form))))
+  (and (obj? form) (special? (hd form))))
 
 (define-local statement? (k)
   (and (special? k) (getenv k 'stmt)))
@@ -33,7 +33,7 @@
   (let (b (first (fn (frame)
                    (or (get frame k) frame._scope))
                  (reverse environment)))
-    (and (composite? b) (is? b.variable))))
+    (and (obj? b) (is? b.variable))))
 
 (define bound? (x)
   (or (macro? x)
@@ -80,7 +80,7 @@
   k)
 
 (define bind (lh rh)
-  (if (and (composite? lh) (composite? rh))
+  (if (and (obj? lh) (obj? rh))
       (let (id (unique))
 	`((,id ,rh) ,@(bind lh id)))
       (atom? lh) `((,lh ,rh))
@@ -126,7 +126,7 @@
 
 (define-local quasisplice? (x depth)
   (and (can-unquote? depth)
-       (composite? x)
+       (obj? x)
        (= (hd x) 'unquote-splicing)))
 
 (define macroexpand (form)

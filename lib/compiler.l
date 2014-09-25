@@ -83,7 +83,7 @@
     (cat (apply special args) tr)))
 
 (define-local parenthesize-call? (x)
-  (or (and (composite? x) (= (hd x) '%function))
+  (or (and (obj? x) (= (hd x) '%function))
       (> (precedence x) 0)))
 
 (define-local compile-call (form)

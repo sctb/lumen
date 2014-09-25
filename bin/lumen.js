@@ -36,11 +36,11 @@ boolean63 = function (x) {
 function63 = function (x) {
   return(type(x) === "function");
 };
-composite63 = function (x) {
+obj63 = function (x) {
   return(is63(x) && type(x) === "object");
 };
 atom63 = function (x) {
-  return(nil63(x) || !composite63(x));
+  return(nil63(x) || !obj63(x));
 };
 nan63 = function (n) {
   return(!(n === n));
@@ -389,7 +389,7 @@ unstash = function (args) {
     return([]);
   } else {
     var l = last(args);
-    if (composite63(l) && l._stash) {
+    if (obj63(l) && l._stash) {
       var args1 = butlast(args);
       var _u88 = l;
       var k = undefined;
@@ -591,7 +591,7 @@ string = function (x, depth) {
   }
 };
 var produces_string63 = function (x) {
-  return(string_literal63(x) || composite63(x) && (hd(x) === "cat" || hd(x) === "string"));
+  return(string_literal63(x) || obj63(x) && (hd(x) === "cat" || hd(x) === "string"));
 };
 space = function (xs) {
   var string = function (x) {
@@ -700,7 +700,7 @@ var special63 = function (k) {
   return(is63(getenv(k, "special")));
 };
 var special_form63 = function (form) {
-  return(composite63(form) && special63(hd(form)));
+  return(obj63(form) && special63(hd(form)));
 };
 var statement63 = function (k) {
   return(special63(k) && getenv(k, "stmt"));
@@ -715,7 +715,7 @@ var variable63 = function (k) {
   var b = first(function (frame) {
     return(frame[k] || frame._scope);
   }, reverse(environment));
-  return(composite63(b) && is63(b.variable));
+  return(obj63(b) && is63(b.variable));
 };
 bound63 = function (x) {
   return(macro63(x) || special63(x) || symbol63(x) || variable63(x));
@@ -803,7 +803,7 @@ var bias = function (k) {
   return(k);
 };
 bind = function (lh, rh) {
-  if (composite63(lh) && composite63(rh)) {
+  if (obj63(lh) && obj63(rh)) {
     var id = unique();
     return(join([[id, rh]], bind(lh, id)));
   } else {
@@ -900,7 +900,7 @@ var can_unquote63 = function (depth) {
   return(quoting63(depth) && depth === 1);
 };
 var quasisplice63 = function (x, depth) {
-  return(can_unquote63(depth) && composite63(x) && hd(x) === "unquote-splicing");
+  return(can_unquote63(depth) && obj63(x) && hd(x) === "unquote-splicing");
 };
 macroexpand = function (form) {
   if (symbol63(form)) {
@@ -1375,13 +1375,13 @@ var precedence = function (form) {
     for (k in _u19) {
       var v = _u19[k];
       var _u20 = parseInt(k);
-      var _u107;
+      var _u108;
       if (isNaN(_u20)) {
-        _u107 = k;
+        _u108 = k;
       } else {
-        _u107 = _u20;
+        _u108 = _u20;
       }
-      var _u21 = _u107;
+      var _u21 = _u108;
       if (v[hd(form)]) {
         return(index(_u21));
       }
@@ -1418,13 +1418,13 @@ var escape_newlines = function (s) {
   var i = 0;
   while (i < length(s)) {
     var c = char(s, i);
-    var _u108;
+    var _u109;
     if (c === "\n") {
-      _u108 = "\\n";
+      _u109 = "\\n";
     } else {
-      _u108 = c;
+      _u109 = c;
     }
-    s1 = s1 + _u108;
+    s1 = s1 + _u109;
     i = i + 1;
   }
   return(s1 + "");
@@ -1435,25 +1435,25 @@ var id = function (id) {
   while (i < length(id)) {
     var c = char(id, i);
     var n = code(c);
-    var _u109;
+    var _u110;
     if (c === "-") {
-      _u109 = "_";
+      _u110 = "_";
     } else {
-      var _u110;
+      var _u111;
       if (valid_code63(n)) {
-        _u110 = c;
+        _u111 = c;
       } else {
-        var _u111;
+        var _u112;
         if (i === 0) {
-          _u111 = "_" + n;
+          _u112 = "_" + n;
         } else {
-          _u111 = n;
+          _u112 = n;
         }
-        _u110 = _u111;
+        _u111 = _u112;
       }
-      _u109 = _u110;
+      _u110 = _u111;
     }
-    var c1 = _u109;
+    var c1 = _u110;
     id1 = id1 + c1;
     i = i + 1;
   }
@@ -1508,14 +1508,15 @@ var terminator = function (stmt63) {
 var compile_special = function (form, stmt63) {
   var x = form[0];
   var args = cut(form, 1);
-  var self_tr63 = getenv(x).tr;
-  var stmt = getenv(x).stmt;
-  var special = getenv(x).special;
+  var _u32 = getenv(x);
+  var self_tr63 = _u32.tr;
+  var stmt = _u32.stmt;
+  var special = _u32.special;
   var tr = terminator(stmt63 && !self_tr63);
   return(apply(special, args) + tr);
 };
 var parenthesize_call63 = function (x) {
-  return(composite63(x) && hd(x) === "%function" || precedence(x) > 0);
+  return(obj63(x) && hd(x) === "%function" || precedence(x) > 0);
 };
 var compile_call = function (form) {
   var f = hd(form);
@@ -1528,15 +1529,15 @@ var compile_call = function (form) {
   }
 };
 var op_delims = function (parent, child) {
-  var _u34 = unstash(Array.prototype.slice.call(arguments, 2));
-  var right = _u34.right;
-  var _u112;
+  var _u35 = unstash(Array.prototype.slice.call(arguments, 2));
+  var right = _u35.right;
+  var _u113;
   if (right) {
-    _u112 = _6261;
+    _u113 = _6261;
   } else {
-    _u112 = _62;
+    _u113 = _62;
   }
-  if (_u112(precedence(child), precedence(parent))) {
+  if (_u113(precedence(child), precedence(parent))) {
     return(["(", ")"]);
   } else {
     return(["", ""]);
@@ -1544,70 +1545,70 @@ var op_delims = function (parent, child) {
 };
 var compile_infix = function (form) {
   var op = form[0];
-  var _u38 = cut(form, 1);
-  var a = _u38[0];
-  var b = _u38[1];
-  var _u39 = op_delims(form, a);
-  var ao = _u39[0];
-  var ac = _u39[1];
-  var _u40 = op_delims(form, b, {_stash: true, right: true});
-  var bo = _u40[0];
-  var bc = _u40[1];
-  var _u41 = compile(a);
-  var _u42 = compile(b);
-  var _u43 = getop(op);
+  var _u39 = cut(form, 1);
+  var a = _u39[0];
+  var b = _u39[1];
+  var _u40 = op_delims(form, a);
+  var ao = _u40[0];
+  var ac = _u40[1];
+  var _u41 = op_delims(form, b, {_stash: true, right: true});
+  var bo = _u41[0];
+  var bc = _u41[1];
+  var _u42 = compile(a);
+  var _u43 = compile(b);
+  var _u44 = getop(op);
   if (unary63(form)) {
-    return(_u43 + ao + _u41 + ac);
+    return(_u44 + ao + _u42 + ac);
   } else {
-    return(ao + _u41 + ac + " " + _u43 + " " + bo + _u42 + bc);
+    return(ao + _u42 + ac + " " + _u44 + " " + bo + _u43 + bc);
   }
 };
 compile_function = function (args, body) {
-  var _u44 = unstash(Array.prototype.slice.call(arguments, 2));
-  var name = _u44.name;
-  var prefix = _u44.prefix;
-  var _u113;
-  if (name) {
-    _u113 = compile(name);
-  } else {
-    _u113 = "";
-  }
-  var id = _u113;
-  var _u45 = compile_args(args);
-  indent_level = indent_level + 1;
-  var _u47 = compile(body, {_stash: true, stmt: true});
-  indent_level = indent_level - 1;
-  var _u46 = _u47;
-  var ind = indentation();
+  var _u45 = unstash(Array.prototype.slice.call(arguments, 2));
+  var name = _u45.name;
+  var prefix = _u45.prefix;
   var _u114;
-  if (prefix) {
-    _u114 = prefix + " ";
+  if (name) {
+    _u114 = compile(name);
   } else {
     _u114 = "";
   }
-  var p = _u114;
+  var id = _u114;
+  var _u46 = compile_args(args);
+  indent_level = indent_level + 1;
+  var _u48 = compile(body, {_stash: true, stmt: true});
+  indent_level = indent_level - 1;
+  var _u47 = _u48;
+  var ind = indentation();
   var _u115;
-  if (target === "js") {
-    _u115 = "";
+  if (prefix) {
+    _u115 = prefix + " ";
   } else {
-    _u115 = "end";
+    _u115 = "";
   }
-  var tr = _u115;
+  var p = _u115;
+  var _u116;
+  if (target === "js") {
+    _u116 = "";
+  } else {
+    _u116 = "end";
+  }
+  var tr = _u116;
   if (name) {
     tr = tr + "\n";
   }
   if (target === "js") {
-    return("function " + id + _u45 + " {\n" + _u46 + ind + "}" + tr);
+    return("function " + id + _u46 + " {\n" + _u47 + ind + "}" + tr);
   } else {
-    return(p + "function " + id + _u45 + "\n" + _u46 + ind + tr);
+    return(p + "function " + id + _u46 + "\n" + _u47 + ind + tr);
   }
 };
 var can_return63 = function (form) {
   return(is63(form) && (atom63(form) || !(hd(form) === "return") && !statement63(hd(form))));
 };
 compile = function (form) {
-  var _u49 = unstash(Array.prototype.slice.call(arguments, 1));
-  var stmt = _u49.stmt;
+  var _u50 = unstash(Array.prototype.slice.call(arguments, 1));
+  var stmt = _u50.stmt;
   if (nil63(form)) {
     return("");
   } else {
@@ -1615,27 +1616,27 @@ compile = function (form) {
       return(compile_special(form, stmt));
     } else {
       var tr = terminator(stmt);
-      var _u116;
-      if (stmt) {
-        _u116 = indentation();
-      } else {
-        _u116 = "";
-      }
-      var ind = _u116;
       var _u117;
-      if (atom63(form)) {
-        _u117 = compile_atom(form);
+      if (stmt) {
+        _u117 = indentation();
       } else {
-        var _u118;
-        if (infix63(hd(form))) {
-          _u118 = compile_infix(form);
-        } else {
-          _u118 = compile_call(form);
-        }
-        _u117 = _u118;
+        _u117 = "";
       }
-      var _u50 = _u117;
-      return(ind + _u50 + tr);
+      var ind = _u117;
+      var _u118;
+      if (atom63(form)) {
+        _u118 = compile_atom(form);
+      } else {
+        var _u119;
+        if (infix63(hd(form))) {
+          _u119 = compile_infix(form);
+        } else {
+          _u119 = compile_call(form);
+        }
+        _u118 = _u119;
+      }
+      var _u51 = _u118;
+      return(ind + _u51 + tr);
     }
   }
 };
@@ -1672,22 +1673,22 @@ var lower_do = function (args, hoist, stmt63, tail63) {
 };
 var lower_if = function (args, hoist, stmt63, tail63) {
   var cond = args[0];
-  var _u61 = args[1];
-  var _u62 = args[2];
+  var _u62 = args[1];
+  var _u63 = args[2];
   if (stmt63 || tail63) {
-    var _u120;
-    if (_u62) {
-      _u120 = [lower_body([_u62], tail63)];
+    var _u121;
+    if (_u63) {
+      _u121 = [lower_body([_u63], tail63)];
     }
-    return(add(hoist, join(["%if", lower(cond, hoist), lower_body([_u61], tail63)], _u120)));
+    return(add(hoist, join(["%if", lower(cond, hoist), lower_body([_u62], tail63)], _u121)));
   } else {
     var e = unique();
     add(hoist, ["%local", e]);
-    var _u119;
-    if (_u62) {
-      _u119 = [lower(["set", e, _u62])];
+    var _u120;
+    if (_u63) {
+      _u120 = [lower(["set", e, _u63])];
     }
-    add(hoist, join(["%if", lower(cond, hoist), lower(["set", e, _u61])], _u119));
+    add(hoist, join(["%if", lower(cond, hoist), lower(["set", e, _u62])], _u120));
     return(e);
   }
 };
@@ -1698,13 +1699,13 @@ var lower_short = function (x, args, hoist) {
   var b1 = lower(b, hoist1);
   if (some63(hoist1)) {
     var id = unique();
-    var _u121;
+    var _u122;
     if (x === "and") {
-      _u121 = ["%if", id, b, id];
+      _u122 = ["%if", id, b, id];
     } else {
-      _u121 = ["%if", id, id, b];
+      _u122 = ["%if", id, id, b];
     }
-    return(lower(["do", ["%local", id, a], _u121], hoist));
+    return(lower(["do", ["%local", id, a], _u122], hoist));
   } else {
     return([x, lower(a, hoist), b1]);
   }
@@ -1730,16 +1731,16 @@ var lower_function = function (args) {
 };
 var lower_definition = function (kind, args, hoist) {
   var name = args[0];
-  var _u87 = args[1];
+  var _u88 = args[1];
   var body = cut(args, 2);
-  return(add(hoist, [kind, name, _u87, lower_body(body, true)]));
+  return(add(hoist, [kind, name, _u88, lower_body(body, true)]));
 };
 var lower_call = function (form, hoist) {
-  var _u90 = map(function (x) {
+  var _u91 = map(function (x) {
     return(lower(x, hoist));
   }, form);
-  if (some63(_u90)) {
-    return(_u90);
+  if (some63(_u91)) {
+    return(_u91);
   }
 };
 var lower_infix63 = function (form) {

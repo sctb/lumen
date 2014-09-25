@@ -33,11 +33,11 @@ end
 function function63(x)
   return(type(x) == "function")
 end
-function composite63(x)
+function obj63(x)
   return(is63(x) and type(x) == "table")
 end
 function atom63(x)
-  return(nil63(x) or not composite63(x))
+  return(nil63(x) or not obj63(x))
 end
 function nan63(n)
   return(not (n == n))
@@ -309,7 +309,7 @@ function unstash(args)
     return({})
   else
     local l = last(args)
-    if composite63(l) and l._stash then
+    if obj63(l) and l._stash then
       local args1 = butlast(args)
       local _u79 = l
       local k = nil
@@ -479,7 +479,7 @@ function string(x, depth)
   end
 end
 local function produces_string63(x)
-  return(string_literal63(x) or composite63(x) and (hd(x) == "cat" or hd(x) == "string"))
+  return(string_literal63(x) or obj63(x) and (hd(x) == "cat" or hd(x) == "string"))
 end
 function space(xs)
   local string = function (x)
@@ -578,7 +578,7 @@ local function special63(k)
   return(is63(getenv(k, "special")))
 end
 local function special_form63(form)
-  return(composite63(form) and special63(hd(form)))
+  return(obj63(form) and special63(hd(form)))
 end
 local function statement63(k)
   return(special63(k) and getenv(k, "stmt"))
@@ -593,7 +593,7 @@ local function variable63(k)
   local b = first(function (frame)
     return(frame[k] or frame._scope)
   end, reverse(environment))
-  return(composite63(b) and is63(b.variable))
+  return(obj63(b) and is63(b.variable))
 end
 function bound63(x)
   return(macro63(x) or special63(x) or symbol63(x) or variable63(x))
@@ -673,7 +673,7 @@ local function bias(k)
   return(k)
 end
 function bind(lh, rh)
-  if composite63(lh) and composite63(rh) then
+  if obj63(lh) and obj63(rh) then
     local id = unique()
     return(join({{id, rh}}, bind(lh, id)))
   else
@@ -754,7 +754,7 @@ local function can_unquote63(depth)
   return(quoting63(depth) and depth == 1)
 end
 local function quasisplice63(x, depth)
-  return(can_unquote63(depth) and composite63(x) and hd(x) == "unquote-splicing")
+  return(can_unquote63(depth) and obj63(x) and hd(x) == "unquote-splicing")
 end
 function macroexpand(form)
   if symbol63(form) then
@@ -1234,13 +1234,13 @@ local function escape_newlines(s)
   local i = 0
   while i < length(s) do
     local c = char(s, i)
-    local _u110
+    local _u111
     if c == "\n" then
-      _u110 = "\\n"
+      _u111 = "\\n"
     else
-      _u110 = c
+      _u111 = c
     end
-    s1 = s1 .. _u110
+    s1 = s1 .. _u111
     i = i + 1
   end
   return(s1 .. "")
@@ -1251,25 +1251,25 @@ local function id(id)
   while i < length(id) do
     local c = char(id, i)
     local n = code(c)
-    local _u111
+    local _u112
     if c == "-" then
-      _u111 = "_"
+      _u112 = "_"
     else
-      local _u112
+      local _u113
       if valid_code63(n) then
-        _u112 = c
+        _u113 = c
       else
-        local _u113
+        local _u114
         if i == 0 then
-          _u113 = "_" .. n
+          _u114 = "_" .. n
         else
-          _u113 = n
+          _u114 = n
         end
-        _u112 = _u113
+        _u113 = _u114
       end
-      _u111 = _u112
+      _u112 = _u113
     end
-    local c1 = _u111
+    local c1 = _u112
     id1 = id1 .. c1
     i = i + 1
   end
@@ -1324,14 +1324,15 @@ end
 local function compile_special(form, stmt63)
   local x = form[1]
   local args = cut(form, 1)
-  local self_tr63 = getenv(x).tr
-  local stmt = getenv(x).stmt
-  local special = getenv(x).special
+  local _u31 = getenv(x)
+  local self_tr63 = _u31.tr
+  local stmt = _u31.stmt
+  local special = _u31.special
   local tr = terminator(stmt63 and not self_tr63)
   return(apply(special, args) .. tr)
 end
 local function parenthesize_call63(x)
-  return(composite63(x) and hd(x) == "%function" or precedence(x) > 0)
+  return(obj63(x) and hd(x) == "%function" or precedence(x) > 0)
 end
 local function compile_call(form)
   local f = hd(form)
@@ -1344,15 +1345,15 @@ local function compile_call(form)
   end
 end
 local function op_delims(parent, child, ...)
-  local _u33 = unstash({...})
-  local right = _u33.right
-  local _u114
+  local _u34 = unstash({...})
+  local right = _u34.right
+  local _u115
   if right then
-    _u114 = _6261
+    _u115 = _6261
   else
-    _u114 = _62
+    _u115 = _62
   end
-  if _u114(precedence(child), precedence(parent)) then
+  if _u115(precedence(child), precedence(parent)) then
     return({"(", ")"})
   else
     return({"", ""})
@@ -1360,70 +1361,70 @@ local function op_delims(parent, child, ...)
 end
 local function compile_infix(form)
   local op = form[1]
-  local _u38 = cut(form, 1)
-  local a = _u38[1]
-  local b = _u38[2]
-  local _u39 = op_delims(form, a)
-  local ao = _u39[1]
-  local ac = _u39[2]
-  local _u40 = op_delims(form, b, {_stash = true, right = true})
-  local bo = _u40[1]
-  local bc = _u40[2]
-  local _u41 = compile(a)
-  local _u42 = compile(b)
-  local _u43 = getop(op)
+  local _u39 = cut(form, 1)
+  local a = _u39[1]
+  local b = _u39[2]
+  local _u40 = op_delims(form, a)
+  local ao = _u40[1]
+  local ac = _u40[2]
+  local _u41 = op_delims(form, b, {_stash = true, right = true})
+  local bo = _u41[1]
+  local bc = _u41[2]
+  local _u42 = compile(a)
+  local _u43 = compile(b)
+  local _u44 = getop(op)
   if unary63(form) then
-    return(_u43 .. ao .. _u41 .. ac)
+    return(_u44 .. ao .. _u42 .. ac)
   else
-    return(ao .. _u41 .. ac .. " " .. _u43 .. " " .. bo .. _u42 .. bc)
+    return(ao .. _u42 .. ac .. " " .. _u44 .. " " .. bo .. _u43 .. bc)
   end
 end
 function compile_function(args, body, ...)
-  local _u44 = unstash({...})
-  local name = _u44.name
-  local prefix = _u44.prefix
-  local _u115
-  if name then
-    _u115 = compile(name)
-  else
-    _u115 = ""
-  end
-  local id = _u115
-  local _u46 = compile_args(args)
-  indent_level = indent_level + 1
-  local _u48 = compile(body, {_stash = true, stmt = true})
-  indent_level = indent_level - 1
-  local _u47 = _u48
-  local ind = indentation()
+  local _u45 = unstash({...})
+  local name = _u45.name
+  local prefix = _u45.prefix
   local _u116
-  if prefix then
-    _u116 = prefix .. " "
+  if name then
+    _u116 = compile(name)
   else
     _u116 = ""
   end
-  local p = _u116
+  local id = _u116
+  local _u47 = compile_args(args)
+  indent_level = indent_level + 1
+  local _u49 = compile(body, {_stash = true, stmt = true})
+  indent_level = indent_level - 1
+  local _u48 = _u49
+  local ind = indentation()
   local _u117
-  if target == "js" then
-    _u117 = ""
+  if prefix then
+    _u117 = prefix .. " "
   else
-    _u117 = "end"
+    _u117 = ""
   end
-  local tr = _u117
+  local p = _u117
+  local _u118
+  if target == "js" then
+    _u118 = ""
+  else
+    _u118 = "end"
+  end
+  local tr = _u118
   if name then
     tr = tr .. "\n"
   end
   if target == "js" then
-    return("function " .. id .. _u46 .. " {\n" .. _u47 .. ind .. "}" .. tr)
+    return("function " .. id .. _u47 .. " {\n" .. _u48 .. ind .. "}" .. tr)
   else
-    return(p .. "function " .. id .. _u46 .. "\n" .. _u47 .. ind .. tr)
+    return(p .. "function " .. id .. _u47 .. "\n" .. _u48 .. ind .. tr)
   end
 end
 local function can_return63(form)
   return(is63(form) and (atom63(form) or not (hd(form) == "return") and not statement63(hd(form))))
 end
 function compile(form, ...)
-  local _u50 = unstash({...})
-  local stmt = _u50.stmt
+  local _u51 = unstash({...})
+  local stmt = _u51.stmt
   if nil63(form) then
     return("")
   else
@@ -1431,27 +1432,27 @@ function compile(form, ...)
       return(compile_special(form, stmt))
     else
       local tr = terminator(stmt)
-      local _u118
-      if stmt then
-        _u118 = indentation()
-      else
-        _u118 = ""
-      end
-      local ind = _u118
       local _u119
-      if atom63(form) then
-        _u119 = compile_atom(form)
+      if stmt then
+        _u119 = indentation()
       else
-        local _u120
-        if infix63(hd(form)) then
-          _u120 = compile_infix(form)
-        else
-          _u120 = compile_call(form)
-        end
-        _u119 = _u120
+        _u119 = ""
       end
-      local _u52 = _u119
-      return(ind .. _u52 .. tr)
+      local ind = _u119
+      local _u120
+      if atom63(form) then
+        _u120 = compile_atom(form)
+      else
+        local _u121
+        if infix63(hd(form)) then
+          _u121 = compile_infix(form)
+        else
+          _u121 = compile_call(form)
+        end
+        _u120 = _u121
+      end
+      local _u53 = _u120
+      return(ind .. _u53 .. tr)
     end
   end
 end
@@ -1488,22 +1489,22 @@ local function lower_do(args, hoist, stmt63, tail63)
 end
 local function lower_if(args, hoist, stmt63, tail63)
   local cond = args[1]
-  local _u63 = args[2]
-  local _u64 = args[3]
+  local _u64 = args[2]
+  local _u65 = args[3]
   if stmt63 or tail63 then
-    local _u122
-    if _u64 then
-      _u122 = {lower_body({_u64}, tail63)}
+    local _u123
+    if _u65 then
+      _u123 = {lower_body({_u65}, tail63)}
     end
-    return(add(hoist, join({"%if", lower(cond, hoist), lower_body({_u63}, tail63)}, _u122)))
+    return(add(hoist, join({"%if", lower(cond, hoist), lower_body({_u64}, tail63)}, _u123)))
   else
     local e = unique()
     add(hoist, {"%local", e})
-    local _u121
-    if _u64 then
-      _u121 = {lower({"set", e, _u64})}
+    local _u122
+    if _u65 then
+      _u122 = {lower({"set", e, _u65})}
     end
-    add(hoist, join({"%if", lower(cond, hoist), lower({"set", e, _u63})}, _u121))
+    add(hoist, join({"%if", lower(cond, hoist), lower({"set", e, _u64})}, _u122))
     return(e)
   end
 end
@@ -1514,13 +1515,13 @@ local function lower_short(x, args, hoist)
   local b1 = lower(b, hoist1)
   if some63(hoist1) then
     local id = unique()
-    local _u123
+    local _u124
     if x == "and" then
-      _u123 = {"%if", id, b, id}
+      _u124 = {"%if", id, b, id}
     else
-      _u123 = {"%if", id, id, b}
+      _u124 = {"%if", id, id, b}
     end
-    return(lower({"do", {"%local", id, a}, _u123}, hoist))
+    return(lower({"do", {"%local", id, a}, _u124}, hoist))
   else
     return({x, lower(a, hoist), b1})
   end
@@ -1546,16 +1547,16 @@ local function lower_function(args)
 end
 local function lower_definition(kind, args, hoist)
   local name = args[1]
-  local _u89 = args[2]
+  local _u90 = args[2]
   local body = cut(args, 2)
-  return(add(hoist, {kind, name, _u89, lower_body(body, true)}))
+  return(add(hoist, {kind, name, _u90, lower_body(body, true)}))
 end
 local function lower_call(form, hoist)
-  local _u92 = map(function (x)
+  local _u93 = map(function (x)
     return(lower(x, hoist))
   end, form)
-  if some63(_u92) then
-    return(_u92)
+  if some63(_u93) then
+    return(_u93)
   end
 end
 local function lower_infix63(form)

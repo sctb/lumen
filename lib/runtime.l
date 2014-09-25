@@ -26,11 +26,11 @@
 (define boolean? (x) (= (type x) 'boolean))
 (define function? (x) (= (type x) 'function))
 
-(define composite? (x)
+(define obj? (x)
   (and (is? x) (= (type x) (target js: 'object lua: 'table))))
 
 (define atom? (x)
-  (or (nil? x) (not (composite? x))))
+  (or (nil? x) (not (obj? x))))
 
 (define nan? (n)
   (not (= n n)))
@@ -207,7 +207,7 @@
 (define unstash (args)
   (if (none? args) ()
     (let (l (last args))
-      (if (and (composite? l) l._stash)
+      (if (and (obj? l) l._stash)
           (let (args1 (butlast args))
             (each (k v) l
               (unless (= k '_stash)
@@ -306,7 +306,7 @@
 
 (define-local produces-string? (x)
   (or (string-literal? x)
-      (and (composite? x)
+      (and (obj? x)
            (or (= (hd x) 'cat)
                (= (hd x) 'string)))))
 
