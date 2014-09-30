@@ -139,8 +139,9 @@
        (%for ,x ,k
          (let (,v (get ,x ,k))
            ,@(if (= target 'lua) body
-               `((let (,n (parseInt ,k)
-                       ,k (if (isNaN ,n) ,k ,n))
+               `((let (,k (if (numeric? ,k)
+                              (parseInt ,k)
+                            ,k))
                    ,@body))))))))
 
 (define-macro set-of xs

@@ -2131,7 +2131,7 @@ setenv("each", {_stash = true, macro = function (_u260, t, ...)
   if target == "lua" then
     _u337 = body
   else
-    _u337 = {join({"let", {n, {"parseInt", k}, k, {"if", {"isNaN", n}, k, n}}}, body)}
+    _u337 = {join({"let", {k, {"if", {"numeric?", k}, {"parseInt", k}, k}}}, body)}
   end
   return({"let", {x, t, k, "nil"}, {"%for", x, k, join({"let", {v, {"get", x, k}}}, _u337)}})
 end})
