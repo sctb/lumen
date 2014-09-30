@@ -223,11 +223,8 @@
 (define reserved? (x)
   (get reserved x))
 
-(define-local numeric? (n)
-  (and (> n 47) (< n 58)))
-
 (define-local valid-code? (n)
-  (or (numeric? n)             ; 0-9
+  (or (number-code? n)         ; 0-9
       (and (> n 64) (< n 91))  ; A-Z
       (and (> n 96) (< n 123)) ; a-z
       (= n 95)))               ; _

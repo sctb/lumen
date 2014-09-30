@@ -52,21 +52,21 @@ end
 function cut(x, from, upto)
   local l = {}
   local j = 0
-  local _u126
+  local _u128
   if nil63(from) or from < 0 then
-    _u126 = 0
+    _u128 = 0
   else
-    _u126 = from
+    _u128 = from
   end
-  local i = _u126
+  local i = _u128
   local n = length(x)
-  local _u127
+  local _u129
   if nil63(upto) or upto > n then
-    _u127 = n
+    _u129 = n
   else
-    _u127 = upto
+    _u129 = upto
   end
-  local _u24 = _u127
+  local _u24 = _u129
   while i < _u24 do
     l[j + 1] = x[i + 1]
     i = i + 1
@@ -107,11 +107,11 @@ function char(s, n)
   return(clip(s, n, n + 1))
 end
 function code(s, n)
-  local _u128
+  local _u130
   if n then
-    _u128 = n + 1
+    _u130 = n + 1
   end
-  return(strlib.byte(s, _u128))
+  return(strlib.byte(s, _u130))
 end
 function string_literal63(x)
   return(string63(x) and char(x, 0) == "\"")
@@ -323,11 +323,11 @@ function unstash(args)
   end
 end
 function search(s, pattern, start)
-  local _u129
+  local _u131
   if start then
-    _u129 = start + 1
+    _u131 = start + 1
   end
-  local _u81 = _u129
+  local _u81 = _u131
   local i = strlib.find(s, pattern, _u81, true)
   return(i and i - 1)
 end
@@ -413,6 +413,20 @@ end
 function number(s)
   return(tonumber(s))
 end
+function number_code63(n)
+  return(n > 47 and n < 58)
+end
+function numeric63(s)
+  local i = 0
+  local n = length(s)
+  while i < n do
+    if not number_code63(code(s, i)) then
+      return(false)
+    end
+    i = i + 1
+  end
+  return(true)
+end
 function string(x, depth)
   if depth and depth > 7 then
     return("#<circular>")
@@ -447,10 +461,10 @@ function string(x, depth)
                   local xs = {}
                   local ks = {}
                   local d = (depth or 0) + 1
-                  local _u104 = x
+                  local _u106 = x
                   local k = nil
-                  for k in next, _u104 do
-                    local v = _u104[k]
+                  for k in next, _u106 do
+                    local v = _u106[k]
                     if number63(k) then
                       xs[k] = string(v, d)
                     else
@@ -458,10 +472,10 @@ function string(x, depth)
                       add(ks, string(v, d))
                     end
                   end
-                  local _u106 = join(xs, ks)
+                  local _u108 = join(xs, ks)
                   local _u5 = nil
-                  for _u5 in next, _u106 do
-                    local v = _u106[_u5]
+                  for _u5 in next, _u108 do
+                    local v = _u108[_u5]
                     s = s .. sp .. v
                     sp = " "
                   end
@@ -495,13 +509,13 @@ function space(xs)
   end
 end
 function apply(f, args)
-  local _u115 = stash(args)
-  return(f(unpack(_u115)))
+  local _u117 = stash(args)
+  return(f(unpack(_u117)))
 end
-local _u116 = 0
+local _u118 = 0
 function unique()
-  _u116 = _u116 + 1
-  return("_u" .. _u116)
+  _u118 = _u118 + 1
+  return("_u" .. _u118)
 end
 function unique63(id)
   return("_u" == clip(id, 0, 2))
@@ -514,22 +528,22 @@ function toplevel63()
   return(one63(environment))
 end
 function setenv(k, ...)
-  local _u121 = unstash({...})
-  local keys = cut(_u121, 0)
+  local _u123 = unstash({...})
+  local keys = cut(_u123, 0)
   if string63(k) then
-    local _u130
+    local _u132
     if keys.toplevel then
-      _u130 = hd(environment)
+      _u132 = hd(environment)
     else
-      _u130 = last(environment)
+      _u132 = last(environment)
     end
-    local frame = _u130
+    local frame = _u132
     local entry = frame[k] or {}
-    local _u123 = keys
-    local _u125 = nil
-    for _u125 in next, _u123 do
-      local v = _u123[_u125]
-      entry[_u125] = v
+    local _u125 = keys
+    local _u127 = nil
+    for _u127 in next, _u125 do
+      local v = _u125[_u127]
+      entry[_u127] = v
     end
     frame[k] = entry
   end
@@ -600,25 +614,25 @@ local function escape(s)
   local i = 0
   while i < length(s) do
     local c = char(s, i)
-    local _u108
+    local _u107
     if c == "\n" then
-      _u108 = "\\n"
+      _u107 = "\\n"
     else
-      local _u109
+      local _u108
       if c == "\"" then
-        _u109 = "\\\""
+        _u108 = "\\\""
       else
-        local _u110
+        local _u109
         if c == "\\" then
-          _u110 = "\\\\"
+          _u109 = "\\\\"
         else
-          _u110 = c
+          _u109 = c
         end
-        _u109 = _u110
+        _u108 = _u109
       end
-      _u108 = _u109
+      _u107 = _u108
     end
-    local c1 = _u108
+    local c1 = _u107
     s1 = s1 .. c1
     i = i + 1
   end
@@ -682,21 +696,21 @@ function bind(lh, rh)
       local k = nil
       for k in next, _u31 do
         local v = _u31[k]
-        local _u111
+        local _u110
         if k == "rest" then
-          _u111 = {"cut", rh, length(lh)}
+          _u110 = {"cut", rh, length(lh)}
         else
-          _u111 = {"get", rh, {"quote", bias(k)}}
+          _u110 = {"get", rh, {"quote", bias(k)}}
         end
-        local x = _u111
+        local x = _u110
         if is63(k) then
-          local _u112
+          local _u111
           if v == true then
-            _u112 = k
+            _u111 = k
           else
-            _u112 = v
+            _u111 = v
           end
-          local _u36 = _u112
+          local _u36 = _u111
           bs = join(bs, bind(_u36, x))
         end
       end
@@ -815,13 +829,13 @@ function quasiquote_list(form, depth)
   for k in next, _u83 do
     local v = _u83[k]
     if not number63(k) then
-      local _u113
+      local _u112
       if quasisplice63(v, depth) then
-        _u113 = quasiexpand(v[2])
+        _u112 = quasiexpand(v[2])
       else
-        _u113 = quasiexpand(v, depth)
+        _u112 = quasiexpand(v, depth)
       end
-      local _u85 = _u113
+      local _u85 = _u112
       last(xs)[k] = _u85
     end
   end
@@ -896,11 +910,8 @@ local reserved = {["="] = true, ["=="] = true, ["+"] = true, ["-"] = true, ["%"]
 function reserved63(x)
   return(reserved[x])
 end
-local function numeric63(n)
-  return(n > 47 and n < 58)
-end
 local function valid_code63(n)
-  return(numeric63(n) or n > 64 and n < 91 or n > 96 and n < 123 or n == 95)
+  return(number_code63(n) or n > 64 and n < 91 or n > 96 and n < 123 or n == 95)
 end
 function valid_id63(id)
   if none63(id) or reserved63(id) then
@@ -930,10 +941,10 @@ function key(k)
 end
 function mapo(f, t)
   local o = {}
-  local _u106 = t
+  local _u105 = t
   local k = nil
-  for k in next, _u106 do
-    local v = _u106[k]
+  for k in next, _u105 do
+    local v = _u105[k]
     local x = f(v)
     if is63(x) then
       add(o, literal(k))

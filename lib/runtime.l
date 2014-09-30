@@ -281,6 +281,17 @@
           (unless (isNaN n) n))
     lua: (tonumber s)))
 
+(define number-code? (n)
+  (and (> n 47) (< n 58)))
+
+(define numeric? (s)
+  (let (i 0 n (length s))
+    (while (< i n)
+      (unless (number-code? (code s i))
+        (return #f))
+      (inc i)))
+  #t)
+
 (define string (x depth)
   (if (and depth (> depth 7)) "#<circular>"
       (nil? x) "nil"
