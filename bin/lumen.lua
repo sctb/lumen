@@ -2221,6 +2221,7 @@ local function usage()
   print("  -o <output>\tOutput file")
   print("  -t <target>\tTarget language (default: lua)")
   print("  -e <expr>\tExpression to evaluate")
+  print("  -n \t\tDon't load arguments from .lumenrc")
   return(exit())
 end
 local function main()

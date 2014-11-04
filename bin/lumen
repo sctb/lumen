@@ -13,4 +13,9 @@ then
     CODE=lumen.js
 fi
 
-exec $HOST $HOME/$CODE "$@"
+if [ "$1" != "-n" -a -r .lumenrc ]
+then
+    exec cat .lumenrc | xargs $0 -n
+else
+    exec $HOST $HOME/$CODE "$@"
+fi

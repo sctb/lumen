@@ -21,6 +21,7 @@
   (pr "  -o <output>\tOutput file")
   (pr "  -t <target>\tTarget language (default: lua)")
   (pr "  -e <expr>\tExpression to evaluate")
+  (pr "  -n \t\tDon't load arguments from .lumenrc")
   (exit))
 
 (define-local main ()
