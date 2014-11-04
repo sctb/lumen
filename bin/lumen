@@ -6,12 +6,11 @@ HOME=`pwd`
 cd $DIR
 
 HOST=${LUMEN_HOST:-lua}
-CODE=lumen.lua
 
-if [ "$HOST" = "node" ]
-then
-    CODE=lumen.js
-fi
+case $HOST in
+    node*) CODE=lumen.js;;
+    *) CODE=lumen.lua;;
+esac
 
 if [ "$1" != "-n" -a -r .lumenrc ]
 then
