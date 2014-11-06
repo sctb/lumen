@@ -12,7 +12,7 @@ case $HOST in
     *) CODE=lumen.lua;;
 esac
 
-if [ "$1" != "-n" -a -r .lumenrc ]
+if [ $# -eq 0 -a -r .lumenrc ]
 then
     exec cat .lumenrc | xargs -o $0 -n
 else
