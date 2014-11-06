@@ -31,11 +31,11 @@ bin/lumen.lua: $(OBJS:.o=.lua)
 	@cat $^ > $@.tmp
 	@mv $@.tmp $@
 
-obj/%.js : lib/%.l
+obj/%.js : %.l
 	@echo "  $@"
 	@$(LUMEN) -c $< -o $@ -t js
 
-obj/%.lua : lib/%.l
+obj/%.lua : %.l
 	@echo "  $@"
 	@$(LUMEN) -c $< -o $@ -t lua
 
