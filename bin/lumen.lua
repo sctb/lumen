@@ -6,17 +6,17 @@ end
 function is63(x)
   return(not nil63(x))
 end
-function length(x)
+function _35(x)
   return(#x)
 end
 function none63(x)
-  return(length(x) == 0)
+  return(_35(x) == 0)
 end
 function some63(x)
-  return(length(x) > 0)
+  return(_35(x) > 0)
 end
 function one63(x)
-  return(length(x) == 1)
+  return(_35(x) == 1)
 end
 function hd(l)
   return(l[1])
@@ -59,7 +59,7 @@ function cut(x, from, upto)
     _u128 = from
   end
   local i = _u128
-  local n = length(x)
+  local n = _35(x)
   local _u129
   if nil63(upto) or upto > n then
     _u129 = n
@@ -95,7 +95,7 @@ function keys(x)
   return(t)
 end
 function edge(x)
-  return(length(x) - 1)
+  return(_35(x) - 1)
 end
 function inner(x)
   return(clip(x, 1, edge(x)))
@@ -143,7 +143,7 @@ end
 function join(a, b)
   if a and b then
     local c = {}
-    local o = length(a)
+    local o = _35(a)
     local _u43 = a
     local k = nil
     for k in next, _u43 do
@@ -188,7 +188,7 @@ function find(f, t)
 end
 function first(f, l)
   local i = 0
-  local n = length(l)
+  local n = _35(l)
   while i < n do
     local x = f(l[i + 1])
     if x then
@@ -205,7 +205,7 @@ end
 function pair(l)
   local i = 0
   local l1 = {}
-  while i < length(l) do
+  while i < _35(l) do
     add(l1, {l[i + 1], l[i + 1 + 1]})
     i = i + 2
   end
@@ -232,12 +232,12 @@ end
 function step(f, l)
   return(iterate(function (i)
     return(f(l[i + 1]))
-  end, length(l)))
+  end, _35(l)))
 end
 function map(f, x)
   local t = {}
   local i = 0
-  local n = length(x)
+  local n = _35(x)
   while i < n do
     local y = f(x[i + 1])
     if is63(y) then
@@ -418,7 +418,7 @@ function number_code63(n)
 end
 function numeric63(s)
   local i = 0
-  local n = length(s)
+  local n = _35(s)
   while i < n do
     if not number_code63(code(s, i)) then
       return(false)
@@ -612,7 +612,7 @@ end
 local function escape(s)
   local s1 = "\""
   local i = 0
-  while i < length(s) do
+  while i < _35(s) do
     local c = char(s, i)
     local _u107
     if c == "\n" then
@@ -698,7 +698,7 @@ function bind(lh, rh)
         local v = _u31[k]
         local _u110
         if k == "rest" then
-          _u110 = {"cut", rh, length(lh)}
+          _u110 = {"cut", rh, _35(lh)}
         else
           _u110 = {"get", rh, {"quote", bias(k)}}
         end
@@ -722,7 +722,7 @@ function bind42(args, body)
   local args1 = {}
   local function rest()
     if target == "js" then
-      return({"unstash", {{"get", {"get", {"get", "Array", {"quote", "prototype"}}, {"quote", "slice"}}, {"quote", "call"}}, "arguments", length(args1)}})
+      return({"unstash", {{"get", {"get", {"get", "Array", {"quote", "prototype"}}, {"quote", "slice"}}, {"quote", "call"}}, "arguments", _35(args1)}})
     else
       add(args1, "|...|")
       return({"unstash", {"list", "|...|"}})
@@ -849,7 +849,7 @@ function quasiquote_list(form, depth)
     end
   end, form)
   local pruned = keep(function (x)
-    return(length(x) > 1 or not (hd(x) == "list") or keys63(x))
+    return(_35(x) > 1 or not (hd(x) == "list") or keys63(x))
   end, xs)
   return(join({"join*"}, pruned))
 end
@@ -918,7 +918,7 @@ function valid_id63(id)
     return(false)
   else
     local i = 0
-    while i < length(id) do
+    while i < _35(id) do
       if not valid_code63(code(id, i)) then
         return(false)
       end
@@ -956,7 +956,7 @@ end
 local delimiters = {["("] = true, [")"] = true, [";"] = true, ["\n"] = true}
 local whitespace = {[" "] = true, ["\t"] = true, ["\n"] = true}
 function stream(str)
-  return({pos = 0, string = str, len = length(str)})
+  return({pos = 0, string = str, len = _35(str)})
 end
 function peek_char(s)
   if s.pos < s.len then
@@ -1020,10 +1020,10 @@ function read_from_string(str)
   end
 end
 local function key63(atom)
-  return(string63(atom) and length(atom) > 1 and char(atom, edge(atom)) == ":")
+  return(string63(atom) and _35(atom) > 1 and char(atom, edge(atom)) == ":")
 end
 local function flag63(atom)
-  return(string63(atom) and length(atom) > 1 and char(atom, 0) == ":")
+  return(string63(atom) and _35(atom) > 1 and char(atom, 0) == ":")
 end
 read_table[""] = function (s)
   local str = ""
@@ -1192,7 +1192,7 @@ _u14.lua = "or"
 _u13["or"] = _u14
 local infix = {_u2, _u4, _u5, _u6, _u8, _u9, _u11, _u13}
 local function unary63(form)
-  return(length(form) == 2 and in63(hd(form), {"not", "-"}))
+  return(_35(form) == 2 and in63(hd(form), {"not", "-"}))
 end
 local function index(k)
   if number63(k) then
@@ -1239,7 +1239,7 @@ end
 local function escape_newlines(s)
   local s1 = ""
   local i = 0
-  while i < length(s) do
+  while i < _35(s) do
     local c = char(s, i)
     local _u111
     if c == "\n" then
@@ -1255,7 +1255,7 @@ end
 local function id(id)
   local id1 = ""
   local i = 0
-  while i < length(id) do
+  while i < _35(id) do
     local c = char(id, i)
     local n = code(c)
     local _u112
@@ -1472,7 +1472,7 @@ local function lower_statement(form, tail63)
     if is63(e) then
       return(e)
     else
-      if length(hoist) > 1 then
+      if _35(hoist) > 1 then
         return(join({"do"}, hoist))
       else
         return(hd(hoist))
@@ -1567,7 +1567,7 @@ local function lower_call(form, hoist)
   end
 end
 local function lower_infix63(form)
-  return(infix63(hd(form)) and length(form) > 3)
+  return(infix63(hd(form)) and _35(form) > 3)
 end
 local function lower_infix(form, hoist)
   local x = form[1]
@@ -1965,7 +1965,7 @@ end})
 setenv("let", {_stash = true, macro = function (bindings, ...)
   local _u76 = unstash({...})
   local body = cut(_u76, 0)
-  if length(bindings) < 2 then
+  if _35(bindings) < 2 then
     return(join({"do"}, body))
   else
     local renames = {}
@@ -2233,7 +2233,7 @@ local function main()
   local output = nil
   local target1 = nil
   local expr = nil
-  local n = length(as)
+  local n = _35(as)
   local i = 0
   while i < n do
     local a = as[i + 1]

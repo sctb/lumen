@@ -41,7 +41,7 @@
   `(%object ,@(mapo (fn (x) x) body)))
 
 (define-macro let (bindings rest: body)
-  (if (< (length bindings) 2) `(do ,@body)
+  (if (< (# bindings) 2) `(do ,@body)
     (let (renames () locals ()
           (lh rh) bindings)
       (each (k (id val)) (bind lh rh)

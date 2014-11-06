@@ -4,7 +4,7 @@
 (define-local whitespace (set-of " " "\t" "\n"))
 
 (define stream (str)
-  (obj pos: 0 string: str len: (length str)))
+  (obj pos: 0 string: str len: (# str)))
 
 (define peek-char (s)
   (if (< s.pos s.len) (char s.string s.pos)))
@@ -50,12 +50,12 @@
 
 (define-local key? (atom)
   (and (string? atom)
-       (> (length atom) 1)
+       (> (# atom) 1)
        (= (char atom (edge atom)) ":")))
 
 (define-local flag? (atom)
   (and (string? atom)
-       (> (length atom) 1)
+       (> (# atom) 1)
        (= (char atom 0) ":")))
 
 (define-reader ("" s) ; atom

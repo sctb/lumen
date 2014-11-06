@@ -10,12 +10,12 @@
 
 (define is? (x) (not (nil? x)))
 
-(define length (x)
+(define # (x)
   (target js: (or x.length 0) lua: |#x|))
 
-(define none? (x) (= (length x) 0))
-(define some? (x) (> (length x) 0))
-(define one? (x) (= (length x) 1))
+(define none? (x) (= (# x) 0))
+(define some? (x) (> (# x) 0))
+(define one? (x) (= (# x) 1))
 
 (define hd (l) (at l 0))
 
@@ -47,7 +47,7 @@
 (define cut (x from upto)
   (let (l () j 0
         i (if (or (nil? from) (< from 0)) 0 from)
-        n (length x)
+        n (# x)
         upto (if (or (nil? upto) (> upto n)) n upto))
     (while (< i upto)
       (set (at l j) (at x i))
@@ -66,7 +66,7 @@
     t))
 
 (define edge (x)
-  (- (length x) 1))
+  (- (# x) 1))
 
 (define inner (x)
   (clip x 1 (edge x)))
@@ -108,7 +108,7 @@
 
 (define join (a b)
   (if (and a b)
-      (let (c () o (length a))
+      (let (c () o (# a))
         (each (k v) a
           (set (get c k) v))
         (each (k v) b
@@ -129,7 +129,7 @@
       (if x (return x)))))
 
 (define first (f l)
-  (let (i 0 n (length l))
+  (let (i 0 n (# l))
     (while (< i n)
       (let (x (f (at l i)))
         (if x (return x)))
@@ -140,7 +140,7 @@
 
 (define pair (l)
   (let (i 0 l1 ())
-    (while (< i (length l))
+    (while (< i (# l))
       (add l1 (list (at l i) (at l (+ i 1))))
       (inc i 2))
     l1))
@@ -162,11 +162,11 @@
     l))
 
 (define step (f l)
-  (iterate (fn (i) (f (at l i))) (length l)))
+  (iterate (fn (i) (f (at l i))) (# l)))
 
 (define map (f x)
   (let (t ())
-    (let (i 0 n (length x))
+    (let (i 0 n (# x))
       (while (< i n)
         (let (y (f (at x i)))
           (when (is? y)
@@ -285,7 +285,7 @@
   (and (> n 47) (< n 58)))
 
 (define numeric? (s)
-  (let (i 0 n (length s))
+  (let (i 0 n (# s))
     (while (< i n)
       (unless (number-code? (code s i))
         (return #f))

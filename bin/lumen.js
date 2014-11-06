@@ -6,17 +6,17 @@ nil63 = function (x) {
 is63 = function (x) {
   return(!nil63(x));
 };
-length = function (x) {
+_35 = function (x) {
   return(x.length || 0);
 };
 none63 = function (x) {
-  return(length(x) === 0);
+  return(_35(x) === 0);
 };
 some63 = function (x) {
-  return(length(x) > 0);
+  return(_35(x) > 0);
 };
 one63 = function (x) {
-  return(length(x) === 1);
+  return(_35(x) === 1);
 };
 hd = function (l) {
   return(l[0]);
@@ -61,7 +61,7 @@ cut = function (x, from, upto) {
     _u133 = from;
   }
   var i = _u133;
-  var n = length(x);
+  var n = _35(x);
   var _u134;
   if (nil63(upto) || upto > n) {
     _u134 = n;
@@ -111,7 +111,7 @@ keys = function (x) {
   return(t);
 };
 edge = function (x) {
-  return(length(x) - 1);
+  return(_35(x) - 1);
 };
 inner = function (x) {
   return(clip(x, 1, edge(x)));
@@ -156,7 +156,7 @@ reverse = function (l) {
 join = function (a, b) {
   if (a && b) {
     var c = [];
-    var o = length(a);
+    var o = _35(a);
     var _u46 = a;
     var k = undefined;
     for (k in _u46) {
@@ -222,7 +222,7 @@ find = function (f, t) {
 };
 first = function (f, l) {
   var i = 0;
-  var n = length(l);
+  var n = _35(l);
   while (i < n) {
     var x = f(l[i]);
     if (x) {
@@ -239,7 +239,7 @@ in63 = function (x, t) {
 pair = function (l) {
   var i = 0;
   var l1 = [];
-  while (i < length(l)) {
+  while (i < _35(l)) {
     add(l1, [l[i], l[i + 1]]);
     i = i + 2;
   }
@@ -275,12 +275,12 @@ replicate = function (n, x) {
 step = function (f, l) {
   return(iterate(function (i) {
     return(f(l[i]));
-  }, length(l)));
+  }, _35(l)));
 };
 map = function (f, x) {
   var t = [];
   var i = 0;
-  var n = length(x);
+  var n = _35(x);
   while (i < n) {
     var y = f(x[i]);
     if (is63(y)) {
@@ -504,7 +504,7 @@ number_code63 = function (n) {
 };
 numeric63 = function (s) {
   var i = 0;
-  var n = length(s);
+  var n = _35(s);
   while (i < n) {
     if (!number_code63(code(s, i))) {
       return(false);
@@ -721,7 +721,7 @@ bound63 = function (x) {
 var escape = function (s) {
   var s1 = "\"";
   var i = 0;
-  while (i < length(s)) {
+  while (i < _35(s)) {
     var c = char(s, i);
     var _u112;
     if (c === "\n") {
@@ -821,7 +821,7 @@ bind = function (lh, rh) {
         var _u34 = _u116;
         var _u117;
         if (_u34 === "rest") {
-          _u117 = ["cut", rh, length(lh)];
+          _u117 = ["cut", rh, _35(lh)];
         } else {
           _u117 = ["get", rh, ["quote", bias(_u34)]];
         }
@@ -845,7 +845,7 @@ bind42 = function (args, body) {
   var args1 = [];
   var rest = function () {
     if (target === "js") {
-      return(["unstash", [["get", ["get", ["get", "Array", ["quote", "prototype"]], ["quote", "slice"]], ["quote", "call"]], "arguments", length(args1)]]);
+      return(["unstash", [["get", ["get", ["get", "Array", ["quote", "prototype"]], ["quote", "slice"]], ["quote", "call"]], "arguments", _35(args1)]]);
     } else {
       add(args1, "|...|");
       return(["unstash", ["list", "|...|"]]);
@@ -1000,7 +1000,7 @@ quasiquote_list = function (form, depth) {
     }
   }, form);
   var pruned = keep(function (x) {
-    return(length(x) > 1 || !(hd(x) === "list") || keys63(x));
+    return(_35(x) > 1 || !(hd(x) === "list") || keys63(x));
   }, xs);
   return(join(["join*"], pruned));
 };
@@ -1069,7 +1069,7 @@ valid_id63 = function (id) {
     return(false);
   } else {
     var i = 0;
-    while (i < length(id)) {
+    while (i < _35(id)) {
       if (!valid_code63(code(id, i))) {
         return(false);
       }
@@ -1114,7 +1114,7 @@ mapo = function (f, t) {
 var delimiters = {"(": true, ")": true, ";": true, "\n": true};
 var whitespace = {" ": true, "\t": true, "\n": true};
 stream = function (str) {
-  return({pos: 0, string: str, len: length(str)});
+  return({pos: 0, string: str, len: _35(str)});
 };
 peek_char = function (s) {
   if (s.pos < s.len) {
@@ -1178,10 +1178,10 @@ read_from_string = function (str) {
   }
 };
 var key63 = function (atom) {
-  return(string63(atom) && length(atom) > 1 && char(atom, edge(atom)) === ":");
+  return(string63(atom) && _35(atom) > 1 && char(atom, edge(atom)) === ":");
 };
 var flag63 = function (atom) {
-  return(string63(atom) && length(atom) > 1 && char(atom, 0) === ":");
+  return(string63(atom) && _35(atom) > 1 && char(atom, 0) === ":");
 };
 read_table[""] = function (s) {
   var str = "";
@@ -1350,7 +1350,7 @@ _u14.lua = "or";
 _u13["or"] = _u14;
 var infix = [_u2, _u4, _u5, _u6, _u8, _u9, _u11, _u13];
 var unary63 = function (form) {
-  return(length(form) === 2 && in63(hd(form), ["not", "-"]));
+  return(_35(form) === 2 && in63(hd(form), ["not", "-"]));
 };
 var index = function (k) {
   return(k);
@@ -1402,7 +1402,7 @@ var compile_args = function (args) {
 var escape_newlines = function (s) {
   var s1 = "";
   var i = 0;
-  while (i < length(s)) {
+  while (i < _35(s)) {
     var c = char(s, i);
     var _u109;
     if (c === "\n") {
@@ -1418,7 +1418,7 @@ var escape_newlines = function (s) {
 var id = function (id) {
   var id1 = "";
   var i = 0;
-  while (i < length(id)) {
+  while (i < _35(id)) {
     var c = char(id, i);
     var n = code(c);
     var _u110;
@@ -1635,7 +1635,7 @@ var lower_statement = function (form, tail63) {
     if (is63(e)) {
       return(e);
     } else {
-      if (length(hoist) > 1) {
+      if (_35(hoist) > 1) {
         return(join(["do"], hoist));
       } else {
         return(hd(hoist));
@@ -1730,7 +1730,7 @@ var lower_call = function (form, hoist) {
   }
 };
 var lower_infix63 = function (form) {
-  return(infix63(hd(form)) && length(form) > 3);
+  return(infix63(hd(form)) && _35(form) > 3);
 };
 var lower_infix = function (form, hoist) {
   var x = form[0];
@@ -2142,7 +2142,7 @@ setenv("obj", {_stash: true, macro: function () {
 setenv("let", {_stash: true, macro: function (bindings) {
   var _u72 = unstash(Array.prototype.slice.call(arguments, 1));
   var body = cut(_u72, 0);
-  if (length(bindings) < 2) {
+  if (_35(bindings) < 2) {
     return(join(["do"], body));
   } else {
     var renames = [];
@@ -2422,7 +2422,7 @@ var main = function () {
   var output = undefined;
   var target1 = undefined;
   var expr = undefined;
-  var n = length(as);
+  var n = _35(as);
   var i = 0;
   while (i < n) {
     var a = as[i];

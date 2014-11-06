@@ -33,7 +33,7 @@
           output nil
           target1 nil
           expr nil
-          n (length as)
+          n (# as)
           i 0)
       (while (< i n)
         (let (a (at as i))

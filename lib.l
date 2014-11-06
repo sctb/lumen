@@ -43,7 +43,7 @@
 
 (define-local escape (s)
   (let (s1 "\"" i 0)
-    (while (< i (length s))
+    (while (< i (# s))
       (let (c (char s i)
             c1 (if (= c "\n") "\\n"
                    (= c "\"") "\\\""
@@ -87,7 +87,7 @@
     (let (bs ())
       (each (k v) lh
         (let (x (if (= k 'rest)
-                    `(cut ,rh ,(length lh))
+                    `(cut ,rh ,(# lh))
                   `(get ,rh ',(bias k))))
           (when (is? k)
             (let (k (if (= v #t) k v))
@@ -99,7 +99,7 @@
     (define-local rest ()
       (if (= target 'js)
           `(unstash 
-            (Array.prototype.slice.call arguments ,(length args1)))
+            (Array.prototype.slice.call arguments ,(# args1)))
         (do (add args1 '|...|) '(unstash (list |...|)))))
     (if (atom? args)
         (list args1 `((let ,(list args (rest)) ,@body)))
@@ -170,7 +170,7 @@
      form)
     (let (pruned
           (keep (fn (x)
-                  (or (> (length x) 1)
+                  (or (> (# x) 1)
                       (not (= (hd x) 'list))
                       (keys? x)))
                 xs))
@@ -233,7 +233,7 @@
   (if (or (none? id) (reserved? id))
       #f
     (let (i 0)
-      (while (< i (length id))
+      (while (< i (# id))
         (unless (valid-code? (code id i))
           (return #f))
         (inc i))

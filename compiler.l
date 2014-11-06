@@ -11,7 +11,7 @@
     (or: (js: ,"||" lua: or))))
 
 (define-local unary? (form)
-  (and (= (length form) 2) (in? (hd form) '(not -))))
+  (and (= (# form) 2) (in? (hd form) '(not -))))
 
 (define-local index (k)
   (target js: k lua: (when (number? k) (- k 1))))
@@ -42,7 +42,7 @@
 
 (define-local escape-newlines (s)
   (let (s1 "" i 0)
-    (while (< i (length s))
+    (while (< i (# s))
       (let (c (char s i))
         (cat! s1 (if (= c "\n") "\\n" c)))
       (inc i))
@@ -50,7 +50,7 @@
 
 (define-local id (id)
   (let (id1 "" i 0)
-    (while (< i (length id))
+    (while (< i (# id))
       (let (c (char id i)
             n (code c)
             c1 (if (= c "-") "_"
@@ -147,7 +147,7 @@
     (if (and (some? hoist) (is? e))
         `(do ,@hoist ,e)
         (is? e) e
-        (> (length hoist) 1) `(do ,@hoist)
+        (> (# hoist) 1) `(do ,@hoist)
       (hd hoist))))
 
 (define-local lower-body (body tail?)
@@ -219,7 +219,7 @@
     (if (some? form) form)))
 
 (define-local lower-infix? (form)
-  (and (infix? (hd form)) (> (length form) 3)))
+  (and (infix? (hd form)) (> (# form) 3)))
 
 (define-local lower-infix (form hoist)
   (let ((x rest: args) form)
