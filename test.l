@@ -470,6 +470,14 @@ c")
   (test= 99 zzop)
   (test= 100 zzap))
 
+(define-test reserved ()
+  (let (end 'zz
+        try 'yy
+        return 99)
+    (test= 'zz end)
+    (test= 'yy try)
+    (test= '99 return)))
+
 (define-test destructuring ()
   (let ((a b c) '(1 2 3))
     (test= 1 a)
