@@ -22,9 +22,11 @@ do
     fi
 done
 
+ARGS=""
+
 if [ $COMPILING -ne 1 ] && [ -r .lumenrc ]
 then
-    echo `cat .lumenrc | xargs -o $HOST $HOME/$CODE "$@"`
-else
-    exec $HOST $HOME/$CODE "$@"
+    ARGS=`cat .lumenrc`
 fi
+
+exec $HOST $HOME/$CODE "$ARGS" "$@"
