@@ -12,9 +12,19 @@ case $HOST in
     *) CODE=lumen.lua;;
 esac
 
-if [ $# -eq 0 -a -r .lumenrc ]
+COMPILING=0
+
+for v in "$@"
+do
+    if [ "$v" = "-c" ]
+    then
+        COMPILING=1
+    fi
+done
+
+if [ $COMPILING -ne 1 ] && [ -r .lumenrc ]
 then
-    exec cat .lumenrc | xargs -o $0 -n
+    echo `cat .lumenrc | xargs -o $HOST $HOME/$CODE "$@"`
 else
     exec $HOST $HOME/$CODE "$@"
 fi
