@@ -52,21 +52,21 @@ end
 function cut(x, from, upto)
   local l = {}
   local j = 0
-  local _u128
+  local _u126
   if nil63(from) or from < 0 then
-    _u128 = 0
+    _u126 = 0
   else
-    _u128 = from
+    _u126 = from
   end
-  local i = _u128
+  local i = _u126
   local n = _35(x)
-  local _u129
+  local _u127
   if nil63(upto) or upto > n then
-    _u129 = n
+    _u127 = n
   else
-    _u129 = upto
+    _u127 = upto
   end
-  local _u24 = _u129
+  local _u24 = _u127
   while i < _u24 do
     l[j + 1] = x[i + 1]
     i = i + 1
@@ -107,11 +107,11 @@ function char(s, n)
   return(clip(s, n, n + 1))
 end
 function code(s, n)
-  local _u130
+  local _u128
   if n then
-    _u130 = n + 1
+    _u128 = n + 1
   end
-  return(strlib.byte(s, _u130))
+  return(strlib.byte(s, _u128))
 end
 function string_literal63(x)
   return(string63(x) and char(x, 0) == "\"")
@@ -323,11 +323,11 @@ function unstash(args)
   end
 end
 function search(s, pattern, start)
-  local _u131
+  local _u129
   if start then
-    _u131 = start + 1
+    _u129 = start + 1
   end
-  local _u81 = _u131
+  local _u81 = _u129
   local i = strlib.find(s, pattern, _u81, true)
   return(i and i - 1)
 end
@@ -404,12 +404,6 @@ end
 function _6061(a, b)
   return(a <= b)
 end
-function today()
-  return(os.date("!%F"))
-end
-function now()
-  return(os.time())
-end
 function number(s)
   return(tonumber(s))
 end
@@ -461,10 +455,10 @@ function string(x, depth)
                   local xs = {}
                   local ks = {}
                   local d = (depth or 0) + 1
-                  local _u106 = x
+                  local _u104 = x
                   local k = nil
-                  for k in next, _u106 do
-                    local v = _u106[k]
+                  for k in next, _u104 do
+                    local v = _u104[k]
                     if number63(k) then
                       xs[k] = string(v, d)
                     else
@@ -472,10 +466,10 @@ function string(x, depth)
                       add(ks, string(v, d))
                     end
                   end
-                  local _u108 = join(xs, ks)
+                  local _u106 = join(xs, ks)
                   local _u5 = nil
-                  for _u5 in next, _u108 do
-                    local v = _u108[_u5]
+                  for _u5 in next, _u106 do
+                    local v = _u106[_u5]
                     s = s .. sp .. v
                     sp = " "
                   end
@@ -509,13 +503,13 @@ function space(xs)
   end
 end
 function apply(f, args)
-  local _u117 = stash(args)
-  return(f(unpack(_u117)))
+  local _u115 = stash(args)
+  return(f(unpack(_u115)))
 end
-local _u118 = 0
+local _u116 = 0
 function unique()
-  _u118 = _u118 + 1
-  return("_u" .. _u118)
+  _u116 = _u116 + 1
+  return("_u" .. _u116)
 end
 function unique63(id)
   return("_u" == clip(id, 0, 2))
@@ -528,22 +522,22 @@ function toplevel63()
   return(one63(environment))
 end
 function setenv(k, ...)
-  local _u123 = unstash({...})
-  local keys = cut(_u123, 0)
+  local _u121 = unstash({...})
+  local keys = cut(_u121, 0)
   if string63(k) then
-    local _u132
+    local _u130
     if keys.toplevel then
-      _u132 = hd(environment)
+      _u130 = hd(environment)
     else
-      _u132 = last(environment)
+      _u130 = last(environment)
     end
-    local frame = _u132
+    local frame = _u130
     local entry = frame[k] or {}
-    local _u125 = keys
-    local _u127 = nil
-    for _u127 in next, _u125 do
-      local v = _u125[_u127]
-      entry[_u127] = v
+    local _u123 = keys
+    local _u125 = nil
+    for _u125 in next, _u123 do
+      local v = _u123[_u125]
+      entry[_u125] = v
     end
     frame[k] = entry
   end

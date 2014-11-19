@@ -258,23 +258,6 @@
 (define >= (a b) (>= a b))
 (define <= (a b) (<= a b))
 
-(define today ()
-  (target
-    js: (let (pad (fn (n)
-                    (if (< n 10)
-                        (cat "0" n)
-                      (string n)))
-              now (|new Date|))
-          (cat (pad (now.getUTCFullYear)) "-"
-               (pad (+ (now.getUTCMonth) 1)) "-"
-               (pad (now.getUTCDate))))
-    lua: (os.date "!%F")))
-
-(define now ()
-  (target
-    js: (Math.floor (/ ((get (|new Date|) 'getTime)) 1000))
-    lua: (os.time)))
-
 (define number (s)
   (target
     js: (let (n (parseFloat s))

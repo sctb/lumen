@@ -29,4 +29,4 @@ then
     ARGS=`cat .lumenrc`
 fi
 
-exec $HOST $HOME/$CODE "$ARGS" "$@"
+exec $HOST $HOME/$CODE $ARGS "$@"
