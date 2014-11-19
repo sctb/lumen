@@ -22,8 +22,6 @@ do
     fi
 done
 
-ARGS=""
-
 if [ $COMPILING -ne 1 ] && [ -r .lumenrc ]
 then
     ARGS=`cat .lumenrc`
