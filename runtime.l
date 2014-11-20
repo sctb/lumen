@@ -38,7 +38,7 @@
 (define inf? (n)
   (or (= n #+inf) (= n #-inf)))
 
-(target lua: (define-local strlib string))
+(target lua: (define strlib string))
 
 (define clip (s from upto)
   (target js: (s.substring from upto)
