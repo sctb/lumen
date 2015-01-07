@@ -1809,7 +1809,7 @@ compile_file = function (path) {
   var s = stream(read_file(path));
   var body = read_all(s);
   var form = expand(join(["do"], body));
-  return(compile(form));
+  return(compile(form, {_stash: true, stmt: true}));
 };
 load = function (path) {
   return(run(compile_file(path)));

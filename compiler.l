@@ -281,7 +281,7 @@
   (let (s (stream (read-file path))
         body (read-all s)
         form (expand `(do ,@body)))
-    (compile form)))
+    (compile form :stmt)))
 
 (define load (path)
   (run (compile-file path)))

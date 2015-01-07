@@ -1661,7 +1661,7 @@ function compile_file(path)
   local s = stream(read_file(path))
   local body = read_all(s)
   local form = expand(join({"do"}, body))
-  return(compile(form))
+  return(compile(form, {_stash = true, stmt = true}))
 end
 function load(path)
   return(run(compile_file(path)))
