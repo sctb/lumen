@@ -78,15 +78,13 @@
 (define-macro define (name x rest: body)
   (setenv name :toplevel :variable)
   (if (some? body)
-      (let ((args body) (bind* x body))
-        `(%global-function ,name ,args ,@body))
+      `(%global-function ,name ,@(bind* x body))
     `(set ,name ,x)))
 
 (define-macro define-local (name x rest: body)
   (setenv name :variable)
   (if (some? body)
-      (let ((args body) (bind* x body))
-        `(%local-function ,name ,args ,@body))
+      `(%local-function ,name ,@(bind* x body))
     `(%local ,name ,x)))
 
 (define-macro with-frame (rest: body :scope)
@@ -122,8 +120,7 @@
     `(do ,@(macroexpand body))))
 
 (define-macro fn (args rest: body)
-  (let ((args body) (bind* args body))
-    `(%function ,args ,@body)))
+  `(%function ,@(bind* args body)))
 
 (define-macro guard (expr)
   (if (= target 'js)

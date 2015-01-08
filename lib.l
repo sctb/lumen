@@ -98,11 +98,11 @@
   (let (args1 ())
     (define-local rest ()
       (if (= target 'js)
-          `(unstash 
+          `(unstash
             (Array.prototype.slice.call arguments ,(# args1)))
         (do (add args1 '|...|) '(unstash (list |...|)))))
     (if (atom? args)
-        (list args1 `((let ,(list args (rest)) ,@body)))
+        (list args1 `(let ,(list args (rest)) ,@body))
       (let (bs () r (unique))
         (each (k v) args
           (when (number? k)
@@ -113,7 +113,7 @@
         (when (keys? args)
           (join! bs (list r (rest)))
           (join! bs (list (keys args) r)))
-        (list args1 `((let ,bs ,@body)))))))
+        (list args1 `(let ,bs ,@body))))))
 
 (define-local quoting? (depth)
   (number? depth))
