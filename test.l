@@ -338,6 +338,12 @@ c")
       (test= nil a)
       (test= 19 i))))
 
+(define-test for ()
+  (let (l ())
+    (for (i 5)
+      (add l i))
+    (test= '(0 1 2 3 4) l)))
+
 (define-test table ()
   (test= 10 (get (obj a: 10) 'a))
   (test= #t (get (obj :a) 'a)))
