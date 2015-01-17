@@ -42,7 +42,7 @@
       (variable? x)))
 
 (define-local escape (s)
-  (let (s1 "\"" i 0)
+  (let (s1 "\"")
     (for (i (# s))
       (let (c (char s i)
             c1 (if (= c "\n") "\\n"
@@ -231,11 +231,10 @@
 (define valid-id? (id)
   (if (or (none? id) (reserved? id))
       #f
-    (let (i 0)
-      (for (i (# id))
-        (unless (valid-code? (code id i))
-          (return #f)))
-      #t)))
+    (do (for (i (# id))
+          (unless (valid-code? (code id i))
+            (return #f)))
+        #t)))
 
 (define key (k)
   (let (i (inner k))

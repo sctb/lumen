@@ -129,7 +129,7 @@
       (if x (return x)))))
 
 (define first (f l)
-  (let (i 0 n (# l))
+  (let (n (# l))
     (for (i n)
       (let (x (f (at l i)))
         (if x (return x))))))
@@ -159,12 +159,11 @@
     (f (at l i))))
 
 (define map (f x)
-  (let (t ())
-    (let (i 0 n (# x))
-      (for (i n)
-        (let (y (f (at x i)))
-          (when (is? y)
-            (add t y)))))
+  (let (t () n (# x))
+    (for (i n)
+      (let (y (f (at x i)))
+        (when (is? y)
+          (add t y))))
     (each (k v) x
       (unless (number? k)
         (let (y (f v))
@@ -261,7 +260,7 @@
   (and (> n 47) (< n 58)))
 
 (define numeric? (s)
-  (let (i 0 n (# s))
+  (let (n (# s))
     (for (i n)
       (unless (number-code? (code s i))
         (return #f))))

@@ -41,14 +41,14 @@
     (cat s ")")))
 
 (define-local escape-newlines (s)
-  (let (s1 "" i 0)
+  (let (s1 "")
     (for (i (# s))
       (let (c (char s i))
         (cat! s1 (if (= c "\n") "\\n" c))))
     (cat s1 "")))
 
 (define-local id (id)
-  (let (id1 "" i 0)
+  (let (id1 "")
     (for (i (# id))
       (let (c (char id i)
             n (code c)
