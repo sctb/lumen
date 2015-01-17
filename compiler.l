@@ -42,23 +42,21 @@
 
 (define-local escape-newlines (s)
   (let (s1 "" i 0)
-    (while (< i (# s))
+    (for (i (# s))
       (let (c (char s i))
-        (cat! s1 (if (= c "\n") "\\n" c)))
-      (inc i))
+        (cat! s1 (if (= c "\n") "\\n" c))))
     (cat s1 "")))
 
 (define-local id (id)
   (let (id1 "" i 0)
-    (while (< i (# id))
+    (for (i (# id))
       (let (c (char id i)
             n (code c)
             c1 (if (= c "-") "_"
                    (valid-code? n) c
                    (= i 0) (cat "_" n)
                  n))
-        (cat! id1 c1))
-      (inc i))
+        (cat! id1 c1)))
     id1))
 
 (define-local compile-atom (x)

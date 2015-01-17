@@ -130,10 +130,9 @@
 
 (define first (f l)
   (let (i 0 n (# l))
-    (while (< i n)
+    (for (i n)
       (let (x (f (at l i)))
-        (if x (return x)))
-      (inc i))))
+        (if x (return x))))))
 
 (define in? (x t)
   (find (fn (y) (= x y)) t))
@@ -150,28 +149,22 @@
     lua: (do (table.sort l f) l)
     js: (l.sort (when f (fn (a b) (if (f a b) -1 1))))))
 
-(define iterate (f count)
-  (let (i 0)
-    (while (< i count)
-      (f i)
-      (inc i))))
-
 (define replicate (n x)
   (let (l ())
-    (iterate (fn () (add l x)) n)
+    (for (_ n) (add l x))
     l))
 
 (define step (f l)
-  (iterate (fn (i) (f (at l i))) (# l)))
+  (for (i (# l))
+    (f (at l i))))
 
 (define map (f x)
   (let (t ())
     (let (i 0 n (# x))
-      (while (< i n)
+      (for (i n)
         (let (y (f (at x i)))
           (when (is? y)
-            (add t y)))
-        (inc i)))
+            (add t y)))))
     (each (k v) x
       (unless (number? k)
         (let (y (f v))
@@ -269,10 +262,9 @@
 
 (define numeric? (s)
   (let (i 0 n (# s))
-    (while (< i n)
+    (for (i n)
       (unless (number-code? (code s i))
-        (return #f))
-      (inc i)))
+        (return #f))))
   #t)
 
 (define string (x depth)

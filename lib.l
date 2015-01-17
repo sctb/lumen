@@ -43,14 +43,13 @@
 
 (define-local escape (s)
   (let (s1 "\"" i 0)
-    (while (< i (# s))
+    (for (i (# s))
       (let (c (char s i)
             c1 (if (= c "\n") "\\n"
                    (= c "\"") "\\\""
                    (= c "\\") "\\\\"
                  c))
-        (cat! s1 c1))
-      (inc i))
+        (cat! s1 c1)))
     (cat s1 "\"")))
 
 (define quoted (form)
@@ -233,10 +232,9 @@
   (if (or (none? id) (reserved? id))
       #f
     (let (i 0)
-      (while (< i (# id))
+      (for (i (# id))
         (unless (valid-code? (code id i))
-          (return #f))
-        (inc i))
+          (return #f)))
       #t)))
 
 (define key (k)
