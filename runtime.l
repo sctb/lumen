@@ -216,12 +216,12 @@
 
 (define split (s sep)
   (if (or (= s "") (= sep "")) ()
-    (let (l ())
+    (let (l () n (# sep))
       (while #t
         (let (i (search s sep))
           (if (nil? i) (break)
             (do (add l (clip s 0 i))
-                (set s (clip s (+ i 1)))))))
+                (set s (clip s (+ i n)))))))
       (add l s)
       l)))
 

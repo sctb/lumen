@@ -408,13 +408,14 @@ split = function (s, sep) {
     return([]);
   } else {
     var l = [];
+    var n = _35(sep);
     while (true) {
       var i = search(s, sep);
       if (nil63(i)) {
         break;
       } else {
         add(l, clip(s, 0, i));
-        s = clip(s, i + 1);
+        s = clip(s, i + n);
       }
     }
     add(l, s);

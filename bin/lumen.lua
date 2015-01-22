@@ -333,13 +333,14 @@ function split(s, sep)
     return({})
   else
     local l = {}
+    local n = _35(sep)
     while true do
       local i = search(s, sep)
       if nil63(i) then
         break
       else
         add(l, clip(s, 0, i))
-        s = clip(s, i + 1)
+        s = clip(s, i + n)
       end
     end
     add(l, s)
