@@ -543,6 +543,26 @@ function setenv(k, ...)
     frame[k] = entry
   end
 end
+local math = math
+abs = math.abs
+acos = math.acos
+asin = math.asin
+atan = math.atan
+atan2 = math.atan2
+ceil = math.ceil
+cos = math.cos
+floor = math.floor
+log = math.log
+log10 = math.log10
+max = math.max
+min = math.min
+pow = math.pow
+random = math.random
+sin = math.sin
+sinh = math.sinh
+sqrt = math.sqrt
+tan = math.tan
+tanh = math.tanh
 function read_file(path)
   local f = io.open(path)
   return(f.read(f, "*a"))
