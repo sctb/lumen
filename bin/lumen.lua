@@ -901,7 +901,7 @@ indent_level = 0
 function indentation()
   return(apply(cat, replicate(indent_level, "  ")))
 end
-local reserved = {["case"] = true, ["delete"] = true, ["this"] = true, ["="] = true, ["and"] = true, ["return"] = true, ["/"] = true, ["in"] = true, ["function"] = true, ["finally"] = true, ["end"] = true, ["if"] = true, ["with"] = true, ["=="] = true, ["*"] = true, ["continue"] = true, ["typeof"] = true, ["break"] = true, ["else"] = true, ["nil"] = true, ["true"] = true, ["<"] = true, ["or"] = true, [">"] = true, ["instanceof"] = true, ["switch"] = true, ["while"] = true, ["local"] = true, ["then"] = true, ["debugger"] = true, ["throw"] = true, ["not"] = true, ["+"] = true, ["do"] = true, ["false"] = true, ["until"] = true, ["-"] = true, ["void"] = true, ["%"] = true, ["var"] = true, ["try"] = true, ["elseif"] = true, ["for"] = true, ["default"] = true, ["repeat"] = true, ["catch"] = true, ["<="] = true, ["new"] = true, [">="] = true}
+local reserved = {["end"] = true, ["and"] = true, ["*"] = true, ["=="] = true, ["="] = true, ["void"] = true, ["break"] = true, ["finally"] = true, ["or"] = true, ["delete"] = true, ["case"] = true, ["var"] = true, ["<="] = true, ["do"] = true, ["local"] = true, ["elseif"] = true, ["not"] = true, ["throw"] = true, ["%"] = true, ["until"] = true, ["default"] = true, ["instanceof"] = true, ["with"] = true, ["+"] = true, ["then"] = true, ["while"] = true, ["for"] = true, [">="] = true, ["false"] = true, [">"] = true, ["switch"] = true, ["<"] = true, ["nil"] = true, ["catch"] = true, ["/"] = true, ["return"] = true, ["-"] = true, ["function"] = true, ["debugger"] = true, ["typeof"] = true, ["try"] = true, ["true"] = true, ["if"] = true, ["continue"] = true, ["else"] = true, ["new"] = true, ["repeat"] = true, ["in"] = true, ["this"] = true}
 function reserved63(x)
   return(reserved[x])
 end
@@ -948,249 +948,43 @@ function mapo(f, t)
   end
   return(o)
 end
-local delimiters = {["("] = true, [")"] = true, [";"] = true, ["\n"] = true}
-local whitespace = {["\n"] = true, [" "] = true, ["\t"] = true}
-function stream(str)
-  return({string = str, len = _35(str), pos = 0})
-end
-function peek_char(s)
-  if s.pos < s.len then
-    return(char(s.string, s.pos))
-  end
-end
-function read_char(s)
-  local c = peek_char(s)
-  if c then
-    s.pos = s.pos + 1
-    return(c)
-  end
-end
-local function skip_non_code(s)
-  while true do
-    local c = peek_char(s)
-    if nil63(c) then
-      break
-    else
-      if whitespace[c] then
-        read_char(s)
-      else
-        if c == ";" then
-          while c and not (c == "\n") do
-            c = read_char(s)
-          end
-          skip_non_code(s)
-        else
-          break
-        end
-      end
-    end
-  end
-end
-read_table = {}
-eof = {}
-function read(s)
-  skip_non_code(s)
-  local c = peek_char(s)
-  if is63(c) then
-    return((read_table[c] or read_table[""])(s))
-  else
-    return(eof)
-  end
-end
-function read_all(s)
-  local l = {}
-  while true do
-    local form = read(s)
-    if form == eof then
-      break
-    end
-    add(l, form)
-  end
-  return(l)
-end
-function read_from_string(str)
-  local x = read(stream(str))
-  if not (x == eof) then
-    return(x)
-  end
-end
-function read_string(str)
-  local x = read(stream(str))
-  if not (x == eof) then
-    return(x)
-  end
-end
-local function key63(atom)
-  return(string63(atom) and _35(atom) > 1 and char(atom, edge(atom)) == ":")
-end
-local function flag63(atom)
-  return(string63(atom) and _35(atom) > 1 and char(atom, 0) == ":")
-end
-read_table[""] = function (s)
-  local str = ""
-  local dot63 = false
-  while true do
-    local c = peek_char(s)
-    if c and (not whitespace[c] and not delimiters[c]) then
-      if c == "." then
-        dot63 = true
-      end
-      str = str .. read_char(s)
-    else
-      break
-    end
-  end
-  local n = number(str)
-  if is63(n) then
-    return(n)
-  else
-    if str == "true" then
-      return(true)
-    else
-      if str == "false" then
-        return(false)
-      else
-        if str == "_" then
-          return(unique())
-        else
-          if dot63 and not one63(str) then
-            return(reduce(function (a, b)
-              return({"get", b, {"quote", a}})
-            end, reverse(split(str, "."))))
-          else
-            return(str)
-          end
-        end
-      end
-    end
-  end
-end
-read_table["("] = function (s)
-  read_char(s)
-  local l = {}
-  while true do
-    skip_non_code(s)
-    local c = peek_char(s)
-    if c and not (c == ")") then
-      local x = read(s)
-      if key63(x) then
-        local k = clip(x, 0, edge(x))
-        local v = read(s)
-        l[k] = v
-      else
-        if flag63(x) then
-          l[clip(x, 1)] = true
-        else
-          add(l, x)
-        end
-      end
-    else
-      if c then
-        read_char(s)
-        break
-      else
-        error("Expected ) at " .. s.pos)
-      end
-    end
-  end
-  return(l)
-end
-read_table[")"] = function (s)
-  error("Unexpected ) at " .. s.pos)
-end
-read_table["\""] = function (s)
-  read_char(s)
-  local str = "\""
-  while true do
-    local c = peek_char(s)
-    if c and not (c == "\"") then
-      if c == "\\" then
-        str = str .. read_char(s)
-      end
-      str = str .. read_char(s)
-    else
-      if c then
-        read_char(s)
-        break
-      else
-        error("Expected \" at " .. s.pos)
-      end
-    end
-  end
-  return(str .. "\"")
-end
-read_table["|"] = function (s)
-  read_char(s)
-  local str = "|"
-  while true do
-    local c = peek_char(s)
-    if c and not (c == "|") then
-      str = str .. read_char(s)
-    else
-      if c then
-        read_char(s)
-        break
-      else
-        error("Expected | at " .. s.pos)
-      end
-    end
-  end
-  return(str .. "|")
-end
-read_table["'"] = function (s)
-  read_char(s)
-  return({"quote", read(s)})
-end
-read_table["`"] = function (s)
-  read_char(s)
-  return({"quasiquote", read(s)})
-end
-read_table[","] = function (s)
-  read_char(s)
-  if peek_char(s) == "@" then
-    read_char(s)
-    return({"unquote-splicing", read(s)})
-  else
-    return({"unquote", read(s)})
-  end
-end
 local reader = require("reader")
 local _u2 = {}
 local _u3 = {}
-_u3.js = "!"
 _u3.lua = "not "
+_u3.js = "!"
 _u2["not"] = _u3
 local _u4 = {}
 _u4["%"] = true
 _u4["*"] = true
 _u4["/"] = true
 local _u5 = {}
-_u5["+"] = true
 _u5["-"] = true
+_u5["+"] = true
 local _u6 = {}
 local _u7 = {}
-_u7.js = "+"
 _u7.lua = ".."
+_u7.js = "+"
 _u6.cat = _u7
 local _u8 = {}
-_u8["<="] = true
-_u8[">"] = true
 _u8[">="] = true
+_u8[">"] = true
 _u8["<"] = true
+_u8["<="] = true
 local _u9 = {}
 local _u10 = {}
-_u10.js = "==="
 _u10.lua = "=="
+_u10.js = "==="
 _u9["="] = _u10
 local _u11 = {}
 local _u12 = {}
-_u12.js = "&&"
 _u12.lua = "and"
+_u12.js = "&&"
 _u11["and"] = _u12
 local _u13 = {}
 local _u14 = {}
-_u14.js = "||"
 _u14.lua = "or"
+_u14.js = "||"
 _u13["or"] = _u14
 local infix = {_u2, _u4, _u5, _u6, _u8, _u9, _u11, _u13}
 local function unary63(form)
@@ -1334,8 +1128,8 @@ local function compile_special(form, stmt63)
   local x = form[1]
   local args = cut(form, 1)
   local _u31 = getenv(x)
-  local stmt = _u31.stmt
   local self_tr63 = _u31.tr
+  local stmt = _u31.stmt
   local special = _u31.special
   local tr = terminator(stmt63 and not self_tr63)
   return(apply(special, args) .. tr)
@@ -2048,8 +1842,8 @@ setenv("define-local", {_stash = true, macro = function (name, x, ...)
 end})
 setenv("with-frame", {_stash = true, macro = function (...)
   local _u157 = unstash({...})
-  local body = cut(_u157, 0)
   local scope = _u157.scope
+  local body = cut(_u157, 0)
   local x = unique()
   local _u161 = {"obj"}
   _u161._scope = scope

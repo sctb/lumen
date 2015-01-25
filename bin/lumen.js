@@ -1044,7 +1044,7 @@ indent_level = 0;
 indentation = function () {
   return(apply(cat, replicate(indent_level, "  ")));
 };
-var reserved = {"case": true, "=": true, "break": true, "continue": true, "switch": true, "elseif": true, "==": true, "%": true, "/": true, "default": true, "+": true, "-": true, "delete": true, "function": true, "if": true, "nil": true, "then": true, "for": true, "typeof": true, "until": true, "new": true, ">": true, "true": true, "<": true, "do": true, "in": true, ">=": true, "return": true, "and": true, "<=": true, "repeat": true, "throw": true, "while": true, "else": true, "local": true, "try": true, "this": true, "finally": true, "*": true, "instanceof": true, "debugger": true, "catch": true, "end": true, "or": true, "with": true, "void": true, "var": true, "not": true, "false": true};
+var reserved = {"return": true, "false": true, "<=": true, "instanceof": true, "break": true, "then": true, "delete": true, "not": true, "==": true, "do": true, "or": true, "else": true, "default": true, "<": true, "new": true, "throw": true, ">": true, "end": true, "switch": true, "if": true, "/": true, "var": true, "in": true, "+": true, "continue": true, "catch": true, "elseif": true, "-": true, "finally": true, "for": true, "%": true, "typeof": true, "debugger": true, "and": true, ">=": true, "try": true, "case": true, "void": true, "nil": true, "true": true, "while": true, "this": true, "function": true, "repeat": true, "*": true, "until": true, "with": true, "=": true, "local": true};
 reserved63 = function (x) {
   return(reserved[x]);
 };
@@ -1097,212 +1097,6 @@ mapo = function (f, t) {
     }
   }
   return(o);
-};
-var delimiters = {"(": true, ")": true, "\n": true, ";": true};
-var whitespace = {"\t": true, " ": true, "\n": true};
-stream = function (str) {
-  return({string: str, len: _35(str), pos: 0});
-};
-peek_char = function (s) {
-  if (s.pos < s.len) {
-    return(char(s.string, s.pos));
-  }
-};
-read_char = function (s) {
-  var c = peek_char(s);
-  if (c) {
-    s.pos = s.pos + 1;
-    return(c);
-  }
-};
-var skip_non_code = function (s) {
-  while (true) {
-    var c = peek_char(s);
-    if (nil63(c)) {
-      break;
-    } else {
-      if (whitespace[c]) {
-        read_char(s);
-      } else {
-        if (c === ";") {
-          while (c && !(c === "\n")) {
-            c = read_char(s);
-          }
-          skip_non_code(s);
-        } else {
-          break;
-        }
-      }
-    }
-  }
-};
-read_table = {};
-eof = {};
-read = function (s) {
-  skip_non_code(s);
-  var c = peek_char(s);
-  if (is63(c)) {
-    return((read_table[c] || read_table[""])(s));
-  } else {
-    return(eof);
-  }
-};
-read_all = function (s) {
-  var l = [];
-  while (true) {
-    var form = read(s);
-    if (form === eof) {
-      break;
-    }
-    add(l, form);
-  }
-  return(l);
-};
-read_from_string = function (str) {
-  var x = read(stream(str));
-  if (!(x === eof)) {
-    return(x);
-  }
-};
-read_string = function (str) {
-  var x = read(stream(str));
-  if (!(x === eof)) {
-    return(x);
-  }
-};
-var key63 = function (atom) {
-  return(string63(atom) && _35(atom) > 1 && char(atom, edge(atom)) === ":");
-};
-var flag63 = function (atom) {
-  return(string63(atom) && _35(atom) > 1 && char(atom, 0) === ":");
-};
-read_table[""] = function (s) {
-  var str = "";
-  var dot63 = false;
-  while (true) {
-    var c = peek_char(s);
-    if (c && (!whitespace[c] && !delimiters[c])) {
-      if (c === ".") {
-        dot63 = true;
-      }
-      str = str + read_char(s);
-    } else {
-      break;
-    }
-  }
-  var n = number(str);
-  if (is63(n)) {
-    return(n);
-  } else {
-    if (str === "true") {
-      return(true);
-    } else {
-      if (str === "false") {
-        return(false);
-      } else {
-        if (str === "_") {
-          return(unique());
-        } else {
-          if (dot63 && !one63(str)) {
-            return(reduce(function (a, b) {
-              return(["get", b, ["quote", a]]);
-            }, reverse(split(str, "."))));
-          } else {
-            return(str);
-          }
-        }
-      }
-    }
-  }
-};
-read_table["("] = function (s) {
-  read_char(s);
-  var l = [];
-  while (true) {
-    skip_non_code(s);
-    var c = peek_char(s);
-    if (c && !(c === ")")) {
-      var x = read(s);
-      if (key63(x)) {
-        var k = clip(x, 0, edge(x));
-        var v = read(s);
-        l[k] = v;
-      } else {
-        if (flag63(x)) {
-          l[clip(x, 1)] = true;
-        } else {
-          add(l, x);
-        }
-      }
-    } else {
-      if (c) {
-        read_char(s);
-        break;
-      } else {
-        throw new Error("Expected ) at " + s.pos);
-      }
-    }
-  }
-  return(l);
-};
-read_table[")"] = function (s) {
-  throw new Error("Unexpected ) at " + s.pos);
-};
-read_table["\""] = function (s) {
-  read_char(s);
-  var str = "\"";
-  while (true) {
-    var c = peek_char(s);
-    if (c && !(c === "\"")) {
-      if (c === "\\") {
-        str = str + read_char(s);
-      }
-      str = str + read_char(s);
-    } else {
-      if (c) {
-        read_char(s);
-        break;
-      } else {
-        throw new Error("Expected \" at " + s.pos);
-      }
-    }
-  }
-  return(str + "\"");
-};
-read_table["|"] = function (s) {
-  read_char(s);
-  var str = "|";
-  while (true) {
-    var c = peek_char(s);
-    if (c && !(c === "|")) {
-      str = str + read_char(s);
-    } else {
-      if (c) {
-        read_char(s);
-        break;
-      } else {
-        throw new Error("Expected | at " + s.pos);
-      }
-    }
-  }
-  return(str + "|");
-};
-read_table["'"] = function (s) {
-  read_char(s);
-  return(["quote", read(s)]);
-};
-read_table["`"] = function (s) {
-  read_char(s);
-  return(["quasiquote", read(s)]);
-};
-read_table[","] = function (s) {
-  read_char(s);
-  if (peek_char(s) === "@") {
-    read_char(s);
-    return(["unquote-splicing", read(s)]);
-  } else {
-    return(["unquote", read(s)]);
-  }
 };
 var reader = require("reader");
 var _u2 = [];
@@ -1489,9 +1283,9 @@ var compile_special = function (form, stmt63) {
   var x = form[0];
   var args = cut(form, 1);
   var _u32 = getenv(x);
+  var stmt = _u32.stmt;
   var special = _u32.special;
   var self_tr63 = _u32.tr;
-  var stmt = _u32.stmt;
   var tr = terminator(stmt63 && !self_tr63);
   return(apply(special, args) + tr);
 };
@@ -1822,7 +1616,7 @@ compile_file = function (path) {
 load = function (path) {
   return(run(compile_file(path)));
 };
-setenv("do", {_stash: true, stmt: true, tr: true, special: function () {
+setenv("do", {_stash: true, tr: true, stmt: true, special: function () {
   var forms = unstash(Array.prototype.slice.call(arguments, 0));
   var s = "";
   step(function (x) {
@@ -1830,7 +1624,7 @@ setenv("do", {_stash: true, stmt: true, tr: true, special: function () {
   }, forms);
   return(s);
 }});
-setenv("%if", {_stash: true, stmt: true, tr: true, special: function (cond, cons, alt) {
+setenv("%if", {_stash: true, tr: true, stmt: true, special: function (cond, cons, alt) {
   var _u12 = compile(cond);
   indent_level = indent_level + 1;
   var _u14 = compile(cons, {_stash: true, stmt: true});
@@ -1864,7 +1658,7 @@ setenv("%if", {_stash: true, stmt: true, tr: true, special: function (cond, cons
     return(s + "\n");
   }
 }});
-setenv("while", {_stash: true, stmt: true, tr: true, special: function (cond, form) {
+setenv("while", {_stash: true, tr: true, stmt: true, special: function (cond, form) {
   var _u21 = compile(cond);
   indent_level = indent_level + 1;
   var _u22 = compile(form, {_stash: true, stmt: true});
@@ -1877,7 +1671,7 @@ setenv("while", {_stash: true, stmt: true, tr: true, special: function (cond, fo
     return(ind + "while " + _u21 + " do\n" + body + ind + "end\n");
   }
 }});
-setenv("%for", {_stash: true, stmt: true, tr: true, special: function (t, k, form) {
+setenv("%for", {_stash: true, tr: true, stmt: true, special: function (t, k, form) {
   var _u27 = compile(t);
   var ind = indentation();
   indent_level = indent_level + 1;
@@ -1890,7 +1684,7 @@ setenv("%for", {_stash: true, stmt: true, tr: true, special: function (t, k, for
     return(ind + "for (" + k + " in " + _u27 + ") {\n" + body + ind + "}\n");
   }
 }});
-setenv("%try", {_stash: true, stmt: true, tr: true, special: function (form) {
+setenv("%try", {_stash: true, tr: true, stmt: true, special: function (form) {
   var ind = indentation();
   indent_level = indent_level + 1;
   var _u36 = compile(form, {_stash: true, stmt: true});
@@ -1913,7 +1707,7 @@ setenv("break", {_stash: true, special: function () {
 setenv("%function", {_stash: true, special: function (args, body) {
   return(compile_function(args, body));
 }});
-setenv("%global-function", {_stash: true, stmt: true, tr: true, special: function (name, args, body) {
+setenv("%global-function", {_stash: true, tr: true, stmt: true, special: function (name, args, body) {
   if (target === "lua") {
     var x = compile_function(args, body, {_stash: true, name: name});
     return(indentation() + x);
@@ -1921,9 +1715,9 @@ setenv("%global-function", {_stash: true, stmt: true, tr: true, special: functio
     return(compile(["set", name, ["%function", args, body]], {_stash: true, stmt: true}));
   }
 }});
-setenv("%local-function", {_stash: true, stmt: true, tr: true, special: function (name, args, body) {
+setenv("%local-function", {_stash: true, tr: true, stmt: true, special: function (name, args, body) {
   if (target === "lua") {
-    var x = compile_function(args, body, {_stash: true, prefix: "local", name: name});
+    var x = compile_function(args, body, {_stash: true, name: name, prefix: "local"});
     return(indentation() + x);
   } else {
     return(compile(["%local", name, ["%function", args, body]], {_stash: true, stmt: true}));
@@ -2205,7 +1999,7 @@ setenv("define-reader", {_stash: true, macro: function (_u120) {
 setenv("define", {_stash: true, macro: function (name, x) {
   var _u129 = unstash(Array.prototype.slice.call(arguments, 2));
   var body = cut(_u129, 0);
-  setenv(name, {_stash: true, variable: true, toplevel: true});
+  setenv(name, {_stash: true, toplevel: true, variable: true});
   if (some63(body)) {
     return(join(["%global-function", name], bind42(x, body)));
   } else {

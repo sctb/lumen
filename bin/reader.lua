@@ -1,5 +1,5 @@
-local delimiters = {[")"] = true, [";"] = true, ["\n"] = true, ["("] = true}
-local whitespace = {["\n"] = true, [" "] = true, ["\t"] = true}
+local delimiters = {[")"] = true, ["("] = true, ["\n"] = true, [";"] = true}
+local whitespace = {["\t"] = true, ["\n"] = true, [" "] = true}
 function stream(str)
   return({pos = 0, string = str, len = _35(str)})
 end
@@ -204,4 +204,4 @@ read_table[","] = function (s)
     return({"unquote", read(s)})
   end
 end
-return({["read-string"] = read_string, ["peek-char"] = peek_char, ["read-char"] = read_char, read = read, stream = stream, ["read-all"] = read_all})
+return({stream = stream, ["peek-char"] = peek_char, ["read-all"] = read_all, ["read-string"] = read_string, ["read-char"] = read_char, read = read})

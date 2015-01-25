@@ -141,9 +141,9 @@
 	  (list 'unquote-splicing (read s)))
     (list 'unquote (read s))))
 
-;; (export stream
-;;         peek-char
-;;         read-char
-;;         read
-;;         read-all
-;;         read-string)
+(export stream
+        peek-char
+        read-char
+        read
+        read-all
+        read-string)

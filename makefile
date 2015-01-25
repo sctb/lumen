@@ -9,13 +9,15 @@ LUMEN := LUMEN_HOST=$(LUMEN_HOST) bin/lumen
 OBJS :=	obj/runtime.o	\
 	obj/io.o	\
 	obj/lib.o	\
-	obj/reader.o	\
 	obj/compiler.o	\
 	obj/special.o	\
 	obj/core.o	\
 	obj/main.o
 
-all: bin/lumen.lua bin/lumen.js
+all: bin/lumen.lua	\
+     bin/lumen.js	\
+     bin/reader.lua	\
+     bin/reader.js
 
 clean:
 	@git checkout bin/lumen.*
@@ -36,6 +38,14 @@ obj/%.js : %.l
 	@$(LUMEN) -c $< -o $@ -t js
 
 obj/%.lua : %.l
+	@echo "  $@"
+	@$(LUMEN) -c $< -o $@ -t lua
+
+bin/%.js : %.l
+	@echo "  $@"
+	@$(LUMEN) -c $< -o $@ -t js
+
+bin/%.lua : %.l
 	@echo "  $@"
 	@$(LUMEN) -c $< -o $@ -t lua
 
