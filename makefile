@@ -40,11 +40,11 @@ obj/%.lua : %.l
 	@$(LUMEN) -c $< -o $@ -t lua
 
 bin/%.js : %.l
-	@echo "  $@"
+	@echo $@
 	@$(LUMEN) -c $< -o $@ -t js
 
 bin/%.lua : %.l
-	@echo "  $@"
+	@echo $@
 	@$(LUMEN) -c $< -o $@ -t lua
 
 test: all obj/test.js obj/test.lua
