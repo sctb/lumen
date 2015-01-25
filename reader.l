@@ -3,13 +3,13 @@
 (define-local delimiters (set-of "(" ")" ";" "\n"))
 (define-local whitespace (set-of " " "\t" "\n"))
 
-(define stream (str)
+(define-local stream (str)
   (obj pos: 0 string: str len: (# str)))
 
-(define peek-char (s)
+(define-local peek-char (s)
   (if (< s.pos s.len) (char s.string s.pos)))
 
-(define read-char (s)
+(define-local read-char (s)
   (let (c (peek-char s))
     (if c (do (inc s.pos) c))))
 
@@ -24,10 +24,10 @@
               (skip-non-code s))
         (break)))))
 
-(define read-table (obj))
-(define eof (obj))
+(define-local read-table (obj))
+(define-local eof (obj))
 
-(define read (s)
+(define-local read (s)
   (skip-non-code s)
   (let (c (peek-char s))
     (if (is? c)
@@ -36,7 +36,7 @@
 	 s)
       eof)))
 
-(define read-all (s)
+(define-local read-all (s)
   (let (l ())
     (while #t
       (let (form (read s))
@@ -44,11 +44,7 @@
         (add l form)))
     l))
 
-(define read-from-string (str)
-  (let (x (read (stream str)))
-    (unless (= x eof) x)))
-
-(define read-string (str)
+(define-local read-string (str)
   (let (x (read (stream str)))
     (unless (= x eof) x)))
 

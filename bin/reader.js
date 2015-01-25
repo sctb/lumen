@@ -1,14 +1,14 @@
-var delimiters = {";": true, ")": true, "\n": true, "(": true};
-var whitespace = {"\t": true, " ": true, "\n": true};
-stream = function (str) {
-  return({len: _35(str), string: str, pos: 0});
+var delimiters = {";": true, "(": true, ")": true, "\n": true};
+var whitespace = {" ": true, "\t": true, "\n": true};
+var stream = function (str) {
+  return({pos: 0, string: str, len: _35(str)});
 };
-peek_char = function (s) {
+var peek_char = function (s) {
   if (s.pos < s.len) {
     return(char(s.string, s.pos));
   }
 };
-read_char = function (s) {
+var read_char = function (s) {
   var c = peek_char(s);
   if (c) {
     s.pos = s.pos + 1;
@@ -36,9 +36,9 @@ var skip_non_code = function (s) {
     }
   }
 };
-read_table = {};
-eof = {};
-read = function (s) {
+var read_table = {};
+var eof = {};
+var read = function (s) {
   skip_non_code(s);
   var c = peek_char(s);
   if (is63(c)) {
@@ -47,7 +47,7 @@ read = function (s) {
     return(eof);
   }
 };
-read_all = function (s) {
+var read_all = function (s) {
   var l = [];
   while (true) {
     var form = read(s);
@@ -58,13 +58,7 @@ read_all = function (s) {
   }
   return(l);
 };
-read_from_string = function (str) {
-  var x = read(stream(str));
-  if (!(x === eof)) {
-    return(x);
-  }
-};
-read_string = function (str) {
+var read_string = function (str) {
   var x = read(stream(str));
   if (!(x === eof)) {
     return(x);

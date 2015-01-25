@@ -1,14 +1,14 @@
 local delimiters = {[")"] = true, ["("] = true, ["\n"] = true, [";"] = true}
 local whitespace = {["\t"] = true, ["\n"] = true, [" "] = true}
-function stream(str)
+local function stream(str)
   return({pos = 0, string = str, len = _35(str)})
 end
-function peek_char(s)
+local function peek_char(s)
   if s.pos < s.len then
     return(char(s.string, s.pos))
   end
 end
-function read_char(s)
+local function read_char(s)
   local c = peek_char(s)
   if c then
     s.pos = s.pos + 1
@@ -36,9 +36,9 @@ local function skip_non_code(s)
     end
   end
 end
-read_table = {}
-eof = {}
-function read(s)
+local read_table = {}
+local eof = {}
+local function read(s)
   skip_non_code(s)
   local c = peek_char(s)
   if is63(c) then
@@ -47,7 +47,7 @@ function read(s)
     return(eof)
   end
 end
-function read_all(s)
+local function read_all(s)
   local l = {}
   while true do
     local form = read(s)
@@ -58,13 +58,7 @@ function read_all(s)
   end
   return(l)
 end
-function read_from_string(str)
-  local x = read(stream(str))
-  if not (x == eof) then
-    return(x)
-  end
-end
-function read_string(str)
+local function read_string(str)
   local x = read(stream(str))
   if not (x == eof) then
     return(x)
@@ -204,4 +198,4 @@ read_table[","] = function (s)
     return({"unquote", read(s)})
   end
 end
-return({stream = stream, ["peek-char"] = peek_char, ["read-all"] = read_all, ["read-string"] = read_string, ["read-char"] = read_char, read = read})
+return({read = read, ["read-char"] = read_char, ["read-all"] = read_all, ["read-string"] = read_string, stream = stream, ["peek-char"] = peek_char})
