@@ -2,6 +2,257 @@
 
 (define-local reader (require 'reader))
 
+(define getenv (k p)
+  (when (string? k)
+    (let (b (find (fn (e)
+                    (get e k))
+                  (reverse environment)))
+      (when (is? b)
+        (if p (get b p) b)))))
+
+(define-local macro-function (k)
+  (getenv k 'macro))
+
+(define-local macro? (k)
+  (is? (macro-function k)))
+
+(define-local special? (k)
+  (is? (getenv k 'special)))
+
+(define-local special-form? (form)
+  (and (obj? form) (special? (hd form))))
+
+(define-local statement? (k)
+  (and (special? k) (getenv k 'stmt)))
+
+(define-local symbol-expansion (k)
+  (getenv k 'symbol))
+
+(define-local symbol? (k)
+  (is? (symbol-expansion k)))
+
+(define-local variable? (k)
+  (let (b (first (fn (frame)
+                   (or (get frame k) frame._scope))
+                 (reverse environment)))
+    (and (obj? b) (is? b.variable))))
+
+(define bound? (x)
+  (or (macro? x)
+      (special? x)
+      (symbol? x)
+      (variable? x)))
+
+(define-local escape (s)
+  (let (s1 "\"")
+    (for (i (# s))
+      (let (c (char s i)
+            c1 (if (= c "\n") "\\n"
+                   (= c "\"") "\\\""
+                   (= c "\\") "\\\\"
+                 c))
+        (cat! s1 c1)))
+    (cat s1 "\"")))
+
+(define quoted (form)
+  (if (string? form) (escape form)
+      (atom? form) form
+    `(list ,@(map quoted form))))
+
+(define-local literal (s)
+  (if (string-literal? s) s (quoted s)))
+
+(define-local stash* (args)
+  (if (keys? args)
+      (let (l `(%object "_stash" true))
+        (each (k v) args
+          (unless (number? k)
+            (add l (literal k))
+            (add l v)))
+        (join args (list l)))
+    args))
+
+(define-local bias (k)
+  (when (and (number? k)
+             (not (= target (language))))
+    (if (= target 'js)
+        (dec k)
+      (inc k)))
+  k)
+
+(define bind (lh rh)
+  (if (and (obj? lh) (obj? rh))
+      (let (id (unique))
+	`((,id ,rh) ,@(bind lh id)))
+      (atom? lh) `((,lh ,rh))
+    (let (bs ())
+      (each (k v) lh
+        (let (x (if (= k 'rest)
+                    `(cut ,rh ,(# lh))
+                  `(get ,rh ',(bias k))))
+          (when (is? k)
+            (let (k (if (= v #t) k v))
+              (join! bs (bind k x))))))
+      bs)))
+
+(define bind* (args body)
+  (let (args1 ())
+    (define-local rest ()
+      (if (= target 'js)
+          `(unstash
+            (Array.prototype.slice.call arguments ,(# args1)))
+        (do (add args1 '|...|) '(unstash (list |...|)))))
+    (if (atom? args)
+        (list args1 `(let ,(list args (rest)) ,@body))
+      (let (bs () r (unique))
+        (each (k v) args
+          (when (number? k)
+            (if (atom? v) (add args1 v)
+              (let (x (unique))
+                (add args1 x)
+                (join! bs (list v x))))))
+        (when (keys? args)
+          (join! bs (list r (rest)))
+          (join! bs (list (keys args) r)))
+        (list args1 `(let ,bs ,@body))))))
+
+(define-local quoting? (depth)
+  (number? depth))
+
+(define-local quasiquoting? (depth)
+  (and (quoting? depth) (> depth 0)))
+
+(define-local can-unquote? (depth)
+  (and (quoting? depth) (= depth 1)))
+
+(define-local quasisplice? (x depth)
+  (and (can-unquote? depth)
+       (obj? x)
+       (= (hd x) 'unquote-splicing)))
+
+(define macroexpand (form)
+  (if (symbol? form)
+      (macroexpand (symbol-expansion form))
+      (atom? form) form
+    (let (x (hd form))
+      (if (= x '%local)
+          (let ((_ name value) form)
+            `(%local ,name ,(macroexpand value)))
+          (= x '%function)
+          (let ((_ args rest: body) form)
+            (with-bindings (args)
+              `(%function ,args ,@(macroexpand body))))
+          (or (= x '%local-function)
+              (= x '%global-function))
+          (let ((_ name args rest: body) form)
+            (with-bindings (args)
+              `(,x ,name ,args ,@(macroexpand body))))
+	  (macro? x)
+          (macroexpand (apply (macro-function x) (tl form)))
+        (map macroexpand form)))))
+
+(define quasiquote-list (form depth)
+  (let (xs (list '(list)))
+    (each (k v) form
+      (unless (number? k)
+        (let (v (if (quasisplice? v depth)
+                    ;; don't splice, just expand
+                    (quasiexpand (at v 1))
+                  (quasiexpand v depth)))
+          (set (get (last xs) k) v))))
+    ;; collect sibling lists
+    (step
+     (fn (x)
+       (if (quasisplice? x depth)
+           (let (x (quasiexpand (at x 1)))
+             (add xs x)
+             (add xs '(list)))
+         (add (last xs) (quasiexpand x depth))))
+     form)
+    (let (pruned
+          (keep (fn (x)
+                  (or (> (# x) 1)
+                      (not (= (hd x) 'list))
+                      (keys? x)))
+                xs))
+      `(join* ,@pruned))))
+
+(define quasiexpand (form depth)
+  (if (quasiquoting? depth)
+      (if (atom? form) (list 'quote form)
+          ;; unquote
+          (and (can-unquote? depth)
+               (= (hd form) 'unquote))
+          (quasiexpand (at form 1))
+          ;; decrease quasiquoting depth
+          (or (= (hd form) 'unquote)
+              (= (hd form) 'unquote-splicing))
+          (quasiquote-list form (- depth 1))
+          ;; increase quasiquoting depth
+          (= (hd form) 'quasiquote)
+          (quasiquote-list form (+ depth 1))
+        (quasiquote-list form depth))
+      (atom? form) form
+      (= (hd form) 'quote) form
+      (= (hd form) 'quasiquote)
+      ;; start quasiquoting
+      (quasiexpand (at form 1) 1)
+    (map (fn (x) (quasiexpand x depth)) form)))
+
+(define expand-if ((a b rest: c))
+  (if (is? b) `((%if ,a ,b ,@(expand-if c)))
+      (is? a) (list a)))
+
+(define indent-level 0)
+
+(define indentation ()
+  (apply cat (replicate indent-level "  ")))
+
+(define-local reserved
+  (set-of "=" "==" "+" "-" "%" "*" "/" "<" ">" "<=" ">="
+          ;; js
+          "break" "case" "catch" "continue" "debugger"
+          "default" "delete" "do" "else" "finally" "for"
+          "function" "if" "in" "instanceof" "new" "return"
+          "switch" "this" "throw" "try" "typeof" "var"
+          "void" "with"
+          ;; lua
+          "and" "end" "in" "repeat" "while" "break" "false"
+          "local" "return" "do" "for" "nil" "then" "else"
+          "function" "not" "true" "elseif" "if" "or" "until"))
+
+(define reserved? (x)
+  (get reserved x))
+
+(define-local valid-code? (n)
+  (or (number-code? n)         ; 0-9
+      (and (> n 64) (< n 91))  ; A-Z
+      (and (> n 96) (< n 123)) ; a-z
+      (= n 95)))               ; _
+
+(define valid-id? (id)
+  (if (or (none? id) (reserved? id))
+      #f
+    (do (for (i (# id))
+          (unless (valid-code? (code id i))
+            (return #f)))
+        #t)))
+
+(define key (k)
+  (let (i (inner k))
+    (if (valid-id? i) i
+        (= target 'js) k
+      (cat "[" k "]"))))
+
+(define mapo (f t)
+  (let (o ())
+    (each (k v) t
+      (let (x (f v))
+        (when (is? x)
+          (add o (literal k))
+          (add o x))))
+    o))
+
 (define-local infix
   `((not: (js: ! lua: ,"not "))
     (:* :/ :%)
@@ -285,3 +536,136 @@
 
 (define load (path)
   (run (compile-file path)))
+
+(define-special do forms :stmt :tr
+  (let (s "")
+    (step (fn (x)
+            (cat! s (compile x :stmt)))
+          forms)
+    s))
+
+(define-special %if (cond cons alt) :stmt :tr
+  (let (cond (compile cond)
+        cons (with-indent (compile cons :stmt))
+        alt (if alt (with-indent (compile alt :stmt)))
+        ind (indentation)
+        s "")
+    (if (= target 'js)
+        (cat! s ind "if (" cond ") {\n" cons ind "}")
+      (cat! s ind "if " cond " then\n" cons))
+    (if (and alt (= target 'js))
+        (cat! s " else {\n" alt ind "}")
+        alt (cat! s ind "else\n" alt))
+    (if (= target 'lua)
+        (cat s ind "end\n")
+      (cat s "\n"))))
+
+(define-special while (cond form) :stmt :tr
+  (let (cond (compile cond)
+        body (with-indent (compile form :stmt))
+        ind (indentation))
+    (if (= target 'js)
+	(cat ind "while (" cond ") {\n" body ind "}\n")
+      (cat ind "while " cond " do\n" body ind "end\n"))))
+
+(define-special %for (t k form) :stmt :tr
+  (let (t (compile t)
+        ind (indentation)
+        body (with-indent (compile form :stmt)))
+    (if (= target 'lua)
+	(cat ind "for " k " in next, " t " do\n" body ind "end\n")
+      (cat ind "for (" k " in " t ") {\n" body ind "}\n"))))
+
+(define-special %try (form) :stmt :tr
+  (let (ind (indentation)
+        body (with-indent (compile form :stmt))
+        e (unique)
+        hf `(return (%array false (get ,e "message")))
+        h (with-indent (compile hf :stmt)))
+    (cat ind "try {\n" body ind "}\n"
+         ind "catch (" e ") {\n" h ind "}\n")))
+
+(define-special %delete (place) :stmt
+  (cat (indentation) "delete " (compile place)))
+
+(define-special break () :stmt
+  (cat (indentation) "break"))
+
+(define-special %function (args body)
+  (compile-function args body))
+
+(define-special %global-function (name args body) :stmt :tr
+  (if (= target 'lua)
+      (let (x (compile-function args body name: name))
+        (cat (indentation) x))
+    (compile `(set ,name (%function ,args ,body)) :stmt)))
+
+(define-special %local-function (name args body) :stmt :tr
+  (if (= target 'lua)
+      (let (x (compile-function args body name: name prefix: 'local))
+        (cat (indentation) x))
+    (compile `(%local ,name (%function ,args ,body)) :stmt)))
+
+(define-special return (x) :stmt
+  (let (x (if (nil? x)
+              "return"
+            (cat "return(" (compile x) ")")))
+    (cat (indentation) x)))
+
+(define-special error (x) :stmt
+  (let (e (if (= target 'js)
+              (cat "throw new " (compile `(Error ,x)))
+            (cat "error(" (compile x) ")")))
+    (cat (indentation) e)))
+
+(define-special %local (name value) :stmt
+  (let (id (compile name)
+        value1 (compile value)
+        rh (if (is? value) (cat " = " value1) "")
+	keyword (if (= target 'js) "var " "local ")
+        ind (indentation))
+    (cat ind keyword id rh)))
+
+(define-special set (lh rh) :stmt
+  (let (lh (compile lh)
+        rh (compile (if (nil? rh) 'nil rh)))
+    (cat (indentation) lh " = " rh)))
+
+(define-special get (t k)
+  (let (t (compile t)
+	k1 (compile k))
+    (when (and (= target 'lua)
+               (= (char t 0) "{"))
+      (set t (cat "(" t ")")))
+    (if (and (string-literal? k)
+             (valid-id? (inner k)))
+        (cat t "." (inner k))
+      (cat t "[" k1 "]"))))
+
+(define-special %array forms
+  (let (open (if (= target 'lua) "{" "[")
+	close (if (= target 'lua) "}" "]")
+	s "" c "")
+    (each (k v) forms
+      (when (number? k)
+        (cat! s c (compile v))
+        (set c ", ")))
+    (cat open s close)))
+
+(define-special %object forms
+  (let (s "{" c ""
+        sep (if (= target 'lua) " = " ": "))
+    (each (k v) (pair forms)
+      (when (number? k)
+        (let ((k v) v)
+          (unless (string? k)
+            (error (cat "Illegal key: " (string k))))
+          (cat! s c (key k) sep (compile v))
+          (set c ", "))))
+    (cat s "}")))
+
+;; (export eval
+;;         run-file
+;;         load
+;;         expand
+;;         compile)
