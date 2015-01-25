@@ -38,7 +38,7 @@
 (define-global inf? (n)
   (or (= n #+inf) (= n #-inf)))
 
-(target lua: (define-local strlib string))
+(target lua: (define strlib string))
 
 (define-global clip (s from upto)
   (target js: (s.substring from upto)
@@ -288,7 +288,7 @@
         (set sp " "))
       (cat s  ")"))))
 
-(define-local produces-string? (x)
+(define produces-string? (x)
   (or (string-literal? x)
       (and (obj? x)
            (or (= (hd x) 'cat)
@@ -332,7 +332,7 @@
         (set (get entry k) v))
       (set (get frame k) entry))))
 
-(target js: (define-local fs (require 'fs)))
+(target js: (define fs (require 'fs)))
 
 (define-global read-file (path)
   (target
@@ -357,7 +357,7 @@
 (define-global argv ()
   (target js: (cut process.argv 2) lua: arg))
 
-(define-local math (target js: Math lua: math))
+(define math (target js: Math lua: math))
 
 (define-global abs math.abs)
 (define-global acos math.acos)

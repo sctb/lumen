@@ -1,19 +1,19 @@
 ;; -*- mode: lisp -*-
 
-(define-local delimiters (set-of "(" ")" ";" "\n"))
-(define-local whitespace (set-of " " "\t" "\n"))
+(define delimiters (set-of "(" ")" ";" "\n"))
+(define whitespace (set-of " " "\t" "\n"))
 
-(define-local stream (str)
+(define stream (str)
   (obj pos: 0 string: str len: (# str)))
 
-(define-local peek-char (s)
+(define peek-char (s)
   (if (< s.pos s.len) (char s.string s.pos)))
 
-(define-local read-char (s)
+(define read-char (s)
   (let (c (peek-char s))
     (if c (do (inc s.pos) c))))
 
-(define-local skip-non-code (s)
+(define skip-non-code (s)
   (while #t
     (let (c (peek-char s))
       (if (nil? c) (break)
@@ -24,10 +24,10 @@
               (skip-non-code s))
         (break)))))
 
-(define-local read-table (obj))
-(define-local eof (obj))
+(define read-table (obj))
+(define eof (obj))
 
-(define-local read (s)
+(define read (s)
   (skip-non-code s)
   (let (c (peek-char s))
     (if (is? c)
@@ -36,7 +36,7 @@
 	 s)
       eof)))
 
-(define-local read-all (s)
+(define read-all (s)
   (let (l ())
     (while #t
       (let (form (read s))
@@ -44,16 +44,16 @@
         (add l form)))
     l))
 
-(define-local read-string (str)
+(define read-string (str)
   (let (x (read (stream str)))
     (unless (= x eof) x)))
 
-(define-local key? (atom)
+(define key? (atom)
   (and (string? atom)
        (> (# atom) 1)
        (= (char atom (edge atom)) ":")))
 
-(define-local flag? (atom)
+(define flag? (atom)
   (and (string? atom)
        (> (# atom) 1)
        (= (char atom 0) ":")))

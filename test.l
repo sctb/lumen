@@ -1,11 +1,11 @@
 ;; -*- mode: lisp -*-
 
-(define-local passed 0)
-(define-local failed 0)
-(define-local tests ())
+(define passed 0)
+(define failed 0)
+(define tests ())
 
-(define-local reader (require 'reader))
-(define-local compiler (require 'compiler))
+(define reader (require 'reader))
+(define compiler (require 'compiler))
 
 (define-macro test (x msg)
   `(if (not ,x)
@@ -13,7 +13,7 @@
 	   (return ,msg))
      (inc passed)))
 
-(define-local equal? (a b)
+(define equal? (a b)
   (if (atom? a) (= a b)
     (= (string a) (string b))))
 
@@ -393,13 +393,13 @@ c")
   (let-fn (f (n) (+ n 10))
     (test= 20 (f 10))))
 
-(define-test define-local ()
-  (define-local x 20)
-  (define-local f () 42)
+(define-test define ()
+  (define x 20)
+  (define f () 42)
   (test= 20 x)
   (test= 42 (f))
   ((fn ()
-     (define-local f () 38)
+     (define f () 38)
      (test= 38 (f))))
   (test= 42 (f)))
 
@@ -464,8 +464,8 @@ c")
      (test= 20 zz))
    20))
 
-(define-local zzop 99)
-(define-local zzap 100)
+(define zzop 99)
+(define zzap 100)
 
 (let (zzop 10
       zzap (+ zzop 10)
@@ -794,7 +794,7 @@ c")
   (let (eval compiler.eval)
     (test= 4 (eval '(+ 2 2)))
     (test= 5 (eval '(let (a 3) (+ 2 a))))
-    (test= 9 (eval '(do (define-local x 7) (+ x 2))))
+    (test= 9 (eval '(do (define x 7) (+ x 2))))
     (test= 6 (eval '(apply + '(1 2 3))))))
 
 (define-test call ()

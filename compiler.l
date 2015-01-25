@@ -1,8 +1,8 @@
 ;; -*- mode: lisp -*-
 
-(define-local reader (require 'reader))
+(define reader (require 'reader))
 
-(define-local getenv (k p)
+(define getenv (k p)
   (when (string? k)
     (let (b (find (fn (e)
                     (get e k))
@@ -10,28 +10,28 @@
       (when (is? b)
         (if p (get b p) b)))))
 
-(define-local macro-function (k)
+(define macro-function (k)
   (getenv k 'macro))
 
-(define-local macro? (k)
+(define macro? (k)
   (is? (macro-function k)))
 
-(define-local special? (k)
+(define special? (k)
   (is? (getenv k 'special)))
 
-(define-local special-form? (form)
+(define special-form? (form)
   (and (obj? form) (special? (hd form))))
 
-(define-local statement? (k)
+(define statement? (k)
   (and (special? k) (getenv k 'stmt)))
 
-(define-local symbol-expansion (k)
+(define symbol-expansion (k)
   (getenv k 'symbol))
 
-(define-local symbol? (k)
+(define symbol? (k)
   (is? (symbol-expansion k)))
 
-(define-local variable? (k)
+(define variable? (k)
   (let (b (first (fn (frame)
                    (or (get frame k) frame._scope))
                  (reverse environment)))
@@ -43,7 +43,7 @@
       (symbol? x)
       (variable? x)))
 
-(define-local escape (s)
+(define escape (s)
   (let (s1 "\"")
     (for (i (# s))
       (let (c (char s i)
@@ -59,10 +59,10 @@
       (atom? form) form
     `(list ,@(map quoted form))))
 
-(define-local literal (s)
+(define literal (s)
   (if (string-literal? s) s (quoted s)))
 
-(define-local stash* (args)
+(define stash* (args)
   (if (keys? args)
       (let (l `(%object "_stash" true))
         (each (k v) args
@@ -72,7 +72,7 @@
         (join args (list l)))
     args))
 
-(define-local bias (k)
+(define bias (k)
   (when (and (number? k)
              (not (= target (language))))
     (if (= target 'js)
@@ -97,7 +97,7 @@
 
 (define-global bind* (args body)
   (let (args1 ())
-    (define-local rest ()
+    (define rest ()
       (if (= target 'js)
           `(unstash
             (Array.prototype.slice.call arguments ,(# args1)))
@@ -116,16 +116,16 @@
           (join! bs (list (keys args) r)))
         (list args1 `(let ,bs ,@body))))))
 
-(define-local quoting? (depth)
+(define quoting? (depth)
   (number? depth))
 
-(define-local quasiquoting? (depth)
+(define quasiquoting? (depth)
   (and (quoting? depth) (> depth 0)))
 
-(define-local can-unquote? (depth)
+(define can-unquote? (depth)
   (and (quoting? depth) (= depth 1)))
 
-(define-local quasisplice? (x depth)
+(define quasisplice? (x depth)
   (and (can-unquote? depth)
        (obj? x)
        (= (hd x) 'unquote-splicing)))
@@ -151,7 +151,7 @@
           (macroexpand (apply (macro-function x) (tl form)))
         (map macroexpand form)))))
 
-(define-local quasiquote-list (form depth)
+(define quasiquote-list (form depth)
   (let (xs (list '(list)))
     (each (k v) form
       (unless (number? k)
@@ -208,7 +208,7 @@
 (define-global indentation ()
   (apply cat (replicate indent-level "  ")))
 
-(define-local reserved
+(define reserved
   (set-of "=" "==" "+" "-" "%" "*" "/" "<" ">" "<=" ">="
           ;; js
           "break" "case" "catch" "continue" "debugger"
@@ -224,7 +224,7 @@
 (define-global reserved? (x)
   (get reserved x))
 
-(define-local valid-code? (n)
+(define valid-code? (n)
   (or (number-code? n)         ; 0-9
       (and (> n 64) (< n 91))  ; A-Z
       (and (> n 96) (< n 123)) ; a-z
@@ -253,7 +253,7 @@
           (add o x))))
     o))
 
-(define-local infix
+(define infix
   `((not: (js: ! lua: ,"not "))
     (:* :/ :%)
     (:+ :-)
@@ -263,29 +263,29 @@
     (and: (js: && lua: and))
     (or: (js: ,"||" lua: or))))
 
-(define-local unary? (form)
+(define unary? (form)
   (and (= (# form) 2) (in? (hd form) '(not -))))
 
-(define-local index (k)
+(define index (k)
   (target js: k lua: (when (number? k) (- k 1))))
 
-(define-local precedence (form)
+(define precedence (form)
   (unless (or (atom? form) (unary? form))
     (each (k v) infix
       (if (get v (hd form)) (return (index k)))))
   0)
 
-(define-local getop (op)
+(define getop (op)
   (find (fn (level)
           (let (x (get level op))
             (if (= x #t) op
                 (is? x) (get x target))))
         infix))
 
-(define-local infix? (x)
+(define infix? (x)
   (is? (getop x)))
 
-(define-local compile-args (args)
+(define compile-args (args)
   (let (s "(" c "")
     (step (fn (x)
             (cat! s c (compile x))
@@ -293,14 +293,14 @@
           args)
     (cat s ")")))
 
-(define-local escape-newlines (s)
+(define escape-newlines (s)
   (let (s1 "")
     (for (i (# s))
       (let (c (char s i))
         (cat! s1 (if (= c "\n") "\\n" c))))
     (cat s1 "")))
 
-(define-local id (id)
+(define id (id)
   (let (id1 "")
     (for (i (# id))
       (let (c (char id i)
@@ -312,7 +312,7 @@
         (cat! id1 c1)))
     id1))
 
-(define-local compile-atom (x)
+(define compile-atom (x)
   (if (and (= x "nil") (= target 'lua)) x
       (= x "nil") "undefined"
       (id-literal? x) (inner x)
@@ -322,22 +322,22 @@
       (number? x) (cat x "")
     (error (cat "Cannot compile atom: " (string x)))))
 
-(define-local terminator (stmt?)
+(define terminator (stmt?)
   (if (not stmt?) ""
       (= target 'js) ";\n"
     "\n"))
 
-(define-local compile-special (form stmt?)
+(define compile-special (form stmt?)
   (let ((x rest: args) form
         (:special :stmt tr: self-tr?) (getenv x)
         tr (terminator (and stmt? (not self-tr?))))
     (cat (apply special args) tr)))
 
-(define-local parenthesize-call? (x)
+(define parenthesize-call? (x)
   (or (and (obj? x) (= (hd x) '%function))
       (> (precedence x) 0)))
 
-(define-local compile-call (form)
+(define compile-call (form)
   (let (f (hd form)
         f1 (compile f)
         args (compile-args (stash* (tl form))))
@@ -345,14 +345,14 @@
         (cat "(" f1 ")" args)
       (cat f1 args))))
 
-(define-local op-delims (parent child :right)
+(define op-delims (parent child :right)
   (if ((if right >= >)
        (precedence child)
        (precedence parent))
       (list "(" ")")
     (list "" "")))
 
-(define-local compile-infix (form)
+(define compile-infix (form)
   (let ((op rest: (a b)) form
         (ao ac) (op-delims form a)
         (bo bc) (op-delims form b :right)
@@ -375,7 +375,7 @@
         (cat "function " id args " {\n" body ind "}" tr)
       (cat p "function " id args "\n" body ind tr))))
 
-(define-local can-return? (form)
+(define can-return? (form)
   (and (is? form)
        (or (atom? form)
            (and (not (= (hd form) 'return))
@@ -392,7 +392,7 @@
                  (compile-call form)))
       (cat ind form tr))))
 
-(define-local lower-statement (form tail?)
+(define lower-statement (form tail?)
   (let (hoist ()
         e (lower form hoist #t tail?))
     (if (and (some? hoist) (is? e))
@@ -401,10 +401,10 @@
         (> (# hoist) 1) `(do ,@hoist)
       (hd hoist))))
 
-(define-local lower-body (body tail?)
+(define lower-body (body tail?)
   (lower-statement `(do ,@body) tail?))
 
-(define-local lower-do (args hoist stmt? tail?)
+(define lower-do (args hoist stmt? tail?)
   (step (fn (x)
           (add hoist (lower x hoist stmt?)))
         (butlast args))
@@ -413,7 +413,7 @@
         `(return ,e)
       e)))
 
-(define-local lower-if (args hoist stmt? tail?)
+(define lower-if (args hoist stmt? tail?)
   (let ((cond then else) args)
     (if (or stmt? tail?)
         (add hoist
@@ -429,7 +429,7 @@
                          (list (lower `(set ,e ,else))))))
         e))))
 
-(define-local lower-short (x args hoist)
+(define lower-short (x args hoist)
   (let ((a b) args
         hoist1 ()
         b1 (lower b hoist1))
@@ -442,44 +442,44 @@
                  hoist))
       `(,x ,(lower a hoist) ,b1))))
 
-(define-local lower-try (args hoist tail?)
+(define lower-try (args hoist tail?)
   (add hoist `(%try ,(lower-body args tail?))))
 
-(define-local lower-while (args hoist)
+(define lower-while (args hoist)
   (let ((c rest: body) args)
     (add hoist
          `(while ,(lower c hoist)
             ,(lower-body body)))))
 
-(define-local lower-for (args hoist)
+(define lower-for (args hoist)
   (let ((t k rest: body) args)
     (add hoist
          `(%for ,(lower t hoist) ,k
             ,(lower-body body)))))
 
-(define-local lower-function (args)
+(define lower-function (args)
   (let ((a rest: body) args)
     `(%function ,a ,(lower-body body #t))))
 
-(define-local lower-definition (kind args hoist)
+(define lower-definition (kind args hoist)
   (let ((name args rest: body) args)
     (add hoist `(,kind ,name ,args ,(lower-body body #t)))))
 
-(define-local lower-call (form hoist)
+(define lower-call (form hoist)
   (let (form (map (fn (x) (lower x hoist)) form))
     (if (some? form) form)))
 
-(define-local lower-infix? (form)
+(define lower-infix? (form)
   (and (infix? (hd form)) (> (# form) 3)))
 
-(define-local lower-infix (form hoist)
+(define lower-infix (form hoist)
   (let ((x rest: args) form)
     (lower (reduce (fn (a b)
                      (list x b a))
                    (reverse args))
            hoist)))
 
-(define-local lower-special (form hoist)
+(define lower-special (form hoist)
   (let (e (lower-call form hoist))
     (if e (add hoist e))))
 
@@ -503,15 +503,15 @@
           (statement? x) (lower-special form hoist)
         (lower-call form hoist)))))
 
-(define-local expand (form)
+(define expand (form)
   (lower (macroexpand form)))
 
 (target js: (set global.require require))
-(target js: (define-local run eval))
+(target js: (define run eval))
 
-(target lua: (define-local load1 load))
+(target lua: (define load1 load))
 (target lua:
-  (define-local run (code)
+  (define run (code)
     (let (|f,e| (load1 code))
       (if f (f) (error (cat e " in " code))))))
 
@@ -525,10 +525,10 @@
       (run code)
       %result)))
 
-(define-local run-file (path)
+(define run-file (path)
   (run (read-file path)))
 
-(define-local compile-file (path)
+(define compile-file (path)
   (let (s (reader.stream (read-file path))
         body (reader.read-all s)
         form (expand `(do ,@body)))

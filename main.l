@@ -1,14 +1,14 @@
 ;; -*- mode: lisp -*-
 
-(define-local reader (require 'reader))
-(define-local compiler (require 'compiler))
+(define reader (require 'reader))
+(define compiler (require 'compiler))
 
-(define-local rep (s)
+(define rep (s)
   (let (form (reader.read-string s)
         (_ x) (guard (compiler.eval form)))
     (if (is? x) (pr x))))
 
-(define-local repl ()
+(define repl ()
   (write "> ")
   (let-fn (rep1 (s) (rep s) (write "> "))
     (target
@@ -18,7 +18,7 @@
              (let (s (io.read))
                (if s (rep1 s) (break)))))))
 
-(define-local usage ()
+(define usage ()
   (pr "usage: lumen [options] <object files>")
   (pr "options:")
   (pr "  -c <input>\tInput file")
@@ -27,7 +27,7 @@
   (pr "  -e <expr>\tExpression to evaluate")
   (exit))
 
-(define-local main ()
+(define main ()
   (let (as (argv))
     (when (or (= (hd as) "-h")
               (= (hd as) "--help"))
