@@ -10,25 +10,10 @@ HOST=${LUMEN_HOST:-lua}
 case $HOST in
     node*)
         CODE=lumen.js
-        export NODE_PATH=$HOME;;
+        export NODE_PATH=$HOME:$DIR/lib;;
     *)
         CODE=lumen.lua
-        export LUA_PATH="$HOME/?.lua;;";;
+        export LUA_PATH="$HOME/?.lua;$DIR/lib/?.lua;;";;
 esac
 
-COMPILING=0
-
-for v in "$@"
-do
-    if [ "$v" = "-c" ]
-    then
-        COMPILING=1
-    fi
-done
-
-if [ $COMPILING -ne 1 ] && [ -r .lumenrc ]
-then
-    ARGS=`cat .lumenrc`
-fi
-
-exec $HOST $HOME/$CODE $ARGS "$@"
+exec $HOST $HOME/$CODE "$@"
