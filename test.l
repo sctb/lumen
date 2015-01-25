@@ -5,6 +5,7 @@
 (define tests ())
 
 (define reader (require 'reader))
+(define compiler (require 'compiler))
 
 (define-macro test (x msg)
   `(if (not ,x)
@@ -790,10 +791,11 @@ c")
   (test= 42 (apply (fn ((:foo)) foo) (list (list foo: 42)))))
 
 (define-test eval ()
-  (test= 4 (eval '(+ 2 2)))
-  (test= 5 (eval '(let (a 3) (+ 2 a))))
-  (test= 9 (eval '(do (define x 7) (+ x 2))))
-  (test= 6 (eval '(apply + '(1 2 3)))))
+  (let (eval compiler.eval)
+    (test= 4 (eval '(+ 2 2)))
+    (test= 5 (eval '(let (a 3) (+ 2 a))))
+    (test= 9 (eval '(do (define x 7) (+ x 2))))
+    (test= 6 (eval '(apply + '(1 2 3))))))
 
 (define-test call ()
   (let (f (fn () 42))

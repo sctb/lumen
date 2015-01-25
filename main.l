@@ -1,9 +1,11 @@
 ;; -*- mode: lisp -*-
 
 (define-local reader (require 'reader))
+(define-local compiler (require 'compiler))
 
 (define-local rep (s)
-  (let ((_ x) (guard (eval (reader.read-string s))))
+  (let (form (reader.read-string s)
+        (_ x) (guard (compiler.eval form)))
     (if (is? x) (pr x))))
 
 (define-local repl ()
@@ -51,10 +53,10 @@
 	      (not (= "-" (char a 0)))
               (add pre a))
           (inc i)))
-      (step run-file pre)
+      (step compiler.run-file pre)
       (if (and input output)
           (do (if target1 (set target target1))
-              (let (code (compile-file input))
+              (let (code (compiler.compile-file input))
                 (write-file output code)))
         (if expr (rep expr) (repl))))))
 

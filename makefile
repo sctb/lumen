@@ -7,14 +7,14 @@ LUMEN_HOST ?= $(LUMEN_LUA)
 LUMEN := LUMEN_HOST=$(LUMEN_HOST) bin/lumen
 
 OBJS :=	obj/runtime.o	\
-	obj/compiler.o	\
 	obj/macros.o	\
 	obj/main.o
 
-all: bin/lumen.lua	\
-     bin/lumen.js	\
-     bin/reader.lua	\
-     bin/reader.js
+MODS := bin/lumen.x	\
+	bin/reader.x	\
+	bin/compiler.x
+
+all: $(MODS:.x=.js) $(MODS:.x=.lua)
 
 clean:
 	@git checkout bin/lumen.*
@@ -46,10 +46,8 @@ bin/%.lua : %.l
 	@echo "  $@"
 	@$(LUMEN) -c $< -o $@ -t lua
 
-TESTOBJS := obj/math.o obj/test.o
-
-test: all $(TESTOBJS:.o=.js) $(TESTOBJS:.o=.lua)
+test: all obj/test.js obj/test.lua
 	@echo js:
-	@LUMEN_HOST=$(LUMEN_NODE) bin/lumen $(TESTOBJS:.o=.js) -e '(run)'
+	@LUMEN_HOST=$(LUMEN_NODE) bin/lumen obj/test.js -e '(run)'
 	@echo lua:
-	@LUMEN_HOST=$(LUMEN_LUA) bin/lumen $(TESTOBJS:.o=.lua) -e '(run)'
+	@LUMEN_HOST=$(LUMEN_LUA) bin/lumen obj/test.lua -e '(run)'

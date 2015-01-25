@@ -664,8 +664,9 @@
           (set c ", "))))
     (cat s "}")))
 
-;; (export eval
-;;         run-file
-;;         load
-;;         expand
-;;         compile)
+(export eval
+        run-file
+        compile-file
+        load
+        expand
+        compile)
