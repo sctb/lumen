@@ -87,12 +87,6 @@
       `(%global-function ,name ,@(bind* x body))
     `(set ,name ,x)))
 
-(define-macro define-local (name x rest: body)
-  (setenv name :variable)
-  (if (some? body)
-      `(%local-function ,name ,@(bind* x body))
-    `(%local ,name ,x)))
-
 (define-macro with-frame (rest: body :scope)
   (let (x (unique))
     `(do (add environment (obj _scope: ,scope))
