@@ -48,6 +48,10 @@
   (let (x (read (stream str)))
     (unless (= x eof) x)))
 
+(define read-string (str)
+  (let (x (read (stream str)))
+    (unless (= x eof) x)))
+
 (define-local key? (atom)
   (and (string? atom)
        (> (# atom) 1)
@@ -136,3 +140,10 @@
       (do (read-char s)
 	  (list 'unquote-splicing (read s)))
     (list 'unquote (read s))))
+
+;; (export stream
+;;         peek-char
+;;         read-char
+;;         read
+;;         read-all
+;;         read-string)

@@ -901,7 +901,7 @@ indent_level = 0
 function indentation()
   return(apply(cat, replicate(indent_level, "  ")))
 end
-local reserved = {["="] = true, ["=="] = true, ["+"] = true, ["-"] = true, ["%"] = true, ["*"] = true, ["/"] = true, ["<"] = true, [">"] = true, ["<="] = true, [">="] = true, ["break"] = true, ["case"] = true, ["catch"] = true, ["continue"] = true, ["debugger"] = true, ["default"] = true, ["delete"] = true, ["do"] = true, ["else"] = true, ["finally"] = true, ["for"] = true, ["function"] = true, ["if"] = true, ["in"] = true, ["instanceof"] = true, ["new"] = true, ["return"] = true, ["switch"] = true, ["this"] = true, ["throw"] = true, ["try"] = true, ["typeof"] = true, ["var"] = true, ["void"] = true, ["with"] = true, ["and"] = true, ["end"] = true, ["repeat"] = true, ["while"] = true, ["false"] = true, ["local"] = true, ["nil"] = true, ["then"] = true, ["not"] = true, ["true"] = true, ["elseif"] = true, ["or"] = true, ["until"] = true}
+local reserved = {["case"] = true, ["delete"] = true, ["this"] = true, ["="] = true, ["and"] = true, ["return"] = true, ["/"] = true, ["in"] = true, ["function"] = true, ["finally"] = true, ["end"] = true, ["if"] = true, ["with"] = true, ["=="] = true, ["*"] = true, ["continue"] = true, ["typeof"] = true, ["break"] = true, ["else"] = true, ["nil"] = true, ["true"] = true, ["<"] = true, ["or"] = true, [">"] = true, ["instanceof"] = true, ["switch"] = true, ["while"] = true, ["local"] = true, ["then"] = true, ["debugger"] = true, ["throw"] = true, ["not"] = true, ["+"] = true, ["do"] = true, ["false"] = true, ["until"] = true, ["-"] = true, ["void"] = true, ["%"] = true, ["var"] = true, ["try"] = true, ["elseif"] = true, ["for"] = true, ["default"] = true, ["repeat"] = true, ["catch"] = true, ["<="] = true, ["new"] = true, [">="] = true}
 function reserved63(x)
   return(reserved[x])
 end
@@ -948,10 +948,10 @@ function mapo(f, t)
   end
   return(o)
 end
-local delimiters = {["("] = true, [")"] = true, ["\n"] = true, [";"] = true}
-local whitespace = {[" "] = true, ["\n"] = true, ["\t"] = true}
+local delimiters = {["("] = true, [")"] = true, [";"] = true, ["\n"] = true}
+local whitespace = {["\n"] = true, [" "] = true, ["\t"] = true}
 function stream(str)
-  return({pos = 0, len = _35(str), string = str})
+  return({string = str, len = _35(str), pos = 0})
 end
 function peek_char(s)
   if s.pos < s.len then
@@ -1009,6 +1009,12 @@ function read_all(s)
   return(l)
 end
 function read_from_string(str)
+  local x = read(stream(str))
+  if not (x == eof) then
+    return(x)
+  end
+end
+function read_string(str)
   local x = read(stream(str))
   if not (x == eof) then
     return(x)
@@ -1148,15 +1154,16 @@ read_table[","] = function (s)
     return({"unquote", read(s)})
   end
 end
+local reader = require("reader")
 local _u2 = {}
 local _u3 = {}
 _u3.js = "!"
 _u3.lua = "not "
 _u2["not"] = _u3
 local _u4 = {}
+_u4["%"] = true
 _u4["*"] = true
 _u4["/"] = true
-_u4["%"] = true
 local _u5 = {}
 _u5["+"] = true
 _u5["-"] = true
@@ -1166,10 +1173,10 @@ _u7.js = "+"
 _u7.lua = ".."
 _u6.cat = _u7
 local _u8 = {}
-_u8["<"] = true
-_u8[">"] = true
 _u8["<="] = true
+_u8[">"] = true
 _u8[">="] = true
+_u8["<"] = true
 local _u9 = {}
 local _u10 = {}
 _u10.js = "==="
@@ -1327,9 +1334,9 @@ local function compile_special(form, stmt63)
   local x = form[1]
   local args = cut(form, 1)
   local _u31 = getenv(x)
-  local special = _u31.special
   local stmt = _u31.stmt
   local self_tr63 = _u31.tr
+  local special = _u31.special
   local tr = terminator(stmt63 and not self_tr63)
   return(apply(special, args) .. tr)
 end
@@ -1659,8 +1666,8 @@ function run_file(path)
   return(run(read_file(path)))
 end
 function compile_file(path)
-  local s = stream(read_file(path))
-  local body = read_all(s)
+  local s = reader.stream(read_file(path))
+  local body = reader["read-all"](s)
   local form = expand(join({"do"}, body))
   return(compile(form, {_stash = true, stmt = true}))
 end
@@ -2041,8 +2048,8 @@ setenv("define-local", {_stash = true, macro = function (name, x, ...)
 end})
 setenv("with-frame", {_stash = true, macro = function (...)
   local _u157 = unstash({...})
-  local scope = _u157.scope
   local body = cut(_u157, 0)
+  local scope = _u157.scope
   local x = unique()
   local _u161 = {"obj"}
   _u161._scope = scope
@@ -2113,13 +2120,13 @@ setenv("each", {_stash = true, macro = function (_u261, t, ...)
   local body = cut(_u260, 0)
   local x = unique()
   local n = unique()
-  local _u371
+  local _u381
   if target == "lua" then
-    _u371 = body
+    _u381 = body
   else
-    _u371 = {join({"let", {k, {"if", {"numeric?", k}, {"parseInt", k}, k}}}, body)}
+    _u381 = {join({"let", {k, {"if", {"numeric?", k}, {"parseInt", k}, k}}}, body)}
   end
-  return({"let", {x, t, k, "nil"}, {"%for", x, k, join({"let", {v, {"get", x, k}}}, _u371)}})
+  return({"let", {x, t, k, "nil"}, {"%for", x, k, join({"let", {v, {"get", x, k}}}, _u381)}})
 end})
 setenv("for", {_stash = true, macro = function (_u285, ...)
   local i = _u285[1]
@@ -2183,18 +2190,25 @@ setenv("#+inf", {_stash = true, symbol = {"/", 1, 0}})
 setenv("#-inf", {_stash = true, symbol = {"-", {"/", 1, 0}}})
 setenv("export", {_stash = true, macro = function (...)
   local names = unstash({...})
-  local x = {}
-  local _u367 = names
-  local _u3 = nil
-  for _u3 in next, _u367 do
-    local k = _u367[_u3]
-    x[k] = k
+  if target == "js" then
+    return(join({"do"}, map(function (k)
+      return({"set", {"get", "exports", {"quote", k}}, k})
+    end, names)))
+  else
+    local x = {}
+    local _u377 = names
+    local _u3 = nil
+    for _u3 in next, _u377 do
+      local k = _u377[_u3]
+      x[k] = k
+    end
+    return({"return", join({"obj"}, x)})
   end
-  return({"return", join({"obj"}, x)})
 end})
+local reader = require("reader")
 local function rep(s)
   local _u4,_u5 = xpcall(function ()
-    return(eval(read_from_string(s)))
+    return(eval(reader["read-string"](s)))
   end, _37message_handler)
   local _u3 = {_u4, _u5}
   local _u1 = _u3[1]

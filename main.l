@@ -1,7 +1,9 @@
 ;; -*- mode: lisp -*-
 
+(define-local reader (require 'reader))
+
 (define-local rep (s)
-  (let ((_ x) (guard (eval (read-from-string s))))
+  (let ((_ x) (guard (eval (reader.read-string s))))
     (if (is? x) (pr x))))
 
 (define-local repl ()

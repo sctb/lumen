@@ -1,5 +1,7 @@
 ;; -*- mode: lisp -*-
 
+(define-local reader (require 'reader))
+
 (define-local infix
   `((not: (js: ! lua: ,"not "))
     (:* :/ :%)
@@ -276,8 +278,8 @@
   (run (read-file path)))
 
 (define compile-file (path)
-  (let (s (stream (read-file path))
-        body (read-all s)
+  (let (s (reader.stream (read-file path))
+        body (reader.read-all s)
         form (expand `(do ,@body)))
     (compile form :stmt)))
 
