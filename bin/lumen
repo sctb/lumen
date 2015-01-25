@@ -13,7 +13,7 @@ case $HOST in
         export NODE_PATH=$HOME;;
     *)
         CODE=lumen.lua
-        export LUA_PATH="$HOME/?.lua;;;";;
+        export LUA_PATH="$HOME/?.lua;;";;
 esac
 
 COMPILING=0
