@@ -305,6 +305,8 @@
   (let (args (stash args))
     (target js: (f.apply f args) lua: (f (unpack args)))))
 
+(define call (f) (f))
+
 (let (count 0)
   (define unique ()
     (inc count)

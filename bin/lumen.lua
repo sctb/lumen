@@ -52,21 +52,21 @@ end
 function cut(x, from, upto)
   local l = {}
   local j = 0
-  local _u124
-  if nil63(from) or from < 0 then
-    _u124 = 0
-  else
-    _u124 = from
-  end
-  local i = _u124
-  local n = _35(x)
   local _u125
-  if nil63(upto) or upto > n then
-    _u125 = n
+  if nil63(from) or from < 0 then
+    _u125 = 0
   else
-    _u125 = upto
+    _u125 = from
   end
-  local _u25 = _u125
+  local i = _u125
+  local n = _35(x)
+  local _u126
+  if nil63(upto) or upto > n then
+    _u126 = n
+  else
+    _u126 = upto
+  end
+  local _u25 = _u126
   while i < _u25 do
     l[j + 1] = x[i + 1]
     i = i + 1
@@ -107,11 +107,11 @@ function char(s, n)
   return(clip(s, n, n + 1))
 end
 function code(s, n)
-  local _u126
+  local _u127
   if n then
-    _u126 = n + 1
+    _u127 = n + 1
   end
-  return(strlib.byte(s, _u126))
+  return(strlib.byte(s, _u127))
 end
 function string_literal63(x)
   return(string63(x) and char(x, 0) == "\"")
@@ -320,11 +320,11 @@ function unstash(args)
   end
 end
 function search(s, pattern, start)
-  local _u127
+  local _u128
   if start then
-    _u127 = start + 1
+    _u128 = start + 1
   end
-  local _u79 = _u127
+  local _u79 = _u128
   local i = strlib.find(s, pattern, _u79, true)
   return(i and i - 1)
 end
@@ -504,10 +504,13 @@ function apply(f, args)
   local _u113 = stash(args)
   return(f(unpack(_u113)))
 end
-local _u114 = 0
+function call(f)
+  return(f())
+end
+local _u115 = 0
 function unique()
-  _u114 = _u114 + 1
-  return("_u" .. _u114)
+  _u115 = _u115 + 1
+  return("_u" .. _u115)
 end
 function unique63(id)
   return("_u" == clip(id, 0, 2))
@@ -520,22 +523,22 @@ function toplevel63()
   return(one63(environment))
 end
 function setenv(k, ...)
-  local _u119 = unstash({...})
-  local keys = cut(_u119, 0)
+  local _u120 = unstash({...})
+  local keys = cut(_u120, 0)
   if string63(k) then
-    local _u128
+    local _u129
     if keys.toplevel then
-      _u128 = hd(environment)
+      _u129 = hd(environment)
     else
-      _u128 = last(environment)
+      _u129 = last(environment)
     end
-    local frame = _u128
+    local frame = _u129
     local entry = frame[k] or {}
-    local _u121 = keys
-    local _u123 = nil
-    for _u123 in next, _u121 do
-      local v = _u121[_u123]
-      entry[_u123] = v
+    local _u122 = keys
+    local _u124 = nil
+    for _u124 in next, _u122 do
+      local v = _u122[_u124]
+      entry[_u124] = v
     end
     frame[k] = entry
   end
