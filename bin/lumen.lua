@@ -52,21 +52,21 @@ end
 function cut(x, from, upto)
   local l = {}
   local j = 0
-  local _u125
+  local _u130
   if nil63(from) or from < 0 then
-    _u125 = 0
+    _u130 = 0
   else
-    _u125 = from
+    _u130 = from
   end
-  local i = _u125
+  local i = _u130
   local n = _35(x)
-  local _u126
+  local _u131
   if nil63(upto) or upto > n then
-    _u126 = n
+    _u131 = n
   else
-    _u126 = upto
+    _u131 = upto
   end
-  local _u25 = _u126
+  local _u25 = _u131
   while i < _u25 do
     l[j + 1] = x[i + 1]
     i = i + 1
@@ -107,11 +107,11 @@ function char(s, n)
   return(clip(s, n, n + 1))
 end
 function code(s, n)
-  local _u127
+  local _u132
   if n then
-    _u127 = n + 1
+    _u132 = n + 1
   end
-  return(strlib.byte(s, _u127))
+  return(strlib.byte(s, _u132))
 end
 function string_literal63(x)
   return(string63(x) and char(x, 0) == "\"")
@@ -320,11 +320,11 @@ function unstash(args)
   end
 end
 function search(s, pattern, start)
-  local _u128
+  local _u133
   if start then
-    _u128 = start + 1
+    _u133 = start + 1
   end
-  local _u79 = _u128
+  local _u79 = _u133
   local i = strlib.find(s, pattern, _u79, true)
   return(i and i - 1)
 end
@@ -526,13 +526,13 @@ function setenv(k, ...)
   local _u120 = unstash({...})
   local keys = cut(_u120, 0)
   if string63(k) then
-    local _u129
+    local _u134
     if keys.toplevel then
-      _u129 = hd(environment)
+      _u134 = hd(environment)
     else
-      _u129 = last(environment)
+      _u134 = last(environment)
     end
-    local frame = _u129
+    local frame = _u134
     local entry = frame[k] or {}
     local _u122 = keys
     local _u124 = nil
@@ -542,6 +542,23 @@ function setenv(k, ...)
     end
     frame[k] = entry
   end
+end
+function read_file(path)
+  local f = io.open(path)
+  return(f.read(f, "*a"))
+end
+function write_file(path, data)
+  local f = io.open(path, "w")
+  return(f.write(f, data))
+end
+function write(x)
+  return(io.write(x))
+end
+function exit(code)
+  return(os.exit(code))
+end
+function argv()
+  return(arg)
 end
 local math = math
 abs = math.abs
@@ -563,23 +580,6 @@ sinh = math.sinh
 sqrt = math.sqrt
 tan = math.tan
 tanh = math.tanh
-function read_file(path)
-  local f = io.open(path)
-  return(f.read(f, "*a"))
-end
-function write_file(path, data)
-  local f = io.open(path, "w")
-  return(f.write(f, data))
-end
-function write(x)
-  return(io.write(x))
-end
-function exit(code)
-  return(os.exit(code))
-end
-function argv()
-  return(arg)
-end
 local reader = require("reader")
 function getenv(k, p)
   if string63(k) then
