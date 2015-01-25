@@ -17,7 +17,8 @@ MODS := bin/lumen.x	\
 all: $(MODS:.x=.js) $(MODS:.x=.lua)
 
 clean:
-	@git checkout bin/lumen.*
+	@git checkout bin/*.js
+	@git checkout bin/*.lua
 	@rm -f obj/*
 
 bin/lumen.js: $(OBJS:.o=.js)

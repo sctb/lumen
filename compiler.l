@@ -2,7 +2,7 @@
 
 (define-local reader (require 'reader))
 
-(define getenv (k p)
+(define-local getenv (k p)
   (when (string? k)
     (let (b (find (fn (e)
                     (get e k))
@@ -151,7 +151,7 @@
           (macroexpand (apply (macro-function x) (tl form)))
         (map macroexpand form)))))
 
-(define quasiquote-list (form depth)
+(define-local quasiquote-list (form depth)
   (let (xs (list '(list)))
     (each (k v) form
       (unless (number? k)
@@ -525,10 +525,10 @@
       (run code)
       %result)))
 
-(define run-file (path)
+(define-local run-file (path)
   (run (read-file path)))
 
-(define compile-file (path)
+(define-local compile-file (path)
   (let (s (reader.stream (read-file path))
         body (reader.read-all s)
         form (expand `(do ,@body)))

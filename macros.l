@@ -81,6 +81,12 @@
       `(%global-function ,name ,@(bind* x body))
     `(set ,name ,x)))
 
+(define-macro define-global (name x rest: body)
+  (setenv name :toplevel :variable)
+  (if (some? body)
+      `(%global-function ,name ,@(bind* x body))
+    `(set ,name ,x)))
+
 (define-macro define-local (name x rest: body)
   (setenv name :variable)
   (if (some? body)
