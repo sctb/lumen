@@ -709,11 +709,11 @@ end})
 setenv("define", {_stash = true, macro = function (name, x, ...)
   local _u136 = unstash({...})
   local body = cut(_u136, 0)
-  setenv(name, {_stash = true, toplevel = true, variable = true})
+  setenv(name, {_stash = true, variable = true})
   if some63(body) then
-    return(join({"%global-function", name}, bind42(x, body)))
+    return(join({"%local-function", name}, bind42(x, body)))
   else
-    return({"set", name, x})
+    return({"%local", name, x})
   end
 end})
 setenv("define-global", {_stash = true, macro = function (name, x, ...)

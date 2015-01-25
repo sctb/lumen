@@ -76,10 +76,10 @@
   `(set (get read-table ,char) (fn (,s) ,@body)))
 
 (define-macro define (name x rest: body)
-  (setenv name :toplevel :variable)
+  (setenv name :variable)
   (if (some? body)
-      `(%global-function ,name ,@(bind* x body))
-    `(set ,name ,x)))
+      `(%local-function ,name ,@(bind* x body))
+    `(%local ,name ,x)))
 
 (define-macro define-global (name x rest: body)
   (setenv name :toplevel :variable)

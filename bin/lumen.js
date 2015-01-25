@@ -824,17 +824,17 @@ setenv("define-reader", {_stash: true, macro: function (_u120) {
 setenv("define", {_stash: true, macro: function (name, x) {
   var _u129 = unstash(Array.prototype.slice.call(arguments, 2));
   var body = cut(_u129, 0);
-  setenv(name, {_stash: true, variable: true, toplevel: true});
+  setenv(name, {_stash: true, variable: true});
   if (some63(body)) {
-    return(join(["%global-function", name], bind42(x, body)));
+    return(join(["%local-function", name], bind42(x, body)));
   } else {
-    return(["set", name, x]);
+    return(["%local", name, x]);
   }
 }});
 setenv("define-global", {_stash: true, macro: function (name, x) {
   var _u136 = unstash(Array.prototype.slice.call(arguments, 2));
   var body = cut(_u136, 0);
-  setenv(name, {_stash: true, variable: true, toplevel: true});
+  setenv(name, {_stash: true, toplevel: true, variable: true});
   if (some63(body)) {
     return(join(["%global-function", name], bind42(x, body)));
   } else {
@@ -853,8 +853,8 @@ setenv("define-local", {_stash: true, macro: function (name, x) {
 }});
 setenv("with-frame", {_stash: true, macro: function () {
   var _u155 = unstash(Array.prototype.slice.call(arguments, 0));
-  var body = cut(_u155, 0);
   var scope = _u155.scope;
+  var body = cut(_u155, 0);
   var x = unique();
   var _u158 = ["obj"];
   _u158._scope = scope;
