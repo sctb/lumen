@@ -45,7 +45,7 @@ end
 function inf63(n)
   return(n == 1 / 0 or n == -(1 / 0))
 end
-strlib = string
+local strlib = string
 function clip(s, from, upto)
   return(strlib.sub(s, from + 1, upto))
 end

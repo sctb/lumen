@@ -642,7 +642,7 @@ setenv = function (k) {
     frame[k] = entry;
   }
 };
-fs = require("fs");
+var fs = require("fs");
 read_file = function (path) {
   return(fs.readFileSync(path, "utf8"));
 };

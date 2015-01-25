@@ -1,50 +1,50 @@
 ;; -*- mode: lisp -*-
 
-(define environment (list (obj)))
-(define target (language))
+(define-global environment (list (obj)))
+(define-global target (language))
 
-(define nil? (x)
+(define-global nil? (x)
   (target
     js: (or (= x nil) (= x null))
     lua: (= x nil)))
 
-(define is? (x) (not (nil? x)))
+(define-global is? (x) (not (nil? x)))
 
-(define # (x)
+(define-global # (x)
   (target js: (or x.length 0) lua: |#x|))
 
-(define none? (x) (= (# x) 0))
-(define some? (x) (> (# x) 0))
-(define one? (x) (= (# x) 1))
+(define-global none? (x) (= (# x) 0))
+(define-global some? (x) (> (# x) 0))
+(define-global one? (x) (= (# x) 1))
 
-(define hd (l) (at l 0))
+(define-global hd (l) (at l 0))
 
-(target js: (define type (x) (typeof x)))
+(target js: (define-global type (x) (typeof x)))
 
-(define string? (x) (= (type x) 'string))
-(define number? (x) (= (type x) 'number))
-(define boolean? (x) (= (type x) 'boolean))
-(define function? (x) (= (type x) 'function))
+(define-global string? (x) (= (type x) 'string))
+(define-global number? (x) (= (type x) 'number))
+(define-global boolean? (x) (= (type x) 'boolean))
+(define-global function? (x) (= (type x) 'function))
 
-(define obj? (x)
+(define-global obj? (x)
   (and (is? x) (= (type x) (target js: 'object lua: 'table))))
 
-(define atom? (x)
+(define-global atom? (x)
   (or (nil? x) (not (obj? x))))
 
-(define nan? (n)
+(define-global nan? (n)
   (not (= n n)))
 
-(define inf? (n)
+(define-global inf? (n)
   (or (= n #+inf) (= n #-inf)))
 
-(target lua: (define strlib string))
+(target lua: (define-local strlib string))
 
-(define clip (s from upto)
+(define-global clip (s from upto)
   (target js: (s.substring from upto)
           lua: (strlib.sub s (+ from 1) upto)))
 
-(define cut (x from upto)
+(define-global cut (x from upto)
   (let (l () j 0
         i (if (or (nil? from) (< from 0)) 0 from)
         n (# x)
@@ -58,55 +58,55 @@
         (set (get l k) v)))
     l))
 
-(define keys (x)
+(define-global keys (x)
   (let (t ())
     (each (k v) x
       (unless (number? k)
         (set (get t k) v)))
     t))
 
-(define edge (x)
+(define-global edge (x)
   (- (# x) 1))
 
-(define inner (x)
+(define-global inner (x)
   (clip x 1 (edge x)))
 
-(define tl (l) (cut l 1))
+(define-global tl (l) (cut l 1))
 
-(define char (s n)
+(define-global char (s n)
   (target js: (s.charAt n) lua: (clip s n (+ n 1))))
 
-(define code (s n)
+(define-global code (s n)
   (target
     js: (s.charCodeAt n)
     lua: (strlib.byte s (if n (+ n 1)))))
 
-(define string-literal? (x)
+(define-global string-literal? (x)
   (and (string? x) (= (char x 0) "\"")))
 
-(define id-literal? (x)
+(define-global id-literal? (x)
   (and (string? x) (= (char x 0) "|")))
 
-(define add (l x)
+(define-global add (l x)
   (target js: (do (l.push x) nil) lua: (table.insert l x)))
 
-(define drop (l)
+(define-global drop (l)
   (target js: (l.pop) lua: (table.remove l)))
 
-(define last (l)
+(define-global last (l)
   (at l (edge l)))
 
-(define butlast (l)
+(define-global butlast (l)
   (cut l 0 (edge l)))
 
-(define reverse (l)
+(define-global reverse (l)
   (let (l1 (keys l) i (edge l))
     (while (>= i 0)
       (add l1 (at l i))
       (dec i))
     l1))
 
-(define join (a b)
+(define-global join (a b)
   (if (and a b)
       (let (c () o (# a))
         (each (k v) a
@@ -118,47 +118,47 @@
         c)
     (or a b ())))
 
-(define reduce (f x)
+(define-global reduce (f x)
   (if (none? x) x
       (one? x) (hd x)
     (f (hd x) (reduce f (tl x)))))
 
-(define find (f t)
+(define-global find (f t)
   (each (_ x) t
     (let (x (f x))
       (if x (return x)))))
 
-(define first (f l)
+(define-global first (f l)
   (let (n (# l))
     (for (i n)
       (let (x (f (at l i)))
         (if x (return x))))))
 
-(define in? (x t)
+(define-global in? (x t)
   (find (fn (y) (= x y)) t))
 
-(define pair (l)
+(define-global pair (l)
   (let (i 0 l1 ())
     (while (< i (# l))
       (add l1 (list (at l i) (at l (+ i 1))))
       (inc i 2))
     l1))
 
-(define sort (l f)
+(define-global sort (l f)
   (target
     lua: (do (table.sort l f) l)
     js: (l.sort (when f (fn (a b) (if (f a b) -1 1))))))
 
-(define replicate (n x)
+(define-global replicate (n x)
   (let (l ())
     (for (_ n) (add l x))
     l))
 
-(define step (f l)
+(define-global step (f l)
   (for (i (# l))
     (f (at l i))))
 
-(define map (f x)
+(define-global map (f x)
   (let (t () n (# x))
     (for (i n)
       (let (y (f (at x i)))
@@ -171,21 +171,21 @@
             (set (get t k) y)))))
     t))
 
-(define keep (f x)
+(define-global keep (f x)
   (map (fn (v) (when (f v) v)) x))
 
-(define keys? (t)
+(define-global keys? (t)
   (each (k _) t
     (unless (number? k)
       (return #t)))
   #f)
 
-(define empty? (t)
+(define-global empty? (t)
   (each (_ _) t
     (return #f))
   #t)
 
-(define stash (args)
+(define-global stash (args)
   (when (keys? args)
     (let (p ())
       (each (k v) args
@@ -195,7 +195,7 @@
       (add args p)))
   args)
 
-(define unstash (args)
+(define-global unstash (args)
   (if (none? args) ()
     (let (l (last args))
       (if (and (obj? l) l._stash)
@@ -206,7 +206,7 @@
             args1)
         args))))
 
-(define search (s pattern start)
+(define-global search (s pattern start)
   (target
     js: (let (i (s.indexOf pattern start))
           (if (>= i 0) i))
@@ -214,7 +214,7 @@
                i (strlib.find s pattern start #t))
            (and i (- i 1)))))
 
-(define split (s sep)
+(define-global split (s sep)
   (if (or (= s "") (= sep "")) ()
     (let (l () n (# sep))
       (while #t
@@ -225,48 +225,48 @@
       (add l s)
       l)))
 
-(define cat xs
+(define-global cat xs
   (if (none? xs) ""
     (reduce (fn (a b) (cat a b)) xs)))
 
-(define + xs
+(define-global + xs
   (reduce (fn (a b) (+ a b)) xs))
 
-(define - xs
+(define-global - xs
   (reduce (fn (b a) (- a b)) (reverse xs)))
 
-(define * xs
+(define-global * xs
   (reduce (fn (a b) (* a b)) xs))
 
-(define / xs
+(define-global / xs
   (reduce (fn (b a) (/ a b)) (reverse xs)))
 
-(define % xs
+(define-global % xs
   (reduce (fn (b a) (% a b)) (reverse xs)))
 
-(define > (a b) (> a b))
-(define < (a b) (< a b))
-(define = (a b) (= a b))
-(define >= (a b) (>= a b))
-(define <= (a b) (<= a b))
+(define-global > (a b) (> a b))
+(define-global < (a b) (< a b))
+(define-global = (a b) (= a b))
+(define-global >= (a b) (>= a b))
+(define-global <= (a b) (<= a b))
 
-(define number (s)
+(define-global number (s)
   (target
     js: (let (n (parseFloat s))
           (unless (isNaN n) n))
     lua: (tonumber s)))
 
-(define number-code? (n)
+(define-global number-code? (n)
   (and (> n 47) (< n 58)))
 
-(define numeric? (s)
+(define-global numeric? (s)
   (let (n (# s))
     (for (i n)
       (unless (number-code? (code s i))
         (return #f))))
   #t)
 
-(define string (x depth)
+(define-global string (x depth)
   (if (and depth (> depth 7)) "#<circular>"
       (nil? x) "nil"
       (nan? x) "#nan"
@@ -294,35 +294,35 @@
            (or (= (hd x) 'cat)
                (= (hd x) 'string)))))
 
-(define space (xs)
+(define-global space (xs)
   (let (string (fn (x) (if (produces-string? x) x `(string ,x))))
     (if (one? xs) (string (hd xs))
       (reduce (fn (a b)
                 `(cat ,(string a) " " ,(string b)))
               xs))))
 
-(define apply (f args)
+(define-global apply (f args)
   (let (args (stash args))
     (target js: (f.apply f args) lua: (f (unpack args)))))
 
-(define call (f) (f))
+(define-global call (f) (f))
 
 (let (count 0)
-  (define unique ()
+  (define-global unique ()
     (inc count)
     (cat "_u" count)))
 
-(define unique? (id)
+(define-global unique? (id)
   (= "_u" (clip id 0 2)))
 
-(define %message-handler (msg)
+(define-global %message-handler (msg)
   (let (i (search msg ": "))
     (clip msg (+ i 2))))
 
-(define toplevel? ()
+(define-global toplevel? ()
   (one? environment))
 
-(define setenv (k rest: keys)
+(define-global setenv (k rest: keys)
   (when (string? k)
     (let (frame (if keys.toplevel
                     (hd environment)
@@ -332,49 +332,49 @@
         (set (get entry k) v))
       (set (get frame k) entry))))
 
-(target js: (define fs (require 'fs)))
+(target js: (define-local fs (require 'fs)))
 
-(define read-file (path)
+(define-global read-file (path)
   (target
     js: (fs.readFileSync path 'utf8)
     lua: (let (f (io.open path))
 	   (f.read f '*a))))
 
-(define write-file (path data)
+(define-global write-file (path data)
   (target
     js: (fs.writeFileSync path data 'utf8)
     lua: (let (f (io.open path 'w))
            (f.write f data))))
 
-(target js: (define print (x) (console.log x)))
+(target js: (define-global print (x) (console.log x)))
 
-(define write (x)
+(define-global write (x)
   (target js: (process.stdout.write x) lua: (io.write x)))
 
-(define exit (code)
+(define-global exit (code)
   (target js: (process.exit code) lua: (os.exit code)))
 
-(define argv ()
+(define-global argv ()
   (target js: (cut process.argv 2) lua: arg))
 
 (define-local math (target js: Math lua: math))
 
-(define abs math.abs)
-(define acos math.acos)
-(define asin math.asin)
-(define atan math.atan)
-(define atan2 math.atan2)
-(define ceil math.ceil)
-(define cos math.cos)
-(define floor math.floor)
-(define log math.log)
-(define log10 math.log10)
-(define max math.max)
-(define min math.min)
-(define pow math.pow)
-(define random math.random)
-(define sin math.sin)
-(define sinh math.sinh)
-(define sqrt math.sqrt)
-(define tan math.tan)
-(define tanh math.tanh)
+(define-global abs math.abs)
+(define-global acos math.acos)
+(define-global asin math.asin)
+(define-global atan math.atan)
+(define-global atan2 math.atan2)
+(define-global ceil math.ceil)
+(define-global cos math.cos)
+(define-global floor math.floor)
+(define-global log math.log)
+(define-global log10 math.log10)
+(define-global max math.max)
+(define-global min math.min)
+(define-global pow math.pow)
+(define-global random math.random)
+(define-global sin math.sin)
+(define-global sinh math.sinh)
+(define-global sqrt math.sqrt)
+(define-global tan math.tan)
+(define-global tanh math.tanh)

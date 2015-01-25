@@ -37,7 +37,7 @@
                  (reverse environment)))
     (and (obj? b) (is? b.variable))))
 
-(define bound? (x)
+(define-global bound? (x)
   (or (macro? x)
       (special? x)
       (symbol? x)
@@ -54,7 +54,7 @@
         (cat! s1 c1)))
     (cat s1 "\"")))
 
-(define quoted (form)
+(define-global quoted (form)
   (if (string? form) (escape form)
       (atom? form) form
     `(list ,@(map quoted form))))
@@ -80,7 +80,7 @@
       (inc k)))
   k)
 
-(define bind (lh rh)
+(define-global bind (lh rh)
   (if (and (obj? lh) (obj? rh))
       (let (id (unique))
 	`((,id ,rh) ,@(bind lh id)))
@@ -95,7 +95,7 @@
               (join! bs (bind k x))))))
       bs)))
 
-(define bind* (args body)
+(define-global bind* (args body)
   (let (args1 ())
     (define-local rest ()
       (if (= target 'js)
@@ -130,7 +130,7 @@
        (obj? x)
        (= (hd x) 'unquote-splicing)))
 
-(define macroexpand (form)
+(define-global macroexpand (form)
   (if (symbol? form)
       (macroexpand (symbol-expansion form))
       (atom? form) form
@@ -177,7 +177,7 @@
                 xs))
       `(join* ,@pruned))))
 
-(define quasiexpand (form depth)
+(define-global quasiexpand (form depth)
   (if (quasiquoting? depth)
       (if (atom? form) (list 'quote form)
           ;; unquote
@@ -199,13 +199,13 @@
       (quasiexpand (at form 1) 1)
     (map (fn (x) (quasiexpand x depth)) form)))
 
-(define expand-if ((a b rest: c))
+(define-global expand-if ((a b rest: c))
   (if (is? b) `((%if ,a ,b ,@(expand-if c)))
       (is? a) (list a)))
 
-(define indent-level 0)
+(define-global indent-level 0)
 
-(define indentation ()
+(define-global indentation ()
   (apply cat (replicate indent-level "  ")))
 
 (define-local reserved
@@ -221,7 +221,7 @@
           "local" "return" "do" "for" "nil" "then" "else"
           "function" "not" "true" "elseif" "if" "or" "until"))
 
-(define reserved? (x)
+(define-global reserved? (x)
   (get reserved x))
 
 (define-local valid-code? (n)
@@ -230,7 +230,7 @@
       (and (> n 96) (< n 123)) ; a-z
       (= n 95)))               ; _
 
-(define valid-id? (id)
+(define-global valid-id? (id)
   (if (or (none? id) (reserved? id))
       #f
     (do (for (i (# id))
@@ -238,13 +238,13 @@
             (return #f)))
         #t)))
 
-(define key (k)
+(define-global key (k)
   (let (i (inner k))
     (if (valid-id? i) i
         (= target 'js) k
       (cat "[" k "]"))))
 
-(define mapo (f t)
+(define-global mapo (f t)
   (let (o ())
     (each (k v) t
       (let (x (f v))
@@ -363,7 +363,7 @@
         (cat op ao a ac)
       (cat ao a ac " " op " " bo b bc))))
 
-(define compile-function (args body :name :prefix)
+(define-global compile-function (args body :name :prefix)
   (let (id (if name (compile name) "")
         args (compile-args args)
         body (with-indent (compile body :stmt))
@@ -381,7 +381,7 @@
            (and (not (= (hd form) 'return))
                 (not (statement? (hd form)))))))
 
-(define compile (form :stmt)
+(define-global compile (form :stmt)
   (if (nil? form) ""
       (special-form? form)
       (compile-special form stmt)
@@ -483,7 +483,7 @@
   (let (e (lower-call form hoist))
     (if e (add hoist e))))
 
-(define lower (form hoist stmt? tail?)
+(define-global lower (form hoist stmt? tail?)
   (if (atom? form) form
       (empty? form) '(%array)
       (nil? hoist) (lower-statement form)
@@ -515,9 +515,9 @@
     (let (|f,e| (load1 code))
       (if f (f) (error (cat e " in " code))))))
 
-(define %result)
+(define-global %result)
 
-(define eval (form)
+(define-global eval (form)
   (let (previous target)
     (set target (language))
     (let (code (compile (expand `(set %result ,form))))
@@ -534,7 +534,7 @@
         form (expand `(do ,@body)))
     (compile form :stmt)))
 
-(define load (path)
+(define-global load (path)
   (run (compile-file path)))
 
 (define-special do forms :stmt :tr
