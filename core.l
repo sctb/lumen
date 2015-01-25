@@ -189,3 +189,13 @@
 (define-symbol #nan (/ 0 0))
 (define-symbol #+inf (/ 1 0))
 (define-symbol #-inf (- (/ 1 0)))
+
+(define-macro export names
+  (target
+    js: `(do ,@(map (fn (k)
+                      `(set (get exports ',k) ,k))
+                    names))
+    lua: (let (x (obj))
+           (each (_ k) names
+             (set (get x k) k))
+           `(return (obj ,@x)))))
