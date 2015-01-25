@@ -1,7 +1,7 @@
-var delimiters = {";": true, "(": true, ")": true, "\n": true};
-var whitespace = {" ": true, "\t": true, "\n": true};
+var delimiters = {"(": true, ")": true, ";": true, "\n": true};
+var whitespace = {"\t": true, "\n": true, " ": true};
 var stream = function (str) {
-  return({pos: 0, string: str, len: _35(str)});
+  return({string: str, pos: 0, len: _35(str)});
 };
 var peek_char = function (s) {
   if (s.pos < s.len) {
@@ -199,8 +199,6 @@ read_table[","] = function (s) {
   }
 };
 exports.stream = stream;
-exports["peek-char"] = peek_char;
-exports["read-char"] = read_char;
 exports.read = read;
 exports["read-all"] = read_all;
 exports["read-string"] = read_string;
