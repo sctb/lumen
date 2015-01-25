@@ -8,7 +8,7 @@ LUMEN := LUMEN_HOST=$(LUMEN_HOST) bin/lumen
 
 OBJS :=	obj/runtime.o	\
 	obj/compiler.o	\
-	obj/core.o	\
+	obj/macros.o	\
 	obj/main.o
 
 all: bin/lumen.lua	\

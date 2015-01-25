@@ -2038,8 +2038,8 @@ setenv("define-local", {_stash: true, macro: function (name, x) {
 }});
 setenv("with-frame", {_stash: true, macro: function () {
   var _u148 = unstash(Array.prototype.slice.call(arguments, 0));
-  var scope = _u148.scope;
   var body = cut(_u148, 0);
+  var scope = _u148.scope;
   var x = unique();
   var _u151 = ["obj"];
   _u151._scope = scope;
