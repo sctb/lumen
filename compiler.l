@@ -534,9 +534,6 @@
         form (expand `(do ,@body)))
     (compile form :stmt)))
 
-(define-global load (path)
-  (run (compile-file path)))
-
 (define-special do forms :stmt :tr
   (let (s "")
     (step (fn (x)
@@ -667,6 +664,5 @@
 (export eval
         run-file
         compile-file
-        load
         expand
         compile)
