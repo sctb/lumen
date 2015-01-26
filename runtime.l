@@ -301,9 +301,12 @@
                 `(cat ,(string a) " " ,(string b)))
               xs))))
 
+(target lua: (define values (or unpack table.unpack)))
+
 (define-global apply (f args)
   (let (args (stash args))
-    (target js: (f.apply f args) lua: (f (unpack args)))))
+    (target js: (f.apply f args)
+            lua: (f (values args)))))
 
 (define-global call (f) (f))
 

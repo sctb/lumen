@@ -500,9 +500,10 @@ function space(xs)
     end, xs))
   end
 end
+local values = unpack or table.unpack
 function apply(f, args)
   local _u113 = stash(args)
-  return(f(unpack(_u113)))
+  return(f(values(_u113)))
 end
 function call(f)
   return(f())
