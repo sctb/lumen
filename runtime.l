@@ -357,7 +357,7 @@
 (define-global exit (code)
   (target js: (process.exit code) lua: (os.exit code)))
 
-(define-global argv ()
+(define-global argv
   (target js: (cut process.argv 2) lua: arg))
 
 (define math (target js: Math lua: math))

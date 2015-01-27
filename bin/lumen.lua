@@ -52,21 +52,21 @@ end
 function cut(x, from, upto)
   local l = {}
   local j = 0
-  local _u130
+  local _u129
   if nil63(from) or from < 0 then
-    _u130 = 0
+    _u129 = 0
   else
-    _u130 = from
+    _u129 = from
   end
-  local i = _u130
+  local i = _u129
   local n = _35(x)
-  local _u131
+  local _u130
   if nil63(upto) or upto > n then
-    _u131 = n
+    _u130 = n
   else
-    _u131 = upto
+    _u130 = upto
   end
-  local _u25 = _u131
+  local _u25 = _u130
   while i < _u25 do
     l[j + 1] = x[i + 1]
     i = i + 1
@@ -107,11 +107,11 @@ function char(s, n)
   return(clip(s, n, n + 1))
 end
 function code(s, n)
-  local _u132
+  local _u131
   if n then
-    _u132 = n + 1
+    _u131 = n + 1
   end
-  return(strlib.byte(s, _u132))
+  return(strlib.byte(s, _u131))
 end
 function string_literal63(x)
   return(string63(x) and char(x, 0) == "\"")
@@ -320,11 +320,11 @@ function unstash(args)
   end
 end
 function search(s, pattern, start)
-  local _u133
+  local _u132
   if start then
-    _u133 = start + 1
+    _u132 = start + 1
   end
-  local _u79 = _u133
+  local _u79 = _u132
   local i = strlib.find(s, pattern, _u79, true)
   return(i and i - 1)
 end
@@ -527,13 +527,13 @@ function setenv(k, ...)
   local _u120 = unstash({...})
   local keys = cut(_u120, 0)
   if string63(k) then
-    local _u134
+    local _u133
     if keys.toplevel then
-      _u134 = hd(environment)
+      _u133 = hd(environment)
     else
-      _u134 = last(environment)
+      _u133 = last(environment)
     end
-    local frame = _u134
+    local frame = _u133
     local entry = frame[k] or {}
     local _u122 = keys
     local _u124 = nil
@@ -558,9 +558,7 @@ end
 function exit(code)
   return(os.exit(code))
 end
-function argv()
-  return(arg)
-end
+argv = arg
 local math = math
 abs = math.abs
 acos = math.acos
@@ -925,8 +923,7 @@ local function usage()
   return(exit())
 end
 local function main()
-  local as = argv()
-  if hd(as) == "-h" or hd(as) == "--help" then
+  if hd(argv) == "-h" or hd(argv) == "--help" then
     usage()
   end
   local pre = {}
@@ -934,16 +931,16 @@ local function main()
   local output = nil
   local target1 = nil
   local expr = nil
-  local n = _35(as)
+  local n = _35(argv)
   local i = 0
   while i < n do
-    local a = as[i + 1]
+    local a = argv[i + 1]
     if a == "-c" or a == "-o" or a == "-t" or a == "-e" then
       if i == n - 1 then
         print("missing argument for" .. " " .. string(a))
       else
         i = i + 1
-        local val = as[i + 1]
+        local val = argv[i + 1]
         if a == "-c" then
           input = val
         else
