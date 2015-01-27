@@ -43,17 +43,6 @@
       (symbol? x)
       (variable? x)))
 
-(define escape (s)
-  (let (s1 "\"")
-    (for (i (# s))
-      (let (c (char s i)
-            c1 (if (= c "\n") "\\n"
-                   (= c "\"") "\\\""
-                   (= c "\\") "\\\\"
-                 c))
-        (cat! s1 c1)))
-    (cat s1 "\"")))
-
 (define-global quoted (form)
   (if (string? form) (escape form)
       (atom? form) form

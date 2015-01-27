@@ -52,21 +52,21 @@ end
 function cut(x, from, upto)
   local l = {}
   local j = 0
-  local _u129
-  if nil63(from) or from < 0 then
-    _u129 = 0
-  else
-    _u129 = from
-  end
-  local i = _u129
-  local n = _35(x)
   local _u130
-  if nil63(upto) or upto > n then
-    _u130 = n
+  if nil63(from) or from < 0 then
+    _u130 = 0
   else
-    _u130 = upto
+    _u130 = from
   end
-  local _u25 = _u130
+  local i = _u130
+  local n = _35(x)
+  local _u131
+  if nil63(upto) or upto > n then
+    _u131 = n
+  else
+    _u131 = upto
+  end
+  local _u25 = _u131
   while i < _u25 do
     l[j + 1] = x[i + 1]
     i = i + 1
@@ -107,11 +107,11 @@ function char(s, n)
   return(clip(s, n, n + 1))
 end
 function code(s, n)
-  local _u131
+  local _u132
   if n then
-    _u131 = n + 1
+    _u132 = n + 1
   end
-  return(strlib.byte(s, _u131))
+  return(strlib.byte(s, _u132))
 end
 function string_literal63(x)
   return(string63(x) and char(x, 0) == "\"")
@@ -320,11 +320,11 @@ function unstash(args)
   end
 end
 function search(s, pattern, start)
-  local _u132
+  local _u133
   if start then
-    _u132 = start + 1
+    _u133 = start + 1
   end
-  local _u79 = _u132
+  local _u79 = _u133
   local i = strlib.find(s, pattern, _u79, true)
   return(i and i - 1)
 end
@@ -419,6 +419,35 @@ function numeric63(s)
   end
   return(true)
 end
+function escape(s)
+  local s1 = "\""
+  local i = 0
+  while i < _35(s) do
+    local c = char(s, i)
+    local _u134
+    if c == "\n" then
+      _u134 = "\\n"
+    else
+      local _u135
+      if c == "\"" then
+        _u135 = "\\\""
+      else
+        local _u136
+        if c == "\\" then
+          _u136 = "\\\\"
+        else
+          _u136 = c
+        end
+        _u135 = _u136
+      end
+      _u134 = _u135
+    end
+    local c1 = _u134
+    s1 = s1 .. c1
+    i = i + 1
+  end
+  return(s1 .. "\"")
+end
 function string(x, depth)
   if depth and depth > 7 then
     return("#<circular>")
@@ -445,33 +474,37 @@ function string(x, depth)
               if function63(x) then
                 return("#<function>")
               else
-                if atom63(x) then
-                  return(x .. "")
+                if string63(x) then
+                  return(escape(x))
                 else
-                  local s = "("
-                  local sp = ""
-                  local xs = {}
-                  local ks = {}
-                  local d = (depth or 0) + 1
-                  local _u102 = x
-                  local k = nil
-                  for k in next, _u102 do
-                    local v = _u102[k]
-                    if number63(k) then
-                      xs[k] = string(v, d)
-                    else
-                      add(ks, k .. ":")
-                      add(ks, string(v, d))
+                  if atom63(x) then
+                    return(tostring(x))
+                  else
+                    local s = "("
+                    local sp = ""
+                    local xs = {}
+                    local ks = {}
+                    local d = (depth or 0) + 1
+                    local _u103 = x
+                    local k = nil
+                    for k in next, _u103 do
+                      local v = _u103[k]
+                      if number63(k) then
+                        xs[k] = string(v, d)
+                      else
+                        add(ks, k .. ":")
+                        add(ks, string(v, d))
+                      end
                     end
+                    local _u105 = join(xs, ks)
+                    local _u6 = nil
+                    for _u6 in next, _u105 do
+                      local v = _u105[_u6]
+                      s = s .. sp .. v
+                      sp = " "
+                    end
+                    return(s .. ")")
                   end
-                  local _u104 = join(xs, ks)
-                  local _u6 = nil
-                  for _u6 in next, _u104 do
-                    local v = _u104[_u6]
-                    s = s .. sp .. v
-                    sp = " "
-                  end
-                  return(s .. ")")
                 end
               end
             end
@@ -502,16 +535,16 @@ function space(xs)
 end
 local values = unpack or table.unpack
 function apply(f, args)
-  local _u113 = stash(args)
-  return(f(values(_u113)))
+  local _u114 = stash(args)
+  return(f(values(_u114)))
 end
 function call(f)
   return(f())
 end
-local _u115 = 0
+local _u116 = 0
 function unique()
-  _u115 = _u115 + 1
-  return("_u" .. _u115)
+  _u116 = _u116 + 1
+  return("_u" .. _u116)
 end
 function unique63(id)
   return("_u" == clip(id, 0, 2))
@@ -524,22 +557,22 @@ function toplevel63()
   return(one63(environment))
 end
 function setenv(k, ...)
-  local _u120 = unstash({...})
-  local keys = cut(_u120, 0)
+  local _u121 = unstash({...})
+  local keys = cut(_u121, 0)
   if string63(k) then
-    local _u133
+    local _u137
     if keys.toplevel then
-      _u133 = hd(environment)
+      _u137 = hd(environment)
     else
-      _u133 = last(environment)
+      _u137 = last(environment)
     end
-    local frame = _u133
+    local frame = _u137
     local entry = frame[k] or {}
-    local _u122 = keys
-    local _u124 = nil
-    for _u124 in next, _u122 do
-      local v = _u122[_u124]
-      entry[_u124] = v
+    local _u123 = keys
+    local _u125 = nil
+    for _u125 in next, _u123 do
+      local v = _u123[_u125]
+      entry[_u125] = v
     end
     frame[k] = entry
   end

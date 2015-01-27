@@ -266,6 +266,19 @@
         (return #f))))
   #t)
 
+(target js: (define tostring (x) (x.toString)))
+
+(define-global escape (s)
+  (let (s1 "\"")
+    (for (i (# s))
+      (let (c (char s i)
+            c1 (if (= c "\n") "\\n"
+                   (= c "\"") "\\\""
+                   (= c "\\") "\\\\"
+                 c))
+        (cat! s1 c1)))
+    (cat s1 "\"")))
+
 (define-global string (x depth)
   (if (and depth (> depth 7)) "#<circular>"
       (nil? x) "nil"
@@ -274,7 +287,8 @@
       (= x #-inf) "#-inf"
       (boolean? x) (if x "#t" "#f")
       (function? x) "#<function>"
-      (atom? x) (cat x "")
+      (string? x) (escape x)
+      (atom? x) (tostring x)
     (let (s "(" sp ""
           xs () ks ()
           d (+ (or depth 0) 1))

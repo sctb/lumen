@@ -54,21 +54,21 @@ clip = function (s, from, upto) {
 cut = function (x, from, upto) {
   var l = [];
   var j = 0;
-  var _u134;
+  var _u136;
   if (nil63(from) || from < 0) {
-    _u134 = 0;
+    _u136 = 0;
   } else {
-    _u134 = from;
+    _u136 = from;
   }
-  var i = _u134;
+  var i = _u136;
   var n = _35(x);
-  var _u135;
+  var _u137;
   if (nil63(upto) || upto > n) {
-    _u135 = n;
+    _u137 = n;
   } else {
-    _u135 = upto;
+    _u137 = upto;
   }
-  var _u26 = _u135;
+  var _u26 = _u137;
   while (i < _u26) {
     l[j] = x[i];
     i = i + 1;
@@ -78,13 +78,13 @@ cut = function (x, from, upto) {
   var k = undefined;
   for (k in _u27) {
     var v = _u27[k];
-    var _u136;
+    var _u138;
     if (numeric63(k)) {
-      _u136 = parseInt(k);
+      _u138 = parseInt(k);
     } else {
-      _u136 = k;
+      _u138 = k;
     }
-    var _u29 = _u136;
+    var _u29 = _u138;
     if (!number63(_u29)) {
       l[_u29] = v;
     }
@@ -97,13 +97,13 @@ keys = function (x) {
   var k = undefined;
   for (k in _u31) {
     var v = _u31[k];
-    var _u137;
+    var _u139;
     if (numeric63(k)) {
-      _u137 = parseInt(k);
+      _u139 = parseInt(k);
     } else {
-      _u137 = k;
+      _u139 = k;
     }
-    var _u33 = _u137;
+    var _u33 = _u139;
     if (!number63(_u33)) {
       t[_u33] = v;
     }
@@ -161,26 +161,26 @@ join = function (a, b) {
     var k = undefined;
     for (k in _u47) {
       var v = _u47[k];
-      var _u138;
+      var _u140;
       if (numeric63(k)) {
-        _u138 = parseInt(k);
+        _u140 = parseInt(k);
       } else {
-        _u138 = k;
+        _u140 = k;
       }
-      var _u49 = _u138;
+      var _u49 = _u140;
       c[_u49] = v;
     }
     var _u50 = b;
     var k = undefined;
     for (k in _u50) {
       var v = _u50[k];
-      var _u139;
+      var _u141;
       if (numeric63(k)) {
-        _u139 = parseInt(k);
+        _u141 = parseInt(k);
       } else {
-        _u139 = k;
+        _u141 = k;
       }
-      var _u52 = _u139;
+      var _u52 = _u141;
       if (number63(_u52)) {
         _u52 = _u52 + o;
       }
@@ -207,13 +207,13 @@ find = function (f, t) {
   var _u1 = undefined;
   for (_u1 in _u55) {
     var x = _u55[_u1];
-    var _u140;
+    var _u142;
     if (numeric63(_u1)) {
-      _u140 = parseInt(_u1);
+      _u142 = parseInt(_u1);
     } else {
-      _u140 = _u1;
+      _u142 = _u1;
     }
-    var _u1 = _u140;
+    var _u1 = _u142;
     var _u57 = f(x);
     if (_u57) {
       return(_u57);
@@ -246,9 +246,9 @@ pair = function (l) {
   return(l1);
 };
 sort = function (l, f) {
-  var _u141;
+  var _u143;
   if (f) {
-    _u141 = function (a, b) {
+    _u143 = function (a, b) {
       if (f(a, b)) {
         return(-1);
       } else {
@@ -256,7 +256,7 @@ sort = function (l, f) {
       }
     };
   }
-  return(l.sort(_u141));
+  return(l.sort(_u143));
 };
 replicate = function (n, x) {
   var l = [];
@@ -289,13 +289,13 @@ map = function (f, x) {
   var k = undefined;
   for (k in _u68) {
     var v = _u68[k];
-    var _u142;
+    var _u144;
     if (numeric63(k)) {
-      _u142 = parseInt(k);
+      _u144 = parseInt(k);
     } else {
-      _u142 = k;
+      _u144 = k;
     }
-    var _u70 = _u142;
+    var _u70 = _u144;
     if (!number63(_u70)) {
       var y = f(v);
       if (is63(y)) {
@@ -317,13 +317,13 @@ keys63 = function (t) {
   var k = undefined;
   for (k in _u74) {
     var _u3 = _u74[k];
-    var _u143;
+    var _u145;
     if (numeric63(k)) {
-      _u143 = parseInt(k);
+      _u145 = parseInt(k);
     } else {
-      _u143 = k;
+      _u145 = k;
     }
-    var _u76 = _u143;
+    var _u76 = _u145;
     if (!number63(_u76)) {
       return(true);
     }
@@ -335,13 +335,13 @@ empty63 = function (t) {
   var _u4 = undefined;
   for (_u4 in _u78) {
     var _u5 = _u78[_u4];
-    var _u144;
+    var _u146;
     if (numeric63(_u4)) {
-      _u144 = parseInt(_u4);
+      _u146 = parseInt(_u4);
     } else {
-      _u144 = _u4;
+      _u146 = _u4;
     }
-    var _u4 = _u144;
+    var _u4 = _u146;
     return(false);
   }
   return(true);
@@ -353,13 +353,13 @@ stash = function (args) {
     var k = undefined;
     for (k in _u81) {
       var v = _u81[k];
-      var _u145;
+      var _u147;
       if (numeric63(k)) {
-        _u145 = parseInt(k);
+        _u147 = parseInt(k);
       } else {
-        _u145 = k;
+        _u147 = k;
       }
-      var _u83 = _u145;
+      var _u83 = _u147;
       if (!number63(_u83)) {
         p[_u83] = v;
       }
@@ -380,13 +380,13 @@ unstash = function (args) {
       var k = undefined;
       for (k in _u85) {
         var v = _u85[k];
-        var _u146;
+        var _u148;
         if (numeric63(k)) {
-          _u146 = parseInt(k);
+          _u148 = parseInt(k);
         } else {
-          _u146 = k;
+          _u148 = k;
         }
-        var _u87 = _u146;
+        var _u87 = _u148;
         if (!(_u87 === "_stash")) {
           args1[_u87] = v;
         }
@@ -497,6 +497,38 @@ numeric63 = function (s) {
   }
   return(true);
 };
+var tostring = function (x) {
+  return(x["toString"]());
+};
+escape = function (s) {
+  var s1 = "\"";
+  var i = 0;
+  while (i < _35(s)) {
+    var c = char(s, i);
+    var _u149;
+    if (c === "\n") {
+      _u149 = "\\n";
+    } else {
+      var _u150;
+      if (c === "\"") {
+        _u150 = "\\\"";
+      } else {
+        var _u151;
+        if (c === "\\") {
+          _u151 = "\\\\";
+        } else {
+          _u151 = c;
+        }
+        _u150 = _u151;
+      }
+      _u149 = _u150;
+    }
+    var c1 = _u149;
+    s1 = s1 + c1;
+    i = i + 1;
+  }
+  return(s1 + "\"");
+};
 string = function (x, depth) {
   if (depth && depth > 7) {
     return("#<circular>");
@@ -523,47 +555,51 @@ string = function (x, depth) {
               if (function63(x)) {
                 return("#<function>");
               } else {
-                if (atom63(x)) {
-                  return(x + "");
+                if (string63(x)) {
+                  return(escape(x));
                 } else {
-                  var s = "(";
-                  var sp = "";
-                  var xs = [];
-                  var ks = [];
-                  var d = (depth || 0) + 1;
-                  var _u105 = x;
-                  var k = undefined;
-                  for (k in _u105) {
-                    var v = _u105[k];
-                    var _u147;
-                    if (numeric63(k)) {
-                      _u147 = parseInt(k);
-                    } else {
-                      _u147 = k;
+                  if (atom63(x)) {
+                    return(tostring(x));
+                  } else {
+                    var s = "(";
+                    var sp = "";
+                    var xs = [];
+                    var ks = [];
+                    var d = (depth || 0) + 1;
+                    var _u107 = x;
+                    var k = undefined;
+                    for (k in _u107) {
+                      var v = _u107[k];
+                      var _u152;
+                      if (numeric63(k)) {
+                        _u152 = parseInt(k);
+                      } else {
+                        _u152 = k;
+                      }
+                      var _u109 = _u152;
+                      if (number63(_u109)) {
+                        xs[_u109] = string(v, d);
+                      } else {
+                        add(ks, _u109 + ":");
+                        add(ks, string(v, d));
+                      }
                     }
-                    var _u107 = _u147;
-                    if (number63(_u107)) {
-                      xs[_u107] = string(v, d);
-                    } else {
-                      add(ks, _u107 + ":");
-                      add(ks, string(v, d));
+                    var _u110 = join(xs, ks);
+                    var _u6 = undefined;
+                    for (_u6 in _u110) {
+                      var v = _u110[_u6];
+                      var _u153;
+                      if (numeric63(_u6)) {
+                        _u153 = parseInt(_u6);
+                      } else {
+                        _u153 = _u6;
+                      }
+                      var _u6 = _u153;
+                      s = s + sp + v;
+                      sp = " ";
                     }
+                    return(s + ")");
                   }
-                  var _u108 = join(xs, ks);
-                  var _u6 = undefined;
-                  for (_u6 in _u108) {
-                    var v = _u108[_u6];
-                    var _u148;
-                    if (numeric63(_u6)) {
-                      _u148 = parseInt(_u6);
-                    } else {
-                      _u148 = _u6;
-                    }
-                    var _u6 = _u148;
-                    s = s + sp + v;
-                    sp = " ";
-                  }
-                  return(s + ")");
                 }
               }
             }
@@ -593,16 +629,16 @@ space = function (xs) {
   }
 };
 apply = function (f, args) {
-  var _u117 = stash(args);
-  return(f.apply(f, _u117));
+  var _u119 = stash(args);
+  return(f.apply(f, _u119));
 };
 call = function (f) {
   return(f());
 };
-var _u119 = 0;
+var _u121 = 0;
 unique = function () {
-  _u119 = _u119 + 1;
-  return("_u" + _u119);
+  _u121 = _u121 + 1;
+  return("_u" + _u121);
 };
 unique63 = function (id) {
   return("_u" === clip(id, 0, 2));
@@ -615,29 +651,29 @@ toplevel63 = function () {
   return(one63(environment));
 };
 setenv = function (k) {
-  var _u124 = unstash(Array.prototype.slice.call(arguments, 1));
-  var keys = cut(_u124, 0);
+  var _u126 = unstash(Array.prototype.slice.call(arguments, 1));
+  var keys = cut(_u126, 0);
   if (string63(k)) {
-    var _u149;
+    var _u154;
     if (keys.toplevel) {
-      _u149 = hd(environment);
+      _u154 = hd(environment);
     } else {
-      _u149 = last(environment);
+      _u154 = last(environment);
     }
-    var frame = _u149;
+    var frame = _u154;
     var entry = frame[k] || {};
-    var _u125 = keys;
-    var _u127 = undefined;
-    for (_u127 in _u125) {
-      var v = _u125[_u127];
-      var _u150;
-      if (numeric63(_u127)) {
-        _u150 = parseInt(_u127);
+    var _u127 = keys;
+    var _u129 = undefined;
+    for (_u129 in _u127) {
+      var v = _u127[_u129];
+      var _u155;
+      if (numeric63(_u129)) {
+        _u155 = parseInt(_u129);
       } else {
-        _u150 = _u127;
+        _u155 = _u129;
       }
-      var _u128 = _u150;
-      entry[_u128] = v;
+      var _u130 = _u155;
+      entry[_u130] = v;
     }
     frame[k] = entry;
   }
