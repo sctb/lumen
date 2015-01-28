@@ -28,8 +28,8 @@
   (each (_ (name f)) tests
     (let (result (f))
       (when (string? result)
-        (pr " " name result))))
-  (pr " " passed "passed," failed "failed"))
+        (print (cat " " name " " result)))))
+  (print (cat " " passed " passed, " failed " failed")))
 
 (define-test reader ()
   (let (read reader.read-string)

@@ -302,19 +302,6 @@
         (set sp " "))
       (cat s  ")"))))
 
-(define produces-string? (x)
-  (or (string-literal? x)
-      (and (obj? x)
-           (or (= (hd x) 'cat)
-               (= (hd x) 'string)))))
-
-(define-global space (xs)
-  (let (string (fn (x) (if (produces-string? x) x `(string ,x))))
-    (if (one? xs) (string (hd xs))
-      (reduce (fn (a b)
-                `(cat ,(string a) " " ,(string b)))
-              xs))))
-
 (target lua: (define values (or unpack table.unpack)))
 
 (define-global apply (f args)

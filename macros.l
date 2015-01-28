@@ -173,9 +173,6 @@
 (define-macro dec (n by)
   `(set ,n (- ,n ,(or by 1))))
 
-(define-macro pr xs
-  `(print ,(space xs)))
-
 (define-macro with-indent (form)
   (let (result (unique))
     `(do (inc indent-level)
