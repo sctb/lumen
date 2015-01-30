@@ -46,7 +46,7 @@ nan63 = function (n) {
   return(!(n === n));
 };
 inf63 = function (n) {
-  return(n === 1 / 0 || n === -(1 / 0));
+  return(n === _43inf || n === _inf);
 };
 clip = function (s, from, upto) {
   return(s.substring(from, upto));
@@ -531,19 +531,19 @@ escape = function (s) {
 };
 string = function (x, depth) {
   if (depth && depth > 7) {
-    return("#<circular>");
+    return("circular");
   } else {
     if (nil63(x)) {
       return("nil");
     } else {
       if (nan63(x)) {
-        return("#nan");
+        return("nan");
       } else {
-        if (x === 1 / 0) {
-          return("#+inf");
+        if (x === _43inf) {
+          return("+inf");
         } else {
-          if (x === -(1 / 0)) {
-            return("#-inf");
+          if (x === _inf) {
+            return("-inf");
           } else {
             if (boolean63(x)) {
               if (x) {
@@ -553,7 +553,7 @@ string = function (x, depth) {
               }
             } else {
               if (function63(x)) {
-                return("#<function>");
+                return("function");
               } else {
                 if (string63(x)) {
                   return(escape(x));
@@ -728,13 +728,13 @@ setenv("list", {_stash: true, macro: function () {
   var k = undefined;
   for (k in _u32) {
     var v = _u32[k];
-    var _u335;
+    var _u331;
     if (numeric63(k)) {
-      _u335 = parseInt(k);
+      _u331 = parseInt(k);
     } else {
-      _u335 = k;
+      _u331 = k;
     }
-    var _u34 = _u335;
+    var _u34 = _u331;
     if (number63(_u34)) {
       l[_u34] = v;
     } else {
@@ -783,13 +783,13 @@ setenv("let", {_stash: true, macro: function (bindings) {
       var _u77 = _u75[k];
       var id = _u77[0];
       var val = _u77[1];
-      var _u336;
+      var _u332;
       if (numeric63(k)) {
-        _u336 = parseInt(k);
+        _u332 = parseInt(k);
       } else {
-        _u336 = k;
+        _u332 = k;
       }
-      var _u78 = _u336;
+      var _u78 = _u332;
       if (number63(_u78)) {
         if (!unique63(id) && (bound63(id) || reserved63(id) || toplevel63())) {
           var id1 = unique();
@@ -930,13 +930,13 @@ setenv("each", {_stash: true, macro: function (_u232, t) {
   var body = cut(_u231, 0);
   var x = unique();
   var n = unique();
-  var _u337;
+  var _u333;
   if (target === "lua") {
-    _u337 = body;
+    _u333 = body;
   } else {
-    _u337 = [join(["let", [k, ["if", ["numeric?", k], ["parseInt", k], k]]], body)];
+    _u333 = [join(["let", [k, ["if", ["numeric?", k], ["parseInt", k], k]]], body)];
   }
-  return(["let", [x, t, k, "nil"], ["%for", x, k, join(["let", [v, ["get", x, k]]], _u337)]]);
+  return(["let", [x, t, k, "nil"], ["%for", x, k, join(["let", [v, ["get", x, k]]], _u333)]]);
 }});
 setenv("for", {_stash: true, macro: function (_u254) {
   var i = _u254[0];
@@ -952,13 +952,13 @@ setenv("set-of", {_stash: true, macro: function () {
   var _u2 = undefined;
   for (_u2 in _u265) {
     var x = _u265[_u2];
-    var _u338;
+    var _u334;
     if (numeric63(_u2)) {
-      _u338 = parseInt(_u2);
+      _u334 = parseInt(_u2);
     } else {
-      _u338 = _u2;
+      _u334 = _u2;
     }
-    var _u2 = _u338;
+    var _u2 = _u334;
     l[x] = true;
   }
   return(join(["obj"], l));
@@ -996,11 +996,9 @@ setenv("with-indent", {_stash: true, macro: function (form) {
   var result = unique();
   return(["do", ["inc", "indent-level"], ["let", [result, form], ["dec", "indent-level"], result]]);
 }});
-setenv("#t", {_stash: true, symbol: true});
-setenv("#f", {_stash: true, symbol: false});
-setenv("#nan", {_stash: true, symbol: ["/", 0, 0]});
-setenv("#+inf", {_stash: true, symbol: ["/", 1, 0]});
-setenv("#-inf", {_stash: true, symbol: ["-", ["/", 1, 0]]});
+nan = 0 / 0;
+_43inf = 1 / 0;
+_inf = -(1 / 0);
 setenv("export", {_stash: true, macro: function () {
   var names = unstash(Array.prototype.slice.call(arguments, 0));
   if (target === "js") {
@@ -1009,17 +1007,17 @@ setenv("export", {_stash: true, macro: function () {
     }, names)));
   } else {
     var x = {};
-    var _u331 = names;
+    var _u327 = names;
     var _u3 = undefined;
-    for (_u3 in _u331) {
-      var k = _u331[_u3];
-      var _u339;
+    for (_u3 in _u327) {
+      var k = _u327[_u3];
+      var _u335;
       if (numeric63(_u3)) {
-        _u339 = parseInt(_u3);
+        _u335 = parseInt(_u3);
       } else {
-        _u339 = _u3;
+        _u335 = _u3;
       }
-      var _u3 = _u339;
+      var _u3 = _u335;
       x[k] = k;
     }
     return(["return", join(["obj"], x)]);

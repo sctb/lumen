@@ -36,7 +36,7 @@
   (not (= n n)))
 
 (define-global inf? (n)
-  (or (= n #+inf) (= n #-inf)))
+  (or (= n +inf) (= n -inf)))
 
 (target lua: (define strlib string))
 
@@ -280,13 +280,13 @@
     (cat s1 "\"")))
 
 (define-global string (x depth)
-  (if (and depth (> depth 7)) "#<circular>"
+  (if (and depth (> depth 7)) "circular"
       (nil? x) "nil"
-      (nan? x) "#nan"
-      (= x #+inf) "#+inf"
-      (= x #-inf) "#-inf"
+      (nan? x) "nan"
+      (= x +inf) "+inf"
+      (= x -inf) "-inf"
       (boolean? x) (if x "true" "false")
-      (function? x) "#<function>"
+      (function? x) "function"
       (string? x) (escape x)
       (atom? x) (tostring x)
     (let (s "(" sp ""

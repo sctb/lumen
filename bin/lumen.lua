@@ -43,7 +43,7 @@ function nan63(n)
   return(not (n == n))
 end
 function inf63(n)
-  return(n == 1 / 0 or n == -(1 / 0))
+  return(n == _43inf or n == _inf)
 end
 local strlib = string
 function clip(s, from, upto)
@@ -450,19 +450,19 @@ function escape(s)
 end
 function string(x, depth)
   if depth and depth > 7 then
-    return("#<circular>")
+    return("circular")
   else
     if nil63(x) then
       return("nil")
     else
       if nan63(x) then
-        return("#nan")
+        return("nan")
       else
-        if x == 1 / 0 then
-          return("#+inf")
+        if x == _43inf then
+          return("+inf")
         else
-          if x == -(1 / 0) then
-            return("#-inf")
+          if x == _inf then
+            return("-inf")
           else
             if boolean63(x) then
               if x then
@@ -472,7 +472,7 @@ function string(x, depth)
               end
             else
               if function63(x) then
-                return("#<function>")
+                return("function")
               else
                 if string63(x) then
                   return(escape(x))
@@ -813,13 +813,13 @@ setenv("each", {_stash = true, macro = function (_u247, t, ...)
   local body = cut(_u246, 0)
   local x = unique()
   local n = unique()
-  local _u358
+  local _u354
   if target == "lua" then
-    _u358 = body
+    _u354 = body
   else
-    _u358 = {join({"let", {k, {"if", {"numeric?", k}, {"parseInt", k}, k}}}, body)}
+    _u354 = {join({"let", {k, {"if", {"numeric?", k}, {"parseInt", k}, k}}}, body)}
   end
-  return({"let", {x, t, k, "nil"}, {"%for", x, k, join({"let", {v, {"get", x, k}}}, _u358)}})
+  return({"let", {x, t, k, "nil"}, {"%for", x, k, join({"let", {v, {"get", x, k}}}, _u354)}})
 end})
 setenv("for", {_stash = true, macro = function (_u270, ...)
   local i = _u270[1]
@@ -872,11 +872,9 @@ setenv("with-indent", {_stash = true, macro = function (form)
   local result = unique()
   return({"do", {"inc", "indent-level"}, {"let", {result, form}, {"dec", "indent-level"}, result}})
 end})
-setenv("#t", {_stash = true, symbol = true})
-setenv("#f", {_stash = true, symbol = false})
-setenv("#nan", {_stash = true, symbol = {"/", 0, 0}})
-setenv("#+inf", {_stash = true, symbol = {"/", 1, 0}})
-setenv("#-inf", {_stash = true, symbol = {"-", {"/", 1, 0}}})
+nan = 0 / 0
+_43inf = 1 / 0
+_inf = -(1 / 0)
 setenv("export", {_stash = true, macro = function (...)
   local names = unstash({...})
   if target == "js" then
@@ -885,10 +883,10 @@ setenv("export", {_stash = true, macro = function (...)
     end, names)))
   else
     local x = {}
-    local _u354 = names
+    local _u350 = names
     local _u3 = nil
-    for _u3 in next, _u354 do
-      local k = _u354[_u3]
+    for _u3 in next, _u350 do
+      local k = _u350[_u3]
       x[k] = k
     end
     return({"return", join({"obj"}, x)})
