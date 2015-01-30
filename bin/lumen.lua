@@ -48,9 +48,9 @@ end
 function inf63(n)
   return(n == _43inf or n == _inf)
 end
-local strlib = string
+local str = string
 function clip(s, from, upto)
-  return(strlib.sub(s, from + 1, upto))
+  return(str.sub(s, from + 1, upto))
 end
 function cut(x, from, upto)
   local l = {}
@@ -114,7 +114,7 @@ function code(s, n)
   if n then
     _u126 = n + 1
   end
-  return(strlib.byte(s, _u126))
+  return(str.byte(s, _u126))
 end
 function string_literal63(x)
   return(string63(x) and char(x, 0) == "\"")
@@ -328,7 +328,7 @@ function search(s, pattern, start)
     _u127 = start + 1
   end
   local _u79 = _u127
-  local i = strlib.find(s, pattern, _u79, true)
+  local i = str.find(s, pattern, _u79, true)
   return(i and i - 1)
 end
 function split(s, sep)

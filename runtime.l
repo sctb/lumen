@@ -42,11 +42,11 @@
 (define-global inf? (n)
   (or (= n +inf) (= n -inf)))
 
-(target lua: (define strlib string))
+(target lua: (define str string))
 
 (define-global clip (s from upto)
   (target js: (s.substring from upto)
-          lua: (strlib.sub s (+ from 1) upto)))
+          lua: (str.sub s (+ from 1) upto)))
 
 (define-global cut (x from upto)
   (let (l () j 0
@@ -83,7 +83,7 @@
 (define-global code (s n)
   (target
     js: (s.charCodeAt n)
-    lua: (strlib.byte s (if n (+ n 1)))))
+    lua: (str.byte s (if n (+ n 1)))))
 
 (define-global string-literal? (x)
   (and (string? x) (= (char x 0) "\"")))
@@ -215,7 +215,7 @@
     js: (let (i (s.indexOf pattern start))
           (if (>= i 0) i))
     lua: (let (start (if start (+ start 1))
-               i (strlib.find s pattern start true))
+               i (str.find s pattern start true))
            (and i (- i 1)))))
 
 (define-global split (s sep)
