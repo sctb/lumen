@@ -180,10 +180,6 @@
            (dec indent-level)
            ,result))))
 
-(define-global nan (/ 0 0))
-(define-global +inf (/ 1 0))
-(define-global -inf (- (/ 1 0)))
-
 (define-macro export names
   (if (= target 'js)
       `(do ,@(map (fn (k)

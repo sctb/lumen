@@ -32,6 +32,10 @@
 (define-global atom? (x)
   (or (nil? x) (not (obj? x))))
 
+(define-global nan (/ 0 0))
+(define-global +inf (/ 1 0))
+(define-global -inf (- (/ 1 0)))
+
 (define-global nan? (n)
   (not (= n n)))
 
