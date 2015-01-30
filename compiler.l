@@ -80,7 +80,7 @@
                     `(cut ,rh ,(# lh))
                   `(get ,rh ',(bias k))))
           (when (is? k)
-            (let (k (if (= v #t) k v))
+            (let (k (if (= v true) k v))
               (join! bs (bind k x))))))
       bs)))
 
@@ -221,11 +221,11 @@
 
 (define-global valid-id? (id)
   (if (or (none? id) (reserved? id))
-      #f
+      false
     (do (for (i (# id))
           (unless (valid-code? (code id i))
-            (return #f)))
-        #t)))
+            (return false)))
+        true)))
 
 (define-global key (k)
   (let (i (inner k))
@@ -267,7 +267,7 @@
 (define getop (op)
   (find (fn (level)
           (let (x (get level op))
-            (if (= x #t) op
+            (if (= x true) op
                 (is? x) (get x target))))
         infix))
 
@@ -383,7 +383,7 @@
 
 (define lower-statement (form tail?)
   (let (hoist ()
-        e (lower form hoist #t tail?))
+        e (lower form hoist true tail?))
     (if (and (some? hoist) (is? e))
         `(do ,@hoist ,e)
         (is? e) e
@@ -448,11 +448,11 @@
 
 (define lower-function (args)
   (let ((a rest: body) args)
-    `(%function ,a ,(lower-body body #t))))
+    `(%function ,a ,(lower-body body true))))
 
 (define lower-definition (kind args hoist)
   (let ((name args rest: body) args)
-    (add hoist `(,kind ,name ,args ,(lower-body body #t)))))
+    (add hoist `(,kind ,name ,args ,(lower-body body true)))))
 
 (define lower-call (form hoist)
   (let (form (map (fn (x) (lower x hoist)) form))

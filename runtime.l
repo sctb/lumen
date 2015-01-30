@@ -177,13 +177,13 @@
 (define-global keys? (t)
   (each (k _) t
     (unless (number? k)
-      (return #t)))
-  #f)
+      (return true)))
+  false)
 
 (define-global empty? (t)
   (each (_ _) t
-    (return #f))
-  #t)
+    (return false))
+  true)
 
 (define-global stash (args)
   (when (keys? args)
@@ -191,7 +191,7 @@
       (each (k v) args
         (unless (number? k)
           (set (get p k) v)))
-      (set (get p '_stash) #t)
+      (set (get p '_stash) true)
       (add args p)))
   args)
 
@@ -211,13 +211,13 @@
     js: (let (i (s.indexOf pattern start))
           (if (>= i 0) i))
     lua: (let (start (if start (+ start 1))
-               i (strlib.find s pattern start #t))
+               i (strlib.find s pattern start true))
            (and i (- i 1)))))
 
 (define-global split (s sep)
   (if (or (= s "") (= sep "")) ()
     (let (l () n (# sep))
-      (while #t
+      (while true
         (let (i (search s sep))
           (if (nil? i) (break)
             (do (add l (clip s 0 i))
@@ -263,8 +263,8 @@
   (let (n (# s))
     (for (i n)
       (unless (number-code? (code s i))
-        (return #f))))
-  #t)
+        (return false))))
+  true)
 
 (target js: (define tostring (x) (x.toString)))
 
@@ -285,7 +285,7 @@
       (nan? x) "#nan"
       (= x #+inf) "#+inf"
       (= x #-inf) "#-inf"
-      (boolean? x) (if x "#t" "#f")
+      (boolean? x) (if x "true" "false")
       (function? x) "#<function>"
       (string? x) (escape x)
       (atom? x) (tostring x)

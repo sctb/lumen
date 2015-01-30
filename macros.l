@@ -150,7 +150,7 @@
 (define-macro set-of xs
   (let (l ())
     (each (_ x) xs
-      (set (get l x) #t))
+      (set (get l x) true))
     `(obj ,@l)))
 
 (define-macro language () `',target)
