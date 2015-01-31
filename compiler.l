@@ -193,7 +193,10 @@
 (define-global indent-level 0)
 
 (define-global indentation ()
-  (apply cat (replicate indent-level "  ")))
+  (let (s "")
+    (for (_ indent-level)
+      (cat! s "  "))
+    s))
 
 (define reserved
   (set-of "=" "==" "+" "-" "%" "*" "/" "<" ">" "<=" ">="

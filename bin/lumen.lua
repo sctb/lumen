@@ -55,30 +55,30 @@ end
 function cut(x, from, upto)
   local l = {}
   local j = 0
-  local _u124
+  local _u121
   if nil63(from) or from < 0 then
-    _u124 = 0
+    _u121 = 0
   else
-    _u124 = from
+    _u121 = from
   end
-  local i = _u124
+  local i = _u121
   local n = _35(x)
-  local _u125
+  local _u122
   if nil63(upto) or upto > n then
-    _u125 = n
+    _u122 = n
   else
-    _u125 = upto
+    _u122 = upto
   end
-  local _u25 = _u125
-  while i < _u25 do
+  local _u24 = _u122
+  while i < _u24 do
     l[j + 1] = x[i + 1]
     i = i + 1
     j = j + 1
   end
-  local _u26 = x
+  local _u25 = x
   local k = nil
-  for k in next, _u26 do
-    local v = _u26[k]
+  for k in next, _u25 do
+    local v = _u25[k]
     if not number63(k) then
       l[k] = v
     end
@@ -87,10 +87,10 @@ function cut(x, from, upto)
 end
 function keys(x)
   local t = {}
-  local _u29 = x
+  local _u28 = x
   local k = nil
-  for k in next, _u29 do
-    local v = _u29[k]
+  for k in next, _u28 do
+    local v = _u28[k]
     if not number63(k) then
       t[k] = v
     end
@@ -110,11 +110,11 @@ function char(s, n)
   return(clip(s, n, n + 1))
 end
 function code(s, n)
-  local _u126
+  local _u123
   if n then
-    _u126 = n + 1
+    _u123 = n + 1
   end
-  return(str.byte(s, _u126))
+  return(str.byte(s, _u123))
 end
 function string_literal63(x)
   return(string63(x) and char(x, 0) == "\"")
@@ -147,16 +147,16 @@ function join(a, b)
   if a and b then
     local c = {}
     local o = _35(a)
-    local _u44 = a
+    local _u43 = a
     local k = nil
-    for k in next, _u44 do
-      local v = _u44[k]
+    for k in next, _u43 do
+      local v = _u43[k]
       c[k] = v
     end
-    local _u46 = b
+    local _u45 = b
     local k = nil
-    for k in next, _u46 do
-      local v = _u46[k]
+    for k in next, _u45 do
+      local v = _u45[k]
       if number63(k) then
         k = k + o
       end
@@ -179,13 +179,13 @@ function reduce(f, x)
   end
 end
 function find(f, t)
-  local _u50 = t
+  local _u49 = t
   local _u1 = nil
-  for _u1 in next, _u50 do
-    local x = _u50[_u1]
-    local _u52 = f(x)
-    if _u52 then
-      return(_u52)
+  for _u1 in next, _u49 do
+    local x = _u49[_u1]
+    local _u51 = f(x)
+    if _u51 then
+      return(_u51)
     end
   end
 end
@@ -218,22 +218,6 @@ function sort(l, f)
   table.sort(l, f)
   return(l)
 end
-function replicate(n, x)
-  local l = {}
-  local _u2 = 0
-  while _u2 < n do
-    add(l, x)
-    _u2 = _u2 + 1
-  end
-  return(l)
-end
-function step(f, l)
-  local i = 0
-  while i < _35(l) do
-    f(l[i + 1])
-    i = i + 1
-  end
-end
 function map(f, x)
   local t = {}
   local n = _35(x)
@@ -245,10 +229,10 @@ function map(f, x)
     end
     i = i + 1
   end
-  local _u62 = x
+  local _u59 = x
   local k = nil
-  for k in next, _u62 do
-    local v = _u62[k]
+  for k in next, _u59 do
+    local v = _u59[k]
     if not number63(k) then
       local y = f(v)
       if is63(y) then
@@ -266,10 +250,10 @@ function keep(f, x)
   end, x))
 end
 function keys63(t)
-  local _u67 = t
+  local _u64 = t
   local k = nil
-  for k in next, _u67 do
-    local _u3 = _u67[k]
+  for k in next, _u64 do
+    local _u2 = _u64[k]
     if not number63(k) then
       return(true)
     end
@@ -277,10 +261,10 @@ function keys63(t)
   return(false)
 end
 function empty63(t)
-  local _u70 = t
-  local _u4 = nil
-  for _u4 in next, _u70 do
-    local _u5 = _u70[_u4]
+  local _u67 = t
+  local _u3 = nil
+  for _u3 in next, _u67 do
+    local _u4 = _u67[_u3]
     return(false)
   end
   return(true)
@@ -288,10 +272,10 @@ end
 function stash(args)
   if keys63(args) then
     local p = {}
-    local _u73 = args
+    local _u70 = args
     local k = nil
-    for k in next, _u73 do
-      local v = _u73[k]
+    for k in next, _u70 do
+      local v = _u70[k]
       if not number63(k) then
         p[k] = v
       end
@@ -308,10 +292,10 @@ function unstash(args)
     local l = last(args)
     if obj63(l) and l._stash then
       local args1 = butlast(args)
-      local _u76 = l
+      local _u73 = l
       local k = nil
-      for k in next, _u76 do
-        local v = _u76[k]
+      for k in next, _u73 do
+        local v = _u73[k]
         if not (k == "_stash") then
           args1[k] = v
         end
@@ -323,12 +307,12 @@ function unstash(args)
   end
 end
 function search(s, pattern, start)
-  local _u127
+  local _u124
   if start then
-    _u127 = start + 1
+    _u124 = start + 1
   end
-  local _u79 = _u127
-  local i = str.find(s, pattern, _u79, true)
+  local _u76 = _u124
+  local i = str.find(s, pattern, _u76, true)
   return(i and i - 1)
 end
 function split(s, sep)
@@ -427,25 +411,25 @@ function escape(s)
   local i = 0
   while i < _35(s) do
     local c = char(s, i)
-    local _u128
+    local _u125
     if c == "\n" then
-      _u128 = "\\n"
+      _u125 = "\\n"
     else
-      local _u129
+      local _u126
       if c == "\"" then
-        _u129 = "\\\""
+        _u126 = "\\\""
       else
-        local _u130
+        local _u127
         if c == "\\" then
-          _u130 = "\\\\"
+          _u127 = "\\\\"
         else
-          _u130 = c
+          _u127 = c
         end
-        _u129 = _u130
+        _u126 = _u127
       end
-      _u128 = _u129
+      _u125 = _u126
     end
-    local c1 = _u128
+    local c1 = _u125
     s1 = s1 .. c1
     i = i + 1
   end
@@ -488,10 +472,10 @@ function string(x, depth)
                     local xs = {}
                     local ks = {}
                     local d = (depth or 0) + 1
-                    local _u103 = x
+                    local _u100 = x
                     local k = nil
-                    for k in next, _u103 do
-                      local v = _u103[k]
+                    for k in next, _u100 do
+                      local v = _u100[k]
                       if number63(k) then
                         xs[k] = string(v, d)
                       else
@@ -499,10 +483,10 @@ function string(x, depth)
                         add(ks, string(v, d))
                       end
                     end
-                    local _u105 = join(xs, ks)
-                    local _u6 = nil
-                    for _u6 in next, _u105 do
-                      local v = _u105[_u6]
+                    local _u102 = join(xs, ks)
+                    local _u5 = nil
+                    for _u5 in next, _u102 do
+                      local v = _u102[_u5]
                       s = s .. sp .. v
                       sp = " "
                     end
@@ -519,16 +503,16 @@ function string(x, depth)
 end
 local values = unpack or table.unpack
 function apply(f, args)
-  local _u108 = stash(args)
-  return(f(values(_u108)))
+  local _u105 = stash(args)
+  return(f(values(_u105)))
 end
 function call(f)
   return(f())
 end
-local _u110 = 0
+local _u107 = 0
 function unique()
-  _u110 = _u110 + 1
-  return("_u" .. _u110)
+  _u107 = _u107 + 1
+  return("_u" .. _u107)
 end
 function unique63(id)
   return("_u" == clip(id, 0, 2))
@@ -541,22 +525,22 @@ function toplevel63()
   return(one63(environment))
 end
 function setenv(k, ...)
-  local _u115 = unstash({...})
-  local keys = cut(_u115, 0)
+  local _u112 = unstash({...})
+  local keys = cut(_u112, 0)
   if string63(k) then
-    local _u131
+    local _u128
     if keys.toplevel then
-      _u131 = hd(environment)
+      _u128 = hd(environment)
     else
-      _u131 = last(environment)
+      _u128 = last(environment)
     end
-    local frame = _u131
+    local frame = _u128
     local entry = frame[k] or {}
-    local _u117 = keys
-    local _u119 = nil
-    for _u119 in next, _u117 do
-      local v = _u117[_u119]
-      entry[_u119] = v
+    local _u114 = keys
+    local _u116 = nil
+    for _u116 in next, _u114 do
+      local v = _u114[_u116]
+      entry[_u116] = v
     end
     frame[k] = entry
   end

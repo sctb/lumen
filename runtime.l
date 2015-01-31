@@ -153,15 +153,6 @@
     lua: (do (table.sort l f) l)
     js: (l.sort (when f (fn (a b) (if (f a b) -1 1))))))
 
-(define-global replicate (n x)
-  (let (l ())
-    (for (_ n) (add l x))
-    l))
-
-(define-global step (f l)
-  (for (i (# l))
-    (f (at l i))))
-
 (define-global map (f x)
   (let (t () n (# x))
     (for (i n)
