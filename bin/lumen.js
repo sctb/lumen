@@ -43,13 +43,13 @@ atom63 = function (x) {
   return(nil63(x) || !obj63(x));
 };
 nan = 0 / 0;
-_43inf = 1 / 0;
+inf = 1 / 0;
 _inf = -(1 / 0);
 nan63 = function (n) {
   return(!(n === n));
 };
 inf63 = function (n) {
-  return(n === _43inf || n === _inf);
+  return(n === inf || n === _inf);
 };
 clip = function (s, from, upto) {
   return(s.substring(from, upto));
@@ -501,7 +501,7 @@ numeric63 = function (s) {
   return(true);
 };
 var tostring = function (x) {
-  return(x.toString());
+  return(x["toString"]());
 };
 escape = function (s) {
   var s1 = "\"";
@@ -542,8 +542,8 @@ string = function (x, depth) {
       if (nan63(x)) {
         return("nan");
       } else {
-        if (x === _43inf) {
-          return("+inf");
+        if (x === inf) {
+          return("inf");
         } else {
           if (x === _inf) {
             return("-inf");

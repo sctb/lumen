@@ -33,14 +33,14 @@
   (or (nil? x) (not (obj? x))))
 
 (define-global nan (/ 0 0))
-(define-global +inf (/ 1 0))
+(define-global inf (/ 1 0))
 (define-global -inf (- (/ 1 0)))
 
 (define-global nan? (n)
   (not (= n n)))
 
 (define-global inf? (n)
-  (or (= n +inf) (= n -inf)))
+  (or (= n inf) (= n -inf)))
 
 (target lua: (define str string))
 
@@ -287,7 +287,7 @@
   (if (and depth (> depth 7)) "circular"
       (nil? x) "nil"
       (nan? x) "nan"
-      (= x +inf) "+inf"
+      (= x inf) "inf"
       (= x -inf) "-inf"
       (boolean? x) (if x "true" "false")
       (function? x) "function"

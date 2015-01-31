@@ -40,13 +40,13 @@ function atom63(x)
   return(nil63(x) or not obj63(x))
 end
 nan = 0 / 0
-_43inf = 1 / 0
+inf = 1 / 0
 _inf = -(1 / 0)
 function nan63(n)
   return(not (n == n))
 end
 function inf63(n)
-  return(n == _43inf or n == _inf)
+  return(n == inf or n == _inf)
 end
 local str = string
 function clip(s, from, upto)
@@ -461,8 +461,8 @@ function string(x, depth)
       if nan63(x) then
         return("nan")
       else
-        if x == _43inf then
-          return("+inf")
+        if x == inf then
+          return("inf")
         else
           if x == _inf then
             return("-inf")
