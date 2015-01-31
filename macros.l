@@ -147,6 +147,15 @@
        ,@body
        (inc ,i))))
 
+(define-macro across ((v t) rest: body)
+  (let (x (unique)
+        n (unique)
+        i (unique))
+    `(let (,x ,t ,n (# ,x))
+       (for (,i ,n)
+         (let (,v (at ,x ,i))
+           ,@body)))))
+
 (define-macro set-of xs
   (let (l ())
     (each (_ x) xs

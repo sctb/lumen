@@ -150,14 +150,12 @@
                   (quasiexpand v depth)))
           (set (get (last xs) k) v))))
     ;; collect sibling lists
-    (step
-     (fn (x)
-       (if (quasisplice? x depth)
-           (let (x (quasiexpand (at x 1)))
-             (add xs x)
-             (add xs '(list)))
-         (add (last xs) (quasiexpand x depth))))
-     form)
+    (across (x form)
+      (if (quasisplice? x depth)
+          (let (x (quasiexpand (at x 1)))
+            (add xs x)
+            (add xs '(list)))
+        (add (last xs) (quasiexpand x depth))))
     (let (pruned
           (keep (fn (x)
                   (or (> (# x) 1)
@@ -276,10 +274,9 @@
 
 (define compile-args (args)
   (let (s "(" c "")
-    (step (fn (x)
-            (cat! s c (compile x))
-            (set c ", "))
-          args)
+    (across (x args)
+      (cat! s c (compile x))
+      (set c ", "))
     (cat s ")")))
 
 (define escape-newlines (s)
@@ -394,9 +391,8 @@
   (lower-statement `(do ,@body) tail?))
 
 (define lower-do (args hoist stmt? tail?)
-  (step (fn (x)
-          (add hoist (lower x hoist stmt?)))
-        (butlast args))
+  (across (x (butlast args))
+    (add hoist (lower x hoist stmt?)))
   (let (e (lower (last args) hoist stmt? tail?))
     (if (and tail? (can-return? e))
         `(return ,e)
@@ -525,9 +521,8 @@
 
 (define-special do forms :stmt :tr
   (let (s "")
-    (step (fn (x)
-            (cat! s (compile x :stmt)))
-          forms)
+    (across (x forms)
+      (cat! s (compile x :stmt)))
     s))
 
 (define-special %if (cond cons alt) :stmt :tr
