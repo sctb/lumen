@@ -595,7 +595,7 @@ c")
 (define-test let-unique ()
   (let-unique (a b)
     (test= true (string? a))
-    (test= "_" (char b 0))))
+    (test= true (string? b))))
 
 (define-test globals ()
   (test= true true)

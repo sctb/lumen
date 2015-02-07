@@ -54,7 +54,7 @@
 (let (count 0)
   (define-global unique (x)
     (inc count)
-    (cat "_u" (or x "") count)))
+    (cat "_u" x count)))
 
 (define stash* (args)
   (if (keys? args)
