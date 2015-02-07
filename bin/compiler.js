@@ -61,27 +61,27 @@ var literal = function (s) {
     return(quoted(s));
   }
 };
-var _uid119 = 0;
+var _uid116 = 0;
 unique = function (x) {
-  _uid119 = _uid119 + 1;
-  return("_u" + x + _uid119);
+  _uid116 = _uid116 + 1;
+  return("_u" + x + _uid116);
 };
 var stash42 = function (args) {
   if (keys63(args)) {
     var l = ["%object", "\"_stash\"", true];
-    var _uo23 = args;
+    var _uo20 = args;
     var k = undefined;
-    for (k in _uo23) {
-      var v = _uo23[k];
+    for (k in _uo20) {
+      var v = _uo20[k];
       var _ue352;
       if (numeric63(k)) {
         _ue352 = parseInt(k);
       } else {
         _ue352 = k;
       }
-      var _uid126 = _ue352;
-      if (!number63(_uid126)) {
-        add(l, literal(_uid126));
+      var _uid123 = _ue352;
+      if (!number63(_uid123)) {
+        add(l, literal(_uid123));
         add(l, v);
       }
     }
@@ -109,33 +109,33 @@ bind = function (lh, rh) {
       return([[lh, rh]]);
     } else {
       var bs = [];
-      var _uo34 = lh;
+      var _uo31 = lh;
       var k = undefined;
-      for (k in _uo34) {
-        var v = _uo34[k];
+      for (k in _uo31) {
+        var v = _uo31[k];
         var _ue353;
         if (numeric63(k)) {
           _ue353 = parseInt(k);
         } else {
           _ue353 = k;
         }
-        var _uid137 = _ue353;
+        var _uid134 = _ue353;
         var _ue354;
-        if (_uid137 === "rest") {
+        if (_uid134 === "rest") {
           _ue354 = ["cut", rh, _35(lh)];
         } else {
-          _ue354 = ["get", rh, ["quote", bias(_uid137)]];
+          _ue354 = ["get", rh, ["quote", bias(_uid134)]];
         }
         var x = _ue354;
-        if (is63(_uid137)) {
+        if (is63(_uid134)) {
           var _ue355;
           if (v === true) {
-            _ue355 = _uid137;
+            _ue355 = _uid134;
           } else {
             _ue355 = v;
           }
-          var _uid141 = _ue355;
-          bs = join(bs, bind(_uid141, x));
+          var _uid138 = _ue355;
+          bs = join(bs, bind(_uid138, x));
         }
       }
       return(bs);
@@ -157,18 +157,18 @@ bind42 = function (args, body) {
   } else {
     var bs = [];
     var r = unique("r");
-    var _uo57 = args;
+    var _uo54 = args;
     var k = undefined;
-    for (k in _uo57) {
-      var v = _uo57[k];
+    for (k in _uo54) {
+      var v = _uo54[k];
       var _ue356;
       if (numeric63(k)) {
         _ue356 = parseInt(k);
       } else {
         _ue356 = k;
       }
-      var _uid160 = _ue356;
-      if (number63(_uid160)) {
+      var _uid157 = _ue356;
+      if (number63(_uid157)) {
         if (atom63(v)) {
           add(args1, v);
         } else {
@@ -206,35 +206,35 @@ macroexpand = function (form) {
     } else {
       var x = hd(form);
       if (x === "%local") {
-        var _uignored1 = form[0];
+        var _uid168 = form[0];
         var name = form[1];
         var value = form[2];
         return(["%local", name, macroexpand(value)]);
       } else {
         if (x === "%function") {
-          var _uignored2 = form[0];
+          var _uid170 = form[0];
           var args = form[1];
           var body = cut(form, 2);
           add(environment, {_scope: true});
-          var _uo74 = args;
-          var _ui76 = undefined;
-          for (_ui76 in _uo74) {
-            var _ux72 = _uo74[_ui76];
+          var _uo73 = args;
+          var _ui75 = undefined;
+          for (_ui75 in _uo73) {
+            var _ux71 = _uo73[_ui75];
             var _ue358;
-            if (numeric63(_ui76)) {
-              _ue358 = parseInt(_ui76);
+            if (numeric63(_ui75)) {
+              _ue358 = parseInt(_ui75);
             } else {
-              _ue358 = _ui76;
+              _ue358 = _ui75;
             }
-            var _uid177 = _ue358;
-            setenv(_ux72, {_stash: true, variable: true});
+            var _uid176 = _ue358;
+            setenv(_ux71, {_stash: true, variable: true});
           }
-          var _ux73 = join(["%function", args], macroexpand(body));
+          var _ux72 = join(["%function", args], macroexpand(body));
           drop(environment);
-          return(_ux73);
+          return(_ux72);
         } else {
           if (x === "%local-function" || x === "%global-function") {
-            var _uignored3 = form[0];
+            var _uid178 = form[0];
             var _uid179 = form[1];
             var _uid180 = form[2];
             var _uid181 = cut(form, 3);
@@ -252,7 +252,7 @@ macroexpand = function (form) {
               var _uid187 = _ue357;
               setenv(_ux82, {_stash: true, variable: true});
             }
-            var _ux83 = join([x, _uid179, _uid180], macroexpand(_uid181));
+            var _ux83 = join([_uid178, _uid179, _uid180], macroexpand(_uid181));
             drop(environment);
             return(_ux83);
           } else {

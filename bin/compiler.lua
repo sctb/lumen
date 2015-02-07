@@ -61,18 +61,18 @@ local function literal(s)
     return(quoted(s))
   end
 end
-local _uid119 = 0
+local _uid116 = 0
 function unique(x)
-  _uid119 = _uid119 + 1
-  return("_u" .. x .. _uid119)
+  _uid116 = _uid116 + 1
+  return("_u" .. x .. _uid116)
 end
 local function stash42(args)
   if keys63(args) then
     local l = {"%object", "\"_stash\"", true}
-    local _uo23 = args
+    local _uo20 = args
     local k = nil
-    for k in next, _uo23 do
-      local v = _uo23[k]
+    for k in next, _uo20 do
+      local v = _uo20[k]
       if not number63(k) then
         add(l, literal(k))
         add(l, v)
@@ -102,10 +102,10 @@ function bind(lh, rh)
       return({{lh, rh}})
     else
       local bs = {}
-      local _uo33 = lh
+      local _uo30 = lh
       local k = nil
-      for k in next, _uo33 do
-        local v = _uo33[k]
+      for k in next, _uo30 do
+        local v = _uo30[k]
         local _ue349
         if k == "rest" then
           _ue349 = {"cut", rh, _35(lh)}
@@ -120,8 +120,8 @@ function bind(lh, rh)
           else
             _ue350 = v
           end
-          local _uid139 = _ue350
-          bs = join(bs, bind(_uid139, x))
+          local _uid136 = _ue350
+          bs = join(bs, bind(_uid136, x))
         end
       end
       return(bs)
@@ -143,10 +143,10 @@ function bind42(args, body)
   else
     local bs = {}
     local r = unique("r")
-    local _uo55 = args
+    local _uo52 = args
     local k = nil
-    for k in next, _uo55 do
-      local v = _uo55[k]
+    for k in next, _uo52 do
+      local v = _uo52[k]
       if number63(k) then
         if atom63(v) then
           add(args1, v)
@@ -185,28 +185,28 @@ function macroexpand(form)
     else
       local x = hd(form)
       if x == "%local" then
-        local _uignored1 = form[1]
+        local _uid165 = form[1]
         local name = form[2]
         local value = form[3]
         return({"%local", name, macroexpand(value)})
       else
         if x == "%function" then
-          local _uignored2 = form[1]
+          local _uid167 = form[1]
           local args = form[2]
           local body = cut(form, 2)
           add(environment, {_scope = true})
-          local _uo71 = args
-          local _ui73 = nil
-          for _ui73 in next, _uo71 do
-            local _ux69 = _uo71[_ui73]
-            setenv(_ux69, {_stash = true, variable = true})
+          local _uo70 = args
+          local _ui72 = nil
+          for _ui72 in next, _uo70 do
+            local _ux68 = _uo70[_ui72]
+            setenv(_ux68, {_stash = true, variable = true})
           end
-          local _ux70 = join({"%function", args}, macroexpand(body))
+          local _ux69 = join({"%function", args}, macroexpand(body))
           drop(environment)
-          return(_ux70)
+          return(_ux69)
         else
           if x == "%local-function" or x == "%global-function" then
-            local _uignored3 = form[1]
+            local _uid174 = form[1]
             local _uid175 = form[2]
             local _uid176 = form[3]
             local _uid177 = cut(form, 3)
@@ -217,7 +217,7 @@ function macroexpand(form)
               local _ux78 = _uo80[_ui82]
               setenv(_ux78, {_stash = true, variable = true})
             end
-            local _ux79 = join({x, _uid175, _uid176}, macroexpand(_uid177))
+            local _ux79 = join({_uid174, _uid175, _uid176}, macroexpand(_uid177))
             drop(environment)
             return(_ux79)
           else
