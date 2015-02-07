@@ -904,7 +904,7 @@ setenv("let-unique", {_stash: true, macro: function (names) {
   var bs = map(function (n) {
     return([n, ["unique", ["quote", n]]]);
   }, names);
-  return(join(["let", reduce(join, bs)], body));
+  return(join(["let", apply(join, bs)], body));
 }});
 setenv("fn", {_stash: true, macro: function (args) {
   var _ur209 = unstash(Array.prototype.slice.call(arguments, 1));

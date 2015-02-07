@@ -124,7 +124,7 @@
   (let (bs (map (fn (n)
                   (list n `(unique ',n)))
                 names))
-    `(let ,(reduce join bs)
+    `(let ,(apply join bs)
        ,@body)))
 
 (define-macro fn (args rest: body)
