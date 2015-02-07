@@ -51,10 +51,14 @@
 (define literal (s)
   (if (string-literal? s) s (quoted s)))
 
-(let (count 0)
+(let (names (obj))
   (define-global unique (x)
-    (inc count)
-    (cat "_u" x count)))
+    (if (get names x)
+        (let (i (get names x))
+          (inc (get names x))
+          (unique (cat x i)))
+      (do (set (get names x) 1)
+          (cat "_" x)))))
 
 (define stash* (args)
   (if (keys? args)

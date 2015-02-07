@@ -600,9 +600,11 @@ c")
     (test= 40 d)))
 
 (define-test let-unique
-  (let-unique (a b)
-    (test= true (string? a))
-    (test= true (string? b))))
+  (let-unique (ham chap)
+    (test= '_ham ham)
+    (test= '_chap chap)
+    (let-unique (ham)
+      (test= '_ham1 ham))))
 
 (define-test globals
   (test= true true)

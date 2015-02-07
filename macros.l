@@ -19,14 +19,14 @@
     `(%delete ,place)))
 
 (define-macro list body
-  (let-unique (id)
+  (let-unique (x)
     (let (l () forms ())
       (each (k v) body
         (if (number? k)
             (set (get l k) v)
-          (add forms `(set (get ,id ',k) ,v))))
+          (add forms `(set (get ,x ',k) ,v))))
       (if (some? forms)
-          `(let (,id (%array ,@l)) ,@forms ,id)
+          `(let (,x (%array ,@l)) ,@forms ,x)
         `(%array ,@l)))))
 
 (define-macro if branches
@@ -49,7 +49,7 @@
       (each (k (id val)) (bind lh rh)
         (when (number? k)
           (if (or (bound? id) (reserved? id) (toplevel?))
-              (let-unique (id1)
+              (let (id1 (unique id))
                 (add renames id)
                 (add renames id1)
                 (set id id1))
