@@ -177,11 +177,8 @@
 (define-macro target clauses
   (get clauses target))
 
-(define-macro join* xs
-  (reduce (fn (a b) (list 'join a b)) xs))
-
 (define-macro join! (a rest: bs)
-  `(set ,a (join* ,a ,@bs)))
+  `(set ,a (join ,a ,@bs)))
 
 (define-macro cat! (a rest: bs)
   `(set ,a (cat ,a ,@bs)))

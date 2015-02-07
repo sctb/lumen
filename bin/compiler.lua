@@ -266,7 +266,11 @@ local function quasiquote_list(form, depth)
   local pruned = keep(function (x)
     return(_35(x) > 1 or not (hd(x) == "list") or keys63(x))
   end, xs)
-  return(join({"join*"}, pruned))
+  if one63(pruned) then
+    return(hd(pruned))
+  else
+    return(join({"join"}, pruned))
+  end
 end
 function quasiexpand(form, depth)
   if quasiquoting63(depth) then
@@ -693,7 +697,7 @@ local function lower_statement(form, tail63)
   local hoist = {}
   local e = lower(form, hoist, true, tail63)
   if some63(hoist) and is63(e) then
-    return(join({"do"}, join(hoist, {e})))
+    return(join({"do"}, hoist, {e}))
   else
     if is63(e) then
       return(e)

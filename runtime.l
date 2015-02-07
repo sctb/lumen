@@ -110,22 +110,25 @@
       (dec i))
     l1))
 
-(define-global join (a b)
-  (if (and a b)
-      (let (c () o (# a))
-        (each (k v) a
-          (set (get c k) v))
-        (each (k v) b
-          (when (number? k)
-            (inc k o))
-          (set (get c k) v))
-        c)
-    (or a b ())))
-
 (define-global reduce (f x)
   (if (none? x) x
       (one? x) (hd x)
     (f (hd x) (reduce f (tl x)))))
+
+(define-global join ls
+  (if (= (# ls) 2)
+      (let ((a b) ls)
+        (if (and a b)
+            (let (c () o (# a))
+              (each (k v) a
+                (set (get c k) v))
+              (each (k v) b
+                (when (number? k)
+                  (inc k o))
+                (set (get c k) v))
+              c)
+          (or a b ())))
+    (reduce join ls)))
 
 (define-global find (f t)
   (each x t

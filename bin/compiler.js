@@ -308,7 +308,11 @@ var quasiquote_list = function (form, depth) {
   var pruned = keep(function (x) {
     return(_35(x) > 1 || !(hd(x) === "list") || keys63(x));
   }, xs);
-  return(join(["join*"], pruned));
+  if (one63(pruned)) {
+    return(hd(pruned));
+  } else {
+    return(join(["join"], pruned));
+  }
 };
 quasiexpand = function (form, depth) {
   if (quasiquoting63(depth)) {
@@ -747,7 +751,7 @@ var lower_statement = function (form, tail63) {
   var hoist = [];
   var e = lower(form, hoist, true, tail63);
   if (some63(hoist) && is63(e)) {
-    return(join(["do"], join(hoist, [e])));
+    return(join(["do"], hoist, [e]));
   } else {
     if (is63(e)) {
       return(e);

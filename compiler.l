@@ -168,7 +168,9 @@
                       (not (= (hd x) 'list))
                       (keys? x)))
                 xs))
-      `(join* ,@pruned))))
+      (if (one? pruned)
+          (hd pruned)
+        `(join ,@pruned)))))
 
 (define-global quasiexpand (form depth)
   (if (quasiquoting? depth)
