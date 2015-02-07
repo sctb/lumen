@@ -25,7 +25,7 @@
   `(add tests (list ',name (fn () ,@body))))
 
 (define-global run ()
-  (each (_ (name f)) tests
+  (each ((name f)) tests
     (let (result (f))
       (when (string? result)
         (print (cat " " name " " result)))))
@@ -379,8 +379,15 @@ c")
       (test= 3 a)
       (test= 2 b))
     (let (a 0)
-      (each (_ _) t (inc a))
-      (test= 5 a))))
+      (each x t (inc a))
+      (test= 5 a)))
+  (let (t '((1) (2) b: (3)))
+    (each x t
+      (test= true (obj? x)))
+    (each (x) t
+      (test= true (obj? x)))
+    (each ((x)) t
+      (test= true (number? x)))))
 
 (define-test fn ()
   (let (f (fn (n) (+ n 10)))
@@ -423,6 +430,8 @@ c")
   (test= '(false baz) (guard (if false 42 (error "baz")))))
 
 (define-test let ()
+  (let a 10
+    (test= 10 a))
   (let (a 10)
     (test= 10 a))
   (let (a 11
@@ -825,4 +834,3 @@ c")
     (test= '(10 20 42) (f 10 bar: 20 (list foo: 42))))
   (let (f (fn args args))
     (test= '(1 2 3) (f 1 2 3))))
-

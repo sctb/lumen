@@ -41,10 +41,11 @@
 (define-macro obj body
   `(%object ,@(mapo (fn (x) x) body)))
 
-(define-macro let (bindings rest: body)
-  (if (< (# bindings) 2) `(do ,@body)
+(define-macro let (bs rest: body)
+  (if (atom? bs) `(let (,bs ,(hd body)) ,@(tl body))
+      (none? bs) `(do ,@body)
     (let (renames () locals ()
-          (lh rh) bindings)
+          (lh rh) bs)
       (each (k (id val)) (bind lh rh)
         (when (number? k)
           (if (or (bound? id) (reserved? id) (toplevel?))
@@ -56,7 +57,7 @@
           (add locals `(%local ,id ,val))))
       `(do ,@locals
            (let-symbol ,renames
-             (let ,(cut bindings 2) ,@body))))))
+             (let ,(cut bs 2) ,@body))))))
 
 (define-macro define-macro (name args rest: body)
   (let (form `(setenv ',name macro: (fn ,args ,@body)))
@@ -97,7 +98,7 @@
 (define-macro with-bindings ((names) rest: body)
   (let-unique (x)
    `(with-frame :scope
-      (each (_ ,x) ,names
+      (each ,x ,names
         (setenv ,x :variable))
       ,@body)))
 
@@ -137,16 +138,20 @@
         `(let (,ex (xpcall (fn () ,expr) %message-handler))
            (list ,e ,x))))))
 
-(define-macro each ((k v) t rest: body)
-  (let-unique (x n)
-    `(let (,x ,t ,k nil)
-       (%for ,x ,k
-         (let (,v (get ,x ,k))
-           ,@(if (= target 'lua) body
-               `((let (,k (if (numeric? ,k)
-                              (parseInt ,k)
-                            ,k))
-                   ,@body))))))))
+(define-macro each (x t rest: body)
+  (let-unique (o n i)
+    (let ((k v) (if (obj? x)
+                    (if (> (# x) 1) x
+                      (list i (hd x)))
+                  (list i x)))
+      `(let (,o ,t ,k nil)
+         (%for ,o ,k
+           (let (,v (get ,o ,k))
+             ,@(if (= target 'lua) body
+                   `((let (,k (if (numeric? ,k)
+                                  (parseInt ,k)
+                                ,k))
+                       ,@body)))))))))
 
 (define-macro for ((i to) rest: body)
   `(let (,i 0)
@@ -163,7 +168,7 @@
 
 (define-macro set-of xs
   (let (l ())
-    (each (_ x) xs
+    (each x xs
       (set (get l x) true))
     `(obj ,@l)))
 
@@ -200,6 +205,6 @@
                     `(set (get exports ',k) ,k))
                   names))
     (let (x (obj))
-      (each (_ k) names
+      (each k names
         (set (get x k) k))
       `(return (obj ,@x)))))

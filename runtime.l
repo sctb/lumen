@@ -128,7 +128,7 @@
     (f (hd x) (reduce f (tl x)))))
 
 (define-global find (f t)
-  (each (_ x) t
+  (each x t
     (let (x (f x))
       (if x (return x)))))
 
@@ -170,13 +170,13 @@
   (map (fn (v) (when (f v) v)) x))
 
 (define-global keys? (t)
-  (each (k _) t
+  (each (k v) t
     (unless (number? k)
       (return true)))
   false)
 
 (define-global empty? (t)
-  (each (_ _) t
+  (each x t
     (return false))
   true)
 
@@ -292,7 +292,7 @@
             (set (get xs k) (string v d))
           (do (add ks (cat k ":"))
               (add ks (string v d)))))
-      (each (_ v) (join xs ks)
+      (each v (join xs ks)
         (cat! s sp v)
         (set sp " "))
       (cat s  ")"))))
