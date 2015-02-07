@@ -153,7 +153,7 @@
                                 ,k))
                        ,@body)))))))))
 
-(define-macro for ((i to) rest: body)
+(define-macro for (i to rest: body)
   `(let (,i 0)
      (while (< ,i ,to)
        ,@body
@@ -162,7 +162,7 @@
 (define-macro step (v t rest: body)
   (let-unique (x n i)
     `(let (,x ,t ,n (# ,x))
-       (for (,i ,n)
+       (for ,i ,n
          (let (,v (at ,x ,i))
            ,@body)))))
 

@@ -803,51 +803,49 @@ setenv("each", {_stash = true, macro = function (x, t, ...)
   local o = unique("o")
   local n = unique("n")
   local i = unique("i")
-  local _ue401
+  local _ue397
   if obj63(x) then
-    local _ue402
+    local _ue398
     if _35(x) > 1 then
-      _ue402 = x
+      _ue398 = x
     else
-      _ue402 = {i, hd(x)}
+      _ue398 = {i, hd(x)}
     end
-    _ue401 = _ue402
+    _ue397 = _ue398
   else
-    _ue401 = {i, x}
+    _ue397 = {i, x}
   end
-  local _uid268 = _ue401
+  local _uid268 = _ue397
   local k = _uid268[1]
   local v = _uid268[2]
-  local _ue403
+  local _ue399
   if target == "lua" then
-    _ue403 = body
+    _ue399 = body
   else
-    _ue403 = {join({"let", {k, {"if", {"numeric?", k}, {"parseInt", k}, k}}}, body)}
+    _ue399 = {join({"let", {k, {"if", {"numeric?", k}, {"parseInt", k}, k}}}, body)}
   end
-  return({"let", {o, t, k, "nil"}, {"%for", o, k, join({"let", {v, {"get", o, k}}}, _ue403)}})
+  return({"let", {o, t, k, "nil"}, {"%for", o, k, join({"let", {v, {"get", o, k}}}, _ue399)}})
 end})
-setenv("for", {_stash = true, macro = function (_ux292, ...)
-  local i = _ux292[1]
-  local to = _ux292[2]
-  local _ur291 = unstash({...})
-  local body = cut(_ur291, 0)
+setenv("for", {_stash = true, macro = function (i, to, ...)
+  local _ur290 = unstash({...})
+  local body = cut(_ur290, 0)
   return({"let", {i, 0}, join({"while", {"<", i, to}}, join(body, {{"inc", i}}))})
 end})
 setenv("step", {_stash = true, macro = function (v, t, ...)
-  local _ur309 = unstash({...})
-  local body = cut(_ur309, 0)
+  local _ur306 = unstash({...})
+  local body = cut(_ur306, 0)
   local x = unique("x")
   local n = unique("n")
   local i = unique("i")
-  return({"let", {x, t, n, {"#", x}}, {"for", {i, n}, join({"let", {v, {"at", x, i}}}, body)}})
+  return({"let", {x, t, n, {"#", x}}, {"for", i, n, join({"let", {v, {"at", x, i}}}, body)}})
 end})
 setenv("set-of", {_stash = true, macro = function (...)
   local xs = unstash({...})
   local l = {}
-  local _uo326 = xs
-  local _ui328 = nil
-  for _ui328 in next, _uo326 do
-    local x = _uo326[_ui328]
+  local _uo322 = xs
+  local _ui324 = nil
+  for _ui324 in next, _uo322 do
+    local x = _uo322[_ui324]
     l[x] = true
   end
   return(join({"obj"}, l))
@@ -866,13 +864,13 @@ setenv("join*", {_stash = true, macro = function (...)
   end, xs))
 end})
 setenv("join!", {_stash = true, macro = function (a, ...)
-  local _ur343 = unstash({...})
-  local bs = cut(_ur343, 0)
+  local _ur339 = unstash({...})
+  local bs = cut(_ur339, 0)
   return({"set", a, join({"join*", a}, bs)})
 end})
 setenv("cat!", {_stash = true, macro = function (a, ...)
-  local _ur350 = unstash({...})
-  local bs = cut(_ur350, 0)
+  local _ur346 = unstash({...})
+  local bs = cut(_ur346, 0)
   return({"set", a, join({"cat", a}, bs)})
 end})
 setenv("inc", {_stash = true, macro = function (n, by)
@@ -893,10 +891,10 @@ setenv("export", {_stash = true, macro = function (...)
     end, names)))
   else
     local x = {}
-    local _uo396 = names
-    local _ui398 = nil
-    for _ui398 in next, _uo396 do
-      local k = _uo396[_ui398]
+    local _uo392 = names
+    local _ui394 = nil
+    for _ui394 in next, _uo392 do
+      local k = _uo392[_ui394]
       x[k] = k
     end
     return({"return", join({"obj"}, x)})

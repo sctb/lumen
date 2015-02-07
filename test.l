@@ -344,7 +344,7 @@ c")
 
 (define-test for ()
   (let (l ())
-    (for (i 5)
+    (for i 5
       (add l i))
     (test= '(0 1 2 3 4) l)))
 

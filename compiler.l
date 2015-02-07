@@ -200,7 +200,7 @@
 
 (define-global indentation ()
   (let (s "")
-    (for (_ indent-level)
+    (for i indent-level
       (cat! s "  "))
     s))
 
@@ -229,7 +229,7 @@
 (define-global valid-id? (id)
   (if (or (none? id) (reserved? id))
       false
-    (do (for (i (# id))
+    (do (for i (# id)
           (unless (valid-code? (code id i))
             (return false)))
         true)))
@@ -290,14 +290,14 @@
 
 (define escape-newlines (s)
   (let (s1 "")
-    (for (i (# s))
+    (for i (# s)
       (let (c (char s i))
         (cat! s1 (if (= c "\n") "\\n" c))))
     (cat s1 "")))
 
 (define id (id)
   (let (id1 "")
-    (for (i (# id))
+    (for i (# id)
       (let (c (char id i)
             n (code c)
             c1 (if (= c "-") "_"

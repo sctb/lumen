@@ -134,7 +134,7 @@
 
 (define-global first (f l)
   (let (n (# l))
-    (for (i n)
+    (for i n
       (let (x (f (at l i)))
         (if x (return x))))))
 
@@ -155,7 +155,7 @@
 
 (define-global map (f x)
   (let (t () n (# x))
-    (for (i n)
+    (for i n
       (let (y (f (at x i)))
         (when (is? y)
           (add t y))))
@@ -256,7 +256,7 @@
 
 (define-global numeric? (s)
   (let (n (# s))
-    (for (i n)
+    (for i n
       (unless (number-code? (code s i))
         (return false))))
   true)
@@ -265,7 +265,7 @@
 
 (define-global escape (s)
   (let (s1 "\"")
-    (for (i (# s))
+    (for i (# s)
       (let (c (char s i)
             c1 (if (= c "\n") "\\n"
                    (= c "\"") "\\\""

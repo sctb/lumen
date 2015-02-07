@@ -38,7 +38,7 @@
         target1 nil
         expr nil
         n (# argv))
-    (for (i n)
+    (for i n
       (let (a (at argv i))
         (if (or (= a "-c") (= a "-o") (= a "-t") (= a "-e"))
             (if (= i (- n 1))
