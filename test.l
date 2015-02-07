@@ -592,6 +592,11 @@ c")
       (test= 42 d))
     (test= 40 d)))
 
+(define-test let-unique ()
+  (let-unique (a b)
+    (test= true (string? a))
+    (test= "_" (char b 0))))
+
 (define-test globals ()
   (test= true true)
   (test= false false)

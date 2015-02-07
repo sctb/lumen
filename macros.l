@@ -119,6 +119,13 @@
          (pair expansions))
     `(do ,@(macroexpand body))))
 
+(define-macro let-unique (names rest: body)
+  (let (bs (map (fn (n)
+                  (list n '(unique)))
+                names))
+    `(let ,(reduce join bs)
+       ,@body)))
+
 (define-macro fn (args rest: body)
   `(%function ,@(bind* args body)))
 
