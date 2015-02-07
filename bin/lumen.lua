@@ -653,7 +653,7 @@ setenv("let", {_stash = true, macro = function (bindings, ...)
       local id = _u82[1]
       local val = _u82[2]
       if number63(k) then
-        if not unique63(id) and (bound63(id) or reserved63(id) or toplevel63()) then
+        if bound63(id) or reserved63(id) or toplevel63() then
           local id1 = unique()
           add(renames, id)
           add(renames, id1)
@@ -800,13 +800,13 @@ setenv("each", {_stash = true, macro = function (_u258, t, ...)
   local body = cut(_u257, 0)
   local x = unique()
   local n = unique()
-  local _u386
+  local _u388
   if target == "lua" then
-    _u386 = body
+    _u388 = body
   else
-    _u386 = {join({"let", {k, {"if", {"numeric?", k}, {"parseInt", k}, k}}}, body)}
+    _u388 = {join({"let", {k, {"if", {"numeric?", k}, {"parseInt", k}, k}}}, body)}
   end
-  return({"let", {x, t, k, "nil"}, {"%for", x, k, join({"let", {v, {"get", x, k}}}, _u386)}})
+  return({"let", {x, t, k, "nil"}, {"%for", x, k, join({"let", {v, {"get", x, k}}}, _u388)}})
 end})
 setenv("for", {_stash = true, macro = function (_u281, ...)
   local i = _u281[1]
@@ -828,10 +828,10 @@ end})
 setenv("set-of", {_stash = true, macro = function (...)
   local xs = unstash({...})
   local l = {}
-  local _u315 = xs
+  local _u316 = xs
   local _u2 = nil
-  for _u2 in next, _u315 do
-    local x = _u315[_u2]
+  for _u2 in next, _u316 do
+    local x = _u316[_u2]
     l[x] = true
   end
   return(join({"obj"}, l))
@@ -850,13 +850,13 @@ setenv("join*", {_stash = true, macro = function (...)
   end, xs))
 end})
 setenv("join!", {_stash = true, macro = function (a, ...)
-  local _u331 = unstash({...})
-  local bs = cut(_u331, 0)
+  local _u332 = unstash({...})
+  local bs = cut(_u332, 0)
   return({"set", a, join({"join*", a}, bs)})
 end})
 setenv("cat!", {_stash = true, macro = function (a, ...)
-  local _u338 = unstash({...})
-  local bs = cut(_u338, 0)
+  local _u339 = unstash({...})
+  local bs = cut(_u339, 0)
   return({"set", a, join({"cat", a}, bs)})
 end})
 setenv("inc", {_stash = true, macro = function (n, by)
@@ -877,10 +877,10 @@ setenv("export", {_stash = true, macro = function (...)
     end, names)))
   else
     local x = {}
-    local _u382 = names
+    local _u384 = names
     local _u3 = nil
-    for _u3 in next, _u382 do
-      local k = _u382[_u3]
+    for _u3 in next, _u384 do
+      local k = _u384[_u3]
       x[k] = k
     end
     return({"return", join({"obj"}, x)})
