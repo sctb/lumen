@@ -71,7 +71,6 @@
       (if (is? n) n
 	  (= str "true") true
 	  (= str "false") false
-          (= str "_") (unique 'ignored)
           (and dot? (not (one? str)))
           (reduce (fn (a b)
                     `(get ,b (quote ,a)))

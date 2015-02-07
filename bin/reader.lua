@@ -94,16 +94,12 @@ read_table[""] = function (s)
       if str == "false" then
         return(false)
       else
-        if str == "_" then
-          return(unique("ignored"))
+        if dot63 and not one63(str) then
+          return(reduce(function (a, b)
+            return({"get", b, {"quote", a}})
+          end, reverse(split(str, "."))))
         else
-          if dot63 and not one63(str) then
-            return(reduce(function (a, b)
-              return({"get", b, {"quote", a}})
-            end, reverse(split(str, "."))))
-          else
-            return(str)
-          end
+          return(str)
         end
       end
     end

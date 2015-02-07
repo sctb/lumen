@@ -94,16 +94,12 @@ read_table[""] = function (s) {
       if (str === "false") {
         return(false);
       } else {
-        if (str === "_") {
-          return(unique("ignored"));
+        if (dot63 && !one63(str)) {
+          return(reduce(function (a, b) {
+            return(["get", b, ["quote", a]]);
+          }, reverse(split(str, "."))));
         } else {
-          if (dot63 && !one63(str)) {
-            return(reduce(function (a, b) {
-              return(["get", b, ["quote", a]]);
-            }, reverse(split(str, "."))));
-          } else {
-            return(str);
-          }
+          return(str);
         }
       }
     }
