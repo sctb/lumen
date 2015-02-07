@@ -50,7 +50,7 @@
                         (= a "-t") (set target1 val)
                         (= a "-e") (set expr val)))))
             (not (= "-" (char a 0))) (add pre a))))
-    (across (file pre)
+    (step file pre
       (compiler.run-file file))
     (if (and input output)
         (do (if target1 (set target target1))

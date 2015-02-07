@@ -156,7 +156,7 @@
                   (quasiexpand v depth)))
           (set (get (last xs) k) v))))
     ;; collect sibling lists
-    (across (x form)
+    (step x form
       (if (quasisplice? x depth)
           (let (x (quasiexpand (at x 1)))
             (add xs x)
@@ -283,7 +283,7 @@
 
 (define compile-args (args)
   (let (s "(" c "")
-    (across (x args)
+    (step x args
       (cat! s c (compile x))
       (set c ", "))
     (cat s ")")))
@@ -400,7 +400,7 @@
   (lower-statement `(do ,@body) tail?))
 
 (define lower-do (args hoist stmt? tail?)
-  (across (x (butlast args))
+  (step x (butlast args)
     (add hoist (lower x hoist stmt?)))
   (let (e (lower (last args) hoist stmt? tail?))
     (if (and tail? (can-return? e))
@@ -530,7 +530,7 @@
 
 (define-special do forms :stmt :tr
   (let (s "")
-    (across (x forms)
+    (step x forms
       (cat! s (compile x :stmt)))
     s))
 
