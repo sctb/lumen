@@ -51,6 +51,14 @@
 (define literal (s)
   (if (string-literal? s) s (quoted s)))
 
+(let (count 0)
+  (define-global unique ()
+    (inc count)
+    (cat "_u" count)))
+
+(define-global unique? (id)
+  (= "_u" (clip id 0 2)))
+
 (define stash* (args)
   (if (keys? args)
       (let (l `(%object "_stash" true))

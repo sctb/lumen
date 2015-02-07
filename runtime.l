@@ -306,14 +306,6 @@
 
 (define-global call (f) (f))
 
-(let (count 0)
-  (define-global unique ()
-    (inc count)
-    (cat "_u" count)))
-
-(define-global unique? (id)
-  (= "_u" (clip id 0 2)))
-
 (define-global %message-handler (msg)
   (let (i (search msg ": "))
     (clip msg (+ i 2))))

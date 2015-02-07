@@ -55,21 +55,21 @@ end
 function cut(x, from, upto)
   local l = {}
   local j = 0
-  local _u121
+  local _u118
   if nil63(from) or from < 0 then
-    _u121 = 0
+    _u118 = 0
   else
-    _u121 = from
+    _u118 = from
   end
-  local i = _u121
+  local i = _u118
   local n = _35(x)
-  local _u122
+  local _u119
   if nil63(upto) or upto > n then
-    _u122 = n
+    _u119 = n
   else
-    _u122 = upto
+    _u119 = upto
   end
-  local _u24 = _u122
+  local _u24 = _u119
   while i < _u24 do
     l[j + 1] = x[i + 1]
     i = i + 1
@@ -110,11 +110,11 @@ function char(s, n)
   return(clip(s, n, n + 1))
 end
 function code(s, n)
-  local _u123
+  local _u120
   if n then
-    _u123 = n + 1
+    _u120 = n + 1
   end
-  return(str.byte(s, _u123))
+  return(str.byte(s, _u120))
 end
 function string_literal63(x)
   return(string63(x) and char(x, 0) == "\"")
@@ -307,11 +307,11 @@ function unstash(args)
   end
 end
 function search(s, pattern, start)
-  local _u124
+  local _u121
   if start then
-    _u124 = start + 1
+    _u121 = start + 1
   end
-  local _u76 = _u124
+  local _u76 = _u121
   local i = str.find(s, pattern, _u76, true)
   return(i and i - 1)
 end
@@ -411,25 +411,25 @@ function escape(s)
   local i = 0
   while i < _35(s) do
     local c = char(s, i)
-    local _u125
+    local _u122
     if c == "\n" then
-      _u125 = "\\n"
+      _u122 = "\\n"
     else
-      local _u126
+      local _u123
       if c == "\"" then
-        _u126 = "\\\""
+        _u123 = "\\\""
       else
-        local _u127
+        local _u124
         if c == "\\" then
-          _u127 = "\\\\"
+          _u124 = "\\\\"
         else
-          _u127 = c
+          _u124 = c
         end
-        _u126 = _u127
+        _u123 = _u124
       end
-      _u125 = _u126
+      _u122 = _u123
     end
-    local c1 = _u125
+    local c1 = _u122
     s1 = s1 .. c1
     i = i + 1
   end
@@ -509,14 +509,6 @@ end
 function call(f)
   return(f())
 end
-local _u107 = 0
-function unique()
-  _u107 = _u107 + 1
-  return("_u" .. _u107)
-end
-function unique63(id)
-  return("_u" == clip(id, 0, 2))
-end
 function _37message_handler(msg)
   local i = search(msg, ": ")
   return(clip(msg, i + 2))
@@ -525,22 +517,22 @@ function toplevel63()
   return(one63(environment))
 end
 function setenv(k, ...)
-  local _u112 = unstash({...})
-  local keys = cut(_u112, 0)
+  local _u109 = unstash({...})
+  local keys = cut(_u109, 0)
   if string63(k) then
-    local _u128
+    local _u125
     if keys.toplevel then
-      _u128 = hd(environment)
+      _u125 = hd(environment)
     else
-      _u128 = last(environment)
+      _u125 = last(environment)
     end
-    local frame = _u128
+    local frame = _u125
     local entry = frame[k] or {}
-    local _u114 = keys
-    local _u116 = nil
-    for _u116 in next, _u114 do
-      local v = _u114[_u116]
-      entry[_u116] = v
+    local _u111 = keys
+    local _u113 = nil
+    for _u113 in next, _u111 do
+      local v = _u111[_u113]
+      entry[_u113] = v
     end
     frame[k] = entry
   end
