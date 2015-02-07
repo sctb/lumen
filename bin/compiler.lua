@@ -974,12 +974,12 @@ setenv("%for", {_stash = true, special = function (t, k, form)
   end
 end, stmt = true, tr = true})
 setenv("%try", {_stash = true, special = function (form)
+  local e = unique()
   local ind = indentation()
   indent_level = indent_level + 1
   local _u271 = compile(form, {_stash = true, stmt = true})
   indent_level = indent_level - 1
   local body = _u271
-  local e = unique()
   local hf = {"return", {"%array", false, {"get", e, "\"message\""}}}
   indent_level = indent_level + 1
   local _u275 = compile(hf, {_stash = true, stmt = true})

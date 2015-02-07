@@ -19,14 +19,15 @@
     `(%delete ,place)))
 
 (define-macro list body
-  (let (l () forms () id (unique))
-    (each (k v) body
-      (if (number? k)
-          (set (get l k) v)
-        (add forms `(set (get ,id ',k) ,v))))
-    (if (some? forms)
-        `(let (,id (%array ,@l)) ,@forms ,id)
-      `(%array ,@l))))
+  (let-unique (id)
+    (let (l () forms ())
+      (each (k v) body
+        (if (number? k)
+            (set (get l k) v)
+          (add forms `(set (get ,id ',k) ,v))))
+      (if (some? forms)
+          `(let (,id (%array ,@l)) ,@forms ,id)
+        `(%array ,@l)))))
 
 (define-macro if branches
   (hd (expand-if branches)))
@@ -47,7 +48,7 @@
       (each (k (id val)) (bind lh rh)
         (when (number? k)
           (if (or (bound? id) (reserved? id) (toplevel?))
-              (let (id1 (unique))
+              (let-unique (id1)
                 (add renames id)
                 (add renames id1)
                 (set id id1))
@@ -87,14 +88,14 @@
     `(set ,name ,x)))
 
 (define-macro with-frame (rest: body :scope)
-  (let (x (unique))
+  (let-unique (x)
     `(do (add environment (obj _scope: ,scope))
          (let (,x (do ,@body))
            (drop environment)
            ,x))))
 
 (define-macro with-bindings ((names) rest: body)
-  (let (x (unique))
+  (let-unique (x)
    `(with-frame :scope
       (each (_ ,x) ,names
         (setenv ,x :variable))
@@ -131,13 +132,13 @@
 (define-macro guard (expr)
   (if (= target 'js)
       `((fn () (%try (list true ,expr))))
-    (let (e (unique) x (unique)
-          ex (cat "|" e "," x "|"))
-      `(let (,ex (xpcall (fn () ,expr) %message-handler))
-         (list ,e ,x)))))
+    (let-unique (e x)
+      (let (ex (cat "|" e "," x "|"))
+        `(let (,ex (xpcall (fn () ,expr) %message-handler))
+           (list ,e ,x))))))
 
 (define-macro each ((k v) t rest: body)
-  (let (x (unique) n (unique))
+  (let-unique (x n)
     `(let (,x ,t ,k nil)
        (%for ,x ,k
          (let (,v (get ,x ,k))
@@ -154,9 +155,7 @@
        (inc ,i))))
 
 (define-macro across ((v t) rest: body)
-  (let (x (unique)
-        n (unique)
-        i (unique))
+  (let-unique (x n i)
     `(let (,x ,t ,n (# ,x))
        (for (,i ,n)
          (let (,v (at ,x ,i))
@@ -189,11 +188,11 @@
   `(set ,n (- ,n ,(or by 1))))
 
 (define-macro with-indent (form)
-  (let (result (unique))
+  (let-unique (x)
     `(do (inc indent-level)
-         (let (,result ,form)
+         (let (,x ,form)
            (dec indent-level)
-           ,result))))
+           ,x))))
 
 (define-macro export names
   (if (= target 'js)

@@ -76,7 +76,7 @@
 
 (define-global bind (lh rh)
   (if (and (obj? lh) (obj? rh))
-      (let (id (unique))
+      (let-unique (id)
 	`((,id ,rh) ,@(bind lh id)))
       (atom? lh) `((,lh ,rh))
     (let (bs ())
@@ -98,13 +98,14 @@
         (do (add args1 '|...|) '(unstash (list |...|)))))
     (if (atom? args)
         (list args1 `(let ,(list args (rest)) ,@body))
-      (let (bs () r (unique))
-        (each (k v) args
-          (when (number? k)
-            (if (atom? v) (add args1 v)
-              (let (x (unique))
-                (add args1 x)
-                (join! bs (list v x))))))
+      (let (bs ())
+        (let-unique (r)
+          (each (k v) args
+            (when (number? k)
+              (if (atom? v) (add args1 v)
+                (let-unique (x)
+                  (add args1 x)
+                  (join! bs (list v x)))))))
         (when (keys? args)
           (join! bs (list r (rest)))
           (join! bs (list (keys args) r)))
@@ -413,7 +414,7 @@
              `(%if ,(lower cond hoist)
                    ,(lower-body (list then) tail?)
                    ,@(if else (list (lower-body (list else) tail?)))))
-      (let (e (unique))
+      (let-unique (e)
         (add hoist `(%local ,e))
         (add hoist
              `(%if ,(lower cond hoist)
@@ -427,7 +428,7 @@
         hoist1 ()
         b1 (lower b hoist1))
     (if (some? hoist1)
-        (let (id (unique))
+        (let-unique (id)
           (lower `(do (%local ,id ,a)
                       ,(if (= x 'and)
                            `(%if ,id ,b ,id)
@@ -566,13 +567,13 @@
       (cat ind "for (" k " in " t ") {\n" body ind "}\n"))))
 
 (define-special %try (form) :stmt :tr
-  (let (ind (indentation)
-        body (with-indent (compile form :stmt))
-        e (unique)
-        hf `(return (%array false (get ,e "message")))
-        h (with-indent (compile hf :stmt)))
-    (cat ind "try {\n" body ind "}\n"
-         ind "catch (" e ") {\n" h ind "}\n")))
+  (let-unique (e)
+    (let (ind (indentation)
+          body (with-indent (compile form :stmt))
+          hf `(return (%array false (get ,e "message")))
+          h (with-indent (compile hf :stmt)))
+      (cat ind "try {\n" body ind "}\n"
+           ind "catch (" e ") {\n" h ind "}\n"))))
 
 (define-special %delete (place) :stmt
   (cat (indentation) "delete " (compile place)))

@@ -597,9 +597,9 @@ setenv("wipe", {_stash = true, macro = function (place)
 end})
 setenv("list", {_stash = true, macro = function (...)
   local body = unstash({...})
+  local id = unique()
   local l = {}
   local forms = {}
-  local id = unique()
   local _u33 = body
   local k = nil
   for k in next, _u33 do
@@ -866,8 +866,8 @@ setenv("dec", {_stash = true, macro = function (n, by)
   return({"set", n, {"-", n, by or 1}})
 end})
 setenv("with-indent", {_stash = true, macro = function (form)
-  local result = unique()
-  return({"do", {"inc", "indent-level"}, {"let", {result, form}, {"dec", "indent-level"}, result}})
+  local x = unique()
+  return({"do", {"inc", "indent-level"}, {"let", {x, form}, {"dec", "indent-level"}, x}})
 end})
 setenv("export", {_stash = true, macro = function (...)
   local names = unstash({...})

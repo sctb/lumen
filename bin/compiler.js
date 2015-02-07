@@ -1021,12 +1021,12 @@ setenv("%for", {_stash: true, special: function (t, k, form) {
   }
 }, stmt: true, tr: true});
 setenv("%try", {_stash: true, special: function (form) {
+  var e = unique();
   var ind = indentation();
   indent_level = indent_level + 1;
   var _u274 = compile(form, {_stash: true, stmt: true});
   indent_level = indent_level - 1;
   var body = _u274;
-  var e = unique();
   var hf = ["return", ["%array", false, ["get", e, "\"message\""]]];
   indent_level = indent_level + 1;
   var _u278 = compile(hf, {_stash: true, stmt: true});

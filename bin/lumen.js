@@ -700,9 +700,9 @@ setenv("wipe", {_stash: true, macro: function (place) {
 }});
 setenv("list", {_stash: true, macro: function () {
   var body = unstash(Array.prototype.slice.call(arguments, 0));
+  var id = unique();
   var l = [];
   var forms = [];
-  var id = unique();
   var _u32 = body;
   var k = undefined;
   for (k in _u32) {
@@ -990,8 +990,8 @@ setenv("dec", {_stash: true, macro: function (n, by) {
   return(["set", n, ["-", n, by || 1]]);
 }});
 setenv("with-indent", {_stash: true, macro: function (form) {
-  var result = unique();
-  return(["do", ["inc", "indent-level"], ["let", [result, form], ["dec", "indent-level"], result]]);
+  var x = unique();
+  return(["do", ["inc", "indent-level"], ["let", [x, form], ["dec", "indent-level"], x]]);
 }});
 setenv("export", {_stash: true, macro: function () {
   var names = unstash(Array.prototype.slice.call(arguments, 0));
