@@ -121,7 +121,7 @@
 
 (define-macro let-unique (names rest: body)
   (let (bs (map (fn (n)
-                  (list n '(unique)))
+                  (list n `(unique ',n)))
                 names))
     `(let ,(reduce join bs)
        ,@body)))

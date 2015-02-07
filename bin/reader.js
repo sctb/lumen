@@ -95,7 +95,7 @@ read_table[""] = function (s) {
         return(false);
       } else {
         if (str === "_") {
-          return(unique());
+          return(unique("ignored"));
         } else {
           if (dot63 && !one63(str)) {
             return(reduce(function (a, b) {

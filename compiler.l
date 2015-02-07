@@ -52,9 +52,9 @@
   (if (string-literal? s) s (quoted s)))
 
 (let (count 0)
-  (define-global unique ()
+  (define-global unique (x)
     (inc count)
-    (cat "_u" count)))
+    (cat "_u" (or x "") count)))
 
 (define stash* (args)
   (if (keys? args)

@@ -95,7 +95,7 @@ read_table[""] = function (s)
         return(false)
       else
         if str == "_" then
-          return(unique())
+          return(unique("ignored"))
         else
           if dot63 and not one63(str) then
             return(reduce(function (a, b)
