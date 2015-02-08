@@ -423,7 +423,7 @@ _x62.lua = "or"
 __x61["or"] = _x62
 local infix = {__x50, __x52, __x53, __x54, __x56, __x57, __x59, __x61}
 local function unary63(form)
-  return(_35(form) == 2 and in63(hd(form), {"not", "-"}))
+  return(two63(form) and in63(hd(form), {"not", "-"}))
 end
 local function index(k)
   if number63(k) then

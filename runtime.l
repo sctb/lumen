@@ -16,6 +16,7 @@
 (define-global none? (x) (= (# x) 0))
 (define-global some? (x) (> (# x) 0))
 (define-global one? (x) (= (# x) 1))
+(define-global two? (x) (= (# x) 2))
 
 (define-global hd (l) (at l 0))
 
@@ -116,7 +117,7 @@
     (f (hd x) (reduce f (tl x)))))
 
 (define-global join ls
-  (if (= (# ls) 2)
+  (if (two? ls)
       (let ((a b) ls)
         (if (and a b)
             (let (c () o (# a))

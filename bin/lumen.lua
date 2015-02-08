@@ -18,6 +18,9 @@ end
 function one63(x)
   return(_35(x) == 1)
 end
+function two63(x)
+  return(_35(x) == 2)
+end
 function hd(l)
   return(l[1])
 end
@@ -156,7 +159,7 @@ function reduce(f, x)
 end
 function join(...)
   local ls = unstash({...})
-  if _35(ls) == 2 then
+  if two63(ls) then
     local a = ls[1]
     local b = ls[2]
     if a and b then
@@ -524,8 +527,8 @@ function toplevel63()
   return(one63(environment))
 end
 function setenv(k, ...)
-  local _r66 = unstash({...})
-  local keys = cut(_r66, 0)
+  local _r67 = unstash({...})
+  local keys = cut(_r67, 0)
   if string63(k) then
     local _e7
     if keys.toplevel then

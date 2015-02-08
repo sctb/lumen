@@ -472,7 +472,7 @@ _x62.lua = "or";
 __x61["or"] = _x62;
 var infix = [__x50, __x52, __x53, __x54, __x56, __x57, __x59, __x61];
 var unary63 = function (form) {
-  return(_35(form) === 2 && in63(hd(form), ["not", "-"]));
+  return(two63(form) && in63(hd(form), ["not", "-"]));
 };
 var index = function (k) {
   return(k);

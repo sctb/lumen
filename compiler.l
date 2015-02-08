@@ -266,7 +266,7 @@
     (or: (js: ,"||" lua: or))))
 
 (define unary? (form)
-  (and (= (# form) 2) (in? (hd form) '(not -))))
+  (and (two? form) (in? (hd form) '(not -))))
 
 (define index (k)
   (target js: k lua: (when (number? k) (- k 1))))

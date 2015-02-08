@@ -18,6 +18,9 @@ some63 = function (x) {
 one63 = function (x) {
   return(_35(x) === 1);
 };
+two63 = function (x) {
+  return(_35(x) === 2);
+};
 hd = function (l) {
   return(l[0]);
 };
@@ -169,7 +172,7 @@ reduce = function (f, x) {
 };
 join = function () {
   var ls = unstash(Array.prototype.slice.call(arguments, 0));
-  if (_35(ls) === 2) {
+  if (two63(ls)) {
     var a = ls[0];
     var b = ls[1];
     if (a && b) {
@@ -618,8 +621,8 @@ toplevel63 = function () {
   return(one63(environment));
 };
 setenv = function (k) {
-  var _r69 = unstash(Array.prototype.slice.call(arguments, 1));
-  var keys = cut(_r69, 0);
+  var _r70 = unstash(Array.prototype.slice.call(arguments, 1));
+  var keys = cut(_r70, 0);
   if (string63(k)) {
     var _e18;
     if (keys.toplevel) {
