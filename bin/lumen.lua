@@ -131,7 +131,7 @@ end
 function last(l)
   return(l[edge(l) + 1])
 end
-function butlast(l)
+function almost(l)
   return(cut(l, 0, edge(l)))
 end
 function reverse(l)
@@ -298,7 +298,7 @@ function unstash(args)
   else
     local l = last(args)
     if obj63(l) and l._stash then
-      local args1 = butlast(args)
+      local args1 = almost(args)
       local _o9 = l
       local k = nil
       for k in next, _o9 do

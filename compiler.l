@@ -405,7 +405,7 @@
   (lower-statement `(do ,@body) tail?))
 
 (define lower-do (args hoist stmt? tail?)
-  (step x (butlast args)
+  (step x (almost args)
     (add hoist (lower x hoist stmt?)))
   (let e (lower (last args) hoist stmt? tail?)
     (if (and tail? (can-return? e))

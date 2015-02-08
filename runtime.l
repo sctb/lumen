@@ -100,7 +100,7 @@
 (define-global last (l)
   (at l (edge l)))
 
-(define-global butlast (l)
+(define-global almost (l)
   (cut l 0 (edge l)))
 
 (define-global reverse (l)
@@ -197,7 +197,7 @@
   (if (none? args) ()
     (let l (last args)
       (if (and (obj? l) l._stash)
-          (let args1 (butlast args)
+          (let args1 (almost args)
             (each (k v) l
               (unless (= k '_stash)
                 (set (get args1 k) v)))

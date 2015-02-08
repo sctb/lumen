@@ -774,7 +774,7 @@ var lower_body = function (body, tail63) {
   return(lower_statement(join(["do"], body), tail63));
 };
 var lower_do = function (args, hoist, stmt63, tail63) {
-  var _x72 = butlast(args);
+  var _x72 = almost(args);
   var _n10 = _35(_x72);
   var _i10 = 0;
   while (_i10 < _n10) {

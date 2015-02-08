@@ -144,7 +144,7 @@ drop = function (l) {
 last = function (l) {
   return(l[edge(l)]);
 };
-butlast = function (l) {
+almost = function (l) {
   return(cut(l, 0, edge(l)));
 };
 reverse = function (l) {
@@ -369,7 +369,7 @@ unstash = function (args) {
   } else {
     var l = last(args);
     if (obj63(l) && l._stash) {
-      var args1 = butlast(args);
+      var args1 = almost(args);
       var _o9 = l;
       var k = undefined;
       for (k in _o9) {

@@ -720,7 +720,7 @@ local function lower_body(body, tail63)
   return(lower_statement(join({"do"}, body), tail63))
 end
 local function lower_do(args, hoist, stmt63, tail63)
-  local _x75 = butlast(args)
+  local _x75 = almost(args)
   local _n10 = _35(_x75)
   local _i10 = 0
   while _i10 < _n10 do
