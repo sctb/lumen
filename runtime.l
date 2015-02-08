@@ -63,7 +63,7 @@
     l))
 
 (define-global keys (x)
-  (let (t ())
+  (let t ()
     (each (k v) x
       (unless (number? k)
         (set (get t k) v)))
@@ -132,13 +132,13 @@
 
 (define-global find (f t)
   (each x t
-    (let (x (f x))
+    (let x (f x)
       (if x (return x)))))
 
 (define-global first (f l)
-  (let (n (# l))
+  (let n (# l)
     (for i n
-      (let (x (f (at l i)))
+      (let x (f (at l i))
         (if x (return x))))))
 
 (define-global in? (x t)
@@ -159,12 +159,12 @@
 (define-global map (f x)
   (let (t () n (# x))
     (for i n
-      (let (y (f (at x i)))
+      (let y (f (at x i))
         (when (is? y)
           (add t y))))
     (each (k v) x
       (unless (number? k)
-        (let (y (f v))
+        (let y (f v)
           (when (is? y)
             (set (get t k) y)))))
     t))
@@ -185,7 +185,7 @@
 
 (define-global stash (args)
   (when (keys? args)
-    (let (p ())
+    (let p ()
       (each (k v) args
         (unless (number? k)
           (set (get p k) v)))
@@ -195,9 +195,9 @@
 
 (define-global unstash (args)
   (if (none? args) ()
-    (let (l (last args))
+    (let l (last args)
       (if (and (obj? l) l._stash)
-          (let (args1 (butlast args))
+          (let args1 (butlast args)
             (each (k v) l
               (unless (= k '_stash)
                 (set (get args1 k) v)))
@@ -206,7 +206,7 @@
 
 (define-global search (s pattern start)
   (target
-    js: (let (i (s.indexOf pattern start))
+    js: (let i (s.indexOf pattern start)
           (if (>= i 0) i))
     lua: (let (start (if start (+ start 1))
                i (str.find s pattern start true))
@@ -216,7 +216,7 @@
   (if (or (= s "") (= sep "")) ()
     (let (l () n (# sep))
       (while true
-        (let (i (search s sep))
+        (let i (search s sep)
           (if (nil? i) (break)
             (do (add l (clip s 0 i))
                 (set s (clip s (+ i n)))))))
@@ -250,7 +250,7 @@
 
 (define-global number (s)
   (target
-    js: (let (n (parseFloat s))
+    js: (let n (parseFloat s)
           (unless (isNaN n) n))
     lua: (tonumber s)))
 
@@ -258,7 +258,7 @@
   (and (> n 47) (< n 58)))
 
 (define-global numeric? (s)
-  (let (n (# s))
+  (let n (# s)
     (for i n
       (unless (number-code? (code s i))
         (return false))))
@@ -267,7 +267,7 @@
 (target js: (define tostring (x) (x.toString)))
 
 (define-global escape (s)
-  (let (s1 "\"")
+  (let s1 "\""
     (for i (# s)
       (let (c (char s i)
             c1 (if (= c "\n") "\\n"
@@ -303,14 +303,14 @@
 (target lua: (define values (or unpack table.unpack)))
 
 (define-global apply (f args)
-  (let (args (stash args))
+  (let args (stash args)
     (target js: (f.apply f args)
             lua: (f (values args)))))
 
 (define-global call (f) (f))
 
 (define-global %message-handler (msg)
-  (let (i (search msg ": "))
+  (let i (search msg ": ")
     (clip msg (+ i 2))))
 
 (define-global toplevel? ()
@@ -331,13 +331,13 @@
 (define-global read-file (path)
   (target
     js: (fs.readFileSync path 'utf8)
-    lua: (let (f (io.open path))
+    lua: (let f (io.open path)
 	   (f.read f '*a))))
 
 (define-global write-file (path data)
   (target
     js: (fs.writeFileSync path data 'utf8)
-    lua: (let (f (io.open path 'w))
+    lua: (let f (io.open path 'w)
            (f.write f data))))
 
 (target js: (define-global print (x) (console.log x)))

@@ -4,9 +4,9 @@
 
 (define getenv (k p)
   (when (string? k)
-    (let (b (find (fn (e)
-                    (get e k))
-                  (reverse environment)))
+    (let b (find (fn (e)
+                   (get e k))
+                 (reverse environment))
       (when (is? b)
         (if p (get b p) b)))))
 
@@ -32,9 +32,9 @@
   (is? (symbol-expansion k)))
 
 (define variable? (k)
-  (let (b (first (fn (frame)
-                   (or (get frame k) frame._scope))
-                 (reverse environment)))
+  (let b (first (fn (frame)
+                  (or (get frame k) frame._scope))
+                (reverse environment))
     (and (obj? b) (is? b.variable))))
 
 (define-global bound? (x)
@@ -54,7 +54,7 @@
 (let (names (obj))
   (define-global unique (x)
     (if (get names x)
-        (let (i (get names x))
+        (let i (get names x)
           (inc (get names x))
           (unique (cat x i)))
       (do (set (get names x) 1)
@@ -62,7 +62,7 @@
 
 (define stash* (args)
   (if (keys? args)
-      (let (l `(%object "_stash" true))
+      (let l `(%object "_stash" true)
         (each (k v) args
           (unless (number? k)
             (add l (literal k))
@@ -83,18 +83,18 @@
       (let-unique (id)
 	`((,id ,rh) ,@(bind lh id)))
       (atom? lh) `((,lh ,rh))
-    (let (bs ())
+    (let bs ()
       (each (k v) lh
-        (let (x (if (= k 'rest)
-                    `(cut ,rh ,(# lh))
-                  `(get ,rh ',(bias k))))
+        (let x (if (= k 'rest)
+                   `(cut ,rh ,(# lh))
+                 `(get ,rh ',(bias k)))
           (when (is? k)
-            (let (k (if (= v true) k v))
+            (let k (if (= v true) k v)
               (join! bs (bind k x))))))
       bs)))
 
 (define-global bind* (args body)
-  (let (args1 ())
+  (let args1 ()
     (define rest ()
       (if (= target 'js)
           `(unstash
@@ -102,7 +102,7 @@
         (do (add args1 '|...|) '(unstash (list |...|)))))
     (if (atom? args)
         (list args1 `(let ,(list args (rest)) ,@body))
-      (let (bs ())
+      (let bs ()
         (let-unique (r)
           (each (k v) args
             (when (number? k)
@@ -133,7 +133,7 @@
   (if (symbol? form)
       (macroexpand (symbol-expansion form))
       (atom? form) form
-    (let (x (hd form))
+    (let x (hd form)
       (if (= x '%local)
           (let ((x name value) form)
             `(%local ,name ,(macroexpand value)))
@@ -151,27 +151,27 @@
         (map macroexpand form)))))
 
 (define quasiquote-list (form depth)
-  (let (xs (list '(list)))
+  (let xs (list '(list))
     (each (k v) form
       (unless (number? k)
-        (let (v (if (quasisplice? v depth)
-                    ;; don't splice, just expand
-                    (quasiexpand (at v 1))
-                  (quasiexpand v depth)))
+        (let v (if (quasisplice? v depth)
+                   ;; don't splice, just expand
+                   (quasiexpand (at v 1))
+                 (quasiexpand v depth))
           (set (get (last xs) k) v))))
     ;; collect sibling lists
     (step x form
       (if (quasisplice? x depth)
-          (let (x (quasiexpand (at x 1)))
+          (let x (quasiexpand (at x 1))
             (add xs x)
             (add xs '(list)))
         (add (last xs) (quasiexpand x depth))))
-    (let (pruned
-          (keep (fn (x)
-                  (or (> (# x) 1)
-                      (not (= (hd x) 'list))
-                      (keys? x)))
-                xs))
+    (let pruned
+        (keep (fn (x)
+                (or (> (# x) 1)
+                    (not (= (hd x) 'list))
+                    (keys? x)))
+              xs)
       (if (one? pruned)
           (hd pruned)
         `(join ,@pruned)))))
@@ -205,7 +205,7 @@
 (define-global indent-level 0)
 
 (define-global indentation ()
-  (let (s "")
+  (let s ""
     (for i indent-level
       (cat! s "  "))
     s))
@@ -241,15 +241,15 @@
         true)))
 
 (define-global key (k)
-  (let (i (inner k))
+  (let i (inner k)
     (if (valid-id? i) i
         (= target 'js) k
       (cat "[" k "]"))))
 
 (define-global mapo (f t)
-  (let (o ())
+  (let o ()
     (each (k v) t
-      (let (x (f v))
+      (let x (f v)
         (when (is? x)
           (add o (literal k))
           (add o x))))
@@ -279,7 +279,7 @@
 
 (define getop (op)
   (find (fn (level)
-          (let (x (get level op))
+          (let x (get level op)
             (if (= x true) op
                 (is? x) (get x target))))
         infix))
@@ -295,14 +295,14 @@
     (cat s ")")))
 
 (define escape-newlines (s)
-  (let (s1 "")
+  (let s1 ""
     (for i (# s)
-      (let (c (char s i))
+      (let c (char s i)
         (cat! s1 (if (= c "\n") "\\n" c))))
     (cat s1 "")))
 
 (define id (id)
-  (let (id1 "")
+  (let id1 ""
     (for i (# id)
       (let (c (char id i)
             n (code c)
@@ -394,8 +394,7 @@
       (cat ind form tr))))
 
 (define lower-statement (form tail?)
-  (let (hoist ()
-        e (lower form hoist true tail?))
+  (let (hoist () e (lower form hoist true tail?))
     (if (and (some? hoist) (is? e))
         `(do ,@hoist ,e)
         (is? e) e
@@ -408,7 +407,7 @@
 (define lower-do (args hoist stmt? tail?)
   (step x (butlast args)
     (add hoist (lower x hoist stmt?)))
-  (let (e (lower (last args) hoist stmt? tail?))
+  (let e (lower (last args) hoist stmt? tail?)
     (if (and tail? (can-return? e))
         `(return ,e)
       e)))
@@ -466,7 +465,7 @@
     (add hoist `(,kind ,name ,args ,(lower-body body true)))))
 
 (define lower-call (form hoist)
-  (let (form (map (fn (x) (lower x hoist)) form))
+  (let form (map (fn (x) (lower x hoist)) form)
     (if (some? form) form)))
 
 (define lower-infix? (form)
@@ -480,7 +479,7 @@
            hoist)))
 
 (define lower-special (form hoist)
-  (let (e (lower-call form hoist))
+  (let e (lower-call form hoist)
     (if e (add hoist e))))
 
 (define-global lower (form hoist stmt? tail?)
@@ -512,15 +511,15 @@
 (target lua: (define load1 load))
 (target lua:
   (define run (code)
-    (let (|f,e| (load1 code))
+    (let |f,e| (load1 code)
       (if f (f) (error (cat e " in " code))))))
 
 (define-global %result)
 
 (define-global eval (form)
-  (let (previous target)
+  (let previous target
     (set target (language))
-    (let (code (compile (expand `(set %result ,form))))
+    (let code (compile (expand `(set %result ,form)))
       (set target previous)
       (run code)
       %result)))
@@ -535,7 +534,7 @@
     (compile form :stmt)))
 
 (define-special do forms :stmt :tr
-  (let (s "")
+  (let s ""
     (step x forms
       (cat! s (compile x :stmt)))
     s))
@@ -592,26 +591,26 @@
 
 (define-special %global-function (name args body) :stmt :tr
   (if (= target 'lua)
-      (let (x (compile-function args body name: name))
+      (let x (compile-function args body name: name)
         (cat (indentation) x))
     (compile `(set ,name (%function ,args ,body)) :stmt)))
 
 (define-special %local-function (name args body) :stmt :tr
   (if (= target 'lua)
-      (let (x (compile-function args body name: name prefix: 'local))
+      (let x (compile-function args body name: name prefix: 'local)
         (cat (indentation) x))
     (compile `(%local ,name (%function ,args ,body)) :stmt)))
 
 (define-special return (x) :stmt
-  (let (x (if (nil? x)
-              "return"
-            (cat "return(" (compile x) ")")))
+  (let x (if (nil? x)
+             "return"
+           (cat "return(" (compile x) ")"))
     (cat (indentation) x)))
 
 (define-special error (x) :stmt
-  (let (e (if (= target 'js)
-              (cat "throw new " (compile `(Error ,x)))
-            (cat "error(" (compile x) ")")))
+  (let e (if (= target 'js)
+             (cat "throw new " (compile `(Error ,x)))
+           (cat "error(" (compile x) ")"))
     (cat (indentation) e)))
 
 (define-special %local (name value) :stmt

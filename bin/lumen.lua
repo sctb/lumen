@@ -618,7 +618,7 @@ setenv("list", {_stash = true, macro = function (...)
     end
   end
   if some63(forms) then
-    return(join({"let", {x, join({"%array"}, l)}}, forms, {x}))
+    return(join({"let", x, join({"%array"}, l)}, forms, {x}))
   else
     return(join({"%array"}, l))
   end
@@ -681,30 +681,30 @@ end})
 setenv("define-macro", {_stash = true, macro = function (name, args, ...)
   local _r17 = unstash({...})
   local body = cut(_r17, 0)
-  local _x62 = {"setenv", {"quote", name}}
-  _x62.macro = join({"fn", args}, body)
-  local form = _x62
+  local _x60 = {"setenv", {"quote", name}}
+  _x60.macro = join({"fn", args}, body)
+  local form = _x60
   eval(form)
   return(form)
 end})
 setenv("define-special", {_stash = true, macro = function (name, args, ...)
   local _r19 = unstash({...})
   local body = cut(_r19, 0)
-  local _x69 = {"setenv", {"quote", name}}
-  _x69.special = join({"fn", args}, body)
-  local form = join(_x69, keys(body))
+  local _x67 = {"setenv", {"quote", name}}
+  _x67.special = join({"fn", args}, body)
+  local form = join(_x67, keys(body))
   eval(form)
   return(form)
 end})
 setenv("define-symbol", {_stash = true, macro = function (name, expansion)
   setenv(name, {_stash = true, symbol = expansion})
-  local _x75 = {"setenv", {"quote", name}}
-  _x75.symbol = {"quote", expansion}
-  return(_x75)
+  local _x73 = {"setenv", {"quote", name}}
+  _x73.symbol = {"quote", expansion}
+  return(_x73)
 end})
-setenv("define-reader", {_stash = true, macro = function (_x83, ...)
-  local char = _x83[1]
-  local s = _x83[2]
+setenv("define-reader", {_stash = true, macro = function (_x81, ...)
+  local char = _x81[1]
+  local s = _x81[2]
   local _r23 = unstash({...})
   local body = cut(_r23, 0)
   return({"set", {"get", "read-table", char}, join({"fn", {s}}, body)})
@@ -734,28 +734,28 @@ setenv("with-frame", {_stash = true, macro = function (...)
   local body = cut(_r29, 0)
   local scope = _r29.scope
   local x = unique("x")
-  local _x109 = {"obj"}
-  _x109._scope = scope
-  return({"do", {"add", "environment", _x109}, {"let", {x, join({"do"}, body)}, {"drop", "environment"}, x}})
+  local _x106 = {"obj"}
+  _x106._scope = scope
+  return({"do", {"add", "environment", _x106}, {"let", x, join({"do"}, body), {"drop", "environment"}, x}})
 end})
-setenv("with-bindings", {_stash = true, macro = function (_x118, ...)
-  local names = _x118[1]
+setenv("with-bindings", {_stash = true, macro = function (_x114, ...)
+  local names = _x114[1]
   local _r31 = unstash({...})
   local body = cut(_r31, 0)
   local x = unique("x")
-  local _x122 = {"setenv", x}
-  _x122.variable = true
-  local _x120 = {"with-frame", {"each", x, names, _x122}}
-  _x120.scope = true
-  return(join(_x120, body))
+  local _x118 = {"setenv", x}
+  _x118.variable = true
+  local _x116 = {"with-frame", {"each", x, names, _x118}}
+  _x116.scope = true
+  return(join(_x116, body))
 end})
-setenv("let-fn", {_stash = true, macro = function (_x127, ...)
-  local name = _x127[1]
-  local args = _x127[2]
-  local fn_body = cut(_x127, 2)
+setenv("let-fn", {_stash = true, macro = function (_x122, ...)
+  local name = _x122[1]
+  local args = _x122[2]
+  local fn_body = cut(_x122, 2)
   local _r33 = unstash({...})
   local body = cut(_r33, 0)
-  return(join({"let", {name, join({"fn", args}, fn_body)}}, body))
+  return(join({"let", name, join({"fn", args}, fn_body)}, body))
 end})
 setenv("let-macro", {_stash = true, macro = function (definitions, ...)
   local _r36 = unstash({...})
@@ -764,22 +764,22 @@ setenv("let-macro", {_stash = true, macro = function (definitions, ...)
   map(function (m)
     return(macroexpand(join({"define-macro"}, m)))
   end, definitions)
-  local _x136 = join({"do"}, macroexpand(body))
+  local _x130 = join({"do"}, macroexpand(body))
   drop(environment)
-  return(_x136)
+  return(_x130)
 end})
 setenv("let-symbol", {_stash = true, macro = function (expansions, ...)
   local _r40 = unstash({...})
   local body = cut(_r40, 0)
   add(environment, {})
-  map(function (_x145)
-    local name = _x145[1]
-    local exp = _x145[2]
+  map(function (_x139)
+    local name = _x139[1]
+    local exp = _x139[2]
     return(macroexpand({"define-symbol", name, exp}))
   end, pair(expansions))
-  local _x144 = join({"do"}, macroexpand(body))
+  local _x138 = join({"do"}, macroexpand(body))
   drop(environment)
-  return(_x144)
+  return(_x138)
 end})
 setenv("let-unique", {_stash = true, macro = function (names, ...)
   local _r44 = unstash({...})
@@ -801,7 +801,7 @@ setenv("guard", {_stash = true, macro = function (expr)
     local e = unique("e")
     local x = unique("x")
     local ex = "|" .. e .. "," .. x .. "|"
-    return({"let", {ex, {"xpcall", {"fn", join(), expr}, "%message-handler"}}, {"list", e, x}})
+    return({"let", ex, {"xpcall", {"fn", join(), expr}, "%message-handler"}, {"list", e, x}})
   end
 end})
 setenv("each", {_stash = true, macro = function (x, t, ...)
@@ -829,14 +829,14 @@ setenv("each", {_stash = true, macro = function (x, t, ...)
   if target == "lua" then
     _e9 = body
   else
-    _e9 = {join({"let", {k, {"if", {"numeric?", k}, {"parseInt", k}, k}}}, body)}
+    _e9 = {join({"let", k, {"if", {"numeric?", k}, {"parseInt", k}, k}}, body)}
   end
   return({"let", {o, t, k, "nil"}, {"%for", o, k, join({"let", {v, {"get", o, k}}}, _e9)}})
 end})
 setenv("for", {_stash = true, macro = function (i, to, ...)
   local _r53 = unstash({...})
   local body = cut(_r53, 0)
-  return({"let", {i, 0}, join({"while", {"<", i, to}}, body, {{"inc", i}})})
+  return({"let", i, 0, join({"while", {"<", i, to}}, body, {{"inc", i}})})
 end})
 setenv("step", {_stash = true, macro = function (v, t, ...)
   local _r55 = unstash({...})
@@ -882,7 +882,7 @@ setenv("dec", {_stash = true, macro = function (n, by)
 end})
 setenv("with-indent", {_stash = true, macro = function (form)
   local x = unique("x")
-  return({"do", {"inc", "indent-level"}, {"let", {x, form}, {"dec", "indent-level"}, x}})
+  return({"do", {"inc", "indent-level"}, {"let", x, form, {"dec", "indent-level"}, x}})
 end})
 setenv("export", {_stash = true, macro = function (...)
   local names = unstash({...})

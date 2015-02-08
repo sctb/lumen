@@ -10,12 +10,12 @@
   (if (< s.pos s.len) (char s.string s.pos)))
 
 (define read-char (s)
-  (let (c (peek-char s))
+  (let c (peek-char s)
     (if c (do (inc s.pos) c))))
 
 (define skip-non-code (s)
   (while true
-    (let (c (peek-char s))
+    (let c (peek-char s)
       (if (nil? c) (break)
           (get whitespace c) (read-char s)
           (= c ";")
@@ -29,7 +29,7 @@
 
 (define read (s)
   (skip-non-code s)
-  (let (c (peek-char s))
+  (let c (peek-char s)
     (if (is? c)
 	((or (get read-table c)
 	     (get read-table ""))
@@ -37,15 +37,15 @@
       eof)))
 
 (define read-all (s)
-  (let (l ())
+  (let l ()
     (while true
-      (let (form (read s))
+      (let form (read s)
         (if (= form eof) (break))
         (add l form)))
     l))
 
 (define read-string (str)
-  (let (x (read (stream str)))
+  (let x (read (stream str))
     (unless (= x eof) x)))
 
 (define key? (atom)
@@ -61,13 +61,13 @@
 (define-reader ("" s) ; atom
   (let (str "" dot? false)
     (while true
-      (let (c (peek-char s))
+      (let c (peek-char s)
 	(if (and c (and (not (get whitespace c))
 			(not (get delimiters c))))
 	    (do (if (= c ".") (set dot? true))
                 (cat! str (read-char s)))
 	  (break))))
-    (let (n (number str))
+    (let n (number str)
       (if (is? n) n
 	  (= str "true") true
 	  (= str "false") false
@@ -79,12 +79,12 @@
 
 (define-reader ("(" s)
   (read-char s)
-  (let (l ())
+  (let l ()
     (while true
       (skip-non-code s)
-      (let (c (peek-char s))
+      (let c (peek-char s)
 	(if (and c (not (= c ")")))
-	    (let (x (read s))
+	    (let x (read s)
 	      (if (key? x)
 		  (let (k (clip x 0 (edge x))
                         v (read s))
@@ -100,9 +100,9 @@
 
 (define-reader ("\"" s)
   (read-char s)
-  (let (str "\"")
+  (let str "\""
     (while true
-      (let (c (peek-char s))
+      (let c (peek-char s)
 	(if (and c (not (= c "\"")))
 	    (do (if (= c "\\") (cat! str (read-char s)))
 		(cat! str (read-char s)))
@@ -112,9 +112,9 @@
 
 (define-reader ("|" s)
   (read-char s)
-  (let (str "|")
+  (let str "|"
     (while true
-      (let (c (peek-char s))
+      (let c (peek-char s)
 	(if (and c (not (= c "|")))
 	    (cat! str (read-char s))
 	    c (do (read-char s) (break)) ; |

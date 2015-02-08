@@ -26,7 +26,7 @@
             (set (get l k) v)
           (add forms `(set (get ,x ',k) ,v))))
       (if (some? forms)
-          `(let (,x (%array ,@l)) ,@forms ,x)
+          `(let ,x (%array ,@l) ,@forms ,x)
         `(%array ,@l)))))
 
 (define-macro if branches
@@ -44,12 +44,11 @@
 (define-macro let (bs rest: body)
   (if (atom? bs) `(let (,bs ,(hd body)) ,@(tl body))
       (none? bs) `(do ,@body)
-    (let (renames () locals ()
-          (lh rh) bs)
+    (let (renames () locals () (lh rh) bs)
       (each (k (id val)) (bind lh rh)
         (when (number? k)
           (if (or (bound? id) (reserved? id) (toplevel?))
-              (let (id1 (unique id))
+              (let id1 (unique id)
                 (add renames id)
                 (add renames id1)
                 (set id id1))
@@ -60,12 +59,12 @@
              (let ,(cut bs 2) ,@body))))))
 
 (define-macro define-macro (name args rest: body)
-  (let (form `(setenv ',name macro: (fn ,args ,@body)))
+  (let form `(setenv ',name macro: (fn ,args ,@body))
     (eval form)
     form))
 
 (define-macro define-special (name args rest: body)
-  (let (form `(setenv ',name special: (fn ,args ,@body) ,@(keys body)))
+  (let form `(setenv ',name special: (fn ,args ,@body) ,@(keys body))
     (eval form)
     form))
 
@@ -91,7 +90,7 @@
 (define-macro with-frame (rest: body :scope)
   (let-unique (x)
     `(do (add environment (obj _scope: ,scope))
-         (let (,x (do ,@body))
+         (let ,x (do ,@body)
            (drop environment)
            ,x))))
 
@@ -103,7 +102,7 @@
       ,@body)))
 
 (define-macro let-fn ((name args rest: fn-body) rest: body)
-  `(let (,name (fn ,args ,@fn-body))
+  `(let ,name (fn ,args ,@fn-body)
      ,@body))
 
 (define-macro let-macro (definitions rest: body)
@@ -121,9 +120,9 @@
     `(do ,@(macroexpand body))))
 
 (define-macro let-unique (names rest: body)
-  (let (bs (map (fn (n)
-                  (list n `(unique ',n)))
-                names))
+  (let bs (map (fn (n)
+                 (list n `(unique ',n)))
+               names)
     `(let ,(apply join bs)
        ,@body)))
 
@@ -134,8 +133,8 @@
   (if (= target 'js)
       `((fn () (%try (list true ,expr))))
     (let-unique (e x)
-      (let (ex (cat "|" e "," x "|"))
-        `(let (,ex (xpcall (fn () ,expr) %message-handler))
+      (let ex (cat "|" e "," x "|")
+        `(let ,ex (xpcall (fn () ,expr) %message-handler)
            (list ,e ,x))))))
 
 (define-macro each (x t rest: body)
@@ -148,13 +147,13 @@
          (%for ,o ,k
            (let (,v (get ,o ,k))
              ,@(if (= target 'lua) body
-                   `((let (,k (if (numeric? ,k)
-                                  (parseInt ,k)
-                                ,k))
+                   `((let ,k (if (numeric? ,k)
+                                 (parseInt ,k)
+                               ,k)
                        ,@body)))))))))
 
 (define-macro for (i to rest: body)
-  `(let (,i 0)
+  `(let ,i 0
      (while (< ,i ,to)
        ,@body
        (inc ,i))))
@@ -167,7 +166,7 @@
            ,@body)))))
 
 (define-macro set-of xs
-  (let (l ())
+  (let l ()
     (each x xs
       (set (get l x) true))
     `(obj ,@l)))
@@ -192,7 +191,7 @@
 (define-macro with-indent (form)
   (let-unique (x)
     `(do (inc indent-level)
-         (let (,x ,form)
+         (let ,x ,form
            (dec indent-level)
            ,x))))
 
@@ -201,7 +200,7 @@
       `(do ,@(map (fn (k)
                     `(set (get exports ',k) ,k))
                   names))
-    (let (x (obj))
+    (let x (obj)
       (each k names
         (set (get x k) k))
       `(return (obj ,@x)))))

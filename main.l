@@ -16,7 +16,7 @@
       js: (do (process.stdin.setEncoding 'utf8)
               (process.stdin.on 'data rep1))
       lua: (while true
-             (let (s (io.read))
+             (let s (io.read)
                (if s (rep1 s) (break)))))))
 
 (define usage ()
@@ -39,12 +39,12 @@
         expr nil
         n (# argv))
     (for i n
-      (let (a (at argv i))
+      (let a (at argv i)
         (if (or (= a "-c") (= a "-o") (= a "-t") (= a "-e"))
             (if (= i (- n 1))
                 (print (cat "missing argument for " a))
               (do (inc i)
-                  (let (val (at argv i))
+                  (let val (at argv i)
                     (if (= a "-c") (set input val)
                         (= a "-o") (set output val)
                         (= a "-t") (set target1 val)
@@ -54,7 +54,7 @@
       (compiler.run-file file))
     (if (and input output)
         (do (if target1 (set target target1))
-            (let (code (compiler.compile-file input))
+            (let code (compiler.compile-file input)
               (write-file output code)))
       (if expr (rep expr) (repl)))))
 
