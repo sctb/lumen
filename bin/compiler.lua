@@ -486,7 +486,7 @@ local function escape_newlines(s)
     s1 = s1 .. _e14
     i = i + 1
   end
-  return(s1 .. "")
+  return(s1)
 end
 local function id(id)
   local id1 = ""

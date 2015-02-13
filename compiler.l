@@ -83,15 +83,14 @@
       (let-unique (id)
 	`((,id ,rh) ,@(bind lh id)))
       (atom? lh) `((,lh ,rh))
-    (let bs ()
+    (with bs ()
       (each (k v) lh
         (let x (if (= k 'rest)
                    `(cut ,rh ,(# lh))
                  `(get ,rh ',(bias k)))
           (when (is? k)
             (let k (if (= v true) k v)
-              (join! bs (bind k x))))))
-      bs)))
+              (join! bs (bind k x)))))))))
 
 (define-global bind* (args body)
   (let args1 ()
@@ -205,10 +204,9 @@
 (define-global indent-level 0)
 
 (define-global indentation ()
-  (let s ""
+  (with s ""
     (for i indent-level
-      (cat! s "  "))
-    s))
+      (cat! s "  "))))
 
 (define reserved
   (set-of "=" "==" "+" "-" "%" "*" "/" "<" ">" "<=" ">="
@@ -247,13 +245,12 @@
       (cat "[" k "]"))))
 
 (define-global mapo (f t)
-  (let o ()
+  (with o ()
     (each (k v) t
       (let x (f v)
         (when (is? x)
           (add o (literal k))
-          (add o x))))
-    o))
+          (add o x))))))
 
 (define infix
   `((not: (js: ! lua: ,"not "))
@@ -295,14 +292,13 @@
     (cat s ")")))
 
 (define escape-newlines (s)
-  (let s1 ""
+  (with s1 ""
     (for i (# s)
       (let c (char s i)
-        (cat! s1 (if (= c "\n") "\\n" c))))
-    (cat s1 "")))
+        (cat! s1 (if (= c "\n") "\\n" c))))))
 
 (define id (id)
-  (let id1 ""
+  (with id1 ""
     (for i (# id)
       (let (c (char id i)
             n (code c)
@@ -310,8 +306,7 @@
                    (valid-code? n) c
                    (= i 0) (cat "_" n)
                  n))
-        (cat! id1 c1)))
-    id1))
+        (cat! id1 c1)))))
 
 (define compile-atom (x)
   (if (and (= x "nil") (= target 'lua)) x
@@ -533,10 +528,9 @@
     (compile form :stmt)))
 
 (define-special do forms :stmt :tr
-  (let s ""
+  (with s ""
     (step x forms
-      (cat! s (compile x :stmt)))
-    s))
+      (cat! s (compile x :stmt)))))
 
 (define-special %if (cond cons alt) :stmt :tr
   (let (cond (compile cond)

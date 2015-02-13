@@ -50,25 +50,24 @@
           lua: (str.sub s (+ from 1) upto)))
 
 (define-global cut (x from upto)
-  (let (l () j 0
-        i (if (or (nil? from) (< from 0)) 0 from)
-        n (# x)
-        upto (if (or (nil? upto) (> upto n)) n upto))
-    (while (< i upto)
-      (set (at l j) (at x i))
-      (inc i)
-      (inc j))
-    (each (k v) x
-      (unless (number? k)
-        (set (get l k) v)))
-    l))
+  (with l ()
+    (let (j 0
+          i (if (or (nil? from) (< from 0)) 0 from)
+          n (# x)
+          upto (if (or (nil? upto) (> upto n)) n upto))
+      (while (< i upto)
+        (set (at l j) (at x i))
+        (inc i)
+        (inc j))
+      (each (k v) x
+        (unless (number? k)
+          (set (get l k) v))))))
 
 (define-global keys (x)
-  (let t ()
+  (with t ()
     (each (k v) x
       (unless (number? k)
-        (set (get t k) v)))
-    t))
+        (set (get t k) v)))))
 
 (define-global edge (x)
   (- (# x) 1))
@@ -105,11 +104,11 @@
   (cut l 0 (edge l)))
 
 (define-global reverse (l)
-  (let (l1 (keys l) i (edge l))
-    (while (>= i 0)
-      (add l1 (at l i))
-      (dec i))
-    l1))
+  (with l1 (keys l)
+    (let i (edge l)
+      (while (>= i 0)
+        (add l1 (at l i))
+        (dec i)))))
 
 (define-global reduce (f x)
   (if (none? x) x
@@ -133,24 +132,22 @@
 
 (define-global find (f t)
   (each x t
-    (let x (f x)
-      (if x (return x)))))
+    (let y (f x)
+      (if y (return y)))))
 
 (define-global first (f l)
-  (let n (# l)
-    (for i n
-      (let x (f (at l i))
-        (if x (return x))))))
+  (step x l
+    (let y (f x)
+      (if y (return y)))))
 
 (define-global in? (x t)
   (find (fn (y) (= x y)) t))
 
 (define-global pair (l)
-  (let (i 0 l1 ())
-    (while (< i (# l))
+  (with l1 ()
+    (for i (# l)
       (add l1 (list (at l i) (at l (+ i 1))))
-      (inc i 2))
-    l1))
+      (inc i))))
 
 (define-global sort (l f)
   (target
@@ -158,17 +155,16 @@
     js: (l.sort (when f (fn (a b) (if (f a b) -1 1))))))
 
 (define-global map (f x)
-  (let (t () n (# x))
-    (for i n
-      (let y (f (at x i))
-        (when (is? y)
+  (with t ()
+    (step v x
+      (let y (f v)
+        (if (is? y)
           (add t y))))
     (each (k v) x
       (unless (number? k)
         (let y (f v)
           (when (is? y)
-            (set (get t k) y)))))
-    t))
+            (set (get t k) y)))))))
 
 (define-global keep (f x)
   (map (fn (v) (when (f v) v)) x))
@@ -215,14 +211,14 @@
 
 (define-global split (s sep)
   (if (or (= s "") (= sep "")) ()
-    (let (l () n (# sep))
-      (while true
-        (let i (search s sep)
-          (if (nil? i) (break)
-            (do (add l (clip s 0 i))
-                (set s (clip s (+ i n)))))))
-      (add l s)
-      l)))
+    (with l ()
+      (let n (# sep)
+        (while true
+          (let i (search s sep)
+            (if (nil? i) (break)
+              (do (add l (clip s 0 i))
+                  (set s (clip s (+ i n)))))))
+        (add l s)))))
 
 (define-global cat xs
   (if (none? xs) ""

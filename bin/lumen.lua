@@ -193,21 +193,23 @@ function find(f, t)
   local _i4 = nil
   for _i4 in next, _o4 do
     local x = _o4[_i4]
-    local _x2 = f(x)
-    if _x2 then
-      return(_x2)
+    local y = f(x)
+    if y then
+      return(y)
     end
   end
 end
 function first(f, l)
-  local n = _35(l)
-  local i = 0
-  while i < n do
-    local x = f(l[i + 1])
-    if x then
-      return(x)
+  local _x2 = l
+  local _n5 = _35(_x2)
+  local _i5 = 0
+  while _i5 < _n5 do
+    local x = _x2[_i5 + 1]
+    local y = f(x)
+    if y then
+      return(y)
     end
-    i = i + 1
+    _i5 = _i5 + 1
   end
 end
 function in63(x, t)
@@ -216,11 +218,12 @@ function in63(x, t)
   end, t))
 end
 function pair(l)
-  local i = 0
   local l1 = {}
+  local i = 0
   while i < _35(l) do
     add(l1, {l[i + 1], l[i + 1 + 1]})
-    i = i + 2
+    i = i + 1
+    i = i + 1
   end
   return(l1)
 end
@@ -230,14 +233,16 @@ function sort(l, f)
 end
 function map(f, x)
   local t = {}
-  local n = _35(x)
-  local i = 0
-  while i < n do
-    local y = f(x[i + 1])
+  local _x4 = x
+  local _n6 = _35(_x4)
+  local _i6 = 0
+  while _i6 < _n6 do
+    local v = _x4[_i6 + 1]
+    local y = f(v)
     if is63(y) then
       add(t, y)
     end
-    i = i + 1
+    _i6 = _i6 + 1
   end
   local _o5 = x
   local k = nil
@@ -272,9 +277,9 @@ function keys63(t)
 end
 function empty63(t)
   local _o7 = t
-  local _i7 = nil
-  for _i7 in next, _o7 do
-    local x = _o7[_i7]
+  local _i9 = nil
+  for _i9 in next, _o7 do
+    local x = _o7[_i9]
     return(false)
   end
   return(true)
@@ -494,9 +499,9 @@ function string(x, depth)
                       end
                     end
                     local _o11 = join(xs, ks)
-                    local _i11 = nil
-                    for _i11 in next, _o11 do
-                      local v = _o11[_i11]
+                    local _i13 = nil
+                    for _i13 in next, _o11 do
+                      local v = _o11[_i13]
                       s = s .. sp .. v
                       sp = " "
                     end
@@ -890,7 +895,7 @@ setenv("dec", {_stash = true, macro = function (n, by)
 end})
 setenv("with-indent", {_stash = true, macro = function (form)
   local x = unique("x")
-  return({"do", {"inc", "indent-level"}, {"let", x, form, {"dec", "indent-level"}, x}})
+  return({"do", {"inc", "indent-level"}, {"with", x, form, {"dec", "indent-level"}}})
 end})
 setenv("export", {_stash = true, macro = function (...)
   local names = unstash({...})

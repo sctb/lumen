@@ -540,7 +540,7 @@ var escape_newlines = function (s) {
     s1 = s1 + _e22;
     i = i + 1;
   }
-  return(s1 + "");
+  return(s1);
 };
 var id = function (id) {
   var id1 = "";

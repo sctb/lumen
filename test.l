@@ -319,9 +319,9 @@ c"
     (test= true true))
   (test= 1 (if true 1 2))
   (test= 1 (if (let a 10 a) 1 2))
-  (test= 1 (if true (let a 1 a) 2))
+  (test= 1 (if true (with a 1) 2))
   (test= 1 (if false 2 (let a 1 a)))
-  (test= 1 (if false 2 true (let a 1 a)))
+  (test= 1 (if false 2 true (with a 1)))
   (test= 1 (if false 2 false 3 (let a 1 a))))
 
 (define-test while
@@ -347,7 +347,8 @@ c"
   (let l ()
     (for i 5
       (add l i))
-    (test= '(0 1 2 3 4) l)))
+    (test= '(0 1 2 3 4) l))
+  (test= '(0 1) (with l () (for i 2 (add l i)))))
 
 (define-test table
   (test= 10 (get (obj a: 10) 'a))

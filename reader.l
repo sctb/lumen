@@ -37,12 +37,11 @@
       eof)))
 
 (define read-all (s)
-  (let l ()
+  (with l ()
     (while true
       (let form (read s)
         (if (= form eof) (break))
-        (add l form)))
-    l))
+        (add l form)))))
 
 (define read-string (str)
   (let x (read (stream str))
@@ -79,7 +78,7 @@
 
 (define-reader ("(" s)
   (read-char s)
-  (let l ()
+  (with l ()
     (while true
       (skip-non-code s)
       (let c (peek-char s)
@@ -92,8 +91,7 @@
                   (flag? x) (set (get l (clip x 1)) true)
 		(add l x)))
 	    c (do (read-char s) (break)) ; )
-	  (error (cat "Expected ) at " s.pos)))))
-    l))
+	  (error (cat "Expected ) at " s.pos)))))))
 
 (define-reader (")" s)
   (error (cat "Unexpected ) at " s.pos)))

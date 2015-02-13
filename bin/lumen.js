@@ -227,21 +227,23 @@ find = function (f, t) {
       _e6 = _i4;
     }
     var __i4 = _e6;
-    var _x1 = f(x);
-    if (_x1) {
-      return(_x1);
+    var y = f(x);
+    if (y) {
+      return(y);
     }
   }
 };
 first = function (f, l) {
-  var n = _35(l);
-  var i = 0;
-  while (i < n) {
-    var x = f(l[i]);
-    if (x) {
-      return(x);
+  var _x1 = l;
+  var _n5 = _35(_x1);
+  var _i5 = 0;
+  while (_i5 < _n5) {
+    var x = _x1[_i5];
+    var y = f(x);
+    if (y) {
+      return(y);
     }
-    i = i + 1;
+    _i5 = _i5 + 1;
   }
 };
 in63 = function (x, t) {
@@ -250,11 +252,12 @@ in63 = function (x, t) {
   }, t));
 };
 pair = function (l) {
-  var i = 0;
   var l1 = [];
+  var i = 0;
   while (i < _35(l)) {
     add(l1, [l[i], l[i + 1]]);
-    i = i + 2;
+    i = i + 1;
+    i = i + 1;
   }
   return(l1);
 };
@@ -273,14 +276,16 @@ sort = function (l, f) {
 };
 map = function (f, x) {
   var t = [];
-  var n = _35(x);
-  var i = 0;
-  while (i < n) {
-    var y = f(x[i]);
+  var _x3 = x;
+  var _n6 = _35(_x3);
+  var _i6 = 0;
+  while (_i6 < _n6) {
+    var v = _x3[_i6];
+    var y = f(v);
     if (is63(y)) {
       add(t, y);
     }
-    i = i + 1;
+    _i6 = _i6 + 1;
   }
   var _o5 = x;
   var k = undefined;
@@ -329,16 +334,16 @@ keys63 = function (t) {
 };
 empty63 = function (t) {
   var _o7 = t;
-  var _i7 = undefined;
-  for (_i7 in _o7) {
-    var x = _o7[_i7];
+  var _i9 = undefined;
+  for (_i9 in _o7) {
+    var x = _o7[_i9];
     var _e10;
-    if (numeric63(_i7)) {
-      _e10 = parseInt(_i7);
+    if (numeric63(_i9)) {
+      _e10 = parseInt(_i9);
     } else {
-      _e10 = _i7;
+      _e10 = _i9;
     }
-    var __i7 = _e10;
+    var __i9 = _e10;
     return(false);
   }
   return(true);
@@ -582,16 +587,16 @@ string = function (x, depth) {
                       }
                     }
                     var _o11 = join(xs, ks);
-                    var _i11 = undefined;
-                    for (_i11 in _o11) {
-                      var v = _o11[_i11];
+                    var _i13 = undefined;
+                    for (_i13 in _o11) {
+                      var v = _o11[_i13];
                       var _e17;
-                      if (numeric63(_i11)) {
-                        _e17 = parseInt(_i11);
+                      if (numeric63(_i13)) {
+                        _e17 = parseInt(_i13);
                       } else {
-                        _e17 = _i11;
+                        _e17 = _i13;
                       }
-                      var __i11 = _e17;
+                      var __i13 = _e17;
                       s = s + sp + v;
                       sp = " ";
                     }
@@ -1014,7 +1019,7 @@ setenv("dec", {_stash: true, macro: function (n, by) {
 }});
 setenv("with-indent", {_stash: true, macro: function (form) {
   var x = unique("x");
-  return(["do", ["inc", "indent-level"], ["let", x, form, ["dec", "indent-level"], x]]);
+  return(["do", ["inc", "indent-level"], ["with", x, form, ["dec", "indent-level"]]]);
 }});
 setenv("export", {_stash: true, macro: function () {
   var names = unstash(Array.prototype.slice.call(arguments, 0));

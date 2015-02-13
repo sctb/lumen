@@ -194,9 +194,8 @@
 (define-macro with-indent (form)
   (let-unique (x)
     `(do (inc indent-level)
-         (let ,x ,form
-           (dec indent-level)
-           ,x))))
+         (with ,x ,form
+           (dec indent-level)))))
 
 (define-macro export names
   (if (= target 'js)
