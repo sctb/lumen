@@ -883,9 +883,8 @@ end
 local function expand(form)
   return(lower(macroexpand(form)))
 end
-local load1 = load
 local function run(code)
-  local f,e = load1(code)
+  local f,e = load(code)
   if f then
     return(f())
   else

@@ -508,10 +508,9 @@
 (target js: (set global.require require))
 (target js: (define run eval))
 
-(target lua: (define load1 load))
 (target lua:
   (define run (code)
-    (let |f,e| (load1 code)
+    (let |f,e| (load code)
       (if f (f) (error (cat e " in " code))))))
 
 (define-global %result)

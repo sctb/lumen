@@ -940,7 +940,7 @@ end
 local function usage()
   print("usage: lumen [options] <object files>")
   print("options:")
-  print("  -c <input>\tInput file")
+  print("  -c <input>\tCompile input file")
   print("  -o <output>\tOutput file")
   print("  -t <target>\tTarget language (default: lua)")
   print("  -e <expr>\tExpression to evaluate")
