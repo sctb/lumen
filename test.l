@@ -485,6 +485,10 @@ c"
 (define-test with
   (test= 10 (with x 9 (inc x))))
 
+(define-test let-when
+  (test= nil (let-when frips (= 'a 'b) 19))
+  (test= 19 (let-when frips 20 (- frips 1))))
+
 (define zzop 99)
 (define zzap 100)
 
