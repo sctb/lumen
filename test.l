@@ -474,6 +474,9 @@ c"
      (test= 20 zz))
    20))
 
+(define-test with
+  (test= 10 (with x 9 (inc x))))
+
 (define zzop 99)
 (define zzap 100)
 

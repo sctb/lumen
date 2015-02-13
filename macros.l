@@ -58,6 +58,9 @@
            (let-symbol ,renames
              (let ,(cut bs 2) ,@body))))))
 
+(define-macro with (x v rest: body)
+  `(let (,x ,v) ,@body ,x))
+
 (define-macro define-macro (name args rest: body)
   (let form `(setenv ',name macro: (fn ,args ,@body))
     (eval form)
