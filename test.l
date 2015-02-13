@@ -324,6 +324,13 @@ c"
   (test= 1 (if false 2 true (with a 1)))
   (test= 1 (if false 2 false 3 (let a 1 a))))
 
+(define-test case
+  (let x 10
+    (test= 2 (case x 9 9 10 2 4)))
+  (let x 'z
+    (test= 9 (case x z 9 10))
+    (test= 7 (case x a 1 b 2 7))))
+
 (define-test while
   (let i 0
     (while (< i 5)

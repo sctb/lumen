@@ -32,6 +32,14 @@
 (define-macro if branches
   (hd (expand-if branches)))
 
+(define-macro case (x rest: clauses)
+  (let bs (map (fn ((a b))
+                 (if (nil? b)
+                     (list a)
+                   `((= ',a ,x) ,b)))
+               (pair clauses))
+    `(if ,@(apply join bs))))
+
 (define-macro when (cond rest: body)
   `(if ,cond (do ,@body)))
 
