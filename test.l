@@ -487,7 +487,9 @@ c"
 
 (define-test let-when
   (test= nil (let-when frips (= 'a 'b) 19))
-  (test= 19 (let-when frips 20 (- frips 1))))
+  (test= 19 (let-when frips 20 (- frips 1)))
+  (test= 20 (let-when (a b) '(19 20) b))
+  (test= nil (let-when (a b) nil b)))
 
 (define zzop 99)
 (define zzap 100)

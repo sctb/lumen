@@ -825,35 +825,36 @@ setenv("with", {_stash: true, macro: function (x, v) {
 setenv("let-when", {_stash: true, macro: function (x, v) {
   var _r23 = unstash(Array.prototype.slice.call(arguments, 2));
   var body = cut(_r23, 0);
-  return(["let", [x, v], join(["when", x], body)]);
+  var y = unique("y");
+  return(["let", y, v, ["when", y, join(["let", [x, y]], body)]]);
 }});
 setenv("define-macro", {_stash: true, macro: function (name, args) {
   var _r25 = unstash(Array.prototype.slice.call(arguments, 2));
   var body = cut(_r25, 0);
-  var _x77 = ["setenv", ["quote", name]];
-  _x77.macro = join(["fn", args], body);
-  var form = _x77;
+  var _x79 = ["setenv", ["quote", name]];
+  _x79.macro = join(["fn", args], body);
+  var form = _x79;
   eval(form);
   return(form);
 }});
 setenv("define-special", {_stash: true, macro: function (name, args) {
   var _r27 = unstash(Array.prototype.slice.call(arguments, 2));
   var body = cut(_r27, 0);
-  var _x83 = ["setenv", ["quote", name]];
-  _x83.special = join(["fn", args], body);
-  var form = join(_x83, keys(body));
+  var _x85 = ["setenv", ["quote", name]];
+  _x85.special = join(["fn", args], body);
+  var form = join(_x85, keys(body));
   eval(form);
   return(form);
 }});
 setenv("define-symbol", {_stash: true, macro: function (name, expansion) {
   setenv(name, {_stash: true, symbol: expansion});
-  var _x89 = ["setenv", ["quote", name]];
-  _x89.symbol = ["quote", expansion];
-  return(_x89);
+  var _x91 = ["setenv", ["quote", name]];
+  _x91.symbol = ["quote", expansion];
+  return(_x91);
 }});
-setenv("define-reader", {_stash: true, macro: function (_x97) {
-  var char = _x97[0];
-  var s = _x97[1];
+setenv("define-reader", {_stash: true, macro: function (_x99) {
+  var char = _x99[0];
+  var s = _x99[1];
   var _r31 = unstash(Array.prototype.slice.call(arguments, 1));
   var body = cut(_r31, 0);
   return(["set", ["get", "read-table", char], join(["fn", [s]], body)]);
@@ -883,25 +884,25 @@ setenv("with-frame", {_stash: true, macro: function () {
   var body = cut(_r37, 0);
   var scope = _r37.scope;
   var x = unique("x");
-  var _x118 = ["obj"];
-  _x118._scope = scope;
-  return(["do", ["add", "environment", _x118], ["let", x, join(["do"], body), ["drop", "environment"], x]]);
+  var _x120 = ["obj"];
+  _x120._scope = scope;
+  return(["do", ["add", "environment", _x120], ["let", x, join(["do"], body), ["drop", "environment"], x]]);
 }});
-setenv("with-bindings", {_stash: true, macro: function (_x126) {
-  var names = _x126[0];
+setenv("with-bindings", {_stash: true, macro: function (_x128) {
+  var names = _x128[0];
   var _r39 = unstash(Array.prototype.slice.call(arguments, 1));
   var body = cut(_r39, 0);
   var x = unique("x");
-  var _x129 = ["setenv", x];
-  _x129.variable = true;
-  var _x127 = ["with-frame", ["each", x, names, _x129]];
-  _x127.scope = true;
-  return(join(_x127, body));
+  var _x131 = ["setenv", x];
+  _x131.variable = true;
+  var _x129 = ["with-frame", ["each", x, names, _x131]];
+  _x129.scope = true;
+  return(join(_x129, body));
 }});
-setenv("let-fn", {_stash: true, macro: function (_x133) {
-  var name = _x133[0];
-  var args = _x133[1];
-  var fn_body = cut(_x133, 2);
+setenv("let-fn", {_stash: true, macro: function (_x135) {
+  var name = _x135[0];
+  var args = _x135[1];
+  var fn_body = cut(_x135, 2);
   var _r41 = unstash(Array.prototype.slice.call(arguments, 1));
   var body = cut(_r41, 0);
   return(join(["let", name, join(["fn", args], fn_body)], body));
@@ -913,22 +914,22 @@ setenv("let-macro", {_stash: true, macro: function (definitions) {
   map(function (m) {
     return(macroexpand(join(["define-macro"], m)));
   }, definitions);
-  var _x139 = join(["do"], macroexpand(body));
+  var _x141 = join(["do"], macroexpand(body));
   drop(environment);
-  return(_x139);
+  return(_x141);
 }});
 setenv("let-symbol", {_stash: true, macro: function (expansions) {
   var _r48 = unstash(Array.prototype.slice.call(arguments, 1));
   var body = cut(_r48, 0);
   add(environment, {});
-  map(function (_x147) {
-    var name = _x147[0];
-    var exp = _x147[1];
+  map(function (_x149) {
+    var name = _x149[0];
+    var exp = _x149[1];
     return(macroexpand(["define-symbol", name, exp]));
   }, pair(expansions));
-  var _x146 = join(["do"], macroexpand(body));
+  var _x148 = join(["do"], macroexpand(body));
   drop(environment);
-  return(_x146);
+  return(_x148);
 }});
 setenv("let-unique", {_stash: true, macro: function (names) {
   var _r52 = unstash(Array.prototype.slice.call(arguments, 1));

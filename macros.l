@@ -70,7 +70,11 @@
   `(let (,x ,v) ,@body ,x))
 
 (define-macro let-when (x v rest: body)
-  `(let (,x ,v) (when ,x ,@body)))
+  (let-unique (y)
+    `(let ,y ,v
+       (when ,y
+         (let (,x ,y)
+           ,@body)))))
 
 (define-macro define-macro (name args rest: body)
   (let form `(setenv ',name macro: (fn ,args ,@body))
