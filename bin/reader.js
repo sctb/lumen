@@ -1,7 +1,7 @@
 var delimiters = {"(": true, ")": true, ";": true, "\n": true};
 var whitespace = {" ": true, "\t": true, "\n": true};
-var stream = function (str) {
-  return({pos: 0, string: str, len: _35(str)});
+var stream = function (str, more) {
+  return({pos: 0, string: str, len: _35(str), more: more});
 };
 var peek_char = function (s) {
   if (s.pos < s.len) {
@@ -58,8 +58,8 @@ var read_all = function (s) {
   }
   return(l);
 };
-var read_string = function (str) {
-  var x = read(stream(str));
+var read_string = function (str, more) {
+  var x = read(stream(str, more));
   if (!(x === eof)) {
     return(x);
   }
@@ -69,6 +69,17 @@ var key63 = function (atom) {
 };
 var flag63 = function (atom) {
   return(string63(atom) && _35(atom) > 1 && char(atom, 0) === ":");
+};
+var expected = function (s, c) {
+  var _id = s.more;
+  var _e;
+  if (_id) {
+    _e = _id;
+  } else {
+    throw new Error("Expected " + c + " at " + s.pos);
+    _e = undefined;
+  }
+  return(_e);
 };
 read_table[""] = function (s) {
   var str = "";
@@ -107,8 +118,9 @@ read_table[""] = function (s) {
 };
 read_table["("] = function (s) {
   read_char(s);
+  var r = undefined;
   var l = [];
-  while (true) {
+  while (nil63(r)) {
     skip_non_code(s);
     var c = peek_char(s);
     if (c && !(c === ")")) {
@@ -127,21 +139,22 @@ read_table["("] = function (s) {
     } else {
       if (c) {
         read_char(s);
-        break;
+        r = l;
       } else {
-        throw new Error("Expected ) at " + s.pos);
+        r = expected(s, ")");
       }
     }
   }
-  return(l);
+  return(r);
 };
 read_table[")"] = function (s) {
   throw new Error("Unexpected ) at " + s.pos);
 };
 read_table["\""] = function (s) {
   read_char(s);
+  var r = undefined;
   var str = "\"";
-  while (true) {
+  while (nil63(r)) {
     var c = peek_char(s);
     if (c && !(c === "\"")) {
       if (c === "\\") {
@@ -150,32 +163,31 @@ read_table["\""] = function (s) {
       str = str + read_char(s);
     } else {
       if (c) {
-        read_char(s);
-        break;
+        r = str + read_char(s);
       } else {
-        throw new Error("Expected \" at " + s.pos);
+        r = expected(s, "\"");
       }
     }
   }
-  return(str + "\"");
+  return(r);
 };
 read_table["|"] = function (s) {
   read_char(s);
+  var r = undefined;
   var str = "|";
-  while (true) {
+  while (nil63(r)) {
     var c = peek_char(s);
     if (c && !(c === "|")) {
       str = str + read_char(s);
     } else {
       if (c) {
-        read_char(s);
-        break;
+        r = str + read_char(s);
       } else {
-        throw new Error("Expected | at " + s.pos);
+        r = expected(s, "|");
       }
     }
   }
-  return(str + "|");
+  return(r);
 };
 read_table["'"] = function (s) {
   read_char(s);

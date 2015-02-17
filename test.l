@@ -51,6 +51,14 @@
     (test= 7 (get (read "(1 2 a: 7)") 'a))
     (test= true (get (read "(:a)") 'a))))
 
+(define-test read-more
+  (let read reader.read-string
+    (test= 17 (read "17" true))
+    (let more ()
+      (test= more (read "(open" more))
+      (test= more (read "\"unterminated " more))
+      (test= more (read "|identifier" more)))))
+
 (define-test boolean
   (test= true (or true false))
   (test= false (or false false))

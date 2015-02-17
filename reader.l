@@ -3,8 +3,8 @@
 (define delimiters (set-of "(" ")" ";" "\n"))
 (define whitespace (set-of " " "\t" "\n"))
 
-(define stream (str)
-  (obj pos: 0 string: str len: (# str)))
+(define stream (str more)
+  (obj pos: 0 string: str len: (# str) more: more))
 
 (define peek-char (s)
   (if (< s.pos s.len) (char s.string s.pos)))
@@ -43,8 +43,8 @@
         (if (= form eof) (break))
         (add l form)))))
 
-(define read-string (str)
-  (let x (read (stream str))
+(define read-string (str more)
+  (let x (read (stream str more))
     (unless (= x eof) x)))
 
 (define key? (atom)
@@ -56,6 +56,9 @@
   (and (string? atom)
        (> (# atom) 1)
        (= (char atom 0) ":")))
+
+(define expected (s c)
+  (or s.more (error (cat "Expected " c " at " s.pos))))
 
 (define-reader ("" s) ; atom
   (let (str "" dot? false)
@@ -78,46 +81,47 @@
 
 (define-reader ("(" s)
   (read-char s)
-  (with l ()
-    (while true
-      (skip-non-code s)
-      (let c (peek-char s)
-	(if (and c (not (= c ")")))
-	    (let x (read s)
-	      (if (key? x)
-		  (let (k (clip x 0 (edge x))
-                        v (read s))
-		    (set (get l k) v))
-                  (flag? x) (set (get l (clip x 1)) true)
-		(add l x)))
-	    c (do (read-char s) (break)) ; )
-	  (error (cat "Expected ) at " s.pos)))))))
+  (with r nil
+    (let l ()
+      (while (nil? r)
+        (skip-non-code s)
+        (let c (peek-char s)
+          (if (and c (not (= c ")")))
+              (let x (read s)
+                (if (key? x)
+                    (let (k (clip x 0 (edge x))
+                          v (read s))
+                      (set (get l k) v))
+                    (flag? x) (set (get l (clip x 1)) true)
+                  (add l x)))
+              c (do (read-char s) (set r l))   ; )
+            (set r (expected s ")"))))))))
 
 (define-reader (")" s)
   (error (cat "Unexpected ) at " s.pos)))
 
 (define-reader ("\"" s)
   (read-char s)
-  (let str "\""
-    (while true
-      (let c (peek-char s)
-	(if (and c (not (= c "\"")))
-	    (do (if (= c "\\") (cat! str (read-char s)))
-		(cat! str (read-char s)))
-	    c (do (read-char s) (break)) ; "
-	  (error (cat "Expected \" at " s.pos)))))
-    (cat str "\"")))
+  (with r nil
+    (let str "\""
+      (while (nil? r)
+        (let c (peek-char s)
+          (if (and c (not (= c "\"")))
+              (do (if (= c "\\") (cat! str (read-char s)))
+                  (cat! str (read-char s)))
+              c (set r (cat str (read-char s))) ; "
+            (set r (expected s "\""))))))))
 
 (define-reader ("|" s)
   (read-char s)
-  (let str "|"
-    (while true
-      (let c (peek-char s)
-	(if (and c (not (= c "|")))
-	    (cat! str (read-char s))
-	    c (do (read-char s) (break)) ; |
-	  (error (cat "Expected | at " s.pos)))))
-    (cat str "|")))
+  (with r nil
+    (let str "|"
+      (while (nil? r)
+        (let c (peek-char s)
+          (if (and c (not (= c "|")))
+              (cat! str (read-char s))
+              c (set r (cat str (read-char s))) ; |
+            (set r (expected s "|"))))))))
 
 (define-reader ("'" s)
   (read-char s)

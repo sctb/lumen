@@ -1,7 +1,7 @@
 local delimiters = {["("] = true, [")"] = true, [";"] = true, ["\n"] = true}
 local whitespace = {[" "] = true, ["\t"] = true, ["\n"] = true}
-local function stream(str)
-  return({pos = 0, string = str, len = _35(str)})
+local function stream(str, more)
+  return({pos = 0, string = str, len = _35(str), more = more})
 end
 local function peek_char(s)
   if s.pos < s.len then
@@ -58,8 +58,8 @@ local function read_all(s)
   end
   return(l)
 end
-local function read_string(str)
-  local x = read(stream(str))
+local function read_string(str, more)
+  local x = read(stream(str, more))
   if not (x == eof) then
     return(x)
   end
@@ -69,6 +69,17 @@ local function key63(atom)
 end
 local function flag63(atom)
   return(string63(atom) and _35(atom) > 1 and char(atom, 0) == ":")
+end
+local function expected(s, c)
+  local _id = s.more
+  local _e
+  if _id then
+    _e = _id
+  else
+    error("Expected " .. c .. " at " .. s.pos)
+    _e = nil
+  end
+  return(_e)
 end
 read_table[""] = function (s)
   local str = ""
@@ -107,8 +118,9 @@ read_table[""] = function (s)
 end
 read_table["("] = function (s)
   read_char(s)
+  local r = nil
   local l = {}
-  while true do
+  while nil63(r) do
     skip_non_code(s)
     local c = peek_char(s)
     if c and not (c == ")") then
@@ -127,21 +139,22 @@ read_table["("] = function (s)
     else
       if c then
         read_char(s)
-        break
+        r = l
       else
-        error("Expected ) at " .. s.pos)
+        r = expected(s, ")")
       end
     end
   end
-  return(l)
+  return(r)
 end
 read_table[")"] = function (s)
   error("Unexpected ) at " .. s.pos)
 end
 read_table["\""] = function (s)
   read_char(s)
+  local r = nil
   local str = "\""
-  while true do
+  while nil63(r) do
     local c = peek_char(s)
     if c and not (c == "\"") then
       if c == "\\" then
@@ -150,32 +163,31 @@ read_table["\""] = function (s)
       str = str .. read_char(s)
     else
       if c then
-        read_char(s)
-        break
+        r = str .. read_char(s)
       else
-        error("Expected \" at " .. s.pos)
+        r = expected(s, "\"")
       end
     end
   end
-  return(str .. "\"")
+  return(r)
 end
 read_table["|"] = function (s)
   read_char(s)
+  local r = nil
   local str = "|"
-  while true do
+  while nil63(r) do
     local c = peek_char(s)
     if c and not (c == "|") then
       str = str .. read_char(s)
     else
       if c then
-        read_char(s)
-        break
+        r = str .. read_char(s)
       else
-        error("Expected | at " .. s.pos)
+        r = expected(s, "|")
       end
     end
   end
-  return(str .. "|")
+  return(r)
 end
 read_table["'"] = function (s)
   read_char(s)
