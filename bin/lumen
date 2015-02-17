@@ -5,7 +5,21 @@ cd "`dirname $0`"
 HOME=`pwd`
 cd $DIR
 
-HOST=${LUMEN_HOST:-lua}
+if [ ! -z $LUMEN_HOST ]
+then
+    HOST=$LUMEN_HOST
+elif luajit -v > /dev/null 2>&1
+then
+    HOST=luajit
+elif lua -v > /dev/null 2>&1
+then
+    HOST=lua
+elif node -v > /dev/null 2>&1
+then
+    HOST=node
+else
+    echo no host found
+fi
 
 case $HOST in
     node*)
