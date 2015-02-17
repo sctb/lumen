@@ -975,6 +975,9 @@ var compile_file = function (path) {
   var form = expand(join(["do"], body));
   return(compile(form, {_stash: true, stmt: true}));
 };
+load = function (path) {
+  return(run(compile_file(path)));
+};
 setenv("do", {_stash: true, special: function () {
   var forms = unstash(Array.prototype.slice.call(arguments, 0));
   var s = "";
@@ -1223,5 +1226,6 @@ setenv("%object", {_stash: true, special: function () {
 exports.eval = eval;
 exports["run-file"] = run_file;
 exports["compile-file"] = compile_file;
+exports.load = load;
 exports.expand = expand;
 exports.compile = compile;

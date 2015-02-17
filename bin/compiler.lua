@@ -901,8 +901,9 @@ end
 local function expand(form)
   return(lower(macroexpand(form)))
 end
+local load1 = load
 local function run(code)
-  local f,e = load(code)
+  local f,e = load1(code)
   if f then
     return(f())
   else
@@ -926,6 +927,9 @@ local function compile_file(path)
   local body = reader["read-all"](s)
   local form = expand(join({"do"}, body))
   return(compile(form, {_stash = true, stmt = true}))
+end
+function load(path)
+  return(run(compile_file(path)))
 end
 setenv("do", {_stash = true, special = function (...)
   local forms = unstash({...})
@@ -1158,4 +1162,4 @@ setenv("%object", {_stash = true, special = function (...)
   end
   return(s .. "}")
 end})
-return({eval = eval, ["run-file"] = run_file, ["compile-file"] = compile_file, expand = expand, compile = compile})
+return({eval = eval, ["run-file"] = run_file, ["compile-file"] = compile_file, load = load, expand = expand, compile = compile})

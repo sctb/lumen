@@ -508,9 +508,10 @@
 (target js: (set global.require require))
 (target js: (define run eval))
 
+(target lua: (define load1 load))
 (target lua:
   (define run (code)
-    (let |f,e| (load code)
+    (let |f,e| (load1 code)
       (if f (f) (error (cat e " in " code))))))
 
 (define-global %result)
@@ -531,6 +532,9 @@
         body (reader.read-all s)
         form (expand `(do ,@body)))
     (compile form :stmt)))
+
+(define-global load (path)
+  (run (compile-file path)))
 
 (define-special do forms :stmt :tr
   (with s ""
@@ -660,5 +664,6 @@
 (export eval
         run-file
         compile-file
+        load
         expand
         compile)
