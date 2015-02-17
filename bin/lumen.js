@@ -1067,8 +1067,7 @@ setenv("export", {_stash: true, macro: function () {
 }});
 var reader = require("reader");
 var compiler = require("compiler");
-var rep = function (s) {
-  var form = reader["read-string"](s);
+var eval_print = function (form) {
   var _id = (function () {
     try {
       return([true, compiler.eval(form)]);
@@ -1087,12 +1086,24 @@ var rep = function (s) {
     }
   }
 };
+var rep = function (s) {
+  return(eval_print(reader["read-string"](s)));
+};
 var repl = function () {
-  write("> ");
+  var buf = "";
   var rep1 = function (s) {
-    rep(s);
-    return(write("> "));
+    buf = buf + s;
+    var more = [];
+    var form = reader["read-string"](buf, more);
+    if (form === more) {
+      return(write("... "));
+    } else {
+      eval_print(form);
+      buf = "";
+      return(write("> "));
+    }
   };
+  write("> ");
   process.stdin.setEncoding("utf8");
   return(process.stdin.on("data", rep1));
 };

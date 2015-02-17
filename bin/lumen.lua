@@ -936,8 +936,7 @@ setenv("export", {_stash = true, macro = function (...)
 end})
 local reader = require("reader")
 local compiler = require("compiler")
-local function rep(s)
-  local form = reader["read-string"](s)
+local function eval_print(form)
   local _e,_x = xpcall(function ()
     return(compiler.eval(form))
   end, _37message_handler)
@@ -952,12 +951,24 @@ local function rep(s)
     end
   end
 end
+local function rep(s)
+  return(eval_print(reader["read-string"](s)))
+end
 local function repl()
-  write("> ")
-  local rep1 = function (s)
-    rep(s)
-    return(write("> "))
+  local buf = ""
+  local function rep1(s)
+    buf = buf .. s
+    local more = {}
+    local form = reader["read-string"](buf, more)
+    if form == more then
+      return(write("... "))
+    else
+      eval_print(form)
+      buf = ""
+      return(write("> "))
+    end
   end
+  write("> ")
   while true do
     local s = io.read()
     if s then

@@ -3,21 +3,32 @@
 (define reader (require 'reader))
 (define compiler (require 'compiler))
 
-(define rep (s)
-  (let (form (reader.read-string s)
-        (ok x) (guard (compiler.eval form)))
+(define eval-print (form)
+  (let ((ok x) (guard (compiler.eval form)))
     (if (not ok) (print (cat "error: " x))
         (is? x) (print (string x)))))
 
+(define rep (s)
+  (eval-print (reader.read-string s)))
+
 (define repl ()
+  (let buf ""
+    (define rep1 (s)
+      (cat! buf s)
+      (let (more ()
+            form (reader.read-string buf more))
+          (if (= form more)
+              (write "... ")
+            (do (eval-print form)
+                (set buf "")
+                (write "> "))))))
   (write "> ")
-  (let-fn (rep1 (s) (rep s) (write "> "))
-    (target
-      js: (do (process.stdin.setEncoding 'utf8)
-              (process.stdin.on 'data rep1))
-      lua: (while true
-             (let s (io.read)
-               (if s (rep1 s) (break)))))))
+  (target
+    js: (do (process.stdin.setEncoding 'utf8)
+            (process.stdin.on 'data rep1))
+    lua: (while true
+           (let s (io.read)
+             (if s (rep1 s) (break))))))
 
 (define usage ()
   (print "usage: lumen [options] <object files>")
