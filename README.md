@@ -112,7 +112,7 @@ Functions in Lumen are values, just like numbers and strings. Expressions that s
 function
 ```
 
-Remember that functions can be called by placing them first in a list expression. The list that appears after `fn` identifies the functions parameters:
+Remember that functions can be called by placing them first in a list expression. The list that appears after `fn` identifies the function's parameters:
 ```
 > (fn (a) (+ a 10))
 function
