@@ -123,25 +123,25 @@ read_table["("] = function (s) {
   while (nil63(r)) {
     skip_non_code(s);
     var c = peek_char(s);
-    if (c && !(c === ")")) {
-      var x = read(s);
-      if (key63(x)) {
-        var k = clip(x, 0, edge(x));
-        var v = read(s);
-        l[k] = v;
-      } else {
-        if (flag63(x)) {
-          l[clip(x, 1)] = true;
-        } else {
-          add(l, x);
-        }
-      }
+    if (c === ")") {
+      read_char(s);
+      r = l;
     } else {
-      if (c) {
-        read_char(s);
-        r = l;
-      } else {
+      if (nil63(c)) {
         r = expected(s, ")");
+      } else {
+        var x = read(s);
+        if (key63(x)) {
+          var k = clip(x, 0, edge(x));
+          var v = read(s);
+          l[k] = v;
+        } else {
+          if (flag63(x)) {
+            l[clip(x, 1)] = true;
+          } else {
+            add(l, x);
+          }
+        }
       }
     }
   }
@@ -156,16 +156,16 @@ read_table["\""] = function (s) {
   var str = "\"";
   while (nil63(r)) {
     var c = peek_char(s);
-    if (c && !(c === "\"")) {
-      if (c === "\\") {
-        str = str + read_char(s);
-      }
-      str = str + read_char(s);
+    if (c === "\"") {
+      r = str + read_char(s);
     } else {
-      if (c) {
-        r = str + read_char(s);
-      } else {
+      if (nil63(c)) {
         r = expected(s, "\"");
+      } else {
+        if (c === "\\") {
+          str = str + read_char(s);
+        }
+        str = str + read_char(s);
       }
     }
   }
@@ -177,13 +177,13 @@ read_table["|"] = function (s) {
   var str = "|";
   while (nil63(r)) {
     var c = peek_char(s);
-    if (c && !(c === "|")) {
-      str = str + read_char(s);
+    if (c === "|") {
+      r = str + read_char(s);
     } else {
-      if (c) {
-        r = str + read_char(s);
-      } else {
+      if (nil63(c)) {
         r = expected(s, "|");
+      } else {
+        str = str + read_char(s);
       }
     }
   }

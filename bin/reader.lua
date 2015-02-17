@@ -123,25 +123,25 @@ read_table["("] = function (s)
   while nil63(r) do
     skip_non_code(s)
     local c = peek_char(s)
-    if c and not (c == ")") then
-      local x = read(s)
-      if key63(x) then
-        local k = clip(x, 0, edge(x))
-        local v = read(s)
-        l[k] = v
-      else
-        if flag63(x) then
-          l[clip(x, 1)] = true
-        else
-          add(l, x)
-        end
-      end
+    if c == ")" then
+      read_char(s)
+      r = l
     else
-      if c then
-        read_char(s)
-        r = l
-      else
+      if nil63(c) then
         r = expected(s, ")")
+      else
+        local x = read(s)
+        if key63(x) then
+          local k = clip(x, 0, edge(x))
+          local v = read(s)
+          l[k] = v
+        else
+          if flag63(x) then
+            l[clip(x, 1)] = true
+          else
+            add(l, x)
+          end
+        end
       end
     end
   end
@@ -156,16 +156,16 @@ read_table["\""] = function (s)
   local str = "\""
   while nil63(r) do
     local c = peek_char(s)
-    if c and not (c == "\"") then
-      if c == "\\" then
-        str = str .. read_char(s)
-      end
-      str = str .. read_char(s)
+    if c == "\"" then
+      r = str .. read_char(s)
     else
-      if c then
-        r = str .. read_char(s)
-      else
+      if nil63(c) then
         r = expected(s, "\"")
+      else
+        if c == "\\" then
+          str = str .. read_char(s)
+        end
+        str = str .. read_char(s)
       end
     end
   end
@@ -177,13 +177,13 @@ read_table["|"] = function (s)
   local str = "|"
   while nil63(r) do
     local c = peek_char(s)
-    if c and not (c == "|") then
-      str = str .. read_char(s)
+    if c == "|" then
+      r = str .. read_char(s)
     else
-      if c then
-        r = str .. read_char(s)
-      else
+      if nil63(c) then
         r = expected(s, "|")
+      else
+        str = str .. read_char(s)
       end
     end
   end
