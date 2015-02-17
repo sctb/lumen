@@ -60,6 +60,11 @@
 (define expected (s c)
   (or s.more (error (cat "Expected " c " at " s.pos))))
 
+(define wrap (s x)
+  (let y (read s)
+    (if (= y s.more) y
+      (list x y))))
+
 (define-reader ("" s) ; atom
   (let (str "" dot? false)
     (while true
@@ -123,18 +128,18 @@
 
 (define-reader ("'" s)
   (read-char s)
-  (list 'quote (read s)))
+  (wrap s 'quote))
 
 (define-reader ("`" s)
   (read-char s)
-  (list 'quasiquote (read s)))
+  (wrap s 'quasiquote))
 
 (define-reader ("," s)
   (read-char s)
   (if (= (peek-char s) "@")
       (do (read-char s)
-	  (list 'unquote-splicing (read s)))
-    (list 'unquote (read s))))
+	  (wrap s 'unquote-splicing))
+    (wrap s 'unquote)))
 
 (export stream
         read

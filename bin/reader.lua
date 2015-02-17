@@ -81,6 +81,14 @@ local function expected(s, c)
   end
   return(_e)
 end
+local function wrap(s, x)
+  local y = read(s)
+  if y == s.more then
+    return(y)
+  else
+    return({x, y})
+  end
+end
 read_table[""] = function (s)
   local str = ""
   local dot63 = false
@@ -191,19 +199,19 @@ read_table["|"] = function (s)
 end
 read_table["'"] = function (s)
   read_char(s)
-  return({"quote", read(s)})
+  return(wrap(s, "quote"))
 end
 read_table["`"] = function (s)
   read_char(s)
-  return({"quasiquote", read(s)})
+  return(wrap(s, "quasiquote"))
 end
 read_table[","] = function (s)
   read_char(s)
   if peek_char(s) == "@" then
     read_char(s)
-    return({"unquote-splicing", read(s)})
+    return(wrap(s, "unquote-splicing"))
   else
-    return({"unquote", read(s)})
+    return(wrap(s, "unquote"))
   end
 end
 return({stream = stream, read = read, ["read-all"] = read_all, ["read-string"] = read_string})

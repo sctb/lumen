@@ -81,6 +81,14 @@ var expected = function (s, c) {
   }
   return(_e);
 };
+var wrap = function (s, x) {
+  var y = read(s);
+  if (y === s.more) {
+    return(y);
+  } else {
+    return([x, y]);
+  }
+};
 read_table[""] = function (s) {
   var str = "";
   var dot63 = false;
@@ -191,19 +199,19 @@ read_table["|"] = function (s) {
 };
 read_table["'"] = function (s) {
   read_char(s);
-  return(["quote", read(s)]);
+  return(wrap(s, "quote"));
 };
 read_table["`"] = function (s) {
   read_char(s);
-  return(["quasiquote", read(s)]);
+  return(wrap(s, "quasiquote"));
 };
 read_table[","] = function (s) {
   read_char(s);
   if (peek_char(s) === "@") {
     read_char(s);
-    return(["unquote-splicing", read(s)]);
+    return(wrap(s, "unquote-splicing"));
   } else {
-    return(["unquote", read(s)]);
+    return(wrap(s, "unquote"));
   }
 };
 exports.stream = stream;

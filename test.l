@@ -57,7 +57,12 @@
     (let more ()
       (test= more (read "(open" more))
       (test= more (read "\"unterminated " more))
-      (test= more (read "|identifier" more)))
+      (test= more (read "|identifier" more))
+      (test= more (read "'(a b c" more))
+      (test= more (read "`(a b c" more))
+      (test= more (read "`(a b ,(z" more))
+      (test= more (read "`\"biz" more))
+      (test= more (read "'\"boz" more)))
     (test= (list false "Expected ) at 5") (guard (read "(open")))))
 
 (define-test boolean
