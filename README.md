@@ -142,7 +142,7 @@ Conditional evaluation is done using an `if` expression. The value of an `if` ex
 11
 ```
 
-Comparing values is done using the `=` operation:
+Comparing values is done using the `=` operator:
 ```
 > (= 10 10)
 true
