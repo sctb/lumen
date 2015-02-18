@@ -706,7 +706,7 @@ c"
   (let t (join '(a b: 1) '(b c: 2))
     (test= 1 t.b)
     (test= 2 t.c)
-    (test= 'b (at t 1))))
+    (test= 'b t.1)))
 
 (define-test reverse
   (test= () (reverse ()))

@@ -18,7 +18,7 @@
 (define-global one? (x) (= (# x) 1))
 (define-global two? (x) (= (# x) 2))
 
-(define-global hd (l) (at l 0))
+(define-global hd (l) l.0)
 
 (target js: (define-global type (x) (typeof x)))
 

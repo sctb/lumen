@@ -160,13 +160,13 @@
       (unless (number? k)
         (let v (if (quasisplice? v depth)
                    ;; don't splice, just expand
-                   (quasiexpand (at v 1))
+                   (quasiexpand v.1)
                  (quasiexpand v depth))
           (set (get (last xs) k) v))))
     ;; collect sibling lists
     (step x form
       (if (quasisplice? x depth)
-          (let x (quasiexpand (at x 1))
+          (let x (quasiexpand x.1)
             (add xs x)
             (add xs '(list)))
         (add (last xs) (quasiexpand x depth))))
@@ -186,7 +186,7 @@
           ;; unquote
           (and (can-unquote? depth)
                (= (hd form) 'unquote))
-          (quasiexpand (at form 1))
+          (quasiexpand form.1)
           ;; decrease quasiquoting depth
           (or (= (hd form) 'unquote)
               (= (hd form) 'unquote-splicing))
@@ -199,7 +199,7 @@
       (= (hd form) 'quote) form
       (= (hd form) 'quasiquote)
       ;; start quasiquoting
-      (quasiexpand (at form 1) 1)
+      (quasiexpand form.1 1)
     (map (fn (x) (quasiexpand x depth)) form)))
 
 (define-global expand-if ((a b rest: c))
