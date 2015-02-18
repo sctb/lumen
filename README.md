@@ -1,7 +1,7 @@
 Lumen
 =
 Lumen is a Lisp for Lua and JavaScript. You can get started by running `bin/lumen` on a machine with Node.js, Lua, or LuaJIT installed.
-### Introduction
+#### Introduction
 Every piece of code in Lumen is an expression, and expressions can be evaluated to give values. Lumen has a few kinds of expressions that evaluate to themselves:
 ```
 > 17
@@ -25,14 +25,6 @@ two"
 "a\"b"
 ```
 
-Variables evaluate to the values that they name:
-```
-> apply
-function
-> nan
-nan
-```
-
 `nil` represents nothingness, and it isn't printed back:
 ```
 > nil
@@ -45,7 +37,7 @@ Comments start with `;` and continue through the rest of the line:
 7
 ```
 
-Lists contain other values, and are written by enclosing expressions in parentheses. Functions and operators are called by placing them at the beginning of a list expression, and list values can be constructed using the `list` operator:
+Lists contain other values, and are written by enclosing expressions in parentheses. Operators are called by placing them at the beginning of a list expression, and list values can be constructed using the `list` operator:
 ```
 > (+ 10 2)
 12
@@ -74,13 +66,23 @@ Positional values can be gotten out of lists using the `at` operator, and keys u
 20
 ```
 
+It's common to access the key values of a list variable, so there is a shorthand for that:
+```
+> (let x (list foo: 10 bar: 20)
+    x.bar)
+20
+> (let x (list foo: 10 bar: 20)
+    (get x "bar")) ; equivalent
+20
+```
+
 A shortcut for a key whose value is `true` looks like this, called a flag:
 ```
 > (list :yes)
 (yes: true)
 ```
 
-### Variables
+#### Variables
 Variables are defined using `define` and `define-global`. Variables declared with `define` are available for use anywhere in subsequent expressions in the same scope, and `define-global` makes them globally available.
 ```
 > (define-global zzz "ho")
@@ -114,7 +116,25 @@ hi
 10
 ```
 
-### Conditionals
+#### Assignment
+Variables and list values can be updated using `set`:
+```
+> (let x 10
+    (set x 20)
+    (+ x 5))
+25
+> (let a (list 1 2 3)
+    (set (at a 1) "b")
+    a)
+(1 "b" 3)
+> (let a (list foo: 17)
+    (set (get a "foo") 19)
+    a)
+(foo: 19)
+```
+`set` expressions can appear anywhere, but they always return `nil`.
+
+#### Conditionals
 Conditional evaluation is done using an `if` expression. The value of an `if` expression is that of the branch whose condition evaluated to `true`:
 ```
 > (if true 10 20)
@@ -158,7 +178,7 @@ Lists are values that have unique identity, so two lists that contain the same v
 "different"
 ```
 
-### Functions
+#### Functions
 Functions in Lumen are values, just like numbers and strings. Expressions that start with `fn` evaluate to functions:
 ```
 > (fn () 10)
@@ -219,7 +239,7 @@ If the key's value is `true`, the same name as the key is used to bind the param
 30
 ```
 
-## Quotation
+#### Quotation
 Expressions can be quoted to prevent them from being evaluated using the `quote` operator:
 ```
 > (quote (1 2 3))
@@ -259,6 +279,15 @@ The shorthand for quotation is use a single quote:
 (1 2 3)
 > '(a b c)
 ("a" "b" "c")
+```
+
+A convenient notation for certain strings is to quote their name:
+```
+> 'a
+"a"
+> (let x '(a: 10 b: 20)
+    (get x 'a))
+10
 ```
 
 When you want to quote some parts of an expression, but want other parts to be evaluated, use `quasiquote` and `unquote`:
