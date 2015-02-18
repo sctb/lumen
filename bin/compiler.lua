@@ -355,7 +355,7 @@ function indentation()
   end
   return(s)
 end
-local reserved = {["break"] = true, ["instanceof"] = true, ["or"] = true, ["typeof"] = true, ["continue"] = true, ["then"] = true, [">"] = true, ["if"] = true, ["<"] = true, ["until"] = true, ["this"] = true, ["new"] = true, [">="] = true, ["<="] = true, ["finally"] = true, ["case"] = true, ["true"] = true, ["while"] = true, ["catch"] = true, ["for"] = true, ["repeat"] = true, ["debugger"] = true, ["do"] = true, ["local"] = true, ["in"] = true, ["nil"] = true, ["switch"] = true, ["elseif"] = true, ["function"] = true, ["="] = true, ["end"] = true, ["*"] = true, ["var"] = true, ["not"] = true, ["throw"] = true, ["false"] = true, ["void"] = true, ["with"] = true, ["=="] = true, ["default"] = true, ["%"] = true, ["-"] = true, ["return"] = true, ["+"] = true, ["delete"] = true, ["else"] = true, ["try"] = true, ["and"] = true, ["/"] = true}
+local reserved = {["catch"] = true, ["case"] = true, ["local"] = true, ["switch"] = true, ["with"] = true, ["not"] = true, ["repeat"] = true, ["throw"] = true, ["function"] = true, ["debugger"] = true, ["in"] = true, ["=="] = true, ["if"] = true, [">"] = true, ["return"] = true, ["<"] = true, ["do"] = true, ["or"] = true, ["finally"] = true, ["+"] = true, ["-"] = true, ["delete"] = true, ["%"] = true, ["and"] = true, ["then"] = true, ["true"] = true, ["continue"] = true, ["end"] = true, ["new"] = true, ["false"] = true, ["break"] = true, ["elseif"] = true, ["typeof"] = true, ["/"] = true, ["while"] = true, ["nil"] = true, ["else"] = true, ["*"] = true, ["var"] = true, ["void"] = true, ["for"] = true, [">="] = true, ["default"] = true, ["<="] = true, ["instanceof"] = true, ["until"] = true, ["try"] = true, ["this"] = true, ["="] = true}
 function reserved63(x)
   return(reserved[x])
 end
@@ -404,40 +404,40 @@ function mapo(f, t)
 end
 local __x51 = {}
 local _x52 = {}
-_x52.js = "!"
 _x52.lua = "not "
+_x52.js = "!"
 __x51["not"] = _x52
 local __x53 = {}
-__x53["/"] = true
-__x53["%"] = true
 __x53["*"] = true
+__x53["%"] = true
+__x53["/"] = true
 local __x54 = {}
 __x54["+"] = true
 __x54["-"] = true
 local __x55 = {}
 local _x56 = {}
-_x56.js = "+"
 _x56.lua = ".."
+_x56.js = "+"
 __x55.cat = _x56
 local __x57 = {}
-__x57["<="] = true
-__x57["<"] = true
-__x57[">="] = true
 __x57[">"] = true
+__x57[">="] = true
+__x57["<"] = true
+__x57["<="] = true
 local __x58 = {}
 local _x59 = {}
-_x59.js = "==="
 _x59.lua = "=="
+_x59.js = "==="
 __x58["="] = _x59
 local __x60 = {}
 local _x61 = {}
-_x61.js = "&&"
 _x61.lua = "and"
+_x61.js = "&&"
 __x60["and"] = _x61
 local __x62 = {}
 local _x63 = {}
-_x63.js = "||"
 _x63.lua = "or"
+_x63.js = "||"
 __x62["or"] = _x63
 local infix = {__x51, __x53, __x54, __x55, __x57, __x58, __x60, __x62}
 local function unary63(form)
@@ -765,7 +765,7 @@ local function lower_do(args, hoist, stmt63, tail63)
     return(e)
   end
 end
-local function lower_sat(args, hoist, stmt63, tail63)
+local function lower_set(args, hoist, stmt63, tail63)
   local lh = args[1]
   local rh = args[2]
   add(hoist, {"set", lh, lower(rh, hoist)})
@@ -879,31 +879,35 @@ function lower(form, hoist, stmt63, tail63)
           if x == "do" then
             return(lower_do(args, hoist, stmt63, tail63))
           else
-            if x == "%if" then
-              return(lower_if(args, hoist, stmt63, tail63))
+            if x == "set" then
+              return(lower_set(args, hoist, stmt63, tail63))
             else
-              if x == "%try" then
-                return(lower_try(args, hoist, tail63))
+              if x == "%if" then
+                return(lower_if(args, hoist, stmt63, tail63))
               else
-                if x == "while" then
-                  return(lower_while(args, hoist))
+                if x == "%try" then
+                  return(lower_try(args, hoist, tail63))
                 else
-                  if x == "%for" then
-                    return(lower_for(args, hoist))
+                  if x == "while" then
+                    return(lower_while(args, hoist))
                   else
-                    if x == "%function" then
-                      return(lower_function(args))
+                    if x == "%for" then
+                      return(lower_for(args, hoist))
                     else
-                      if x == "%local-function" or x == "%global-function" then
-                        return(lower_definition(x, args, hoist))
+                      if x == "%function" then
+                        return(lower_function(args))
                       else
-                        if in63(x, {"and", "or"}) then
-                          return(lower_short(x, args, hoist))
+                        if x == "%local-function" or x == "%global-function" then
+                          return(lower_definition(x, args, hoist))
                         else
-                          if statement63(x) then
-                            return(lower_special(form, hoist))
+                          if in63(x, {"and", "or"}) then
+                            return(lower_short(x, args, hoist))
                           else
-                            return(lower_call(form, hoist))
+                            if statement63(x) then
+                              return(lower_special(form, hoist))
+                            else
+                              return(lower_call(form, hoist))
+                            end
                           end
                         end
                       end
@@ -963,7 +967,7 @@ setenv("do", {_stash = true, special = function (...)
     _i12 = _i12 + 1
   end
   return(s)
-end, tr = true, stmt = true})
+end, stmt = true, tr = true})
 setenv("%if", {_stash = true, special = function (cond, cons, alt)
   local _cond1 = compile(cond)
   indent_level = indent_level + 1
@@ -997,7 +1001,7 @@ setenv("%if", {_stash = true, special = function (cond, cons, alt)
   else
     return(s .. "\n")
   end
-end, tr = true, stmt = true})
+end, stmt = true, tr = true})
 setenv("while", {_stash = true, special = function (cond, form)
   local _cond3 = compile(cond)
   indent_level = indent_level + 1
@@ -1010,7 +1014,7 @@ setenv("while", {_stash = true, special = function (cond, form)
   else
     return(ind .. "while " .. _cond3 .. " do\n" .. body .. ind .. "end\n")
   end
-end, tr = true, stmt = true})
+end, stmt = true, tr = true})
 setenv("%for", {_stash = true, special = function (t, k, form)
   local _t1 = compile(t)
   local ind = indentation()
@@ -1023,7 +1027,7 @@ setenv("%for", {_stash = true, special = function (t, k, form)
   else
     return(ind .. "for (" .. k .. " in " .. _t1 .. ") {\n" .. body .. ind .. "}\n")
   end
-end, tr = true, stmt = true})
+end, stmt = true, tr = true})
 setenv("%try", {_stash = true, special = function (form)
   local e = unique("e")
   local ind = indentation()
@@ -1037,7 +1041,7 @@ setenv("%try", {_stash = true, special = function (form)
   indent_level = indent_level - 1
   local h = _x124
   return(ind .. "try {\n" .. body .. ind .. "}\n" .. ind .. "catch (" .. e .. ") {\n" .. h .. ind .. "}\n")
-end, tr = true, stmt = true})
+end, stmt = true, tr = true})
 setenv("%delete", {_stash = true, special = function (place)
   return(indentation() .. "delete " .. compile(place))
 end, stmt = true})
@@ -1054,7 +1058,7 @@ setenv("%global-function", {_stash = true, special = function (name, args, body)
   else
     return(compile({"set", name, {"%function", args, body}}, {_stash = true, stmt = true}))
   end
-end, tr = true, stmt = true})
+end, stmt = true, tr = true})
 setenv("%local-function", {_stash = true, special = function (name, args, body)
   if target == "lua" then
     local x = compile_function(args, body, {_stash = true, name = name, prefix = "local"})
@@ -1062,7 +1066,7 @@ setenv("%local-function", {_stash = true, special = function (name, args, body)
   else
     return(compile({"%local", name, {"%function", args, body}}, {_stash = true, stmt = true}))
   end
-end, tr = true, stmt = true})
+end, stmt = true, tr = true})
 setenv("return", {_stash = true, special = function (x)
   local _e27
   if nil63(x) then
@@ -1182,4 +1186,4 @@ setenv("%object", {_stash = true, special = function (...)
   end
   return(s .. "}")
 end})
-return({expand = expand, compile = compile, eval = eval, load = load, ["run-file"] = run_file, ["compile-file"] = compile_file})
+return({["run-file"] = run_file, compile = compile, load = load, eval = eval, ["compile-file"] = compile_file, expand = expand})

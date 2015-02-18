@@ -550,6 +550,7 @@ function setenv(k, ...)
       entry[_k] = v
     end
     frame[k] = entry
+    return(frame[k])
   end
 end
 function read_file(path)

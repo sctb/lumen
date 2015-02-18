@@ -425,6 +425,12 @@
         `(return ,e)
       e)))
 
+(define lower-set (args hoist stmt? tail?)
+  (let ((lh rh) args)
+    (add hoist `(set ,lh ,(lower rh hoist)))
+    (unless (and stmt? (not tail?))
+      lh)))
+
 (define lower-if (args hoist stmt? tail?)
   (let ((cond then else) args)
     (if (or stmt? tail?)
@@ -502,6 +508,7 @@
       (lower-infix? form) (lower-infix form hoist)
     (let ((x rest: args) form)
       (if (= x 'do) (lower-do args hoist stmt? tail?)
+          (= x 'set) (lower-set args hoist stmt? tail?)
           (= x '%if) (lower-if args hoist stmt? tail?)
           (= x '%try) (lower-try args hoist tail?)
           (= x 'while) (lower-while args hoist)

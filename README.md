@@ -123,8 +123,11 @@ hi
 ```
 
 #### Assignment
-Variables and list values can be updated using `set`:
+Variables and list values can be updated using `set`, which evaluates to the value that it updated:
 ```
+> (let x 10
+    (set x 15))
+15
 > (let x 10
     (set x 20)
     (+ x 5))
@@ -138,7 +141,6 @@ Variables and list values can be updated using `set`:
     a)
 (foo: 19)
 ```
-`set` expressions can appear anywhere, but they always return `nil`.
 
 #### Conditionals
 Conditional evaluation is done using an `if` expression. The value of an `if` expression is that of the branch whose condition evaluated to `true`:

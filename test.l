@@ -286,12 +286,12 @@ c"
     (set a 'bar)
     (test= 'bar a)
     (let x (set a 10)
-      (test= x nil)
-      (test= a 10))
+      (test= 10 x)
+      (test= 10 a))
     (set a false)
-    (test= a false)
+    (test= false a)
     (set a)
-    (test= a nil)))
+    (test= nil a)))
 
 (define-test wipe
   (let x '(:a :b :c)
@@ -460,7 +460,7 @@ c"
     (test= nil a))
   (let a 11
     (let b ((fn () (inc a)))
-      (test= nil b)
+      (test= 12 b)
       (test= 12 a))))
 
 (define-test guard

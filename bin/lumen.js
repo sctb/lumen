@@ -651,6 +651,7 @@ setenv = function (k) {
       entry[_k10] = v;
     }
     frame[k] = entry;
+    return(frame[k]);
   }
 };
 var fs = require("fs");
@@ -872,7 +873,7 @@ setenv("define", {_stash: true, macro: function (name, x) {
 setenv("define-global", {_stash: true, macro: function (name, x) {
   var _r35 = unstash(Array.prototype.slice.call(arguments, 2));
   var body = cut(_r35, 0);
-  setenv(name, {_stash: true, toplevel: true, variable: true});
+  setenv(name, {_stash: true, variable: true, toplevel: true});
   if (some63(body)) {
     return(join(["%global-function", name], bind42(x, body)));
   } else {
