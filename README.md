@@ -8,12 +8,21 @@ Every piece of code in Lumen is an expression, and expressions can be evaluated 
 17
 > -5e4
 -5000
-> "hi there"
-"hi there"
 > true
 true
 > false
 false
+```
+
+Strings are enclosed in quotation marks, and contain newlines. Special characters are escaped using a backslash:
+```
+> "hi there"
+"hi there"
+> "one
+two"
+"one\ntwo"
+> "a\"b"
+"a\"b"
 ```
 
 Variables evaluate to the values that they name:
@@ -24,7 +33,7 @@ function
 nan
 ```
 
-Another expression that evaluates to itself is `nil`, which represents nothingness, but it isn't printed back:
+`nil` represents nothingness, and it isn't printed back:
 ```
 > nil
 >
@@ -105,6 +114,50 @@ hi
 10
 ```
 
+### Conditionals
+Conditional evaluation is done using an `if` expression. The value of an `if` expression is that of the branch whose condition evaluated to `true`:
+```
+> (if true 10 20)
+10
+> (if false 10 20)
+20
+> (+ (if false 10 20) 5)
+25
+```
+
+`if` expressions can have any number of branches:
+```
+> (if true 10)
+10
+> (if false 10)
+>
+> (if false 1 false 2 false 3 true 10)
+10
+> (if false 1 false 2 false 3 10)
+10
+> (if true 9 (do (print 10) 11))
+9
+> (if false 9 (do (print 10) 11))
+10
+11
+```
+
+Comparing values is done using the `=` operation:
+```
+> (= 10 10)
+true
+> (if (= 10 10) "yes")
+"yes"
+> (if (= 10 "no") "yes")
+>
+```
+
+Lists are values that have unique identity, so two lists that contain the same values are not themselves the same:
+```
+> (if (= (list 1 2 3) (list 1 2 3)) "same" "different")
+"different"
+```
+
 ### Functions
 Functions in Lumen are values, just like numbers and strings. Expressions that start with `fn` evaluate to functions:
 ```
@@ -164,4 +217,73 @@ If the key's value is `true`, the same name as the key is used to bind the param
 > (let f (fn (a :b) (+ a b)) ; use a flag
     (f 10 b: 20))
 30
+```
+
+## Quotation
+Expressions can be quoted to prevent them from being evaluated using the `quote` operator:
+```
+> (quote (1 2 3))
+(1 2 3)
+```
+
+Expressions that evaluate to themselves are unaffected by quotation:
+```
+> (quote 10)
+10
+> (quote false)
+false
+```
+
+Quoting names and strings results in strings that would evaluate to the quoted expression:
+```
+> (quote a)
+"a"
+> (quote "hereanother")
+"\"hereanother\""
+> (quote "two\nlines")
+"\"two\\nlines\""
+```
+This is also true for expressions inside lists:
+```
+> (quote (a b c))
+("a" "b" "c")
+> (quote (1 2 b: baz z: "frob"))
+(1 2 b: "baz" z: "\"frob\"")
+```
+
+The shorthand for quotation is use a single quote:
+```
+> '17
+17
+> '(1 2 3)
+(1 2 3)
+> '(a b c)
+("a" "b" "c")
+```
+
+When you want to quote some parts of an expression, but want other parts to be evaluated, use `quasiquote` and `unquote`:
+```
+> (let x 10
+    (quasiquote (1 5 (unquote x))))
+(1 5 10)
+```
+
+The shorthand for quasiquotation is `\`` for `quasiquote` and `,` for `unquote`:
+```
+> (let x 10 `(1 5 ,x))
+(1 5 10)
+```
+
+Another way to unquote expressions is `unquote-splicing`, which takes the values contained in a nested list and places them in the enclosing one:
+```
+> (let a (1 2 3)
+    (quasiquote (9 8 (unquote-splicing a))))
+(9 8 1 2 3)
+```
+
+The shorthand for `unquote-splicing` is `,@`:
+```
+> (let a (1 2 3)
+    `(9 8 ,@a))
+(9 8 1 2 3)
 ```
