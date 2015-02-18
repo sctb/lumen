@@ -87,7 +87,7 @@ Variables for a limited scope are introduced using `let`:
 ```
 > (let (x 10 y 20)
     (+ x y))
-20
+30
 > (let x 41 (+ x 1))
 42
 ```
