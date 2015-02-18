@@ -406,7 +406,8 @@
 
 (define lower-do (args hoist stmt? tail?)
   (step x (almost args)
-    (add hoist (lower x hoist stmt?)))
+    (let-when e (lower x hoist stmt?)
+      (add hoist e)))
   (let e (lower (last args) hoist stmt? tail?)
     (if (and tail? (can-return? e))
         `(return ,e)
