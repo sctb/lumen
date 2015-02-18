@@ -257,6 +257,16 @@ Parameters in Lumen are always optional, and those without a supplied argument h
 10
 ```
 
+Functions can also take a variable number of arguments by either specifying a single parameter instead of a list, or by using the `rest` key:
+```
+> (let f (fn xs (last xs))
+    (f 1 2 3))
+3
+> (let f (fn (a rest: as) (+ a (last as)))
+    (f 10 11 12 13))
+23
+```
+
 #### Quotation
 Expressions can be prevented from being evaluated using the `quote` operator:
 ```
@@ -334,4 +344,17 @@ The shorthand for `unquote-splicing` is `,@`:
 > (let a (1 2 3)
     `(9 8 ,@a))
 (9 8 1 2 3)
+```
+
+#### Macros
+Macros allow you to write functions that manipulate expressions before they have been evaluated. Macros take expressions as parameters and return an expression:
+```
+> (define-macro when (condition rest: body)
+    `(if ,condition (do ,@body)))
+(macro: function)
+> (when true
+    (print 'hi)
+    (+ 10 20))
+hi
+30
 ```
