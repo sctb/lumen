@@ -122,6 +122,12 @@
   (test= 11 (- 12 (* 1 1)))
   (test= 10 (+ (/ 4 2) 8)))
 
+(define-test standalone
+  (test= 10 (do (+ illegal) 10))
+  (let x nil
+    (test= 9 (do (list nothing fooey (set x 10)) 9))
+    (test= 10 x)))
+
 (define-test string
   (test= 3 (# "foo"))
   (test= 3 (# "\"a\""))

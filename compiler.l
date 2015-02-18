@@ -404,10 +404,21 @@
 (define lower-body (body tail?)
   (lower-statement `(do ,@body) tail?))
 
+(define literal? (form)
+  (or (atom? form)
+      (= (hd form) '%array)
+      (= (hd form) '%object)))
+
+(define standalone? (form)
+  (and (obj? form)
+       (not (infix? (hd form)))
+       (not (literal? form))))
+
 (define lower-do (args hoist stmt? tail?)
   (step x (almost args)
     (let-when e (lower x hoist stmt?)
-      (add hoist e)))
+      (when (standalone? e)
+        (add hoist e))))
   (let e (lower (last args) hoist stmt? tail?)
     (if (and tail? (can-return? e))
         `(return ,e)
