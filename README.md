@@ -180,7 +180,7 @@ true
 >
 ```
 
-Lists are values that have unique identity, so two separate lists that happen contain the same values are not the same:
+Lists are values that have unique identity, so two separate lists that happen to contain the same values are not the same:
 ```
 > (= (list 1 2 3) (list 1 2 3))
 false
