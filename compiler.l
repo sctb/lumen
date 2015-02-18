@@ -412,7 +412,8 @@
 (define standalone? (form)
   (and (obj? form)
        (not (infix? (hd form)))
-       (not (literal? form))))
+       (not (literal? form))
+       (not (= 'get (hd form)))))
 
 (define lower-do (args hoist stmt? tail?)
   (step x (almost args)
