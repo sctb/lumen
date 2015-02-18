@@ -14,7 +14,7 @@ true
 false
 ```
 
-Strings are enclosed in quotation marks, and contain newlines. Special characters are escaped using a backslash:
+Strings are enclosed in quotation marks, and may contain newlines. Special characters are escaped using a backslash:
 ```
 > "hi there"
 "hi there"
