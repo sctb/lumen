@@ -25,7 +25,7 @@ two"
 "a\"b"
 ```
 
-`nil` represents nothingness, and it isn't printed back:
+`nil` represents nothingness, and it isn't printed back at the command line:
 ```
 > nil
 >
@@ -66,22 +66,6 @@ Positional values can be gotten out of lists using the `at` operator, and keys u
 20
 ```
 
-It's common to access the values of a list variable where the position or key is known in advance, so there is a shorthand for that:
-```
-> (let x (list foo: 10 bar: 20)
-    x.bar)
-20
-> (let x (list foo: 10 bar: 20)
-    (get x "bar")) ; equivalent
-20
-> (let x (list 10 20 30)
-    x.2)
-30
-> (let x (list 10 20 30)
-    (at x 2)) ; equivalent
-30
-```
-
 A shortcut for a key whose value is `true` looks like this, called a flag:
 ```
 > (list :yes)
@@ -89,7 +73,7 @@ A shortcut for a key whose value is `true` looks like this, called a flag:
 ```
 
 #### Variables
-Variables are defined using `define` and `define-global`. Variables declared with `define` are available for use anywhere in subsequent expressions in the same scope, and `define-global` makes them globally available.
+Variables are declared using `define` and `define-global`. Variables declared with `define` are available for use anywhere in subsequent expressions in the same scope, and `define-global` makes them globally available.
 ```
 > (define-global zzz "ho")
 > zzz
@@ -120,6 +104,22 @@ You can see that `let` accepts a list of names and values, called bindings, or i
     (let y (+ x 1) y))
 hi
 10
+```
+
+It's common to access the values of a list variable where the position or key is known in advance, so there is a shorthand for that:
+```
+> (let x (list foo: 10 bar: 20)
+    x.bar)
+20
+> (let x (list foo: 10 bar: 20)
+    (get x "bar")) ; equivalent
+20
+> (let x (list 10 20 30)
+    x.2)
+30
+> (let x (list 10 20 30)
+    (at x 2)) ; equivalent
+30
 ```
 
 #### Assignment
@@ -180,10 +180,10 @@ true
 >
 ```
 
-Lists are values that have unique identity, so two lists that contain the same values are not themselves the same:
+Lists are values that have unique identity, so two separate lists that happen contain the same values are not the same:
 ```
-> (if (= (list 1 2 3) (list 1 2 3)) "same" "different")
-"different"
+> (= (list 1 2 3) (list 1 2 3))
+false
 ```
 
 #### Functions
@@ -193,7 +193,7 @@ Functions in Lumen are values, just like numbers and strings. Expressions that s
 function
 ```
 
-Remember that functions can be called by placing them first in a list expression. The list that appears after `fn` identifies the function's parameters:
+Functions can be called by placing them first in a list expression. The list that appears after the name `fn` identifies the function's parameters:
 ```
 > (fn (a) (+ a 10))
 function
@@ -247,6 +247,16 @@ If the key's value is `true`, the same name as the key is used to bind the param
 30
 ```
 
+Parameters in Lumen are always optional, and those without a supplied argument have the value `nil`:
+```
+> (let f (fn (a) a)
+    (f))
+>
+> (let f (fn (:b) (if (= b nil) 10 20))
+    (f a: 99))
+10
+```
+
 #### Quotation
 Expressions can be quoted to prevent them from being evaluated using the `quote` operator:
 ```
@@ -271,6 +281,7 @@ Quoting names and strings results in strings that would evaluate to the quoted e
 > (quote "two\nlines")
 "\"two\\nlines\""
 ```
+
 This is also true for expressions inside lists:
 ```
 > (quote (a b c))
