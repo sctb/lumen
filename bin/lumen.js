@@ -1095,9 +1095,7 @@ var repl = function () {
     buf = buf + s;
     var more = [];
     var form = reader["read-string"](buf, more);
-    if (form === more) {
-      return(write("... "));
-    } else {
+    if (!(form === more)) {
       eval_print(form);
       buf = "";
       return(write("> "));

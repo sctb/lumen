@@ -960,9 +960,7 @@ local function repl()
     buf = buf .. s
     local more = {}
     local form = reader["read-string"](buf, more)
-    if form == more then
-      return(write("... "))
-    else
+    if not (form == more) then
       eval_print(form)
       buf = ""
       return(write("> "))
