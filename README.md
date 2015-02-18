@@ -66,7 +66,7 @@ Positional values can be gotten out of lists using the `at` operator, and keys u
 20
 ```
 
-It's common to access the key values of a list variable, so there is a shorthand for that:
+It's common to access the values of a list variable where the position or key is known in advance, so there is a shorthand for that:
 ```
 > (let x (list foo: 10 bar: 20)
     x.bar)
@@ -74,6 +74,12 @@ It's common to access the key values of a list variable, so there is a shorthand
 > (let x (list foo: 10 bar: 20)
     (get x "bar")) ; equivalent
 20
+> (let x (list 10 20 30)
+    x.2)
+30
+> (let x (list 10 20 30)
+    (at x 2)) ; equivalent
+30
 ```
 
 A shortcut for a key whose value is `true` looks like this, called a flag:
