@@ -1,7 +1,7 @@
-local delimiters = {["("] = true, [")"] = true, [";"] = true, ["\n"] = true}
-local whitespace = {[" "] = true, ["\t"] = true, ["\n"] = true}
+local delimiters = {["("] = true, ["\n"] = true, [")"] = true, [";"] = true}
+local whitespace = {["\n"] = true, ["\t"] = true, [" "] = true}
 local function stream(str, more)
-  return({pos = 0, string = str, len = _35(str), more = more})
+  return({len = _35(str), more = more, pos = 0, string = str})
 end
 local function peek_char(s)
   if s.pos < s.len then
@@ -214,4 +214,4 @@ read_table[","] = function (s)
     return(wrap(s, "unquote"))
   end
 end
-return({stream = stream, read = read, ["read-all"] = read_all, ["read-string"] = read_string})
+return({["read-string"] = read_string, ["read-all"] = read_all, stream = stream, read = read})

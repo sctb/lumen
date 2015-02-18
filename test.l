@@ -34,6 +34,7 @@
 (define-test reader
   (let read reader.read-string
     (test= nil (read ""))
+    (test= "nil" (read "nil"))
     (test= 17 (read "17"))
     (test= 0.015 (read "1.5e-2"))
     (test= true (read "true"))

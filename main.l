@@ -28,7 +28,7 @@
             (process.stdin.on 'data rep1))
     lua: (while true
            (let s (io.read)
-             (if s (rep1 s) (break))))))
+             (if s (rep1 (cat s "\n")) (break))))))
 
 (define usage ()
   (print "usage: lumen [options] <object files>")
