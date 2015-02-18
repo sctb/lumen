@@ -384,10 +384,20 @@ c"
   (test= false (empty? (obj :a)))
   (test= false (empty? '(b: false))))
 
+(define-test at
+  (let l '(a b c d)
+    (test= 'a (at l 0))
+    (test= 'b l.1)
+    (set (at l 0) 9)
+    (test= 9 (at l 0))
+    (set l.3 10)
+    (test= 10 (at l 3))))
+
 (define-test get-set
   (let t (obj)
     (set (get t 'foo) 'bar)
     (test= 'bar (get t 'foo))
+    (test= 'bar t.foo)
     (test= 'bar (get t "foo"))
     (let k 'foo
       (test= 'bar (get t k)))

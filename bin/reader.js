@@ -1,7 +1,7 @@
-var delimiters = {";": true, "(": true, ")": true, "\n": true};
-var whitespace = {" ": true, "\t": true, "\n": true};
+var delimiters = {";": true, "(": true, "\n": true, ")": true};
+var whitespace = {"\t": true, "\n": true, " ": true};
 var stream = function (str, more) {
-  return({string: str, more: more, len: _35(str), pos: 0});
+  return({more: more, string: str, len: _35(str), pos: 0});
 };
 var peek_char = function (s) {
   if (s.pos < s.len) {
@@ -115,7 +115,12 @@ read_table[""] = function (s) {
       } else {
         if (dot63 && !one63(str)) {
           return(reduce(function (a, b) {
-            return(["get", b, ["quote", a]]);
+            var n = number(a);
+            if (is63(n)) {
+              return(["at", b, n]);
+            } else {
+              return(["get", b, ["quote", a]]);
+            }
           }, reverse(split(str, "."))));
         } else {
           return(str);

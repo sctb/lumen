@@ -80,7 +80,10 @@
 	  (= str "false") false
           (and dot? (not (one? str)))
           (reduce (fn (a b)
-                    `(get ,b (quote ,a)))
+                    (let n (number a)
+                      (if (is? n)
+                          `(at ,b ,n)
+                        `(get ,b (quote ,a)))))
                   (reverse (split str ".")))
         str))))
 

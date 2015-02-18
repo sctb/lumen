@@ -881,8 +881,8 @@ setenv("define-global", {_stash: true, macro: function (name, x) {
 }});
 setenv("with-frame", {_stash: true, macro: function () {
   var _r37 = unstash(Array.prototype.slice.call(arguments, 0));
-  var body = cut(_r37, 0);
   var scope = _r37.scope;
+  var body = cut(_r37, 0);
   var x = unique("x");
   var _x135 = ["obj"];
   _x135._scope = scope;
