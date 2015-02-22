@@ -52,19 +52,17 @@
 (define-macro let (bs rest: body)
   (if (atom? bs) `(let (,bs ,(hd body)) ,@(tl body))
       (none? bs) `(do ,@body)
-    (let (renames () locals () (lh rh) bs)
-      (each (k (id val)) (bind lh rh)
-        (when (number? k)
-          (if (or (bound? id) (reserved? id) (toplevel?))
-              (let id1 (unique id)
-                (add renames id)
-                (add renames id1)
-                (set id id1))
-            (setenv id :variable))
-          (add locals `(%local ,id ,val))))
-      `(do ,@locals
-           (let-symbol ,renames
-             (let ,(cut bs 2) ,@body))))))
+    (let ((lh rh rest: bs2) bs
+          (id val rest: bs1) (bind lh rh))
+      (let renames ()
+        (if (or (bound? id) (reserved? id) (toplevel?))
+            (let id1 (unique id)
+              (set renames (list id id1))
+              (set id id1))
+          (setenv id :variable))
+        `(do (%local ,id ,val)
+             (let-symbol ,renames
+               (let ,(join bs1 bs2) ,@body)))))))
 
 (define-macro with (x v rest: body)
   `(let (,x ,v) ,@body ,x))

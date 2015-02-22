@@ -79,18 +79,16 @@
   k)
 
 (define-global bind (lh rh)
-  (if (and (obj? lh) (obj? rh))
-      (let-unique (id)
-	`((,id ,rh) ,@(bind lh id)))
-      (atom? lh) `((,lh ,rh))
-    (with bs ()
-      (each (k v) lh
-        (let x (if (= k 'rest)
-                   `(cut ,rh ,(# lh))
-                 `(get ,rh ',(bias k)))
-          (when (is? k)
-            (let k (if (= v true) k v)
-              (join! bs (bind k x)))))))))
+  (if (atom? lh) `(,lh ,rh)
+    (let-unique (id)
+      (with bs (list id rh)
+        (each (k v) lh
+          (let x (if (= k 'rest)
+                     `(cut ,id ,(# lh))
+                   `(get ,id ',(bias k)))
+            (when (is? k)
+              (let k (if (= v true) k v)
+                (join! bs (bind k x))))))))))
 
 (define-global bind* (args body)
   (let args1 ()

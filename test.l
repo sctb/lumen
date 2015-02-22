@@ -580,7 +580,12 @@ c"
     (test= 10 a)
     (test= 20 b)
     (test= 17 foo)
-    (test= '(1 2 3) bar)))
+    (test= '(1 2 3) bar))
+  (let yy (list 1 2 3)
+    (let ((xx yy rest: zz) yy)
+      (test= 1 xx)
+      (test= 2 yy)
+      (test= '(3) zz))))
 
 (define-test let-macro
   (let-macro ((a () 17)
