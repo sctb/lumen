@@ -90,6 +90,12 @@ Variables for a limited scope are introduced using `let`:
 30
 > (let x 41 (+ x 1))
 42
+> (let x 1
+    (let x 2
+      (print x))
+    (print x))
+2
+1
 ```
 
 You can see that `let` accepts a list of names and values, called bindings, or it can work with a single binding. More than one expression can follow the bindings, which works like `do`:
@@ -284,7 +290,7 @@ Variables can be bound to values in a list at certain positions or key:
     b)
 2
 ```
-There is a special key called `rest` which binds the remainder of the list:
+The `rest` key works with destructuring as it does with function parameters, which binds the remainder of the list:
 ```
 > (let ((a rest: as) (list 1 2 3))
     (list a as))
