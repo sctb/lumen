@@ -267,6 +267,87 @@ Functions can also take a variable number of arguments by either specifying a si
 23
 ```
 
+#### Destructuring
+Variables can be bound to values in a list at certain positions or key:
+```
+> (let ((a b c) (list 1 2 3))
+    b)
+2
+> ((fn ((a b c)) c) (list 1 2 3))
+3
+> (let ((a b: my-b) (list 1 b: 2))
+    my-b)
+2
+> ((fn ((a b: my-b)) (list a my-b)) (list 1 b: 2))
+(1 2)
+> (let ((a :b) (list 1 b: 2))
+    b)
+2
+```
+There is a special key called `rest` which binds the remainder of the list:
+```
+> (let ((a rest: as) (list 1 2 3))
+    (list a as))
+(1 (2 3))
+> (let ((a :rest) (list 1 2 3))
+    (list a rest))
+(1 (2 3))
+```
+
+#### Iteration
+There are several iteration mechanisms in Lumen. The simplest is a `while` loop:
+```
+> (let i 3
+    (while (> i 0)
+      (print (dec i))))
+2
+1
+0
+```
+The shorthand for iterating from 0 to N is `for`:
+```
+> (for i 3
+    (print i))
+0
+1
+2
+```
+You can enumerate the keys and values of a list with `each`:
+```
+> (each (k v) (list 1 2 a: 10 b: 20)
+    (print (cat k " " v)))
+1 1
+2 2
+b 20
+a 10
+> (each v (list 1 2 a: 10 b: 20) ; values only
+    (print v))
+1
+2
+20
+10
+> (each (k (a b)) ; destructuring
+      (list (list 10 20) bar: (list "a" "b"))
+    (print (cat k " " a " " b)))
+1 10 20
+bar a b
+```
+`each` will bind keys and values in any order. If you want only the positional values of a list, you can enumerate them in order using `step`:
+```
+> (step x (list 1 2 3)
+    (print x))
+1
+2
+3
+> (step (a b) (list (list 1 2) (list 10 20)) ; destructuring
+    (print a)
+    (print b))
+1
+2
+10
+20
+```
+
 #### Quotation
 Expressions can be prevented from being evaluated using the `quote` operator:
 ```
