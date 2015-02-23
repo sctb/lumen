@@ -1,7 +1,7 @@
 Lumen
 =
 Lumen is a Lisp for Lua and JavaScript. You can get started by running `bin/lumen` on a machine with Node.js, Lua, or LuaJIT installed.
-#### Introduction
+## Introduction
 Every piece of code in Lumen is an expression, and expressions can be evaluated to give values. Lumen has a few kinds of expressions that evaluate to themselves:
 ```
 > 17
