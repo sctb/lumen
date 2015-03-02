@@ -780,7 +780,7 @@ setenv("with-frame", {_stash = true, macro = function (...)
   local x = unique("x")
   local _x150 = {"obj"}
   _x150._scope = scope
-  return({"do", {"add", "environment", _x150}, {"let", x, join({"do"}, body), {"drop", "environment"}, x}})
+  return({"do", {"add", "environment", _x150}, {"with", x, join({"do"}, body), {"drop", "environment"}}})
 end})
 setenv("with-bindings", {_stash = true, macro = function (_x159, ...)
   local _id34 = _x159

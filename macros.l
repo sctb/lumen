@@ -106,9 +106,8 @@
 (define-macro with-frame (rest: body :scope)
   (let-unique (x)
     `(do (add environment (obj _scope: ,scope))
-         (let ,x (do ,@body)
-           (drop environment)
-           ,x))))
+         (with ,x (do ,@body)
+           (drop environment)))))
 
 (define-macro with-bindings ((names) rest: body)
   (let-unique (x)
