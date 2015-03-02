@@ -103,15 +103,15 @@
       `(%global-function ,name ,@(bind* x body))
     `(set ,name ,x)))
 
-(define-macro with-frame (rest: body :scope)
+(define-macro with-frame body
   (let-unique (x)
-    `(do (add environment (obj _scope: ,scope))
+    `(do (add environment (obj))
          (with ,x (do ,@body)
            (drop environment)))))
 
 (define-macro with-bindings ((names) rest: body)
   (let-unique (x)
-   `(with-frame :scope
+   `(with-frame
       (each ,x ,names
         (setenv ,x :variable))
       ,@body)))

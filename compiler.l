@@ -33,7 +33,7 @@
 
 (define variable? (k)
   (let b (first (fn (frame)
-                  (or (get frame k) frame._scope))
+                  (get frame k))
                 (reverse environment))
     (and (obj? b) (is? b.variable))))
 

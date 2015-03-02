@@ -512,7 +512,12 @@ c"
      (let (zz 21)
        (test= 21 zz))
      (test= 20 zz))
-   20))
+   20)
+  (let q 9
+    ((fn ()
+       (let q 10
+         (test= 10 q))
+       (test= 9 q)))))
 
 (define-test with
   (test= 10 (with x 9 (inc x))))
