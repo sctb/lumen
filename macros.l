@@ -116,10 +116,6 @@
         (setenv ,x :variable))
       ,@body)))
 
-(define-macro let-fn ((name args rest: fn-body) rest: body)
-  `(let ,name (fn ,args ,@fn-body)
-     ,@body))
-
 (define-macro let-macro (definitions rest: body)
   (with-frame
     (map (fn (m)

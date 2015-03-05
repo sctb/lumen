@@ -437,10 +437,6 @@ c"
     (test= 40 ((fn (n) (+ n 10)) 30))
     (test= '(2 3 4) (map (fn (x) (+ x 1)) '(1 2 3)))))
 
-(define-test let-fn
-  (let-fn (f (n) (+ n 10))
-    (test= 20 (f 10))))
-
 (define-test define
   (define x 20)
   (define f () 42)
