@@ -69,25 +69,17 @@
       (list x y))))
 
 (define-reader ("" s) ; atom
-  (let (str "" dot? false)
+  (let (str "")
     (while true
       (let c (peek-char s)
 	(if (and c (and (not (get whitespace c))
 			(not (get delimiters c))))
-	    (do (if (= c ".") (set dot? true))
-                (cat! str (read-char s)))
+	    (cat! str (read-char s))
 	  (break))))
     (let n (number str)
       (if (is? n) n
 	  (= str "true") true
 	  (= str "false") false
-          (and dot? (not (one? str)))
-          (reduce (fn (a b)
-                    (let n (number a)
-                      (if (is? n)
-                          `(at ,b ,n)
-                        `(get ,b (quote ,a)))))
-                  (reverse (split str ".")))
         str))))
 
 (define-reader ("(" s)

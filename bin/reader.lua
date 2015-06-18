@@ -1,12 +1,12 @@
-local delimiters = {["\n"] = true, ["("] = true, [")"] = true, [";"] = true}
+local delimiters = {["\n"] = true, [")"] = true, [";"] = true, ["("] = true}
 local whitespace = {["\n"] = true, ["\t"] = true, [" "] = true}
 local function stream(str, more)
-  return({len = _35(str), string = str, pos = 0, more = more})
+  return({len = _35(str), string = str, more = more, pos = 0})
 end
 local function peek_char(s)
   local _id = s
-  local string = _id.string
   local len = _id.len
+  local string = _id.string
   local pos = _id.pos
   if pos < len then
     return(char(string, pos))
@@ -76,8 +76,8 @@ local function flag63(atom)
 end
 local function expected(s, c)
   local _id1 = s
-  local pos = _id1.pos
   local more = _id1.more
+  local pos = _id1.pos
   local _id2 = more
   local _e
   if _id2 then
@@ -98,13 +98,9 @@ local function wrap(s, x)
 end
 read_table[""] = function (s)
   local str = ""
-  local dot63 = false
   while true do
     local c = peek_char(s)
     if c and (not whitespace[c] and not delimiters[c]) then
-      if c == "." then
-        dot63 = true
-      end
       str = str .. read_char(s)
     else
       break
@@ -120,18 +116,7 @@ read_table[""] = function (s)
       if str == "false" then
         return(false)
       else
-        if dot63 and not one63(str) then
-          return(reduce(function (a, b)
-            local _n = number(a)
-            if is63(_n) then
-              return({"at", b, _n})
-            else
-              return({"get", b, {"quote", a}})
-            end
-          end, reverse(split(str, "."))))
-        else
-          return(str)
-        end
+        return(str)
       end
     end
   end
@@ -226,4 +211,4 @@ read_table[","] = function (s)
     return(wrap(s, "unquote"))
   end
 end
-return({["read-all"] = read_all, stream = stream, read = read, ["read-string"] = read_string})
+return({stream = stream, read = read, ["read-all"] = read_all, ["read-string"] = read_string})

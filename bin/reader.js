@@ -1,13 +1,13 @@
-var delimiters = {";": true, "(": true, "\n": true, ")": true};
-var whitespace = {"\t": true, "\n": true, " ": true};
+var delimiters = {"(": true, ";": true, ")": true, "\n": true};
+var whitespace = {"\t": true, " ": true, "\n": true};
 var stream = function (str, more) {
-  return({more: more, string: str, len: _35(str), pos: 0});
+  return({len: _35(str), string: str, more: more, pos: 0});
 };
 var peek_char = function (s) {
   var _id = s;
   var len = _id.len;
-  var string = _id.string;
   var pos = _id.pos;
+  var string = _id.string;
   if (pos < len) {
     return(char(string, pos));
   }
@@ -98,13 +98,9 @@ var wrap = function (s, x) {
 };
 read_table[""] = function (s) {
   var str = "";
-  var dot63 = false;
   while (true) {
     var c = peek_char(s);
     if (c && (!whitespace[c] && !delimiters[c])) {
-      if (c === ".") {
-        dot63 = true;
-      }
       str = str + read_char(s);
     } else {
       break;
@@ -120,18 +116,7 @@ read_table[""] = function (s) {
       if (str === "false") {
         return(false);
       } else {
-        if (dot63 && !one63(str)) {
-          return(reduce(function (a, b) {
-            var _n = number(a);
-            if (is63(_n)) {
-              return(["at", b, _n]);
-            } else {
-              return(["get", b, ["quote", a]]);
-            }
-          }, reverse(split(str, "."))));
-        } else {
-          return(str);
-        }
+        return(str);
       }
     }
   }
