@@ -32,7 +32,7 @@
   (print (cat " " passed " passed, " failed " failed")))
 
 (define-test reader
-  (let read reader.read-string
+  (let read (get reader 'read-string)
     (test= nil (read ""))
     (test= "nil" (read "nil"))
     (test= 17 (read "17"))
@@ -53,7 +53,7 @@
     (test= true (get (read "(:a)") 'a))))
 
 (define-test read-more
-  (let read reader.read-string
+  (let read (get reader 'read-string)
     (test= 17 (read "17" true))
     (let more ()
       (test= more (read "(open" more))
@@ -255,7 +255,6 @@ c"
 	t (obj f: f))
     (test= 42 (f))
     (test= 42 ((at l 0)))
-    (test= 42 (t.f))
     (test= 42 ((get t 'f)))
     (test= nil ((fn () (return))))
     (test= 10 ((fn (x) (- x 2)) 12))))
@@ -295,14 +294,14 @@ c"
 
 (define-test wipe
   (let x '(:a :b :c)
-    (wipe x.a)
-    (test= nil x.a)
-    (test= true x.b)
+    (wipe (get x 'a))
+    (test= nil (get x 'a))
+    (test= true (get x 'b))
     (wipe (get x 'c))
-    (test= nil x.c)
-    (test= true x.b)
-    (wipe x.b)
-    (test= nil x.b)
+    (test= nil (get x 'c))
+    (test= true (get x 'b))
+    (wipe (get x 'b))
+    (test= nil (get x 'b))
     (test= () x)))
 
 (define-test do
@@ -394,17 +393,16 @@ c"
 (define-test at
   (let l '(a b c d)
     (test= 'a (at l 0))
-    (test= 'b l.1)
+    (test= 'b (at l 1))
     (set (at l 0) 9)
     (test= 9 (at l 0))
-    (set l.3 10)
+    (set (at l 3) 10)
     (test= 10 (at l 3))))
 
 (define-test get-set
   (let t (obj)
     (set (get t 'foo) 'bar)
     (test= 'bar (get t 'foo))
-    (test= 'bar t.foo)
     (test= 'bar (get t "foo"))
     (let k 'foo
       (test= 'bar (get t k)))
@@ -710,9 +708,9 @@ c"
   (test= '(a b: 10) (join '(a :b) (obj b: 10)))
   (test= '(b: 10) (join (obj :b) '(b: 10)))
   (let t (join '(a b: 1) '(b c: 2))
-    (test= 1 t.b)
-    (test= 2 t.c)
-    (test= 'b t.1)))
+    (test= 1 (get t 'b))
+    (test= 2 (get t 'c))
+    (test= 'b (at t 1))))
 
 (define-test reverse
   (test= () (reverse ()))
@@ -863,7 +861,7 @@ c"
   (test= 42 (apply (fn ((:foo)) foo) (list (list foo: 42)))))
 
 (define-test eval
-  (let eval compiler.eval
+  (let eval (get compiler 'eval)
     (test= 4 (eval '(+ 2 2)))
     (test= 5 (eval '(let a 3 (+ 2 a))))
     (test= 9 (eval '(do (define x 7) (+ x 2))))

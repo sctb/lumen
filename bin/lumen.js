@@ -667,7 +667,8 @@ print = function (x) {
   return(console.log(x));
 };
 write = function (x) {
-  return(process.stdout.write(x));
+  var out = process.stdout;
+  return(out.write(x));
 };
 exit = function (code) {
   return(process.exit(code));
@@ -1103,8 +1104,9 @@ var repl = function () {
     }
   };
   write("> ");
-  process.stdin.setEncoding("utf8");
-  return(process.stdin.on("data", rep1));
+  var _in = process.stdin;
+  _in.setEncoding("utf8");
+  return(_in.on("data", rep1));
 };
 var usage = function () {
   print("usage: lumen [options] <object files>");

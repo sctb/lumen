@@ -7,11 +7,13 @@
   (obj pos: 0 string: str len: (# str) more: more))
 
 (define peek-char (s)
-  (if (< s.pos s.len) (char s.string s.pos)))
+  (let ((:pos :len :string) s)
+    (when (< pos len)
+      (char string pos))))
 
 (define read-char (s)
   (let c (peek-char s)
-    (if c (do (inc s.pos) c))))
+    (if c (do (inc (get s 'pos)) c))))
 
 (define skip-non-code (s)
   (while true
@@ -58,11 +60,12 @@
        (= (char atom 0) ":")))
 
 (define expected (s c)
-  (or s.more (error (cat "Expected " c " at " s.pos))))
+  (let ((:more :pos) s)
+    (or more (error (cat "Expected " c " at " pos)))))
 
 (define wrap (s x)
   (let y (read s)
-    (if (= y s.more) y
+    (if (= y (get s 'more)) y
       (list x y))))
 
 (define-reader ("" s) ; atom
@@ -105,7 +108,7 @@
                 (add l x)))))))))
 
 (define-reader (")" s)
-  (error (cat "Unexpected ) at " s.pos)))
+  (error (cat "Unexpected ) at " (get s 'pos))))
 
 (define-reader ("\"" s)
   (read-char s)

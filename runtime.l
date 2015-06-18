@@ -11,14 +11,14 @@
 (define-global is? (x) (not (nil? x)))
 
 (define-global # (x)
-  (target js: (or x.length 0) lua: |#x|))
+  (target js: (or (get x 'length) 0) lua: |#x|))
 
 (define-global none? (x) (= (# x) 0))
 (define-global some? (x) (> (# x) 0))
 (define-global one? (x) (= (# x) 1))
 (define-global two? (x) (= (# x) 2))
 
-(define-global hd (l) l.0)
+(define-global hd (l) (at l 0))
 
 (target js: (define-global type (x) (typeof x)))
 
@@ -46,8 +46,8 @@
 (target lua: (define str string))
 
 (define-global clip (s from upto)
-  (target js: (s.substring from upto)
-          lua: (str.sub s (+ from 1) upto)))
+  (target js: ((get s 'substring) from upto)
+          lua: ((get str 'sub) s (+ from 1) upto)))
 
 (define-global cut (x from upto)
   (with l ()
@@ -78,12 +78,12 @@
 (define-global tl (l) (cut l 1))
 
 (define-global char (s n)
-  (target js: (s.charAt n) lua: (clip s n (+ n 1))))
+  (target js: ((get s 'charAt) n) lua: (clip s n (+ n 1))))
 
 (define-global code (s n)
   (target
-    js: (s.charCodeAt n)
-    lua: (str.byte s (if n (+ n 1)))))
+    js: ((get s 'charCodeAt) n)
+    lua: ((get str 'byte) s (if n (+ n 1)))))
 
 (define-global string-literal? (x)
   (and (string? x) (= (char x 0) "\"")))
@@ -92,10 +92,12 @@
   (and (string? x) (= (char x 0) "|")))
 
 (define-global add (l x)
-  (target js: (do (l.push x) nil) lua: (table.insert l x)))
+  (target js: (do ((get l 'push) x) nil)
+          lua: ((get table 'insert) l x)))
 
 (define-global drop (l)
-  (target js: (l.pop) lua: (table.remove l)))
+  (target js: ((get l 'pop))
+          lua: ((get table 'remove) l)))
 
 (define-global last (l)
   (at l (edge l)))
@@ -151,8 +153,8 @@
 
 (define-global sort (l f)
   (target
-    lua: (do (table.sort l f) l)
-    js: (l.sort (when f (fn (a b) (if (f a b) -1 1))))))
+    lua: (do ((get table 'sort) l f) l)
+    js: ((get l 'sort) (when f (fn (a b) (if (f a b) -1 1))))))
 
 (define-global map (f x)
   (with t ()
@@ -193,7 +195,7 @@
 (define-global unstash (args)
   (if (none? args) ()
     (let l (last args)
-      (if (and (obj? l) l._stash)
+      (if (and (obj? l) (get l '_stash))
           (let args1 (almost args)
             (each (k v) l
               (unless (= k '_stash)
@@ -203,10 +205,10 @@
 
 (define-global search (s pattern start)
   (target
-    js: (let i (s.indexOf pattern start)
+    js: (let i ((get s 'indexOf) pattern start)
           (if (>= i 0) i))
     lua: (let (start (if start (+ start 1))
-               i (str.find s pattern start true))
+               i ((get str 'find) s pattern start true))
            (and i (- i 1)))))
 
 (define-global split (s sep)
@@ -261,7 +263,7 @@
         (return false))))
   true)
 
-(target js: (define tostring (x) (x.toString)))
+(target js: (define tostring (x) ((get x 'toString))))
 
 (define-global escape (s)
   (let s1 "\""
@@ -297,11 +299,11 @@
         (set sp " "))
       (cat s  ")"))))
 
-(target lua: (define values (or unpack table.unpack)))
+(target lua: (define values (or unpack (get table 'unpack))))
 
 (define-global apply (f args)
   (let args (stash args)
-    (target js: (f.apply f args)
+    (target js: ((get f 'apply) f args)
             lua: (f (values args)))))
 
 (define-global call (f) (f))
@@ -315,7 +317,7 @@
 
 (define-global setenv (k rest: keys)
   (when (string? k)
-    (let (frame (if keys.toplevel
+    (let (frame (if (get keys 'toplevel)
                     (hd environment)
                   (last environment))
           entry (or (get frame k) (obj)))
@@ -327,45 +329,48 @@
 
 (define-global read-file (path)
   (target
-    js: (fs.readFileSync path 'utf8)
-    lua: (let f (io.open path)
-	   (f.read f '*a))))
+    js: ((get fs 'readFileSync) path 'utf8)
+    lua: (let f ((get io 'open) path)
+	   ((get f 'read) f '*a))))
 
 (define-global write-file (path data)
   (target
-    js: (fs.writeFileSync path data 'utf8)
-    lua: (let f (io.open path 'w)
-           (f.write f data))))
+    js: ((get fs 'writeFileSync) path data 'utf8)
+    lua: (let f ((get io 'open) path 'w)
+           ((get f 'write) f data))))
 
-(target js: (define-global print (x) (console.log x)))
+(target js: (define-global print (x) ((get console 'log) x)))
 
 (define-global write (x)
-  (target js: (process.stdout.write x) lua: (io.write x)))
+  (target js: (let out (get process 'stdout)
+                ((get out 'write) x))
+          lua: ((get io 'write) x)))
 
 (define-global exit (code)
-  (target js: (process.exit code) lua: (os.exit code)))
+  (target js: ((get process 'exit) code)
+          lua: ((get os 'exit) code)))
 
 (define-global argv
-  (target js: (cut process.argv 2) lua: arg))
+  (target js: (cut (get process 'argv) 2) lua: arg))
 
 (define math (target js: Math lua: math))
 
-(define-global abs math.abs)
-(define-global acos math.acos)
-(define-global asin math.asin)
-(define-global atan math.atan)
-(define-global atan2 math.atan2)
-(define-global ceil math.ceil)
-(define-global cos math.cos)
-(define-global floor math.floor)
-(define-global log math.log)
-(define-global log10 math.log10)
-(define-global max math.max)
-(define-global min math.min)
-(define-global pow math.pow)
-(define-global random math.random)
-(define-global sin math.sin)
-(define-global sinh math.sinh)
-(define-global sqrt math.sqrt)
-(define-global tan math.tan)
-(define-global tanh math.tanh)
+(define-global abs (get math 'abs))
+(define-global acos (get math 'acos))
+(define-global asin (get math 'asin))
+(define-global atan (get math 'atan))
+(define-global atan2 (get math 'atan2))
+(define-global ceil (get math 'ceil))
+(define-global cos (get math 'cos))
+(define-global floor (get math 'floor))
+(define-global log (get math 'log))
+(define-global log10 (get math 'log10))
+(define-global max (get math 'max))
+(define-global min (get math 'min))
+(define-global pow (get math 'pow))
+(define-global random (get math 'random))
+(define-global sin (get math 'sin))
+(define-global sinh (get math 'sinh))
+(define-global sqrt (get math 'sqrt))
+(define-global tan (get math 'tan))
+(define-global tanh (get math 'tanh))

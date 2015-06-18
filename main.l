@@ -4,29 +4,30 @@
 (define compiler (require 'compiler))
 
 (define eval-print (form)
-  (let ((ok x) (guard (compiler.eval form)))
+  (let ((ok x) (guard ((get compiler 'eval) form)))
     (if (not ok) (print (cat "error: " x))
         (is? x) (print (string x)))))
 
 (define rep (s)
-  (eval-print (reader.read-string s)))
+  (eval-print ((get reader 'read-string) s)))
 
 (define repl ()
   (let buf ""
     (define rep1 (s)
       (cat! buf s)
       (let (more ()
-            form (reader.read-string buf more))
+            form ((get reader 'read-string) buf more))
           (unless (= form more)
             (eval-print form)
             (set buf "")
             (write "> ")))))
   (write "> ")
   (target
-    js: (do (process.stdin.setEncoding 'utf8)
-            (process.stdin.on 'data rep1))
+    js: (let in (get process 'stdin)
+          ((get in 'setEncoding) 'utf8)
+          ((get in 'on) 'data rep1))
     lua: (while true
-           (let s (io.read)
+           (let s ((get io 'read))
              (if s (rep1 (cat s "\n")) (break))))))
 
 (define usage ()
@@ -61,10 +62,10 @@
                         (= a "-e") (set expr val)))))
             (not (= "-" (char a 0))) (add pre a))))
     (step file pre
-      (compiler.run-file file))
+      ((get compiler 'run-file) file))
     (if (and input output)
         (do (if target1 (set target target1))
-            (let code (compiler.compile-file input)
+            (let code ((get compiler 'compile-file) input)
               (write-file output code)))
       (if expr (rep expr) (repl)))))
 

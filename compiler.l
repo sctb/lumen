@@ -35,7 +35,7 @@
   (let b (first (fn (frame)
                   (get frame k))
                 (reverse environment))
-    (and (obj? b) (is? b.variable))))
+    (and (obj? b) (is? (get b 'variable)))))
 
 (define-global bound? (x)
   (or (macro? x)
@@ -90,12 +90,14 @@
               (let k (if (= v true) k v)
                 (join! bs (bind k x))))))))))
 
+(define-macro arguments% (from)
+  `((get (get (get Array 'prototype) 'slice) 'call) arguments ,from))
+
 (define-global bind* (args body)
   (let args1 ()
     (define rest ()
       (if (= target 'js)
-          `(unstash
-            (Array.prototype.slice.call arguments ,(# args1)))
+          `(unstash (arguments% ,(# args1)))
         (do (add args1 '|...|) '(unstash (list |...|)))))
     (if (atom? args)
         (list args1 `(let ,(list args (rest)) ,@body))
@@ -158,13 +160,13 @@
       (unless (number? k)
         (let v (if (quasisplice? v depth)
                    ;; don't splice, just expand
-                   (quasiexpand v.1)
+                   (quasiexpand (at v 1))
                  (quasiexpand v depth))
           (set (get (last xs) k) v))))
     ;; collect sibling lists
     (step x form
       (if (quasisplice? x depth)
-          (let x (quasiexpand x.1)
+          (let x (quasiexpand (at x 1))
             (add xs x)
             (add xs '(list)))
         (add (last xs) (quasiexpand x depth))))
@@ -184,7 +186,7 @@
           ;; unquote
           (and (can-unquote? depth)
                (= (hd form) 'unquote))
-          (quasiexpand form.1)
+          (quasiexpand (at form 1))
           ;; decrease quasiquoting depth
           (or (= (hd form) 'unquote)
               (= (hd form) 'unquote-splicing))
@@ -197,7 +199,7 @@
       (= (hd form) 'quote) form
       (= (hd form) 'quasiquote)
       ;; start quasiquoting
-      (quasiexpand form.1 1)
+      (quasiexpand (at form 1) 1)
     (map (fn (x) (quasiexpand x depth)) form)))
 
 (define-global expand-if ((a b rest: c))
@@ -523,7 +525,7 @@
 (define expand (form)
   (lower (macroexpand form)))
 
-(target js: (set global.require require))
+(target js: (set (get global 'require) require))
 (target js: (define run eval))
 
 (target lua: (define load1 load))
@@ -546,8 +548,8 @@
   (run (read-file path)))
 
 (define compile-file (path)
-  (let (s (reader.stream (read-file path))
-        body (reader.read-all s)
+  (let (s ((get reader 'stream) (read-file path))
+        body ((get reader 'read-all) s)
         form (expand `(do ,@body)))
     (compile form :stmt)))
 

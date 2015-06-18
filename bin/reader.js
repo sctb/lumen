@@ -1,11 +1,15 @@
-var delimiters = {";": true, "\n": true, ")": true, "(": true};
-var whitespace = {"\t": true, " ": true, "\n": true};
+var delimiters = {";": true, "(": true, "\n": true, ")": true};
+var whitespace = {"\t": true, "\n": true, " ": true};
 var stream = function (str, more) {
-  return({pos: 0, string: str, more: more, len: _35(str)});
+  return({more: more, string: str, len: _35(str), pos: 0});
 };
 var peek_char = function (s) {
-  if (s.pos < s.len) {
-    return(char(s.string, s.pos));
+  var _id = s;
+  var len = _id.len;
+  var string = _id.string;
+  var pos = _id.pos;
+  if (pos < len) {
+    return(char(string, pos));
   }
 };
 var read_char = function (s) {
@@ -71,12 +75,15 @@ var flag63 = function (atom) {
   return(string63(atom) && _35(atom) > 1 && char(atom, 0) === ":");
 };
 var expected = function (s, c) {
-  var _id = s.more;
+  var _id1 = s;
+  var more = _id1.more;
+  var pos = _id1.pos;
+  var _id2 = more;
   var _e;
-  if (_id) {
-    _e = _id;
+  if (_id2) {
+    _e = _id2;
   } else {
-    throw new Error("Expected " + c + " at " + s.pos);
+    throw new Error("Expected " + c + " at " + pos);
     _e = undefined;
   }
   return(_e);

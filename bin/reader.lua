@@ -1,11 +1,15 @@
-local delimiters = {["\n"] = true, [";"] = true, ["("] = true, [")"] = true}
-local whitespace = {[" "] = true, ["\t"] = true, ["\n"] = true}
+local delimiters = {["\n"] = true, ["("] = true, [")"] = true, [";"] = true}
+local whitespace = {["\n"] = true, ["\t"] = true, [" "] = true}
 local function stream(str, more)
-  return({pos = 0, more = more, len = _35(str), string = str})
+  return({len = _35(str), string = str, pos = 0, more = more})
 end
 local function peek_char(s)
-  if s.pos < s.len then
-    return(char(s.string, s.pos))
+  local _id = s
+  local string = _id.string
+  local len = _id.len
+  local pos = _id.pos
+  if pos < len then
+    return(char(string, pos))
   end
 end
 local function read_char(s)
@@ -71,12 +75,15 @@ local function flag63(atom)
   return(string63(atom) and _35(atom) > 1 and char(atom, 0) == ":")
 end
 local function expected(s, c)
-  local _id = s.more
+  local _id1 = s
+  local pos = _id1.pos
+  local more = _id1.more
+  local _id2 = more
   local _e
-  if _id then
-    _e = _id
+  if _id2 then
+    _e = _id2
   else
-    error("Expected " .. c .. " at " .. s.pos)
+    error("Expected " .. c .. " at " .. pos)
     _e = nil
   end
   return(_e)
@@ -219,4 +226,4 @@ read_table[","] = function (s)
     return(wrap(s, "unquote"))
   end
 end
-return({read = read, ["read-string"] = read_string, ["read-all"] = read_all, stream = stream})
+return({["read-all"] = read_all, stream = stream, read = read, ["read-string"] = read_string})
