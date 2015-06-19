@@ -20,7 +20,7 @@
   (is? (getenv k 'special)))
 
 (define special-form? (form)
-  (and (obj? form) (special? (hd form))))
+  (and (not (atom? form)) (special? (hd form))))
 
 (define statement? (k)
   (and (special? k) (getenv k 'stmt)))
@@ -35,7 +35,7 @@
   (let b (first (fn (frame)
                   (get frame k))
                 (reverse environment))
-    (and (obj? b) (is? (get b 'variable)))))
+    (and (not (atom? b)) (is? (get b 'variable)))))
 
 (define-global bound? (x)
   (or (macro? x)
@@ -125,7 +125,7 @@
 
 (define quasisplice? (x depth)
   (and (can-unquote? depth)
-       (obj? x)
+       (not (atom? x))
        (= (hd x) 'unquote-splicing)))
 
 (define expand-local ((x name value))
@@ -335,7 +335,8 @@
     (cat (apply special args) tr)))
 
 (define parenthesize-call? (x)
-  (or (and (obj? x) (= (hd x) '%function))
+  (or (and (not (atom? x))
+           (= (hd x) '%function))
       (> (precedence x) 0)))
 
 (define compile-call (form)
@@ -410,7 +411,7 @@
       (= (hd form) '%object)))
 
 (define standalone? (form)
-  (and (obj? form)
+  (and (not (atom? form))
        (not (infix? (hd form)))
        (not (literal? form))
        (not (= 'get (hd form)))))

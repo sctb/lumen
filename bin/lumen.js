@@ -36,9 +36,6 @@ number63 = function (x) {
 boolean63 = function (x) {
   return(type(x) === "boolean");
 };
-obj63 = function (x) {
-  return(is63(x) && type(x) === "object");
-};
 atom63 = function (x) {
   return(nil63(x) || string63(x) || number63(x) || boolean63(x));
 };
@@ -374,7 +371,7 @@ unstash = function (args) {
     return([]);
   } else {
     var l = last(args);
-    if (obj63(l) && l._stash) {
+    if (!atom63(l) && l._stash) {
       var args1 = almost(args);
       var _o9 = l;
       var k = undefined;
@@ -620,8 +617,8 @@ toplevel63 = function () {
   return(one63(environment));
 };
 setenv = function (k) {
-  var _r69 = unstash(Array.prototype.slice.call(arguments, 1));
-  var _id1 = _r69;
+  var _r68 = unstash(Array.prototype.slice.call(arguments, 1));
+  var _id1 = _r68;
   var _keys = cut(_id1, 0);
   if (string63(k)) {
     var _e18;
@@ -952,7 +949,9 @@ setenv("each", {_stash: true, macro: function (x, t) {
   var n = unique("n");
   var i = unique("i");
   var _e4;
-  if (obj63(x)) {
+  if (atom63(x)) {
+    _e4 = [i, x];
+  } else {
     var _e5;
     if (_35(x) > 1) {
       _e5 = x;
@@ -960,8 +959,6 @@ setenv("each", {_stash: true, macro: function (x, t) {
       _e5 = [i, hd(x)];
     }
     _e4 = _e5;
-  } else {
-    _e4 = [i, x];
   }
   var _id47 = _e4;
   var k = _id47[0];

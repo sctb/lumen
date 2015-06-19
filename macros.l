@@ -150,10 +150,9 @@
 
 (define-macro each (x t rest: body)
   (let-unique (o n i)
-    (let ((k v) (if (obj? x)
-                    (if (> (# x) 1) x
-                      (list i (hd x)))
-                  (list i x)))
+    (let ((k v) (if (atom? x) (list i x)
+                  (if (> (# x) 1) x
+                      (list i (hd x)))))
       `(let (,o ,t ,k nil)
          (%for ,o ,k
            (let (,v (get ,o ,k))

@@ -35,9 +35,6 @@ end
 function boolean63(x)
   return(type(x) == "boolean")
 end
-function obj63(x)
-  return(is63(x) and type(x) == "table")
-end
 function atom63(x)
   return(nil63(x) or string63(x) or number63(x) or boolean63(x))
 end
@@ -304,7 +301,7 @@ function unstash(args)
     return({})
   else
     local l = last(args)
-    if obj63(l) and l._stash then
+    if not atom63(l) and l._stash then
       local args1 = almost(args)
       local _o9 = l
       local k = nil
@@ -527,8 +524,8 @@ function toplevel63()
   return(one63(environment))
 end
 function setenv(k, ...)
-  local _r66 = unstash({...})
-  local _id1 = _r66
+  local _r65 = unstash({...})
+  local _id1 = _r65
   local _keys = cut(_id1, 0)
   if string63(k) then
     local _e7
@@ -842,7 +839,9 @@ setenv("each", {_stash = true, macro = function (x, t, ...)
   local n = unique("n")
   local i = unique("i")
   local _e3
-  if obj63(x) then
+  if atom63(x) then
+    _e3 = {i, x}
+  else
     local _e4
     if _35(x) > 1 then
       _e4 = x
@@ -850,8 +849,6 @@ setenv("each", {_stash = true, macro = function (x, t, ...)
       _e4 = {i, hd(x)}
     end
     _e3 = _e4
-  else
-    _e3 = {i, x}
   end
   local _id47 = _e3
   local k = _id47[1]
