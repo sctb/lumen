@@ -43,7 +43,7 @@ obj63 = function (x) {
   return(is63(x) && type(x) === "object");
 };
 atom63 = function (x) {
-  return(nil63(x) || !obj63(x));
+  return(nil63(x) || string63(x) || number63(x) || boolean63(x));
 };
 nan = 0 / 0;
 inf = 1 / 0;

@@ -34,7 +34,7 @@
   (and (is? x) (= (type x) (target js: 'object lua: 'table))))
 
 (define-global atom? (x)
-  (or (nil? x) (not (obj? x))))
+  (or (nil? x) (string? x) (number? x) (boolean? x)))
 
 (define-global nan (/ 0 0))
 (define-global inf (/ 1 0))

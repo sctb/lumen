@@ -42,7 +42,7 @@ function obj63(x)
   return(is63(x) and type(x) == "table")
 end
 function atom63(x)
-  return(nil63(x) or not obj63(x))
+  return(nil63(x) or string63(x) or number63(x) or boolean63(x))
 end
 nan = 0 / 0
 inf = 1 / 0
@@ -766,7 +766,7 @@ setenv("define-global", {_stash = true, macro = function (name, x, ...)
   local _r35 = unstash({...})
   local _id29 = _r35
   local body = cut(_id29, 0)
-  setenv(name, {_stash = true, toplevel = true, variable = true})
+  setenv(name, {_stash = true, variable = true, toplevel = true})
   if some63(body) then
     return(join({"%global-function", name}, bind42(x, body)))
   else
