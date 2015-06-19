@@ -28,7 +28,6 @@
 (define-global string? (x) (= (type x) 'string))
 (define-global number? (x) (= (type x) 'number))
 (define-global boolean? (x) (= (type x) 'boolean))
-(define-global function? (x) (= (type x) 'function))
 
 (define-global obj? (x)
   (and (is? x) (= (type x) (target js: 'object lua: 'table))))
@@ -284,7 +283,6 @@
       (= x inf) "inf"
       (= x -inf) "-inf"
       (boolean? x) (if x "true" "false")
-      (function? x) "function"
       (string? x) (escape x)
       (atom? x) (tostring x)
     (let (s "(" sp ""
