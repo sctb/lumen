@@ -422,9 +422,9 @@ c"
       (test= 5 a)))
   (let t '((1) (2) b: (3))
     (each x t
-      (test= true (obj? x)))
+      (test= false (atom? x)))
     (each (x) t
-      (test= true (obj? x)))
+      (test= false (atom? x)))
     (each ((x)) t
       (test= true (number? x)))))
 
@@ -818,13 +818,6 @@ c"
   (test= '(3 2 1) (sort '(1 2 3) >)))
 
 (define-test type
-  (test= true (atom? nil))
-  (test= true (atom? "abc"))
-  (test= true (atom? 42))
-  (test= true (atom? true))
-  (test= false (atom? (fn ())))
-  (test= false (atom? '(1)))
-  (test= false (atom? (obj)))
   (test= true (string? "abc"))
   (test= false (string? 17))
   (test= false (string? '(a)))
@@ -840,16 +833,13 @@ c"
   (test= false (boolean? '(a)))
   (test= true (boolean? true))
   (test= false (boolean? (obj)))
-  (test= false (function? 17))
-  (test= false (function? "foo"))
-  (test= false (function? '(a)))
-  (test= false (function? (obj)))
-  (test= true (function? (fn () 17)))
-  (test= false (obj? "abc"))
-  (test= false (obj? 17))
-  (test= true (obj? '(a)))
-  (test= false (obj? true))
-  (test= true (obj? (obj))))
+  (test= true (atom? nil))
+  (test= true (atom? "abc"))
+  (test= true (atom? 42))
+  (test= true (atom? true))
+  (test= false (atom? (fn ())))
+  (test= false (atom? '(1)))
+  (test= false (atom? (obj))))
 
 (define-test apply
   (test= 4 (apply (fn (a b) (+ a b)) '(2 2)))
