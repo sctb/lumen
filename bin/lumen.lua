@@ -1,5 +1,7 @@
 environment = {{}}
 target = "lua"
+local str = string
+local tbl = table
 function nil63(x)
   return(x == nil)
 end
@@ -51,7 +53,6 @@ end
 function inf63(n)
   return(n == inf or n == _inf)
 end
-local str = string
 function clip(s, from, upto)
   return(str.sub(s, from + 1, upto))
 end
@@ -126,10 +127,10 @@ function id_literal63(x)
   return(string63(x) and char(x, 0) == "|")
 end
 function add(l, x)
-  return(table.insert(l, x))
+  return(tbl.insert(l, x))
 end
 function drop(l)
-  return(table.remove(l))
+  return(tbl.remove(l))
 end
 function last(l)
   return(l[edge(l) + 1])
@@ -229,7 +230,7 @@ function pair(l)
   return(l1)
 end
 function sort(l, f)
-  table.sort(l, f)
+  tbl.sort(l, f)
   return(l)
 end
 function map(f, x)
@@ -517,7 +518,7 @@ function string(x, depth)
     end
   end
 end
-local values = unpack or table.unpack
+local values = unpack or tbl.unpack
 function apply(f, args)
   local _args = stash(args)
   return(f(values(_args)))

@@ -3,6 +3,9 @@
 (define-global environment (list (obj)))
 (define-global target (language))
 
+(target lua: (define str string))
+(target lua: (define tbl table))
+
 (define-global nil? (x)
   (target
     js: (or (= x nil) (= x null))
@@ -42,8 +45,6 @@
 
 (define-global inf? (n)
   (or (= n inf) (= n -inf)))
-
-(target lua: (define str string))
 
 (define-global clip (s from upto)
   (target js: ((get s 'substring) from upto)
@@ -93,11 +94,11 @@
 
 (define-global add (l x)
   (target js: (do ((get l 'push) x) nil)
-          lua: ((get table 'insert) l x)))
+          lua: ((get tbl 'insert) l x)))
 
 (define-global drop (l)
   (target js: ((get l 'pop))
-          lua: ((get table 'remove) l)))
+          lua: ((get tbl 'remove) l)))
 
 (define-global last (l)
   (at l (edge l)))
@@ -153,7 +154,7 @@
 
 (define-global sort (l f)
   (target
-    lua: (do ((get table 'sort) l f) l)
+    lua: (do ((get tbl 'sort) l f) l)
     js: ((get l 'sort) (when f (fn (a b) (if (f a b) -1 1))))))
 
 (define-global map (f x)
@@ -299,7 +300,8 @@
         (set sp " "))
       (cat s  ")"))))
 
-(target lua: (define values (or unpack (get table 'unpack))))
+(target lua:
+  (define values (or unpack (get tbl 'unpack))))
 
 (define-global apply (f args)
   (let args (stash args)
