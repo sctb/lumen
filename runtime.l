@@ -28,6 +28,7 @@
 (define-global string? (x) (= (type x) 'string))
 (define-global number? (x) (= (type x) 'number))
 (define-global boolean? (x) (= (type x) 'boolean))
+(define-global function? (x) (= (type x) 'function))
 
 (define-global atom? (x)
   (or (nil? x) (string? x) (number? x) (boolean? x)))
@@ -282,6 +283,7 @@
       (boolean? x) (if x "true" "false")
       (string? x) (escape x)
       (atom? x) (tostring x)
+      (function? x) "function"
     (let (s "(" sp ""
           xs () ks ()
           d (+ (or depth 0) 1))
