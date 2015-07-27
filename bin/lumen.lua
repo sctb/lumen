@@ -1,7 +1,12 @@
 environment = {{}}
 target = "lua"
-local str = string
-local tbl = table
+local ssub = string.sub
+local sbyte = string.byte
+local sfind = string.find
+local tinsert = table.insert
+local tremove = table.remove
+local tsort = table.sort
+local tunpack = table.unpack
 function nil63(x)
   return(x == nil)
 end
@@ -51,7 +56,7 @@ function inf63(n)
   return(n == inf or n == _inf)
 end
 function clip(s, from, upto)
-  return(str.sub(s, from + 1, upto))
+  return(ssub(s, from + 1, upto))
 end
 function cut(x, from, upto)
   local l = {}
@@ -115,7 +120,7 @@ function code(s, n)
   if n then
     _e2 = n + 1
   end
-  return(str.byte(s, _e2))
+  return(sbyte(s, _e2))
 end
 function string_literal63(x)
   return(string63(x) and char(x, 0) == "\"")
@@ -124,10 +129,10 @@ function id_literal63(x)
   return(string63(x) and char(x, 0) == "|")
 end
 function add(l, x)
-  return(tbl.insert(l, x))
+  return(tinsert(l, x))
 end
 function drop(l)
-  return(tbl.remove(l))
+  return(tremove(l))
 end
 function last(l)
   return(l[edge(l) + 1])
@@ -227,7 +232,7 @@ function pair(l)
   return(l1)
 end
 function sort(l, f)
-  tbl.sort(l, f)
+  tsort(l, f)
   return(l)
 end
 function map(f, x)
@@ -326,7 +331,7 @@ function search(s, pattern, start)
     _e3 = start + 1
   end
   local _start = _e3
-  local i = str.find(s, pattern, _start, true)
+  local i = sfind(s, pattern, _start, true)
   return(i and i - 1)
 end
 function split(s, sep)
@@ -515,7 +520,7 @@ function string(x, depth)
     end
   end
 end
-local values = unpack or tbl.unpack
+local values = unpack or tunpack
 function apply(f, args)
   local _args = stash(args)
   return(f(values(_args)))

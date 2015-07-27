@@ -359,7 +359,7 @@ function indentation()
   end
   return(s)
 end
-local reserved = {["*"] = true, ["nil"] = true, ["then"] = true, ["else"] = true, ["var"] = true, ["debugger"] = true, ["continue"] = true, ["<"] = true, ["elseif"] = true, ["break"] = true, ["throw"] = true, ["=="] = true, ["or"] = true, ["new"] = true, ["for"] = true, ["false"] = true, ["switch"] = true, ["instanceof"] = true, ["case"] = true, ["typeof"] = true, ["true"] = true, ["-"] = true, ["and"] = true, ["finally"] = true, ["while"] = true, ["="] = true, ["default"] = true, ["%"] = true, ["until"] = true, ["if"] = true, ["not"] = true, [">"] = true, ["return"] = true, ["repeat"] = true, ["local"] = true, ["with"] = true, ["this"] = true, [">="] = true, ["void"] = true, ["<="] = true, ["+"] = true, ["do"] = true, ["/"] = true, ["try"] = true, ["in"] = true, ["catch"] = true, ["function"] = true, ["delete"] = true, ["end"] = true}
+local reserved = {["throw"] = true, ["else"] = true, ["false"] = true, ["elseif"] = true, ["end"] = true, ["<"] = true, ["delete"] = true, [">"] = true, ["return"] = true, ["new"] = true, ["typeof"] = true, ["*"] = true, ["until"] = true, ["then"] = true, [">="] = true, ["%"] = true, ["<="] = true, ["do"] = true, ["while"] = true, ["continue"] = true, ["or"] = true, ["not"] = true, ["function"] = true, ["local"] = true, ["and"] = true, ["case"] = true, ["true"] = true, ["nil"] = true, ["in"] = true, ["="] = true, ["default"] = true, ["break"] = true, ["void"] = true, ["-"] = true, ["/"] = true, ["for"] = true, ["var"] = true, ["try"] = true, ["debugger"] = true, ["this"] = true, ["+"] = true, ["switch"] = true, ["catch"] = true, ["=="] = true, ["finally"] = true, ["instanceof"] = true, ["if"] = true, ["with"] = true, ["repeat"] = true}
 function reserved63(x)
   return(reserved[x])
 end
@@ -408,40 +408,40 @@ function mapo(f, t)
 end
 local __x57 = {}
 local _x58 = {}
-_x58.js = "!"
 _x58.lua = "not "
+_x58.js = "!"
 __x57["not"] = _x58
 local __x59 = {}
-__x59["*"] = true
 __x59["%"] = true
+__x59["*"] = true
 __x59["/"] = true
 local __x60 = {}
 __x60["+"] = true
 __x60["-"] = true
 local __x61 = {}
 local _x62 = {}
-_x62.js = "+"
 _x62.lua = ".."
+_x62.js = "+"
 __x61.cat = _x62
 local __x63 = {}
-__x63[">"] = true
 __x63["<"] = true
 __x63[">="] = true
+__x63[">"] = true
 __x63["<="] = true
 local __x64 = {}
 local _x65 = {}
-_x65.js = "==="
 _x65.lua = "=="
+_x65.js = "==="
 __x64["="] = _x65
 local __x66 = {}
 local _x67 = {}
-_x67.js = "&&"
 _x67.lua = "and"
+_x67.js = "&&"
 __x66["and"] = _x67
 local __x68 = {}
 local _x69 = {}
-_x69.js = "||"
 _x69.lua = "or"
+_x69.js = "||"
 __x68["or"] = _x69
 local infix = {__x57, __x59, __x60, __x61, __x63, __x64, __x66, __x68}
 local function unary63(form)
@@ -650,8 +650,8 @@ end
 function compile_function(args, body, ...)
   local _r58 = unstash({...})
   local _id12 = _r58
-  local prefix = _id12.prefix
   local name = _id12.name
+  local prefix = _id12.prefix
   local _e17
   if name then
     _e17 = compile(name)
@@ -1079,7 +1079,7 @@ setenv("%global-function", {_stash = true, special = function (name, args, body)
 end, tr = true, stmt = true})
 setenv("%local-function", {_stash = true, special = function (name, args, body)
   if target == "lua" then
-    local x = compile_function(args, body, {_stash = true, prefix = "local", name = name})
+    local x = compile_function(args, body, {_stash = true, name = name, prefix = "local"})
     return(indentation() .. x)
   else
     return(compile({"%local", name, {"%function", args, body}}, {_stash = true, stmt = true}))
@@ -1208,4 +1208,4 @@ setenv("%object", {_stash = true, special = function (...)
   end
   return(s .. "}")
 end})
-return({eval = eval, ["run-file"] = run_file, load = load, compile = compile, expand = expand, ["compile-file"] = compile_file})
+return({eval = eval, expand = expand, ["compile-file"] = compile_file, compile = compile, ["run-file"] = run_file, load = load})

@@ -3,8 +3,13 @@
 (define-global environment (list (obj)))
 (define-global target (language))
 
-(target lua: (define str string))
-(target lua: (define tbl table))
+(target lua: (define ssub (get string 'sub)))
+(target lua: (define sbyte (get string 'byte)))
+(target lua: (define sfind (get string 'find)))
+(target lua: (define tinsert (get table 'insert)))
+(target lua: (define tremove (get table 'remove)))
+(target lua: (define tsort (get table 'sort)))
+(target lua: (define tunpack (get table 'unpack)))
 
 (define-global nil? (x)
   (target
@@ -45,7 +50,7 @@
 
 (define-global clip (s from upto)
   (target js: ((get s 'substring) from upto)
-          lua: ((get str 'sub) s (+ from 1) upto)))
+          lua: (ssub s (+ from 1) upto)))
 
 (define-global cut (x from upto)
   (with l ()
@@ -81,7 +86,7 @@
 (define-global code (s n)
   (target
     js: ((get s 'charCodeAt) n)
-    lua: ((get str 'byte) s (if n (+ n 1)))))
+    lua: (sbyte s (if n (+ n 1)))))
 
 (define-global string-literal? (x)
   (and (string? x) (= (char x 0) "\"")))
@@ -91,11 +96,11 @@
 
 (define-global add (l x)
   (target js: (do ((get l 'push) x) nil)
-          lua: ((get tbl 'insert) l x)))
+          lua: (tinsert l x)))
 
 (define-global drop (l)
   (target js: ((get l 'pop))
-          lua: ((get tbl 'remove) l)))
+          lua: (tremove l)))
 
 (define-global last (l)
   (at l (edge l)))
@@ -151,7 +156,7 @@
 
 (define-global sort (l f)
   (target
-    lua: (do ((get tbl 'sort) l f) l)
+    lua: (do (tsort l f) l)
     js: ((get l 'sort) (when f (fn (a b) (if (f a b) -1 1))))))
 
 (define-global map (f x)
@@ -206,7 +211,7 @@
     js: (let i ((get s 'indexOf) pattern start)
           (if (>= i 0) i))
     lua: (let (start (if start (+ start 1))
-               i ((get str 'find) s pattern start true))
+               i (sfind s pattern start true))
            (and i (- i 1)))))
 
 (define-global split (s sep)
@@ -298,7 +303,7 @@
       (cat s  ")"))))
 
 (target lua:
-  (define values (or unpack (get tbl 'unpack))))
+  (define values (or unpack tunpack)))
 
 (define-global apply (f args)
   (let args (stash args)
