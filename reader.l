@@ -77,7 +77,9 @@
 	    (cat! str (read-char s))
 	  (break))))
     (let n (number str)
-      (if (is? n) n
+      (if (is? n) (if (nan? n) str
+                      (= n (- inf)) str
+                      n)
 	  (= str "true") true
 	  (= str "false") false
         str))))
