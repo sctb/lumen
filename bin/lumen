@@ -24,10 +24,10 @@ fi
 case $HOST in
     node*)
         CODE=lumen.js
-        export NODE_PATH="$HOME:$DIR/lib";;
+        export NODE_PATH="$NODE_PATH:$HOME:$DIR/lib";;
     *)
         CODE=lumen.lua
-        export LUA_PATH="$HOME/?.lua;$DIR/lib/?.lua;;";;
+        export LUA_PATH="$LUA_PATH;$HOME/?.lua;$DIR/lib/?.lua;;";;
 esac
 
 exec $HOST "$HOME/$CODE" "$@"
