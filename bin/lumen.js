@@ -664,8 +664,8 @@ file_exists63 = function (path) {
   return(fs.existsSync(path, "utf8"));
 };
 path_separator = require("path").sep;
-read_env = function (varname) {
-  return(process.env[varname]);
+get_environment_variable = function (name) {
+  return(process.env[name]);
 };
 print = function (x) {
   return(console.log(x));

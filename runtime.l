@@ -360,10 +360,10 @@
     js: (get (require 'path) 'sep)
     lua: (char (get (get _G 'package) 'config) 0)))
 
-(define-global read-env (varname)
+(define-global get-environment-variable (name)
   (target
-    js: (get (get process 'env) varname)
-    lua: ((get os 'getenv) varname)))
+    js: (get (get process 'env) name)
+    lua: ((get os 'getenv) name)))
 
 (target js: (define-global print (x) ((get console 'log) x)))
 
