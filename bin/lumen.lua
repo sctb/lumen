@@ -584,6 +584,9 @@ function file_exists63(path)
   end))
 end
 path_separator = char(_G.package.config, 0)
+function read_env(varname)
+  return(os.getenv(varname))
+end
 function write(x)
   return(io.write(x))
 end
