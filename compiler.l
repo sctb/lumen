@@ -233,6 +233,7 @@
   (or (number-code? n)         ; 0-9
       (and (> n 64) (< n 91))  ; A-Z
       (and (> n 96) (< n 123)) ; a-z
+      (= n 46)                 ; .
       (= n 95)))               ; _
 
 (define-global valid-id? (id)
@@ -548,14 +549,23 @@
 (define run-file (path)
   (run (read-file path)))
 
-(define compile-file (path)
-  (let (s ((get reader 'stream) (read-file path))
-        body ((get reader 'read-all) s)
-        form (expand `(do ,@body)))
+(define expand-string (str)
+  (let (s ((get reader 'stream) str)
+        body ((get reader 'read-all) s))
+    (expand `(do ,@body))))
+
+(define compile-string (str)
+  (let form (expand-string str)
     (compile form :stmt)))
+
+(define compile-file (path)
+  (compile-string (read-file path)))
 
 (define-global load (path)
   (run (compile-file path)))
+
+(define-global load-string (str)
+  (run (compile-string str)))
 
 (define-special do forms :stmt :tr
   (with s ""
@@ -686,8 +696,12 @@
     (cat s "}")))
 
 (export eval
+        run
         run-file
+        expand-string
+        compile-string
         compile-file
         load
+        load-string
         expand
         compile)

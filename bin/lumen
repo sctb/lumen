@@ -1,9 +1,11 @@
 #!/bin/sh
 
-DIR=`pwd`
-cd "`dirname $0`"
-HOME=`pwd`
-cd $DIR
+DIR="`pwd`"
+cd "`dirname "$0"`"
+USR="$HOME"
+HOME="`pwd`"
+PLATFORM="`python -c 'import sys; sys.stdout.write(sys.platform)'`"
+cd "$DIR"
 
 if [ ! -z $LUMEN_HOST ]
 then
@@ -24,10 +26,16 @@ fi
 case $HOST in
     node*)
         CODE=lumen.js
-        export NODE_PATH=$HOME:$DIR/lib;;
+        export NODE_PATH="$NODE_PATH:$HOME:$DIR/lib:$DIR/lib/$PLATFORM";;
     *)
         CODE=lumen.lua
-        export LUA_PATH="$HOME/?.lua;$DIR/lib/?.lua;;";;
+        export LUA_PATH="$LUA_PATH;$HOME/?.lua;$DIR/lib/?.lua;$DIR/lib/$PLATFORM/?.lua;;";;
 esac
 
-exec $HOST $HOME/$CODE "$@"
+export USER_HOME="$USR"
+export LUMEN_DIR="$DIR"
+cd "$HOME/.."
+export LUMEN_HOME="`pwd`"
+cd "$DIR"
+
+exec $HOST "$HOME/$CODE" "$@"

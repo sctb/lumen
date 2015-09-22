@@ -61,21 +61,21 @@ end
 function cut(x, from, upto)
   local l = {}
   local j = 0
-  local _e
-  if nil63(from) or from < 0 then
-    _e = 0
-  else
-    _e = from
-  end
-  local i = _e
-  local n = _35(x)
   local _e1
-  if nil63(upto) or upto > n then
-    _e1 = n
+  if nil63(from) or from < 0 then
+    _e1 = 0
   else
-    _e1 = upto
+    _e1 = from
   end
-  local _upto = _e1
+  local i = _e1
+  local n = _35(x)
+  local _e2
+  if nil63(upto) or upto > n then
+    _e2 = n
+  else
+    _e2 = upto
+  end
+  local _upto = _e2
   while i < _upto do
     l[j + 1] = x[i + 1]
     i = i + 1
@@ -116,11 +116,11 @@ function char(s, n)
   return(clip(s, n, n + 1))
 end
 function code(s, n)
-  local _e2
+  local _e3
   if n then
-    _e2 = n + 1
+    _e3 = n + 1
   end
-  return(sbyte(s, _e2))
+  return(sbyte(s, _e3))
 end
 function string_literal63(x)
   return(string63(x) and char(x, 0) == "\"")
@@ -326,11 +326,11 @@ function unstash(args)
   end
 end
 function search(s, pattern, start)
-  local _e3
+  local _e4
   if start then
-    _e3 = start + 1
+    _e4 = start + 1
   end
-  local _start = _e3
+  local _start = _e4
   local i = sfind(s, pattern, _start, true)
   return(i and i - 1)
 end
@@ -430,25 +430,25 @@ function escape(s)
   local i = 0
   while i < _35(s) do
     local c = char(s, i)
-    local _e4
+    local _e5
     if c == "\n" then
-      _e4 = "\\n"
+      _e5 = "\\n"
     else
-      local _e5
+      local _e6
       if c == "\"" then
-        _e5 = "\\\""
+        _e6 = "\\\""
       else
-        local _e6
+        local _e7
         if c == "\\" then
-          _e6 = "\\\\"
+          _e7 = "\\\\"
         else
-          _e6 = c
+          _e7 = c
         end
-        _e5 = _e6
+        _e6 = _e7
       end
-      _e4 = _e5
+      _e5 = _e6
     end
-    local c1 = _e4
+    local c1 = _e5
     s1 = s1 .. c1
     i = i + 1
   end
@@ -540,13 +540,13 @@ function setenv(k, ...)
   local _id1 = _r66
   local _keys = cut(_id1, 0)
   if string63(k) then
-    local _e7
+    local _e8
     if _keys.toplevel then
-      _e7 = hd(environment)
+      _e8 = hd(environment)
     else
-      _e7 = last(environment)
+      _e8 = last(environment)
     end
-    local frame = _e7
+    local frame = _e8
     local entry = frame[k] or {}
     local _o12 = _keys
     local _k = nil
@@ -558,13 +558,57 @@ function setenv(k, ...)
     return(frame[k])
   end
 end
+local function call_with_file(f, call)
+  local _e,_x12 = xpcall(function ()
+    return(call(f))
+  end, _37message_handler)
+  local _id2 = {_e, _x12}
+  local ok = _id2[1]
+  local s = _id2[2]
+  if is63(f) then
+    f.close(f)
+  end
+  return(s)
+end
 function read_file(path)
-  local f = io.open(path)
-  return(f.read(f, "*a"))
+  return(call_with_file(io.open(path), function (f)
+    if is63(f) then
+      return(f.read(f, "*a"))
+    end
+  end))
 end
 function write_file(path, data)
-  local f = io.open(path, "w")
-  return(f.write(f, data))
+  return(call_with_file(io.open(path, "w"), function (f)
+    if is63(f) then
+      return(f.write(f, data))
+    end
+  end))
+end
+function file_exists63(path)
+  return(call_with_file(io.open(path), function (f)
+    return(is63(f))
+  end))
+end
+function read_env(varname)
+  return(os.getenv(varname))
+end
+path_sep = char(_G.package.config, 0)
+windows63 = path_sep == "\\"
+function user_path(path)
+  local base = read_env("USER_HOME")
+  if is63(path) then
+    return(base .. path_sep .. path)
+  else
+    return(base)
+  end
+end
+function lumen_path(path)
+  local base = read_env("LUMEN_HOME")
+  if is63(path) then
+    return(base .. path_sep .. path)
+  else
+    return(base)
+  end
 end
 function write(x)
   return(io.write(x))
@@ -768,7 +812,7 @@ setenv("define-global", {_stash = true, macro = function (name, x, ...)
   local _r35 = unstash({...})
   local _id29 = _r35
   local body = cut(_id29, 0)
-  setenv(name, {_stash = true, toplevel = true, variable = true})
+  setenv(name, {_stash = true, variable = true, toplevel = true})
   if some63(body) then
     return(join({"%global-function", name}, bind42(x, body)))
   else

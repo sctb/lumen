@@ -331,17 +331,50 @@
 
 (target js: (define fs (require 'fs)))
 
+(target lua:
+  (define call-with-file (f call)
+    (let ((ok s) (guard (call f)))
+      (when (is? f)
+        ((get f 'close) f))
+      s)))
+
 (define-global read-file (path)
   (target
     js: ((get fs 'readFileSync) path 'utf8)
-    lua: (let f ((get io 'open) path)
-	   ((get f 'read) f '*a))))
+    lua: (call-with-file ((get io 'open) path) (fn (f)
+           (when (is? f) ((get f 'read) f '*a))))))
 
 (define-global write-file (path data)
   (target
     js: ((get fs 'writeFileSync) path data 'utf8)
-    lua: (let f ((get io 'open) path 'w)
-           ((get f 'write) f data))))
+    lua: (call-with-file ((get io 'open) path 'w) (fn (f)
+           (when (is? f) ((get f 'write) f data))))))
+
+(define-global file-exists? (path)
+  (target
+    js: ((get fs 'existsSync) path 'utf8)
+    lua: (call-with-file ((get io 'open) path) (fn (f)
+           (is? f)))))
+
+(define-global read-env (varname)
+  (target
+    js: (get (get process 'env) varname)
+    lua: ((get os 'getenv) varname)))
+
+(define-global path-sep 
+  (target
+    js: (get (require 'path) 'sep)
+    lua: (char (get (get _G 'package) 'config) 0)))
+
+(define-global windows? (= path-sep "\\"))
+
+(define-global user-path (path)
+  (let base (read-env "USER_HOME")
+    (if (is? path) (cat base path-sep path) base)))
+
+(define-global lumen-path (path)
+  (let base (read-env "LUMEN_HOME")
+    (if (is? path) (cat base path-sep path) base)))
 
 (target js: (define-global print (x) ((get console 'log) x)))
 

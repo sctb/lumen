@@ -660,6 +660,30 @@ read_file = function (path) {
 write_file = function (path, data) {
   return(fs.writeFileSync(path, data, "utf8"));
 };
+file_exists63 = function (path) {
+  return(fs.existsSync(path, "utf8"));
+};
+read_env = function (varname) {
+  return(process.env[varname]);
+};
+path_sep = require("path").sep;
+windows63 = path_sep === "\\";
+user_path = function (path) {
+  var base = read_env("USER_HOME");
+  if (is63(path)) {
+    return(base + path_sep + path);
+  } else {
+    return(base);
+  }
+};
+lumen_path = function (path) {
+  var base = read_env("LUMEN_HOME");
+  if (is63(path)) {
+    return(base + path_sep + path);
+  } else {
+    return(base);
+  }
+};
 print = function (x) {
   return(console.log(x));
 };
