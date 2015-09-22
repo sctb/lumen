@@ -355,7 +355,7 @@
     lua: (call-with-file ((get io 'open) path)
            (fn (f) (is? f)))))
 
-(define-global path-sep
+(define-global path-separator
   (target
     js: (get (require 'path) 'sep)
     lua: (char (get (get _G 'package) 'config) 0)))
