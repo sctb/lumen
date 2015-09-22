@@ -356,6 +356,11 @@
     lua: (call-with-file ((get io 'open) path) (fn (f)
            (is? f)))))
 
+(define-global read-env (varname)
+  (target
+    js: (get (get process 'env) varname)
+    lua: ((get os 'getenv) varname)))
+
 (define-global path-sep 
   (target
     js: (get (require 'path) 'sep)

@@ -589,6 +589,9 @@ function file_exists63(path)
     return(is63(f))
   end))
 end
+function read_env(varname)
+  return(os.getenv(varname))
+end
 path_sep = char(_G.package.config, 0)
 windows63 = path_sep == "\\"
 function write(x)
@@ -793,7 +796,7 @@ setenv("define-global", {_stash = true, macro = function (name, x, ...)
   local _r35 = unstash({...})
   local _id29 = _r35
   local body = cut(_id29, 0)
-  setenv(name, {_stash = true, variable = true, toplevel = true})
+  setenv(name, {_stash = true, toplevel = true, variable = true})
   if some63(body) then
     return(join({"%global-function", name}, bind42(x, body)))
   else

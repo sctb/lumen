@@ -663,6 +663,9 @@ write_file = function (path, data) {
 file_exists63 = function (path) {
   return(fs.existsSync(path, "utf8"));
 };
+read_env = function (varname) {
+  return(process.env[varname]);
+};
 path_sep = require("path").sep;
 windows63 = path_sep === "\\";
 print = function (x) {
