@@ -368,6 +368,14 @@
 
 (define-global windows? (= path-sep "\\"))
 
+(define-global user-path (path)
+  (let base (read-env "USER_HOME")
+    (if (is? path) (cat base path-sep path) base)))
+
+(define-global lumen-path (path)
+  (let base (read-env "LUMEN_HOME")
+    (if (is? path) (cat base path-sep path) base)))
+
 (target js: (define-global print (x) ((get console 'log) x)))
 
 (define-global write (x)

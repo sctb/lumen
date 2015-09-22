@@ -668,6 +668,22 @@ read_env = function (varname) {
 };
 path_sep = require("path").sep;
 windows63 = path_sep === "\\";
+user_path = function (path) {
+  var base = read_env("USER_HOME");
+  if (is63(path)) {
+    return(base + path_sep + path);
+  } else {
+    return(base);
+  }
+};
+lumen_path = function (path) {
+  var base = read_env("LUMEN_HOME");
+  if (is63(path)) {
+    return(base + path_sep + path);
+  } else {
+    return(base);
+  }
+};
 print = function (x) {
   return(console.log(x));
 };
@@ -881,7 +897,7 @@ setenv("define-global", {_stash: true, macro: function (name, x) {
   var _r35 = unstash(Array.prototype.slice.call(arguments, 2));
   var _id29 = _r35;
   var body = cut(_id29, 0);
-  setenv(name, {_stash: true, toplevel: true, variable: true});
+  setenv(name, {_stash: true, variable: true, toplevel: true});
   if (some63(body)) {
     return(join(["%global-function", name], bind42(x, body)));
   } else {

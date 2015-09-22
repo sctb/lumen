@@ -2,6 +2,7 @@
 
 DIR="`pwd`"
 cd "`dirname "$0"`"
+USR="$HOME"
 HOME="`pwd`"
 cd "$DIR"
 
@@ -29,5 +30,11 @@ case $HOST in
         CODE=lumen.lua
         export LUA_PATH="$HOME/?.lua;$DIR/lib/?.lua;;";;
 esac
+
+export USER_HOME="$USR"
+export LUMEN_DIR="$DIR"
+cd "$HOME/.."
+export LUMEN_HOME="`pwd`"
+cd "$DIR"
 
 exec $HOST "$HOME/$CODE" "$@"

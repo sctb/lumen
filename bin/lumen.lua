@@ -594,6 +594,22 @@ function read_env(varname)
 end
 path_sep = char(_G.package.config, 0)
 windows63 = path_sep == "\\"
+function user_path(path)
+  local base = read_env("USER_HOME")
+  if is63(path) then
+    return(base .. path_sep .. path)
+  else
+    return(base)
+  end
+end
+function lumen_path(path)
+  local base = read_env("LUMEN_HOME")
+  if is63(path) then
+    return(base .. path_sep .. path)
+  else
+    return(base)
+  end
+end
 function write(x)
   return(io.write(x))
 end
@@ -796,7 +812,7 @@ setenv("define-global", {_stash = true, macro = function (name, x, ...)
   local _r35 = unstash({...})
   local _id29 = _r35
   local body = cut(_id29, 0)
-  setenv(name, {_stash = true, toplevel = true, variable = true})
+  setenv(name, {_stash = true, variable = true, toplevel = true})
   if some63(body) then
     return(join({"%global-function", name}, bind42(x, body)))
   else
