@@ -664,6 +664,7 @@ file_exists63 = function (path) {
   return(fs.existsSync(path, "utf8"));
 };
 path_sep = require("path").sep;
+windows63 = path_sep === "\\";
 print = function (x) {
   return(console.log(x));
 };

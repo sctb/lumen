@@ -361,6 +361,8 @@
     js: (get (require 'path) 'sep)
     lua: (char (get (get _G 'package) 'config) 0)))
 
+(define-global windows? (= path-sep "\\"))
+
 (target js: (define-global print (x) ((get console 'log) x)))
 
 (define-global write (x)
