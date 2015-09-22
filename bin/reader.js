@@ -1,13 +1,13 @@
-var delimiters = {"\n": true, ";": true, ")": true, "(": true};
-var whitespace = {"\n": true, " ": true, "\t": true};
+var delimiters = {"(": true, ")": true, "\n": true, ";": true};
+var whitespace = {" ": true, "\n": true, "\t": true};
 var stream = function (str, more) {
-  return({more: more, string: str, pos: 0, len: _35(str)});
+  return({more: more, pos: 0, len: _35(str), string: str});
 };
 var peek_char = function (s) {
   var _id = s;
-  var string = _id.string;
-  var len = _id.len;
   var pos = _id.pos;
+  var len = _id.len;
+  var string = _id.string;
   if (pos < len) {
     return(char(string, pos));
   }
@@ -108,7 +108,15 @@ read_table[""] = function (s) {
   }
   var n = number(str);
   if (is63(n)) {
-    return(n);
+    if (nan63(n)) {
+      return(str);
+    } else {
+      if (n === -inf) {
+        return(str);
+      } else {
+        return(n);
+      }
+    }
   } else {
     if (str === "true") {
       return(true);
