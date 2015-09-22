@@ -355,6 +355,11 @@
     lua: (call-with-file ((get io 'open) path)
            (fn (f) (is? f)))))
 
+(define-global path-sep
+  (target
+    js: (get (require 'path) 'sep)
+    lua: (char (get (get _G 'package) 'config) 0)))
+
 (target js: (define-global print (x) ((get console 'log) x)))
 
 (define-global write (x)
