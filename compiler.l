@@ -233,6 +233,7 @@
   (or (number-code? n)         ; 0-9
       (and (> n 64) (< n 91))  ; A-Z
       (and (> n 96) (< n 123)) ; a-z
+      (= n 46)                 ; .
       (= n 95)))               ; _
 
 (define-global valid-id? (id)
