@@ -583,6 +583,7 @@ function file_exists63(path)
     return(is63(f))
   end))
 end
+path_separator = char(_G.package.config, 0)
 function write(x)
   return(io.write(x))
 end

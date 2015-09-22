@@ -663,6 +663,7 @@ write_file = function (path, data) {
 file_exists63 = function (path) {
   return(fs.existsSync(path, "utf8"));
 };
+path_separator = require("path").sep;
 print = function (x) {
   return(console.log(x));
 };
