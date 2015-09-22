@@ -349,6 +349,12 @@
     lua: (call-with-file ((get io 'open) path 'w)
            (fn (f) ((get f 'write) f data)))))
 
+(define-global file-exists? (path)
+  (target
+    js: ((get fs 'existsSync) path 'utf8)
+    lua: (call-with-file ((get io 'open) path)
+           (fn (f) (is? f)))))
+
 (target js: (define-global print (x) ((get console 'log) x)))
 
 (define-global write (x)
