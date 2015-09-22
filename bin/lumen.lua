@@ -558,26 +558,35 @@ function setenv(k, ...)
     return(frame[k])
   end
 end
-local function call_with_file(file, f)
-  if is63(file) then
-    local _e,_x12 = xpcall(function ()
-      return(f(file))
-    end, _37message_handler)
-    local _id2 = {_e, _x12}
-    local ok = _id2[1]
-    local s = _id2[2]
-    file.close(file)
-    return(s)
+local function call_with_file(f, call)
+  local _e,_x12 = xpcall(function ()
+    return(call(f))
+  end, _37message_handler)
+  local _id2 = {_e, _x12}
+  local ok = _id2[1]
+  local s = _id2[2]
+  if is63(f) then
+    f.close(f)
   end
+  return(s)
 end
 function read_file(path)
   return(call_with_file(io.open(path), function (f)
-    return(f.read(f, "*a"))
+    if is63(f) then
+      return(f.read(f, "*a"))
+    end
   end))
 end
 function write_file(path, data)
   return(call_with_file(io.open(path, "w"), function (f)
-    return(f.write(f, data))
+    if is63(f) then
+      return(f.write(f, data))
+    end
+  end))
+end
+function file_exists63(path)
+  return(call_with_file(io.open(path), function (f)
+    return(is63(f))
   end))
 end
 function write(x)
@@ -782,7 +791,7 @@ setenv("define-global", {_stash = true, macro = function (name, x, ...)
   local _r35 = unstash({...})
   local _id29 = _r35
   local body = cut(_id29, 0)
-  setenv(name, {_stash = true, variable = true, toplevel = true})
+  setenv(name, {_stash = true, toplevel = true, variable = true})
   if some63(body) then
     return(join({"%global-function", name}, bind42(x, body)))
   else
