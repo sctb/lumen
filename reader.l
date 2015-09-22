@@ -79,10 +79,10 @@
     (if (= str "true") true
         (= str "false") false
         (or (= str "inf") (= str "-inf")
-            (= str "nan") (= str "-nan")) str
+            (= str "nan") (= str "-nan"))
+        str
       (let n (number str)
-        (if (is? n) n
-          str)))))
+        (if (is? n) n str)))))
 
 (define-reader ("(" s)
   (read-char s)
