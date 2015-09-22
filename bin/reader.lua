@@ -1,7 +1,7 @@
-local delimiters = {[";"] = true, ["\n"] = true, [")"] = true, ["("] = true}
+local delimiters = {["("] = true, [")"] = true, ["\n"] = true, [";"] = true}
 local whitespace = {[" "] = true, ["\n"] = true, ["\t"] = true}
 local function stream(str, more)
-  return({string = str, pos = 0, len = _35(str), more = more})
+  return({more = more, pos = 0, len = _35(str), string = str})
 end
 local function peek_char(s)
   local _id = s
@@ -76,8 +76,8 @@ local function flag63(atom)
 end
 local function expected(s, c)
   local _id1 = s
-  local pos = _id1.pos
   local more = _id1.more
+  local pos = _id1.pos
   local _id2 = more
   local _e
   if _id2 then
@@ -106,17 +106,21 @@ read_table[""] = function (s)
       break
     end
   end
-  local n = number(str)
-  if is63(n) then
-    return(n)
+  if str == "true" then
+    return(true)
   else
-    if str == "true" then
-      return(true)
+    if str == "false" then
+      return(false)
     else
-      if str == "false" then
-        return(false)
-      else
+      if str == "inf" or str == "-inf" or str == "nan" or str == "-nan" then
         return(str)
+      else
+        local n = number(str)
+        if is63(n) then
+          return(n)
+        else
+          return(str)
+        end
       end
     end
   end
@@ -211,4 +215,4 @@ read_table[","] = function (s)
     return(wrap(s, "unquote"))
   end
 end
-return({["read-all"] = read_all, ["read-string"] = read_string, read = read, stream = stream})
+return({["read-string"] = read_string, read = read, ["read-all"] = read_all, stream = stream})
