@@ -1,5 +1,5 @@
-local delimiters = {["("] = true, [")"] = true, [";"] = true, ["\n"] = true}
-local whitespace = {[" "] = true, ["\t"] = true, ["\n"] = true}
+local delimiters = {["("] = true, ["\n"] = true, [")"] = true, [";"] = true}
+local whitespace = {["\n"] = true, ["\t"] = true, [" "] = true}
 local function stream(str, more)
   return({pos = 0, string = str, len = _35(str), more = more})
 end
@@ -76,8 +76,8 @@ local function flag63(atom)
 end
 local function expected(s, c)
   local _id1 = s
-  local more = _id1.more
   local pos = _id1.pos
+  local more = _id1.more
   local _id2 = more
   local _e
   if _id2 then
@@ -96,6 +96,7 @@ local function wrap(s, x)
     return({x, y})
   end
 end
+local literals = {["false"] = false, ["true"] = true, nan = {"/", 0, 0}, inf = {"/", 1, 0}, ["-nan"] = {"/", 0, 0}, ["-inf"] = {"/", -1, 0}}
 read_table[""] = function (s)
   local str = ""
   while true do
@@ -106,22 +107,15 @@ read_table[""] = function (s)
       break
     end
   end
-  if str == "true" then
-    return(true)
+  local e = literals[str]
+  if is63(e) then
+    return(e)
   else
-    if str == "false" then
-      return(false)
+    local n = number(str)
+    if nil63(n) or nan63(n) or inf63(n) then
+      return(str)
     else
-      if str == "inf" or str == "-inf" or str == "nan" or str == "-nan" then
-        return(str)
-      else
-        local n = number(str)
-        if is63(n) then
-          return(n)
-        else
-          return(str)
-        end
-      end
+      return(n)
     end
   end
 end
@@ -215,4 +209,4 @@ read_table[","] = function (s)
     return(wrap(s, "unquote"))
   end
 end
-return({stream = stream, read = read, ["read-all"] = read_all, ["read-string"] = read_string})
+return({["read-all"] = read_all, read = read, ["read-string"] = read_string, stream = stream})

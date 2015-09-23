@@ -38,10 +38,6 @@
 (define-global atom? (x)
   (or (nil? x) (string? x) (number? x) (boolean? x)))
 
-(define-global nan (/ 0 0))
-(define-global inf (/ 1 0))
-(define-global -inf (- (/ 1 0)))
-
 (define-global nan? (n)
   (not (= n n)))
 
@@ -282,9 +278,6 @@
 (define-global string (x depth)
   (if (and depth (> depth 7)) "circular"
       (nil? x) "nil"
-      (nan? x) "nan"
-      (= x inf) "inf"
-      (= x -inf) "-inf"
       (boolean? x) (if x "true" "false")
       (string? x) (escape x)
       (atom? x) (tostring x)
