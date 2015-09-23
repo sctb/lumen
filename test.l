@@ -661,16 +661,33 @@ c"
     (let-unique (ham)
       (test= '_ham1 ham))))
 
-(define-test globals
-  (test= true true)
-  (test= false false)
+(define-macro infnan-tests ()
+  `(do
   (test= true (< -inf -1e10))
   (test= false (< inf -1e10))
   (test= false (= nan nan))
   (test= true (nan? nan))
   (test= true (nan? (* nan 20)))
   (test= -inf (- inf))
-  (test= inf (- -inf)))
+  (test= inf (- -inf))))
+
+
+(define-test globals
+  (test= true true)
+  (test= false false)
+  (let-macro ((retest () `(do
+      (test= true (< -inf -1e10))
+      (test= false (< inf -1e10))
+      (test= false (= nan nan))
+      (test= true (nan? nan))
+      (test= true (nan? (* nan 20)))
+      (test= -inf (- inf))
+      (test= inf (- -inf)))))
+    (retest)
+    (let Inf 42 (test= Inf 42) (retest))
+    (let NaN 42 (test= NaN 42) (retest))
+    (let -Inf 42 (test= -Inf 42) (retest))
+    (let -NaN 42 (test= -NaN 42) (retest))))
 
 (define-test add
   (let l ()

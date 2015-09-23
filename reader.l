@@ -68,6 +68,10 @@
     (if (= y (get s 'more)) y
       (list x y))))
 
+(define literals (obj true: true false: false
+                      nan: '(/ 0 0) -nan: '(/ 0 0) 
+                      inf: '(/ 1 0) -inf: '(/ -1 0)))
+
 (define-reader ("" s) ; atom
   (let (str "")
     (while true
@@ -76,13 +80,10 @@
 			(not (get delimiters c))))
 	    (cat! str (read-char s))
 	  (break))))
-    (if (= str "true") true
-        (= str "false") false
-        (or (= str "inf") (= str "-inf")
-            (= str "nan") (= str "-nan"))
-        str
-      (let n (number str)
-        (if (is? n) n str)))))
+    (let e (get literals str)
+      (if (is? e) e
+        (let n (number str)
+          (if (or (nil? n) (nan? n) (inf? n)) str n))))))
 
 (define-reader ("(" s)
   (read-char s)
