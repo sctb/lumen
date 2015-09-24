@@ -1,7 +1,7 @@
-local delimiters = {["("] = true, [")"] = true, [";"] = true, ["\n"] = true}
-local whitespace = {[" "] = true, ["\t"] = true, ["\n"] = true}
+local delimiters = {["("] = true, [")"] = true, ["\n"] = true, [";"] = true}
+local whitespace = {[" "] = true, ["\n"] = true, ["\t"] = true}
 local function stream(str, more)
-  return({pos = 0, string = str, len = _35(str), more = more})
+  return({more = more, pos = 0, len = _35(str), string = str})
 end
 local function peek_char(s)
   local _id = s
@@ -29,7 +29,7 @@ local function skip_non_code(s)
         read_char(s)
       else
         if c == ";" then
-          while c and not (c == "\n") do
+          while c and not ( c == "\n") do
             c = read_char(s)
           end
           skip_non_code(s)
@@ -64,7 +64,7 @@ local function read_all(s)
 end
 local function read_string(str, more)
   local x = read(stream(str, more))
-  if not (x == eof) then
+  if not ( x == eof) then
     return(x)
   end
 end
@@ -96,32 +96,26 @@ local function wrap(s, x)
     return({x, y})
   end
 end
+local literals = {["-nan"] = 0 / 0, ["false"] = false, nan = 0 / 0, ["true"] = true, ["-inf"] = -1 / 0, inf = 1 / 0}
 read_table[""] = function (s)
   local str = ""
   while true do
     local c = peek_char(s)
-    if c and (not whitespace[c] and not delimiters[c]) then
+    if c and (not  whitespace[c] and not  delimiters[c]) then
       str = str .. read_char(s)
     else
       break
     end
   end
-  if str == "true" then
-    return(true)
+  local x = literals[str]
+  if is63(x) then
+    return(x)
   else
-    if str == "false" then
-      return(false)
+    local n = number(str)
+    if nil63(n) or nan63(n) or inf63(n) then
+      return(str)
     else
-      if str == "inf" or str == "-inf" or str == "nan" or str == "-nan" then
-        return(str)
-      else
-        local n = number(str)
-        if is63(n) then
-          return(n)
-        else
-          return(str)
-        end
-      end
+      return(n)
     end
   end
 end
@@ -215,4 +209,4 @@ read_table[","] = function (s)
     return(wrap(s, "unquote"))
   end
 end
-return({stream = stream, read = read, ["read-all"] = read_all, ["read-string"] = read_string})
+return({["read-string"] = read_string, read = read, ["read-all"] = read_all, stream = stream})

@@ -1,7 +1,7 @@
-var delimiters = {"(": true, ")": true, ";": true, "\n": true};
-var whitespace = {" ": true, "\t": true, "\n": true};
+var delimiters = {"(": true, ")": true, "\n": true, ";": true};
+var whitespace = {" ": true, "\n": true, "\t": true};
 var stream = function (str, more) {
-  return({pos: 0, string: str, len: _35(str), more: more});
+  return({more: more, pos: 0, len: _35(str), string: str});
 };
 var peek_char = function (s) {
   var _id = s;
@@ -29,7 +29,7 @@ var skip_non_code = function (s) {
         read_char(s);
       } else {
         if (c === ";") {
-          while (c && !(c === "\n")) {
+          while (c && !( c === "\n")) {
             c = read_char(s);
           }
           skip_non_code(s);
@@ -64,7 +64,7 @@ var read_all = function (s) {
 };
 var read_string = function (str, more) {
   var x = read(stream(str, more));
-  if (!(x === eof)) {
+  if (!( x === eof)) {
     return(x);
   }
 };
@@ -96,32 +96,26 @@ var wrap = function (s, x) {
     return([x, y]);
   }
 };
+var literals = {"-nan": 0 / 0, "false": false, nan: 0 / 0, "true": true, "-inf": -1 / 0, inf: 1 / 0};
 read_table[""] = function (s) {
   var str = "";
   while (true) {
     var c = peek_char(s);
-    if (c && (!whitespace[c] && !delimiters[c])) {
+    if (c && (! whitespace[c] && ! delimiters[c])) {
       str = str + read_char(s);
     } else {
       break;
     }
   }
-  if (str === "true") {
-    return(true);
+  var x = literals[str];
+  if (is63(x)) {
+    return(x);
   } else {
-    if (str === "false") {
-      return(false);
+    var n = number(str);
+    if (nil63(n) || nan63(n) || inf63(n)) {
+      return(str);
     } else {
-      if (str === "inf" || str === "-inf" || str === "nan" || str === "-nan") {
-        return(str);
-      } else {
-        var n = number(str);
-        if (is63(n)) {
-          return(n);
-        } else {
-          return(str);
-        }
-      }
+      return(n);
     }
   }
 };

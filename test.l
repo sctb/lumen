@@ -50,7 +50,8 @@
     (test= '(quasiquote (unquote-splicing a)) (read "`,@a"))
     (test= 2 (# (read "(1 2 a: 7)")))
     (test= 7 (get (read "(1 2 a: 7)") 'a))
-    (test= true (get (read "(:a)") 'a))))
+    (test= true (get (read "(:a)") 'a))
+    (test= 1 (- -1))))
 
 (define-test read-more
   (let read (get reader 'read-string)
@@ -664,13 +665,18 @@ c"
 (define-test globals
   (test= true true)
   (test= false false)
-  (test= true (< -inf -1e10))
-  (test= false (< inf -1e10))
-  (test= false (= nan nan))
-  (test= true (nan? nan))
-  (test= true (nan? (* nan 20)))
-  (test= -inf (- inf))
-  (test= inf (- -inf)))
+  (let (Inf 1 NaN 2 -Inf 'aa- -NaN 'choo!)
+    (test= Inf 1)
+    (test= NaN 2)
+    (test= -Inf 'aa-)
+    (test= -NaN 'choo!)
+    (test= true (< -inf -1e10))
+    (test= false (< inf -1e10))
+    (test= false (= nan nan))
+    (test= true (nan? nan))
+    (test= true (nan? (* nan 20)))
+    (test= -inf (- inf))
+    (test= inf (- -inf))))
 
 (define-test add
   (let l ()

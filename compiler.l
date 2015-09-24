@@ -363,7 +363,7 @@
         b (compile b)
         op (getop op))
     (if (unary? form)
-        (cat op ao a ac)
+        (cat op ao " " a ac)
       (cat ao a ac " " op " " bo b bc))))
 
 (define-global compile-function (args body :name :prefix)
