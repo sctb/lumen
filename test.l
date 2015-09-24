@@ -50,7 +50,8 @@
     (test= '(quasiquote (unquote-splicing a)) (read "`,@a"))
     (test= 2 (# (read "(1 2 a: 7)")))
     (test= 7 (get (read "(1 2 a: 7)") 'a))
-    (test= true (get (read "(:a)") 'a))))
+    (test= true (get (read "(:a)") 'a))
+    (test= 1 (- -1))))
 
 (define-test read-more
   (let read (get reader 'read-string)

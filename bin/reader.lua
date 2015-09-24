@@ -1,7 +1,7 @@
-local delimiters = {["("] = true, [")"] = true, [";"] = true, ["\n"] = true}
+local delimiters = {["\n"] = true, [";"] = true, ["("] = true, [")"] = true}
 local whitespace = {[" "] = true, ["\t"] = true, ["\n"] = true}
 local function stream(str, more)
-  return({pos = 0, string = str, len = _35(str), more = more})
+  return({more = more, pos = 0, len = _35(str), string = str})
 end
 local function peek_char(s)
   local _id = s
@@ -29,7 +29,7 @@ local function skip_non_code(s)
         read_char(s)
       else
         if c == ";" then
-          while c and not (c == "\n") do
+          while c and not ( c == "\n") do
             c = read_char(s)
           end
           skip_non_code(s)
@@ -64,7 +64,7 @@ local function read_all(s)
 end
 local function read_string(str, more)
   local x = read(stream(str, more))
-  if not (x == eof) then
+  if not ( x == eof) then
     return(x)
   end
 end
@@ -76,8 +76,8 @@ local function flag63(atom)
 end
 local function expected(s, c)
   local _id1 = s
-  local more = _id1.more
   local pos = _id1.pos
+  local more = _id1.more
   local _id2 = more
   local _e
   if _id2 then
@@ -100,7 +100,7 @@ read_table[""] = function (s)
   local str = ""
   while true do
     local c = peek_char(s)
-    if c and (not whitespace[c] and not delimiters[c]) then
+    if c and (not  whitespace[c] and not  delimiters[c]) then
       str = str .. read_char(s)
     else
       break
@@ -215,4 +215,4 @@ read_table[","] = function (s)
     return(wrap(s, "unquote"))
   end
 end
-return({stream = stream, read = read, ["read-all"] = read_all, ["read-string"] = read_string})
+return({stream = stream, ["read-string"] = read_string, read = read, ["read-all"] = read_all})
