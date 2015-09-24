@@ -401,7 +401,7 @@ indentation = function () {
   }
   return(s);
 };
-var reserved = {"switch": true, "=": true, "function": true, "then": true, "with": true, "+": true, "==": true, "elseif": true, "throw": true, "this": true, "until": true, "nil": true, "break": true, "var": true, "new": true, "while": true, "not": true, "local": true, "in": true, "false": true, ">": true, "catch": true, "-": true, "and": true, "debugger": true, "or": true, "end": true, "case": true, ">=": true, "for": true, "<=": true, "delete": true, "finally": true, "else": true, "instanceof": true, "*": true, "continue": true, "%": true, "<": true, "if": true, "true": true, "try": true, "repeat": true, "return": true, "typeof": true, "default": true, "/": true, "do": true, "void": true};
+var reserved = {"else": true, "<": true, "true": true, "/": true, "end": true, "typeof": true, "function": true, "switch": true, "=": true, "or": true, "try": true, "catch": true, "until": true, "local": true, "repeat": true, "-": true, "false": true, "continue": true, "==": true, "and": true, "if": true, "for": true, ">=": true, "<=": true, "with": true, "return": true, "finally": true, "nil": true, "new": true, "do": true, "case": true, "break": true, "elseif": true, "+": true, "not": true, "void": true, "var": true, "%": true, "in": true, "delete": true, "throw": true, "debugger": true, "instanceof": true, "this": true, "while": true, "then": true, "default": true, "*": true, ">": true};
 reserved63 = function (x) {
   return(reserved[x]);
 };
@@ -461,22 +461,22 @@ _x58.lua = "not ";
 _x58.js = "!";
 __x57["not"] = _x58;
 var __x59 = [];
-__x59["*"] = true;
 __x59["/"] = true;
+__x59["*"] = true;
 __x59["%"] = true;
 var __x60 = [];
-__x60["-"] = true;
 __x60["+"] = true;
+__x60["-"] = true;
 var __x61 = [];
 var _x62 = [];
 _x62.lua = "..";
 _x62.js = "+";
 __x61.cat = _x62;
 var __x63 = [];
-__x63[">"] = true;
 __x63["<="] = true;
-__x63["<"] = true;
 __x63[">="] = true;
+__x63["<"] = true;
+__x63[">"] = true;
 var __x64 = [];
 var _x65 = [];
 _x65.lua = "==";
@@ -646,8 +646,8 @@ var compile_special = function (form, stmt63) {
   var args = cut(_id5, 1);
   var _id6 = getenv(x);
   var self_tr63 = _id6.tr;
-  var special = _id6.special;
   var stmt = _id6.stmt;
+  var special = _id6.special;
   var tr = terminator(stmt63 && ! self_tr63);
   return(apply(special, args) + tr);
 };
