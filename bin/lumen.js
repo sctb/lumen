@@ -44,12 +44,11 @@ atom63 = function (x) {
 };
 nan = 0 / 0;
 inf = 1 / 0;
-_inf = -( 1 / 0);
 nan63 = function (n) {
   return(!( n === n));
 };
 inf63 = function (n) {
-  return(n === inf || n === _inf);
+  return(n === inf || n === -inf);
 };
 clip = function (s, from, upto) {
   return(s.substring(from, upto));
@@ -542,7 +541,7 @@ string = function (x, depth) {
         if (x === inf) {
           return("inf");
         } else {
-          if (x === _inf) {
+          if (x === -inf) {
             return("-inf");
           } else {
             if (boolean63(x)) {
@@ -880,7 +879,7 @@ setenv("define-global", {_stash: true, macro: function (name, x) {
   var _r35 = unstash(Array.prototype.slice.call(arguments, 2));
   var _id29 = _r35;
   var body = cut(_id29, 0);
-  setenv(name, {_stash: true, toplevel: true, variable: true});
+  setenv(name, {_stash: true, variable: true, toplevel: true});
   if (some63(body)) {
     return(join(["%global-function", name], bind42(x, body)));
   } else {

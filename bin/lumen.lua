@@ -48,12 +48,11 @@ function atom63(x)
 end
 nan = 0 / 0
 inf = 1 / 0
-_inf = -( 1 / 0)
 function nan63(n)
   return(not ( n == n))
 end
 function inf63(n)
-  return(n == inf or n == _inf)
+  return(n == inf or n == -inf)
 end
 function clip(s, from, upto)
   return(ssub(s, from + 1, upto))
@@ -467,7 +466,7 @@ function string(x, depth)
         if x == inf then
           return("inf")
         else
-          if x == _inf then
+          if x == -inf then
             return("-inf")
           else
             if boolean63(x) then
