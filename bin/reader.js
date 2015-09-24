@@ -1,13 +1,13 @@
-var delimiters = {"(": true, ")": true, ";": true, "\n": true};
-var whitespace = {" ": true, "\t": true, "\n": true};
+var delimiters = {"\n": true, "(": true, ";": true, ")": true};
+var whitespace = {"\n": true, "\t": true, " ": true};
 var stream = function (str, more) {
-  return({pos: 0, string: str, len: _35(str), more: more});
+  return({string: str, pos: 0, more: more, len: _35(str)});
 };
 var peek_char = function (s) {
   var _id = s;
   var pos = _id.pos;
-  var len = _id.len;
   var string = _id.string;
+  var len = _id.len;
   if (pos < len) {
     return(char(string, pos));
   }
@@ -29,7 +29,7 @@ var skip_non_code = function (s) {
         read_char(s);
       } else {
         if (c === ";") {
-          while (c && !(c === "\n")) {
+          while (c && !( c === "\n")) {
             c = read_char(s);
           }
           skip_non_code(s);
@@ -64,7 +64,7 @@ var read_all = function (s) {
 };
 var read_string = function (str, more) {
   var x = read(stream(str, more));
-  if (!(x === eof)) {
+  if (!( x === eof)) {
     return(x);
   }
 };
@@ -100,7 +100,7 @@ read_table[""] = function (s) {
   var str = "";
   while (true) {
     var c = peek_char(s);
-    if (c && (!whitespace[c] && !delimiters[c])) {
+    if (c && (! whitespace[c] && ! delimiters[c])) {
       str = str + read_char(s);
     } else {
       break;
