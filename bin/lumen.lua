@@ -559,10 +559,25 @@ function setenv(k, ...)
   end
 end
 local function call_with_file(path, f)
-  local _e,_x12 = xpcall(function ()
-    return(f(path))
-  end, _37message_handler)
-  local _id2 = {_e, _x12}
+  local _x12 = nil
+  local _msg = nil
+  local _e = xpcall(function ()
+    _x12 = (function ()
+      return(f(path))
+    end)()
+    return(_x12)
+  end, function (...)
+    local l = unstash({...})
+    _msg = apply(_37message_handler, l)
+    return(_msg)
+  end)
+  local _e9
+  if _e then
+    _e9 = _x12
+  else
+    _e9 = _msg
+  end
+  local _id2 = {_e, _e9}
   local ok = _id2[1]
   local s = _id2[2]
   path.close(path)
@@ -854,19 +869,21 @@ setenv("fn", {_stash = true, macro = function (args, ...)
   local body = cut(_id43, 0)
   return(join({"%function"}, bind42(args, body)))
 end})
-setenv("guard", {_stash = true, macro = function (expr)
+setenv("guard", {_stash = true, macro = function (...)
+  local body = unstash({...})
+  local expr = {join({"fn", join()}, body)}
   if target == "js" then
     return({{"fn", join(), {"%try", {"list", true, expr}}}})
   else
     local e = unique("e")
     local x = unique("x")
-    local ex = "|" .. e .. "," .. x .. "|"
-    return({"let", ex, {"xpcall", {"fn", join(), expr}, "%message-handler"}, {"list", e, x}})
+    local msg = unique("msg")
+    return({"let", {x, "nil", msg, "nil", e, {"xpcall", {"fn", join(), {"set", x, expr}}, {"fn", "l", {"set", msg, {"apply", "%message-handler", "l"}}}}}, {"list", e, {"if", e, x, msg}}})
   end
 end})
 setenv("each", {_stash = true, macro = function (x, t, ...)
-  local _r55 = unstash({...})
-  local _id46 = _r55
+  local _r53 = unstash({...})
+  local _id46 = _r53
   local body = cut(_id46, 0)
   local o = unique("o")
   local n = unique("n")
@@ -895,14 +912,14 @@ setenv("each", {_stash = true, macro = function (x, t, ...)
   return({"let", {o, t, k, "nil"}, {"%for", o, k, join({"let", {v, {"get", o, k}}}, _e5)}})
 end})
 setenv("for", {_stash = true, macro = function (i, to, ...)
-  local _r57 = unstash({...})
-  local _id49 = _r57
+  local _r55 = unstash({...})
+  local _id49 = _r55
   local body = cut(_id49, 0)
   return({"let", i, 0, join({"while", {"<", i, to}}, body, {{"inc", i}})})
 end})
 setenv("step", {_stash = true, macro = function (v, t, ...)
-  local _r59 = unstash({...})
-  local _id51 = _r59
+  local _r57 = unstash({...})
+  local _id51 = _r57
   local body = cut(_id51, 0)
   local x = unique("x")
   local n = unique("n")
@@ -928,14 +945,14 @@ setenv("target", {_stash = true, macro = function (...)
   return(clauses[target])
 end})
 setenv("join!", {_stash = true, macro = function (a, ...)
-  local _r63 = unstash({...})
-  local _id53 = _r63
+  local _r61 = unstash({...})
+  local _id53 = _r61
   local bs = cut(_id53, 0)
   return({"set", a, join({"join", a}, bs)})
 end})
 setenv("cat!", {_stash = true, macro = function (a, ...)
-  local _r65 = unstash({...})
-  local _id55 = _r65
+  local _r63 = unstash({...})
+  local _id55 = _r63
   local bs = cut(_id55, 0)
   return({"set", a, join({"cat", a}, bs)})
 end})
@@ -969,10 +986,25 @@ end})
 local reader = require("reader")
 local compiler = require("compiler")
 local function eval_print(form)
-  local _e,_x = xpcall(function ()
-    return(compiler.eval(form))
-  end, _37message_handler)
-  local _id = {_e, _x}
+  local _x = nil
+  local _msg = nil
+  local _e = xpcall(function ()
+    _x = (function ()
+      return(compiler.eval(form))
+    end)()
+    return(_x)
+  end, function (...)
+    local l = unstash({...})
+    _msg = apply(_37message_handler, l)
+    return(_msg)
+  end)
+  local _e1
+  if _e then
+    _e1 = _x
+  else
+    _e1 = _msg
+  end
+  local _id = {_e, _e1}
   local ok = _id[1]
   local x = _id[2]
   if not  ok then
@@ -1018,15 +1050,15 @@ local function usage()
   return(exit())
 end
 local function end_is63(str, ...)
-  local _r6 = unstash({...})
-  local _id1 = _r6
+  local _r7 = unstash({...})
+  local _id1 = _r7
   local l = cut(_id1, 0)
   local s = apply(cat, l)
   return(clip(str, _35(str) - _35(s)) == s)
 end
 local function cat_end(str, ...)
-  local _r7 = unstash({...})
-  local _id2 = _r7
+  local _r8 = unstash({...})
+  local _id2 = _r8
   local l = cut(_id2, 0)
   local s = apply(cat, l)
   if end_is63(str, s) then
@@ -1083,11 +1115,11 @@ local function main()
     end
     i = i + 1
   end
-  local _x4 = pre
-  local _n = _35(_x4)
+  local _x5 = pre
+  local _n = _35(_x5)
   local _i = 0
   while _i < _n do
-    local file = _x4[_i + 1]
+    local file = _x5[_i + 1]
     compiler["run-file"](cat_end(file, ".", target))
     _i = _i + 1
   end

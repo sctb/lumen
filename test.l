@@ -53,6 +53,23 @@
     (test= true (get (read "(:a)") 'a))
     (test= 1 (- -1))))
 
+(define-test guard
+  (let i 0
+    (let ((ok x) (guard 1 2 (inc i) 3 4))
+      (test= 1 i)
+      (test= true ok)
+      (test= 4 x))
+    (let ((ok x) (guard 1 2 (bark) (inc i) 3 4))
+      (test= 1 i)
+      (test= false ok)
+      (target js: (test= "bark is not defined" x))
+      (target lua: (test= "attempt to call global 'bark' (a nil value)" x)))
+    (let ((ok x) (guard 1 2 (inc i) (bark) 3 4))
+      (test= 2 i)
+      (test= false ok)
+      (target js: (test= "bark is not defined" x))
+      (target lua: (test= "attempt to call global 'bark' (a nil value)" x)))))
+
 (define-test read-more
   (let read (get reader 'read-string)
     (test= 17 (read "17" true))
