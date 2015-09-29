@@ -68,10 +68,10 @@
     (if (= y (get s 'more)) y
       (list x y))))
 
-(define literals (obj true: true false: false
-                      nan: (/ 0 0) -nan: (/ 0 0)
-                      inf: (/ 1 0) -inf: (/ -1 0)))
-
+(define literals
+  (obj true: true false: false
+       nan: (/ 0 0) -nan: (/ 0 0)
+       inf: (/ 1 0) -inf: (/ -1 0)))
 
 (define-reader ("" s) ; atom
   (let (str "")
