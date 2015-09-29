@@ -549,14 +549,22 @@
 (define run-file (path)
   (run (read-file path)))
 
+(define compile-string (s)
+  (let out ""
+    (step expr (read-from-string s)
+      (let form (expand `(do ,expr))
+        (cat! out (compile form :stmt))))
+    out))
+
 (define compile-file (path)
-  (let (s ((get reader 'stream) (read-file path))
-        body ((get reader 'read-all) s)
-        form (expand `(do ,@body)))
-    (compile form :stmt)))
+  (compile-string (read-file path)))
+
+(define-global load-string (s)
+  (run (compile-string (cat "(set %result ((fn () " s ")))")))
+  %result)
 
 (define-global load (path)
-  (run (compile-file path)))
+  (load-string (read-file path)))
 
 (define-special do forms :stmt :tr
   (with s ""
@@ -688,7 +696,9 @@
 
 (export eval
         run-file
+        compile-string
         compile-file
+        load-string
         load
         expand
         compile)

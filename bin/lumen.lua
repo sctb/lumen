@@ -61,21 +61,21 @@ end
 function cut(x, from, upto)
   local l = {}
   local j = 0
-  local _e1
+  local _e
   if nil63(from) or from < 0 then
-    _e1 = 0
+    _e = 0
   else
-    _e1 = from
+    _e = from
   end
-  local i = _e1
+  local i = _e
   local n = _35(x)
-  local _e2
+  local _e1
   if nil63(upto) or upto > n then
-    _e2 = n
+    _e1 = n
   else
-    _e2 = upto
+    _e1 = upto
   end
-  local _upto = _e2
+  local _upto = _e1
   while i < _upto do
     l[j + 1] = x[i + 1]
     i = i + 1
@@ -116,11 +116,11 @@ function char(s, n)
   return(clip(s, n, n + 1))
 end
 function code(s, n)
-  local _e3
+  local _e2
   if n then
-    _e3 = n + 1
+    _e2 = n + 1
   end
-  return(sbyte(s, _e3))
+  return(sbyte(s, _e2))
 end
 function string_literal63(x)
   return(string63(x) and char(x, 0) == "\"")
@@ -326,11 +326,11 @@ function unstash(args)
   end
 end
 function search(s, pattern, start)
-  local _e4
+  local _e3
   if start then
-    _e4 = start + 1
+    _e3 = start + 1
   end
-  local _start = _e4
+  local _start = _e3
   local i = sfind(s, pattern, _start, true)
   return(i and i - 1)
 end
@@ -430,25 +430,25 @@ function escape(s)
   local i = 0
   while i < _35(s) do
     local c = char(s, i)
-    local _e5
+    local _e4
     if c == "\n" then
-      _e5 = "\\n"
+      _e4 = "\\n"
     else
-      local _e6
+      local _e5
       if c == "\"" then
-        _e6 = "\\\""
+        _e5 = "\\\""
       else
-        local _e7
+        local _e6
         if c == "\\" then
-          _e7 = "\\\\"
+          _e6 = "\\\\"
         else
-          _e7 = c
+          _e6 = c
         end
-        _e6 = _e7
+        _e5 = _e6
       end
-      _e5 = _e6
+      _e4 = _e5
     end
-    local c1 = _e5
+    local c1 = _e4
     s1 = s1 .. c1
     i = i + 1
   end
@@ -540,13 +540,13 @@ function setenv(k, ...)
   local _id1 = _r66
   local _keys = cut(_id1, 0)
   if string63(k) then
-    local _e8
+    local _e7
     if _keys.toplevel then
-      _e8 = hd(environment)
+      _e7 = hd(environment)
     else
-      _e8 = last(environment)
+      _e7 = last(environment)
     end
-    local frame = _e8
+    local frame = _e7
     local entry = frame[k] or {}
     local _o12 = _keys
     local _k = nil
@@ -561,7 +561,7 @@ end
 local function call_with_file(path, f)
   local _x12 = nil
   local _msg = nil
-  local _e = xpcall(function ()
+  local _e8 = xpcall(function ()
     _x12 = (function ()
       return(f(path))
     end)()
@@ -572,12 +572,12 @@ local function call_with_file(path, f)
     return(_msg)
   end)
   local _e9
-  if _e then
+  if _e8 then
     _e9 = _x12
   else
     _e9 = _msg
   end
-  local _id2 = {_e, _e9}
+  local _id2 = {_e8, _e9}
   local ok = _id2[1]
   local s = _id2[2]
   path.close(path)

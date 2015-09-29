@@ -730,13 +730,13 @@ setenv("list", {_stash: true, macro: function () {
   var k = undefined;
   for (k in _o1) {
     var v = _o1[k];
-    var _e3;
+    var _e;
     if (numeric63(k)) {
-      _e3 = parseInt(k);
+      _e = parseInt(k);
     } else {
-      _e3 = k;
+      _e = k;
     }
-    var _k = _e3;
+    var _k = _e;
     if (number63(_k)) {
       l[_k] = v;
     } else {

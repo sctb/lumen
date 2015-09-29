@@ -878,6 +878,22 @@ c"
     (test= 9 (eval '(do (define x 7) (+ x 2))))
     (test= 6 (eval '(apply + '(1 2 3))))))
 
+(define-test compiler
+  (let (eval (get compiler 'eval)
+        compile-string (get compiler 'compile-string))
+    (define-global test-foobar () 42)
+    (test= 42 (test-foobar))
+    (test= 99 (load-string "(define test-foobar () 99) (test-foobar)"))
+    (test= 42 (test-foobar))
+    (test= 99 (load-string "(define-global test-foobar () 99) (test-foobar)"))
+    (test= 99 (test-foobar))
+    (let module (load-string (inner '|
+      (define reader (require 'reader))
+      (define foobar (str) ((get reader 'read-from-string) str))
+      (export foobar)
+      |))
+      (test= '(42 99) ((get module 'foobar) "42 99")))))
+
 (define-test call
   (let f (fn () 42)
     (test= 42 (call f)))
