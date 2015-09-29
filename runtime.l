@@ -359,6 +359,10 @@
     js: (get (require 'path) 'sep)
     lua: (char (get (get _G 'package) 'config) 0)))
 
+(define-global path-join parts
+  (if (none? parts) ""
+    (reduce (fn (x y) (cat x path-separator y)) parts)))
+
 (define-global get-environment-variable (name)
   (target
     js: (get (get process 'env) name)

@@ -663,6 +663,16 @@ file_exists63 = function (path) {
   return(fs.existsSync(path, "utf8"));
 };
 path_separator = require("path").sep;
+path_join = function () {
+  var parts = unstash(Array.prototype.slice.call(arguments, 0));
+  if (none63(parts)) {
+    return("");
+  } else {
+    return(reduce(function (x, y) {
+      return(x + path_separator + y);
+    }, parts));
+  }
+};
 get_environment_variable = function (name) {
   return(process.env[name]);
 };
