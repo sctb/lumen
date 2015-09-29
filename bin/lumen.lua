@@ -1017,6 +1017,7 @@ local function usage()
   print("  -e <expr>\tExpression to evaluate")
   return(exit())
 end
+args = {}
 local function main()
   if hd(argv) == "-h" or hd(argv) == "--help" then
     usage()
@@ -1030,31 +1031,36 @@ local function main()
   local i = 0
   while i < n do
     local a = argv[i + 1]
-    if a == "-c" or a == "-o" or a == "-t" or a == "-e" then
-      if i == n - 1 then
-        print("missing argument for " .. a)
-      else
-        i = i + 1
-        local val = argv[i + 1]
-        if a == "-c" then
-          input = val
+    if a == "--" then
+      args = cut(argv, i + 1)
+      break
+    else
+      if a == "-c" or a == "-o" or a == "-t" or a == "-e" then
+        if i == n - 1 then
+          print("missing argument for " .. a)
         else
-          if a == "-o" then
-            output = val
+          i = i + 1
+          local val = argv[i + 1]
+          if a == "-c" then
+            input = val
           else
-            if a == "-t" then
-              target1 = val
+            if a == "-o" then
+              output = val
             else
-              if a == "-e" then
-                expr = val
+              if a == "-t" then
+                target1 = val
+              else
+                if a == "-e" then
+                  expr = val
+                end
               end
             end
           end
         end
-      end
-    else
-      if not ( "-" == char(a, 0)) then
-        add(pre, a)
+      else
+        if not ( "-" == char(a, 0)) then
+          add(pre, a)
+        end
       end
     end
     i = i + 1

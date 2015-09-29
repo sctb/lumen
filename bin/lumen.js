@@ -1121,6 +1121,7 @@ var usage = function () {
   print("  -e <expr>\tExpression to evaluate");
   return(exit());
 };
+args = [];
 var main = function () {
   if (hd(argv) === "-h" || hd(argv) === "--help") {
     usage();
@@ -1134,31 +1135,36 @@ var main = function () {
   var i = 0;
   while (i < n) {
     var a = argv[i];
-    if (a === "-c" || a === "-o" || a === "-t" || a === "-e") {
-      if (i === n - 1) {
-        print("missing argument for " + a);
-      } else {
-        i = i + 1;
-        var val = argv[i];
-        if (a === "-c") {
-          input = val;
+    if (a === "--") {
+      args = cut(argv, i + 1);
+      break;
+    } else {
+      if (a === "-c" || a === "-o" || a === "-t" || a === "-e") {
+        if (i === n - 1) {
+          print("missing argument for " + a);
         } else {
-          if (a === "-o") {
-            output = val;
+          i = i + 1;
+          var val = argv[i];
+          if (a === "-c") {
+            input = val;
           } else {
-            if (a === "-t") {
-              target1 = val;
+            if (a === "-o") {
+              output = val;
             } else {
-              if (a === "-e") {
-                expr = val;
+              if (a === "-t") {
+                target1 = val;
+              } else {
+                if (a === "-e") {
+                  expr = val;
+                }
               }
             }
           }
         }
-      }
-    } else {
-      if (!( "-" === char(a, 0))) {
-        add(pre, a);
+      } else {
+        if (!( "-" === char(a, 0))) {
+          add(pre, a);
+        }
       }
     }
     i = i + 1;

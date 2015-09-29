@@ -39,6 +39,8 @@
   (print "  -e <expr>\tExpression to evaluate")
   (exit))
 
+(define-global args ())
+
 (define main ()
   (when (or (= (hd argv) "-h")
             (= (hd argv) "--help"))
@@ -51,7 +53,8 @@
         n (# argv))
     (for i n
       (let a (at argv i)
-        (if (or (= a "-c") (= a "-o") (= a "-t") (= a "-e"))
+        (if (= a "--") (do (set args (cut argv (+ i 1))) (break))
+            (or (= a "-c") (= a "-o") (= a "-t") (= a "-e"))
             (if (= i (- n 1))
                 (print (cat "missing argument for " a))
               (do (inc i)
