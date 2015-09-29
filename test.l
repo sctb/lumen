@@ -662,21 +662,21 @@ c"
     (let-unique (ham)
       (test= '_ham1 ham))))
 
-(define-test globals
+(define-test literals
   (test= true true)
   (test= false false)
-  (let (Inf 1 NaN 2 -Inf 'aa- -NaN 'choo!)
+  (test= true (< -inf -1e10))
+  (test= false (< inf -1e10))
+  (test= false (= nan nan))
+  (test= true (nan? nan))
+  (test= true (nan? (* nan 20)))
+  (test= -inf (- inf))
+  (test= inf (- -inf))
+  (let (Inf 1 NaN 2 -Inf 'a -NaN 'b)
     (test= Inf 1)
     (test= NaN 2)
-    (test= -Inf 'aa-)
-    (test= -NaN 'choo!)
-    (test= true (< -inf -1e10))
-    (test= false (< inf -1e10))
-    (test= false (= nan nan))
-    (test= true (nan? nan))
-    (test= true (nan? (* nan 20)))
-    (test= -inf (- inf))
-    (test= inf (- -inf))))
+    (test= -Inf 'a)
+    (test= -NaN 'b)))
 
 (define-test add
   (let l ()
