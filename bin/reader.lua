@@ -1,12 +1,12 @@
-local delimiters = {["("] = true, [";"] = true, ["\n"] = true, [")"] = true}
-local whitespace = {["\t"] = true, [" "] = true, ["\n"] = true}
+local delimiters = {[";"] = true, [")"] = true, ["\n"] = true, ["("] = true}
+local whitespace = {["\n"] = true, [" "] = true, ["\t"] = true}
 local function stream(str, more)
-  return({len = _35(str), pos = 0, string = str, more = more})
+  return({string = str, more = more, len = _35(str), pos = 0})
 end
 local function peek_char(s)
   local _id = s
-  local len = _id.len
   local string = _id.string
+  local len = _id.len
   local pos = _id.pos
   if pos < len then
     return(char(string, pos))
@@ -96,7 +96,7 @@ local function wrap(s, x)
     return({x, y})
   end
 end
-local literals = {["-nan"] = 0 / 0, ["-inf"] = -1 / 0, ["false"] = false, ["true"] = true, inf = 1 / 0, nan = 0 / 0}
+local literals = {["false"] = false, nan = 0 / 0, ["true"] = true, ["-nan"] = 0 / 0, inf = 1 / 0, ["-inf"] = -1 / 0}
 read_table[""] = function (s)
   local str = ""
   while true do
@@ -112,10 +112,10 @@ read_table[""] = function (s)
     return(x)
   else
     local n = number(str)
-    if is63(n) then
-      return(n)
-    else
+    if nil63(n) or nan63(n) or inf63(n) then
       return(str)
+    else
+      return(n)
     end
   end
 end
@@ -209,4 +209,4 @@ read_table[","] = function (s)
     return(wrap(s, "unquote"))
   end
 end
-return({["read-string"] = read_string, stream = stream, ["read-all"] = read_all, read = read})
+return({stream = stream, ["read-string"] = read_string, read = read, ["read-all"] = read_all})
