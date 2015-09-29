@@ -879,14 +879,17 @@ c"
     (test= 6 (eval '(apply + '(1 2 3))))))
 
 (define-test compiler
-  (let (eval (get compiler 'eval)
-        compile-string (get compiler 'compile-string))
+  (let compile-string (get compiler 'compile-string)
+    (let (code (compile-string "(+ 1 1)\n(+ 2 2)\nxyz\n(+ 3 3)")
+          lines (keep some? (split code "\n")))
+      (test= 4 (# lines)))
     (define-global test-foobar () 42)
     (test= 42 (test-foobar))
     (test= 99 (load-string "(define test-foobar () 99) (test-foobar)"))
     (test= 42 (test-foobar))
     (test= 99 (load-string "(define-global test-foobar () 99) (test-foobar)"))
     (test= 99 (test-foobar))
+    (test= 3 (load-string "((get ((fn () (define foo (x y) (+ x y)) (export foo))) 'foo) 1 2)"))
     (let module (load-string (inner '|
       (define reader (require 'reader))
       (define foobar (str) ((get reader 'read-from-string) str))
