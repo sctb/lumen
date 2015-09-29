@@ -1195,12 +1195,16 @@ var main = function () {
     compiler["run-file"](cat_end(file, ".", target));
     _i = _i + 1;
   }
-  if (input && output) {
+  if (input) {
     if (target1) {
       target = target1;
     }
     var code = compiler["compile-file"](input);
-    return(write_file(output, code));
+    if (nil63(output) || output === "-") {
+      return(print(code));
+    } else {
+      return(write_file(output, code));
+    }
   } else {
     if (expr) {
       return(rep(expr));
