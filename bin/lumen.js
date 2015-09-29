@@ -1121,6 +1121,24 @@ var usage = function () {
   print("  -e <expr>\tExpression to evaluate");
   return(exit());
 };
+var end_is63 = function (str) {
+  var _r6 = unstash(Array.prototype.slice.call(arguments, 1));
+  var _id1 = _r6;
+  var l = cut(_id1, 0);
+  var s = apply(cat, l);
+  return(clip(str, _35(str) - _35(s)) === s);
+};
+var cat_end = function (str) {
+  var _r7 = unstash(Array.prototype.slice.call(arguments, 1));
+  var _id2 = _r7;
+  var l = cut(_id2, 0);
+  var s = apply(cat, l);
+  if (end_is63(str, s)) {
+    return(str);
+  } else {
+    return(str + s);
+  }
+};
 args = [];
 var main = function () {
   if (hd(argv) === "-h" || hd(argv) === "--help") {
@@ -1174,7 +1192,7 @@ var main = function () {
   var _i = 0;
   while (_i < _n) {
     var file = _x1[_i];
-    compiler["run-file"](file);
+    compiler["run-file"](cat_end(file, ".", target));
     _i = _i + 1;
   }
   if (input && output) {

@@ -1017,6 +1017,24 @@ local function usage()
   print("  -e <expr>\tExpression to evaluate")
   return(exit())
 end
+local function end_is63(str, ...)
+  local _r6 = unstash({...})
+  local _id1 = _r6
+  local l = cut(_id1, 0)
+  local s = apply(cat, l)
+  return(clip(str, _35(str) - _35(s)) == s)
+end
+local function cat_end(str, ...)
+  local _r7 = unstash({...})
+  local _id2 = _r7
+  local l = cut(_id2, 0)
+  local s = apply(cat, l)
+  if end_is63(str, s) then
+    return(str)
+  else
+    return(str .. s)
+  end
+end
 args = {}
 local function main()
   if hd(argv) == "-h" or hd(argv) == "--help" then
@@ -1065,12 +1083,12 @@ local function main()
     end
     i = i + 1
   end
-  local _x2 = pre
-  local _n = _35(_x2)
+  local _x4 = pre
+  local _n = _35(_x4)
   local _i = 0
   while _i < _n do
-    local file = _x2[_i + 1]
-    compiler["run-file"](file)
+    local file = _x4[_i + 1]
+    compiler["run-file"](cat_end(file, ".", target))
     _i = _i + 1
   end
   if input and output then

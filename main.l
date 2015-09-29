@@ -39,6 +39,15 @@
   (print "  -e <expr>\tExpression to evaluate")
   (exit))
 
+(define end-is? (str rest: l)
+  (let s (apply cat l)
+    (= (clip str (- (# str) (# s))) s)))
+
+(define cat-end (str rest: l)
+  (let s (apply cat l)
+    (if (end-is? str s) str
+      (cat str s))))
+
 (define-global args ())
 
 (define main ()
@@ -65,7 +74,7 @@
                         (= a "-e") (set expr val)))))
             (not (= "-" (char a 0))) (add pre a))))
     (step file pre
-      ((get compiler 'run-file) file))
+      ((get compiler 'run-file) (cat-end file "." target)))
     (if (and input output)
         (do (if target1 (set target target1))
             (let code ((get compiler 'compile-file) input)
