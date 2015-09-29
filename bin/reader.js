@@ -225,8 +225,10 @@ read_table[","] = function (s) {
     return(wrap(s, "unquote"));
   }
 };
+var _124exports124 = exports || {};
 exports.stream = stream;
 exports.read = read;
 exports["read-all"] = read_all;
 exports["read-string"] = read_string;
 exports["read-from-string"] = read_from_string;
+exports;

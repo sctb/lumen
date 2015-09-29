@@ -1283,6 +1283,7 @@ setenv("%object", {_stash: true, special: function () {
   }
   return(s + "}");
 }});
+var _124exports124 = exports || {};
 exports.eval = eval;
 exports["run-file"] = run_file;
 exports["compile-string"] = compile_string;
@@ -1291,3 +1292,4 @@ exports["load-string"] = load_string;
 exports.load = load;
 exports.expand = expand;
 exports.compile = compile;
+exports;

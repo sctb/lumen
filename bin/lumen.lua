@@ -969,9 +969,9 @@ end})
 setenv("export", {_stash = true, macro = function (...)
   local names = unstash({...})
   if target == "js" then
-    return(join({"do"}, map(function (k)
+    return(join({"let", "|exports|", {"or", "exports", {"obj"}}}, map(function (k)
       return({"set", {"get", "exports", {"quote", k}}, k})
-    end, names)))
+    end, names), {"exports"}))
   else
     local x = {}
     local _o5 = names

@@ -1052,9 +1052,9 @@ setenv("with-indent", {_stash: true, macro: function (form) {
 setenv("export", {_stash: true, macro: function () {
   var names = unstash(Array.prototype.slice.call(arguments, 0));
   if (target === "js") {
-    return(join(["do"], map(function (k) {
+    return(join(["let", "|exports|", ["or", "exports", ["obj"]]], map(function (k) {
       return(["set", ["get", "exports", ["quote", k]], k]);
-    }, names)));
+    }, names), ["exports"]));
   } else {
     var x = {};
     var _o5 = names;

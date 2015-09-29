@@ -208,9 +208,11 @@
 
 (define-macro export names
   (if (= target 'js)
-      `(do ,@(map (fn (k)
+      `(let |exports| (or exports (obj))
+           ,@(map (fn (k)
                     `(set (get exports ',k) ,k))
-                  names))
+                  names)
+           exports)
     (let x (obj)
       (each k names
         (set (get x k) k))
