@@ -39,6 +39,17 @@
   (print "  -e <expr>\tExpression to evaluate")
   (exit))
 
+(define end-is? (str rest: l)
+  (let s (apply cat l)
+    (= (clip str (- (# str) (# s))) s)))
+
+(define cat-end (str rest: l)
+  (let s (apply cat l)
+    (if (end-is? str s) str
+      (cat str s))))
+
+(define-global args ())
+
 (define main ()
   (when (or (= (hd argv) "-h")
             (= (hd argv) "--help"))
@@ -51,7 +62,8 @@
         n (# argv))
     (for i n
       (let a (at argv i)
-        (if (or (= a "-c") (= a "-o") (= a "-t") (= a "-e"))
+        (if (= a "--") (do (set args (cut argv (+ i 1))) (break))
+            (or (= a "-c") (= a "-o") (= a "-t") (= a "-e"))
             (if (= i (- n 1))
                 (print (cat "missing argument for " a))
               (do (inc i)
@@ -62,11 +74,13 @@
                         (= a "-e") (set expr val)))))
             (not (= "-" (char a 0))) (add pre a))))
     (step file pre
-      ((get compiler 'run-file) file))
-    (if (and input output)
+      ((get compiler 'run-file) (cat-end file "." target)))
+    (if input
         (do (if target1 (set target target1))
             (let code ((get compiler 'compile-file) input)
-              (write-file output code)))
+              (if (or (nil? output) (= output "-"))
+                (print code)
+                (write-file output code))))
       (if expr (rep expr) (repl)))))
 
 (main)

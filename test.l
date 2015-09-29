@@ -51,7 +51,26 @@
     (test= 2 (# (read "(1 2 a: 7)")))
     (test= 7 (get (read "(1 2 a: 7)") 'a))
     (test= true (get (read "(:a)") 'a))
-    (test= 1 (- -1))))
+    (test= 1 (- -1))
+    (test= '(foo bar) (read-from-string "foo bar"))
+    (test= 'foo (read-from-string "foo bar" :one))))
+
+(define-test guard
+  (let i 0
+    (let ((ok x) (guard 1 2 (inc i) 3 4))
+      (test= 1 i)
+      (test= true ok)
+      (test= 4 x))
+    (let ((ok x) (guard 1 2 (bark) (inc i) 3 4))
+      (test= 1 i)
+      (test= false ok)
+      (target js: (test= "bark is not defined" x))
+      (target lua: (test= "attempt to call global 'bark' (a nil value)" x)))
+    (let ((ok x) (guard 1 2 (inc i) (bark) 3 4))
+      (test= 2 i)
+      (test= false ok)
+      (target js: (test= "bark is not defined" x))
+      (target lua: (test= "attempt to call global 'bark' (a nil value)" x)))))
 
 (define-test read-more
   (let read (get reader 'read-string)
@@ -858,6 +877,25 @@ c"
     (test= 5 (eval '(let a 3 (+ 2 a))))
     (test= 9 (eval '(do (define x 7) (+ x 2))))
     (test= 6 (eval '(apply + '(1 2 3))))))
+
+(define-test compiler
+  (let compile-string (get compiler 'compile-string)
+    (let (code (compile-string "(+ 1 1)\n(+ 2 2)\nxyz\n(+ 3 3)")
+          lines (keep some? (split code "\n")))
+      (test= 4 (# lines)))
+    (define-global test-foobar () 42)
+    (test= 42 (test-foobar))
+    (test= 99 (load-string "(define test-foobar () 99) (test-foobar)"))
+    (test= 42 (test-foobar))
+    (test= 99 (load-string "(define-global test-foobar () 99) (test-foobar)"))
+    (test= 99 (test-foobar))
+    (test= 3 (load-string "((get ((fn () (define foo (x y) (+ x y)) (export foo))) 'foo) 1 2)"))
+    (let module (load-string (inner '|
+      (define reader (require 'reader))
+      (define foobar (str) ((get reader 'read-from-string) str))
+      (export foobar)
+      |))
+      (test= '(42 99) ((get module 'foobar) "42 99")))))
 
 (define-test call
   (let f (fn () 42)

@@ -140,13 +140,15 @@
 (define-macro fn (args rest: body)
   `(%function ,@(bind* args body)))
 
-(define-macro guard (expr)
-  (if (= target 'js)
-      `((fn () (%try (list true ,expr))))
-    (let-unique (e x)
-      (let ex (cat "|" e "," x "|")
-        `(let ,ex (xpcall (fn () ,expr) %message-handler)
-           (list ,e ,x))))))
+(define-macro guard body
+  (let expr `((fn () ,@body))
+    (if (= target 'js)
+        `((fn () (%try (list true ,expr))))
+      (let-unique (e x msg)
+        `(let (,x nil ,msg nil
+               ,e (xpcall (fn () (set ,x ,expr))
+                          (fn l (set ,msg (apply %message-handler l)))))
+           (list ,e (if ,e ,x ,msg)))))))
 
 (define-macro each (x t rest: body)
   (let-unique (o n i)
@@ -206,9 +208,11 @@
 
 (define-macro export names
   (if (= target 'js)
-      `(do ,@(map (fn (k)
+      `(let |exports| (or exports (obj))
+           ,@(map (fn (k)
                     `(set (get exports ',k) ,k))
-                  names))
+                  names)
+           exports)
     (let x (obj)
       (each k names
         (set (get x k) k))

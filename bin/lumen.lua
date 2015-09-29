@@ -61,21 +61,21 @@ end
 function cut(x, from, upto)
   local l = {}
   local j = 0
-  local _e1
+  local _e
   if nil63(from) or from < 0 then
-    _e1 = 0
+    _e = 0
   else
-    _e1 = from
+    _e = from
   end
-  local i = _e1
+  local i = _e
   local n = _35(x)
-  local _e2
+  local _e1
   if nil63(upto) or upto > n then
-    _e2 = n
+    _e1 = n
   else
-    _e2 = upto
+    _e1 = upto
   end
-  local _upto = _e2
+  local _upto = _e1
   while i < _upto do
     l[j + 1] = x[i + 1]
     i = i + 1
@@ -116,11 +116,11 @@ function char(s, n)
   return(clip(s, n, n + 1))
 end
 function code(s, n)
-  local _e3
+  local _e2
   if n then
-    _e3 = n + 1
+    _e2 = n + 1
   end
-  return(sbyte(s, _e3))
+  return(sbyte(s, _e2))
 end
 function string_literal63(x)
   return(string63(x) and char(x, 0) == "\"")
@@ -326,11 +326,11 @@ function unstash(args)
   end
 end
 function search(s, pattern, start)
-  local _e4
+  local _e3
   if start then
-    _e4 = start + 1
+    _e3 = start + 1
   end
-  local _start = _e4
+  local _start = _e3
   local i = sfind(s, pattern, _start, true)
   return(i and i - 1)
 end
@@ -430,25 +430,25 @@ function escape(s)
   local i = 0
   while i < _35(s) do
     local c = char(s, i)
-    local _e5
+    local _e4
     if c == "\n" then
-      _e5 = "\\n"
+      _e4 = "\\n"
     else
-      local _e6
+      local _e5
       if c == "\"" then
-        _e6 = "\\\""
+        _e5 = "\\\""
       else
-        local _e7
+        local _e6
         if c == "\\" then
-          _e7 = "\\\\"
+          _e6 = "\\\\"
         else
-          _e7 = c
+          _e6 = c
         end
-        _e6 = _e7
+        _e5 = _e6
       end
-      _e5 = _e6
+      _e4 = _e5
     end
-    local c1 = _e5
+    local c1 = _e4
     s1 = s1 .. c1
     i = i + 1
   end
@@ -540,13 +540,13 @@ function setenv(k, ...)
   local _id1 = _r66
   local _keys = cut(_id1, 0)
   if string63(k) then
-    local _e8
+    local _e7
     if _keys.toplevel then
-      _e8 = hd(environment)
+      _e7 = hd(environment)
     else
-      _e8 = last(environment)
+      _e7 = last(environment)
     end
-    local frame = _e8
+    local frame = _e7
     local entry = frame[k] or {}
     local _o12 = _keys
     local _k = nil
@@ -559,10 +559,25 @@ function setenv(k, ...)
   end
 end
 local function call_with_file(path, f)
-  local _e,_x12 = xpcall(function ()
-    return(f(path))
-  end, _37message_handler)
-  local _id2 = {_e, _x12}
+  local _x12 = nil
+  local _msg = nil
+  local _e8 = xpcall(function ()
+    _x12 = (function ()
+      return(f(path))
+    end)()
+    return(_x12)
+  end, function (...)
+    local l = unstash({...})
+    _msg = apply(_37message_handler, l)
+    return(_msg)
+  end)
+  local _e9
+  if _e8 then
+    _e9 = _x12
+  else
+    _e9 = _msg
+  end
+  local _id2 = {_e8, _e9}
   local ok = _id2[1]
   local s = _id2[2]
   path.close(path)
@@ -854,19 +869,21 @@ setenv("fn", {_stash = true, macro = function (args, ...)
   local body = cut(_id43, 0)
   return(join({"%function"}, bind42(args, body)))
 end})
-setenv("guard", {_stash = true, macro = function (expr)
+setenv("guard", {_stash = true, macro = function (...)
+  local body = unstash({...})
+  local expr = {join({"fn", join()}, body)}
   if target == "js" then
     return({{"fn", join(), {"%try", {"list", true, expr}}}})
   else
     local e = unique("e")
     local x = unique("x")
-    local ex = "|" .. e .. "," .. x .. "|"
-    return({"let", ex, {"xpcall", {"fn", join(), expr}, "%message-handler"}, {"list", e, x}})
+    local msg = unique("msg")
+    return({"let", {x, "nil", msg, "nil", e, {"xpcall", {"fn", join(), {"set", x, expr}}, {"fn", "l", {"set", msg, {"apply", "%message-handler", "l"}}}}}, {"list", e, {"if", e, x, msg}}})
   end
 end})
 setenv("each", {_stash = true, macro = function (x, t, ...)
-  local _r55 = unstash({...})
-  local _id46 = _r55
+  local _r53 = unstash({...})
+  local _id46 = _r53
   local body = cut(_id46, 0)
   local o = unique("o")
   local n = unique("n")
@@ -895,14 +912,14 @@ setenv("each", {_stash = true, macro = function (x, t, ...)
   return({"let", {o, t, k, "nil"}, {"%for", o, k, join({"let", {v, {"get", o, k}}}, _e5)}})
 end})
 setenv("for", {_stash = true, macro = function (i, to, ...)
-  local _r57 = unstash({...})
-  local _id49 = _r57
+  local _r55 = unstash({...})
+  local _id49 = _r55
   local body = cut(_id49, 0)
   return({"let", i, 0, join({"while", {"<", i, to}}, body, {{"inc", i}})})
 end})
 setenv("step", {_stash = true, macro = function (v, t, ...)
-  local _r59 = unstash({...})
-  local _id51 = _r59
+  local _r57 = unstash({...})
+  local _id51 = _r57
   local body = cut(_id51, 0)
   local x = unique("x")
   local n = unique("n")
@@ -928,14 +945,14 @@ setenv("target", {_stash = true, macro = function (...)
   return(clauses[target])
 end})
 setenv("join!", {_stash = true, macro = function (a, ...)
-  local _r63 = unstash({...})
-  local _id53 = _r63
+  local _r61 = unstash({...})
+  local _id53 = _r61
   local bs = cut(_id53, 0)
   return({"set", a, join({"join", a}, bs)})
 end})
 setenv("cat!", {_stash = true, macro = function (a, ...)
-  local _r65 = unstash({...})
-  local _id55 = _r65
+  local _r63 = unstash({...})
+  local _id55 = _r63
   local bs = cut(_id55, 0)
   return({"set", a, join({"cat", a}, bs)})
 end})
@@ -952,9 +969,9 @@ end})
 setenv("export", {_stash = true, macro = function (...)
   local names = unstash({...})
   if target == "js" then
-    return(join({"do"}, map(function (k)
+    return(join({"let", "|exports|", {"or", "exports", {"obj"}}}, map(function (k)
       return({"set", {"get", "exports", {"quote", k}}, k})
-    end, names)))
+    end, names), {"exports"}))
   else
     local x = {}
     local _o5 = names
@@ -969,10 +986,25 @@ end})
 local reader = require("reader")
 local compiler = require("compiler")
 local function eval_print(form)
-  local _e,_x = xpcall(function ()
-    return(compiler.eval(form))
-  end, _37message_handler)
-  local _id = {_e, _x}
+  local _x = nil
+  local _msg = nil
+  local _e = xpcall(function ()
+    _x = (function ()
+      return(compiler.eval(form))
+    end)()
+    return(_x)
+  end, function (...)
+    local l = unstash({...})
+    _msg = apply(_37message_handler, l)
+    return(_msg)
+  end)
+  local _e1
+  if _e then
+    _e1 = _x
+  else
+    _e1 = _msg
+  end
+  local _id = {_e, _e1}
   local ok = _id[1]
   local x = _id[2]
   if not  ok then
@@ -1017,6 +1049,25 @@ local function usage()
   print("  -e <expr>\tExpression to evaluate")
   return(exit())
 end
+local function end_is63(str, ...)
+  local _r7 = unstash({...})
+  local _id1 = _r7
+  local l = cut(_id1, 0)
+  local s = apply(cat, l)
+  return(clip(str, _35(str) - _35(s)) == s)
+end
+local function cat_end(str, ...)
+  local _r8 = unstash({...})
+  local _id2 = _r8
+  local l = cut(_id2, 0)
+  local s = apply(cat, l)
+  if end_is63(str, s) then
+    return(str)
+  else
+    return(str .. s)
+  end
+end
+args = {}
 local function main()
   if hd(argv) == "-h" or hd(argv) == "--help" then
     usage()
@@ -1030,49 +1081,58 @@ local function main()
   local i = 0
   while i < n do
     local a = argv[i + 1]
-    if a == "-c" or a == "-o" or a == "-t" or a == "-e" then
-      if i == n - 1 then
-        print("missing argument for " .. a)
-      else
-        i = i + 1
-        local val = argv[i + 1]
-        if a == "-c" then
-          input = val
+    if a == "--" then
+      args = cut(argv, i + 1)
+      break
+    else
+      if a == "-c" or a == "-o" or a == "-t" or a == "-e" then
+        if i == n - 1 then
+          print("missing argument for " .. a)
         else
-          if a == "-o" then
-            output = val
+          i = i + 1
+          local val = argv[i + 1]
+          if a == "-c" then
+            input = val
           else
-            if a == "-t" then
-              target1 = val
+            if a == "-o" then
+              output = val
             else
-              if a == "-e" then
-                expr = val
+              if a == "-t" then
+                target1 = val
+              else
+                if a == "-e" then
+                  expr = val
+                end
               end
             end
           end
         end
-      end
-    else
-      if not ( "-" == char(a, 0)) then
-        add(pre, a)
+      else
+        if not ( "-" == char(a, 0)) then
+          add(pre, a)
+        end
       end
     end
     i = i + 1
   end
-  local _x2 = pre
-  local _n = _35(_x2)
+  local _x5 = pre
+  local _n = _35(_x5)
   local _i = 0
   while _i < _n do
-    local file = _x2[_i + 1]
-    compiler["run-file"](file)
+    local file = _x5[_i + 1]
+    compiler["run-file"](cat_end(file, ".", target))
     _i = _i + 1
   end
-  if input and output then
+  if input then
     if target1 then
       target = target1
     end
     local code = compiler["compile-file"](input)
-    return(write_file(output, code))
+    if nil63(output) or output == "-" then
+      return(print(code))
+    else
+      return(write_file(output, code))
+    end
   else
     if expr then
       return(rep(expr))
