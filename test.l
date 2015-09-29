@@ -51,7 +51,11 @@
     (test= 2 (# (read "(1 2 a: 7)")))
     (test= 7 (get (read "(1 2 a: 7)") 'a))
     (test= true (get (read "(:a)") 'a))
-    (test= 1 (- -1))))
+    (test= 1 (- -1))
+    (test= true (nan? (read "nan")))
+    (test= true (nan? (read "-nan")))
+    (test= true (inf? (read "inf")))
+    (test= true (inf? (read "-inf")))))
 
 (define-test read-more
   (let read (get reader 'read-string)
