@@ -49,6 +49,10 @@
   (let x (read (stream str more))
     (unless (= x eof) x)))
 
+(define-global read-from-string (s :one)
+  (if one (read-string s)
+    (read-all (stream s))))
+
 (define key? (atom)
   (and (string? atom)
        (> (# atom) 1)
@@ -144,4 +148,5 @@
 (export stream
         read
         read-all
-        read-string)
+        read-string
+        read-from-string)

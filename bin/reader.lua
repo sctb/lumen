@@ -68,6 +68,16 @@ local function read_string(str, more)
     return(x)
   end
 end
+function read_from_string(s, ...)
+  local _r7 = unstash({...})
+  local _id1 = _r7
+  local one = _id1.one
+  if one then
+    return(read_string(s))
+  else
+    return(read_all(stream(s)))
+  end
+end
 local function key63(atom)
   return(string63(atom) and _35(atom) > 1 and char(atom, edge(atom)) == ":")
 end
@@ -75,13 +85,13 @@ local function flag63(atom)
   return(string63(atom) and _35(atom) > 1 and char(atom, 0) == ":")
 end
 local function expected(s, c)
-  local _id1 = s
-  local more = _id1.more
-  local pos = _id1.pos
-  local _id2 = more
+  local _id2 = s
+  local more = _id2.more
+  local pos = _id2.pos
+  local _id3 = more
   local _e
-  if _id2 then
-    _e = _id2
+  if _id3 then
+    _e = _id3
   else
     error("Expected " .. c .. " at " .. pos)
     _e = nil
@@ -215,4 +225,4 @@ read_table[","] = function (s)
     return(wrap(s, "unquote"))
   end
 end
-return({["read-string"] = read_string, read = read, ["read-all"] = read_all, stream = stream})
+return({["read-string"] = read_string, ["read-all"] = read_all, read = read, ["read-from-string"] = read_from_string, stream = stream})

@@ -68,6 +68,16 @@ var read_string = function (str, more) {
     return(x);
   }
 };
+read_from_string = function (s) {
+  var _r7 = unstash(Array.prototype.slice.call(arguments, 1));
+  var _id1 = _r7;
+  var one = _id1.one;
+  if (one) {
+    return(read_string(s));
+  } else {
+    return(read_all(stream(s)));
+  }
+};
 var key63 = function (atom) {
   return(string63(atom) && _35(atom) > 1 && char(atom, edge(atom)) === ":");
 };
@@ -75,13 +85,13 @@ var flag63 = function (atom) {
   return(string63(atom) && _35(atom) > 1 && char(atom, 0) === ":");
 };
 var expected = function (s, c) {
-  var _id1 = s;
-  var more = _id1.more;
-  var pos = _id1.pos;
-  var _id2 = more;
+  var _id2 = s;
+  var more = _id2.more;
+  var pos = _id2.pos;
+  var _id3 = more;
   var _e;
-  if (_id2) {
-    _e = _id2;
+  if (_id3) {
+    _e = _id3;
   } else {
     throw new Error("Expected " + c + " at " + pos);
     _e = undefined;
@@ -219,3 +229,4 @@ exports.stream = stream;
 exports.read = read;
 exports["read-all"] = read_all;
 exports["read-string"] = read_string;
+exports["read-from-string"] = read_from_string;

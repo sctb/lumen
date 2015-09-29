@@ -51,7 +51,9 @@
     (test= 2 (# (read "(1 2 a: 7)")))
     (test= 7 (get (read "(1 2 a: 7)") 'a))
     (test= true (get (read "(:a)") 'a))
-    (test= 1 (- -1))))
+    (test= 1 (- -1))
+    (test= '(foo bar) (read-from-string "foo bar"))
+    (test= 'foo (read-from-string "foo bar" :one))))
 
 (define-test guard
   (let i 0
