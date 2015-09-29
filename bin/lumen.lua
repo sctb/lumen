@@ -584,6 +584,16 @@ function file_exists63(path)
   end))
 end
 path_separator = char(_G.package.config, 0)
+function path_join(...)
+  local parts = unstash({...})
+  if none63(parts) then
+    return("")
+  else
+    return(reduce(function (x, y)
+      return(x .. path_separator .. y)
+    end, parts))
+  end
+end
 function get_environment_variable(name)
   return(os.getenv(name))
 end

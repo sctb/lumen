@@ -880,3 +880,7 @@ c"
     (test= '(10 20 42) (f 10 bar: 20 (list foo: 42))))
   (let f (fn args args)
     (test= '(1 2 3) (f 1 2 3))))
+
+(define-test runtime
+  (test= (path-join) "")
+  (test= (path-join 'foo 'bar) (or "foo/bar" "foo\\bar")))
