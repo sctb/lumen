@@ -1033,12 +1033,16 @@ local function main()
     compiler["run-file"](file)
     _i = _i + 1
   end
-  if input and output then
+  if input then
     if target1 then
       target = target1
     end
     local code = compiler["compile-file"](input)
-    return(system["write-file"](output, code))
+    if nil63(output) or output == "-" then
+      return(print(code))
+    else
+      return(system["write-file"](output, code))
+    end
   else
     if expr then
       return(rep(expr))
