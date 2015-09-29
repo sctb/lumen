@@ -84,7 +84,7 @@
     (let x (get literals str)
       (if (is? x) x
         (let n (number str)
-          (if (or (nil? n) (nan? n) (inf? n)) str n))))))
+          (if (is? n) n str))))))
 
 (define-reader ("(" s)
   (read-char s)
