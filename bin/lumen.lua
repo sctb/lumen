@@ -557,24 +557,34 @@ function setenv(k, ...)
     return(frame[k])
   end
 end
-local function call_with_file(path, f)
+local function call_with_file(file, f)
   local _e,_x12 = xpcall(function ()
-    return(f(path))
+    return(f(file))
   end, _37message_handler)
   local _id2 = {_e, _x12}
   local ok = _id2[1]
   local s = _id2[2]
-  path.close(path)
+  if file then
+    file.close(file)
+  end
   return(s)
 end
 function read_file(path)
   return(call_with_file(io.open(path), function (f)
-    return(f.read(f, "*a"))
+    if is63(f) then
+      return(f.read(f, "*a"))
+    else
+      error("read-file: Couldn't open file: " .. path)
+    end
   end))
 end
 function write_file(path, data)
   return(call_with_file(io.open(path, "w"), function (f)
-    return(f.write(f, data))
+    if is63(f) then
+      return(f.write(f, data))
+    else
+      error("write-file: Couldn't open file: " .. path)
+    end
   end))
 end
 function file_exists63(path)

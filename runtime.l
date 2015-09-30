@@ -331,22 +331,25 @@
 (target js: (define fs (require 'fs)))
 
 (target lua:
-  (define call-with-file (path f)
-    (let ((ok s) (guard (f path)))
-      ((get path 'close) path)
+  (define call-with-file (file f)
+    (let ((ok s) (guard (f file)))
+      (when file
+        ((get file 'close) file))
       s)))
 
 (define-global read-file (path)
   (target
     js: ((get fs 'readFileSync) path 'utf8)
     lua: (call-with-file ((get io 'open) path)
-           (fn (f) ((get f 'read) f '*a)))))
+           (fn (f) (if (is? f) ((get f 'read) f '*a)
+                     (error (cat "read-file: Couldn't open file: " path)))))))
 
 (define-global write-file (path data)
   (target
     js: ((get fs 'writeFileSync) path data 'utf8)
     lua: (call-with-file ((get io 'open) path 'w)
-           (fn (f) ((get f 'write) f data)))))
+           (fn (f) (if (is? f) ((get f 'write) f data)
+                     (error (cat "write-file: Couldn't open file: " path)))))))
 
 (define-global file-exists? (path)
   (target
