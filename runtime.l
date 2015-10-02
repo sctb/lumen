@@ -331,9 +331,9 @@
 (target js: (define fs (require 'fs)))
 
 (target lua:
-  (define call-with-file (path f)
-    (let ((ok s) (guard (f path)))
-      ((get path 'close) path)
+  (define call-with-file (file f)
+    (let ((ok s) (guard (f file)))
+      ((get file 'close) file)
       s)))
 
 (define-global read-file (path)

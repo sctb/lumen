@@ -557,14 +557,14 @@ function setenv(k, ...)
     return(frame[k])
   end
 end
-local function call_with_file(path, f)
+local function call_with_file(file, f)
   local _e,_x12 = xpcall(function ()
-    return(f(path))
+    return(f(file))
   end, _37message_handler)
   local _id2 = {_e, _x12}
   local ok = _id2[1]
   local s = _id2[2]
-  path.close(path)
+  file.close(file)
   return(s)
 end
 function read_file(path)
