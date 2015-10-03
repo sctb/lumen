@@ -311,10 +311,6 @@
 
 (define-global call (f) (f))
 
-(define-global %message-handler (msg)
-  (let i (search msg ": ")
-    (clip msg (+ i 2))))
-
 (define-global toplevel? ()
   (one? environment))
 
@@ -327,6 +323,11 @@
       (each (k v) keys
         (set (get entry k) v))
       (set (get frame k) entry))))
+
+(target lua:
+  (define-global %message-handler (msg)
+    (let i (search msg ": ")
+      (clip msg (+ i 2)))))
 
 (target js:
   (define-global print (x)

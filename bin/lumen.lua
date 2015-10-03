@@ -527,16 +527,12 @@ end
 function call(f)
   return(f())
 end
-function _37message_handler(msg)
-  local i = search(msg, ": ")
-  return(clip(msg, i + 2))
-end
 function toplevel63()
   return(one63(environment))
 end
 function setenv(k, ...)
-  local _r66 = unstash({...})
-  local _id1 = _r66
+  local _r65 = unstash({...})
+  local _id1 = _r65
   local _keys = cut(_id1, 0)
   if string63(k) then
     local _e7
@@ -556,6 +552,10 @@ function setenv(k, ...)
     frame[k] = entry
     return(frame[k])
   end
+end
+function _37message_handler(msg)
+  local i = search(msg, ": ")
+  return(clip(msg, i + 2))
 end
 local math = math
 abs = math.abs

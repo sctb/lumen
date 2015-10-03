@@ -615,16 +615,12 @@ apply = function (f, args) {
 call = function (f) {
   return(f());
 };
-_37message_handler = function (msg) {
-  var i = search(msg, ": ");
-  return(clip(msg, i + 2));
-};
 toplevel63 = function () {
   return(one63(environment));
 };
 setenv = function (k) {
-  var _r69 = unstash(Array.prototype.slice.call(arguments, 1));
-  var _id1 = _r69;
+  var _r68 = unstash(Array.prototype.slice.call(arguments, 1));
+  var _id1 = _r68;
   var _keys = cut(_id1, 0);
   if (string63(k)) {
     var _e18;
@@ -857,7 +853,7 @@ setenv("define-global", {_stash: true, macro: function (name, x) {
   var _r35 = unstash(Array.prototype.slice.call(arguments, 2));
   var _id29 = _r35;
   var body = cut(_id29, 0);
-  setenv(name, {_stash: true, variable: true, toplevel: true});
+  setenv(name, {_stash: true, toplevel: true, variable: true});
   if (some63(body)) {
     return(join(["%global-function", name], bind42(x, body)));
   } else {
