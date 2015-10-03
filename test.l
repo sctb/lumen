@@ -467,6 +467,7 @@ c"
   (test= '(true 42) (guard 42))
   (test= '(false foo) (guard (error "foo")))
   (test= '(false foo) (guard (do (error "foo") (error "baz"))))
+  (test= '(false baz) (guard (do (guard (error "foo")) (error "baz"))))
   (test= '(true 42) (guard (if true 42 (error "baz"))))
   (test= '(false baz) (guard (if false 42 (error "baz")))))
 
