@@ -889,9 +889,3 @@ c"
     (test= '(10 20 42) (f 10 bar: 20 (list foo: 42))))
   (let f (fn args args)
     (test= '(1 2 3) (f 1 2 3))))
-
-(define-test paths
-  (test= (path-join) "")
-  (let s (path-join 'foo 'bar)
-    (test= true (or (= s "foo/bar")
-                    (= s "foo\\bar")))))

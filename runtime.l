@@ -328,63 +328,9 @@
         (set (get entry k) v))
       (set (get frame k) entry))))
 
-(target js: (define fs (require 'fs)))
-
-(target lua:
-  (define call-with-file (f path mode)
-    (let |h,e| ((get io 'open) path mode)
-      (unless h
-        (error e))
-      (with x (f h)
-        ((get h 'close) h)))))
-
-(define-global read-file (path)
-  (target
-    js: ((get fs 'readFileSync) path 'utf8)
-    lua: (call-with-file
-          (fn (f) ((get f 'read) f '*a))
-          path)))
-
-(define-global write-file (path data)
-  (target
-    js: ((get fs 'writeFileSync) path data 'utf8)
-    lua: (call-with-file
-          (fn (f) ((get f 'write) f data))
-          path 'w)))
-
-(define-global file-exists? (path)
-  (target
-    js: ((get fs 'existsSync) path 'utf8)
-    lua: (call-with-file ((get io 'open) path)
-           (fn (f) (is? f)))))
-
-(define-global path-separator
-  (target
-    js: (get (require 'path) 'sep)
-    lua: (char (get (get _G 'package) 'config) 0)))
-
-(define-global path-join parts
-  (if (none? parts) ""
-    (reduce (fn (x y) (cat x path-separator y)) parts)))
-
-(define-global get-environment-variable (name)
-  (target
-    js: (get (get process 'env) name)
-    lua: ((get os 'getenv) name)))
-
-(target js: (define-global print (x) ((get console 'log) x)))
-
-(define-global write (x)
-  (target js: (let out (get process 'stdout)
-                ((get out 'write) x))
-          lua: ((get io 'write) x)))
-
-(define-global exit (code)
-  (target js: ((get process 'exit) code)
-          lua: ((get os 'exit) code)))
-
-(define-global argv
-  (target js: (cut (get process 'argv) 2) lua: arg))
+(target js:
+  (define-global print (x)
+    ((get console 'log) x)))
 
 (define math (target js: Math lua: math))
 

@@ -557,51 +557,6 @@ function setenv(k, ...)
     return(frame[k])
   end
 end
-local function call_with_file(f, path, mode)
-  local h,e = io.open(path, mode)
-  if not  h then
-    error(e)
-  end
-  local x = f(h)
-  h.close(h)
-  return(x)
-end
-function read_file(path)
-  return(call_with_file(function (f)
-    return(f.read(f, "*a"))
-  end, path))
-end
-function write_file(path, data)
-  return(call_with_file(function (f)
-    return(f.write(f, data))
-  end, path, "w"))
-end
-function file_exists63(path)
-  return(call_with_file(io.open(path), function (f)
-    return(is63(f))
-  end))
-end
-path_separator = char(_G.package.config, 0)
-function path_join(...)
-  local parts = unstash({...})
-  if none63(parts) then
-    return("")
-  else
-    return(reduce(function (x, y)
-      return(x .. path_separator .. y)
-    end, parts))
-  end
-end
-function get_environment_variable(name)
-  return(os.getenv(name))
-end
-function write(x)
-  return(io.write(x))
-end
-function exit(code)
-  return(os.exit(code))
-end
-argv = arg
 local math = math
 abs = math.abs
 acos = math.acos
@@ -1024,10 +979,11 @@ local function usage()
   print("  -o <output>\tOutput file")
   print("  -t <target>\tTarget language (default: lua)")
   print("  -e <expr>\tExpression to evaluate")
-  return(exit())
+  return(system.exit())
 end
 local function main()
-  if hd(argv) == "-h" or hd(argv) == "--help" then
+  local arg = hd(system.argv)
+  if arg == "-h" or arg == "--help" then
     usage()
   end
   local pre = {}
@@ -1035,6 +991,7 @@ local function main()
   local output = nil
   local target1 = nil
   local expr = nil
+  local argv = system.argv
   local n = _35(argv)
   local i = 0
   while i < n do

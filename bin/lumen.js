@@ -652,41 +652,9 @@ setenv = function (k) {
     return(frame[k]);
   }
 };
-var fs = require("fs");
-read_file = function (path) {
-  return(fs.readFileSync(path, "utf8"));
-};
-write_file = function (path, data) {
-  return(fs.writeFileSync(path, data, "utf8"));
-};
-file_exists63 = function (path) {
-  return(fs.existsSync(path, "utf8"));
-};
-path_separator = require("path").sep;
-path_join = function () {
-  var parts = unstash(Array.prototype.slice.call(arguments, 0));
-  if (none63(parts)) {
-    return("");
-  } else {
-    return(reduce(function (x, y) {
-      return(x + path_separator + y);
-    }, parts));
-  }
-};
-get_environment_variable = function (name) {
-  return(process.env[name]);
-};
 print = function (x) {
   return(console.log(x));
 };
-write = function (x) {
-  var out = process.stdout;
-  return(out.write(x));
-};
-exit = function (code) {
-  return(process.exit(code));
-};
-argv = cut(process.argv, 2);
 var math = Math;
 abs = math.abs;
 acos = math.acos;
@@ -1129,10 +1097,11 @@ var usage = function () {
   print("  -o <output>\tOutput file");
   print("  -t <target>\tTarget language (default: lua)");
   print("  -e <expr>\tExpression to evaluate");
-  return(exit());
+  return(system.exit());
 };
 var main = function () {
-  if (hd(argv) === "-h" || hd(argv) === "--help") {
+  var arg = hd(system.argv);
+  if (arg === "-h" || arg === "--help") {
     usage();
   }
   var pre = [];
@@ -1140,6 +1109,7 @@ var main = function () {
   var output = undefined;
   var target1 = undefined;
   var expr = undefined;
+  var argv = system.argv;
   var n = _35(argv);
   var i = 0;
   while (i < n) {

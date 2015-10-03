@@ -38,17 +38,19 @@
   (print "  -o <output>\tOutput file")
   (print "  -t <target>\tTarget language (default: lua)")
   (print "  -e <expr>\tExpression to evaluate")
-  (exit))
+  ((get system 'exit)))
 
 (define main ()
-  (when (or (= (hd argv) "-h")
-            (= (hd argv) "--help"))
-    (usage))
+  (let arg (hd (get system 'argv))
+    (when (or (= arg "-h")
+              (= arg "--help"))
+      (usage)))
   (let (pre ()
         input nil
         output nil
         target1 nil
         expr nil
+        argv (get system 'argv)
         n (# argv))
     (for i n
       (let a (at argv i)
