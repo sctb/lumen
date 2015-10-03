@@ -890,6 +890,8 @@ c"
   (let f (fn args args)
     (test= '(1 2 3) (f 1 2 3))))
 
-(define-test runtime
+(define-test paths
   (test= (path-join) "")
-  (test= (path-join 'foo 'bar) (or "foo/bar" "foo\\bar")))
+  (let s (path-join 'foo 'bar)
+    (test= true (or (= s "foo/bar")
+                    (= s "foo\\bar")))))
