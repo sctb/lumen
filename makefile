@@ -12,7 +12,8 @@ OBJS :=	obj/runtime.o	\
 
 MODS := bin/lumen.x	\
 	bin/reader.x	\
-	bin/compiler.x
+	bin/compiler.x	\
+	bin/system.x
 
 all: $(MODS:.x=.js) $(MODS:.x=.lua)
 

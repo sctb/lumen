@@ -1,6 +1,7 @@
 ;; -*- mode: lisp -*-
 
 (define reader (require 'reader))
+(define system (require 'system))
 
 (define getenv (k p)
   (when (string? k)
@@ -547,10 +548,10 @@
       %result)))
 
 (define run-file (path)
-  (run (read-file path)))
+  (run ((get system 'read-file) path)))
 
 (define compile-file (path)
-  (let (s ((get reader 'stream) (read-file path))
+  (let (s ((get reader 'stream) ((get system 'read-file) path))
         body ((get reader 'read-all) s)
         form (expand `(do ,@body)))
     (compile form :stmt)))

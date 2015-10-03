@@ -2,6 +2,7 @@
 
 (define reader (require 'reader))
 (define compiler (require 'compiler))
+(define system (require 'system))
 
 (define eval-print (form)
   (let ((ok x) (guard ((get compiler 'eval) form)))
@@ -20,8 +21,8 @@
           (unless (= form more)
             (eval-print form)
             (set buf "")
-            (write "> ")))))
-  (write "> ")
+            ((get system 'write) "> ")))))
+  ((get system 'write) "> ")
   (target
     js: (let in (get process 'stdin)
           ((get in 'setEncoding) 'utf8)
@@ -66,7 +67,7 @@
     (if (and input output)
         (do (if target1 (set target target1))
             (let code ((get compiler 'compile-file) input)
-              (write-file output code)))
+              ((get system 'write-file) output code)))
       (if expr (rep expr) (repl)))))
 
 (main)

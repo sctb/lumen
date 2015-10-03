@@ -976,6 +976,7 @@ setenv("export", {_stash = true, macro = function (...)
 end})
 local reader = require("reader")
 local compiler = require("compiler")
+local system = require("system")
 local function eval_print(form)
   local _e,_x = xpcall(function ()
     return(compiler.eval(form))
@@ -1003,10 +1004,10 @@ local function repl()
     if not ( form == more) then
       eval_print(form)
       buf = ""
-      return(write("> "))
+      return(system.write("> "))
     end
   end
-  write("> ")
+  system.write("> ")
   while true do
     local s = io.read()
     if s then
@@ -1080,7 +1081,7 @@ local function main()
       target = target1
     end
     local code = compiler["compile-file"](input)
-    return(write_file(output, code))
+    return(system["write-file"](output, code))
   else
     if expr then
       return(rep(expr))
