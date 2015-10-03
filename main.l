@@ -66,12 +66,11 @@
             (not (= "-" (char a 0))) (add pre a))))
     (step file pre
       ((get compiler 'run-file) file))
-    (if input
-        (do (if target1 (set target target1))
-            (let code ((get compiler 'compile-file) input)
-              (if (or (nil? output) (= output "-"))
-                  (print code)
-                  ((get system 'write-file) output code))))
-      (if expr (rep expr) (repl)))))
+    (if (nil? input) (if expr (rep expr) (repl))
+      (do (if target1 (set target target1))
+          (let code ((get compiler 'compile-file) input)
+            (if (or (nil? output) (= output "-"))
+                (print code)
+              ((get system 'write-file) output code)))))))
 
 (main)

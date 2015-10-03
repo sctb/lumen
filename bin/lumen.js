@@ -1147,7 +1147,13 @@ var main = function () {
     compiler["run-file"](file);
     _i = _i + 1;
   }
-  if (input) {
+  if (nil63(input)) {
+    if (expr) {
+      return(rep(expr));
+    } else {
+      return(repl());
+    }
+  } else {
     if (target1) {
       target = target1;
     }
@@ -1156,12 +1162,6 @@ var main = function () {
       return(print(code));
     } else {
       return(system["write-file"](output, code));
-    }
-  } else {
-    if (expr) {
-      return(rep(expr));
-    } else {
-      return(repl());
     }
   }
 };

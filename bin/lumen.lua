@@ -1033,7 +1033,13 @@ local function main()
     compiler["run-file"](file)
     _i = _i + 1
   end
-  if input then
+  if nil63(input) then
+    if expr then
+      return(rep(expr))
+    else
+      return(repl())
+    end
+  else
     if target1 then
       target = target1
     end
@@ -1042,12 +1048,6 @@ local function main()
       return(print(code))
     else
       return(system["write-file"](output, code))
-    end
-  else
-    if expr then
-      return(rep(expr))
-    else
-      return(repl())
     end
   end
 end
