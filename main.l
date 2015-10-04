@@ -31,6 +31,18 @@
            (let s ((get io 'read))
              (if s (rep1 (cat s "\n")) (break))))))
 
+(define-global compile-file (path)
+  (let (s ((get reader 'stream) ((get system 'read-file) path))
+        body ((get reader 'read-all) s)
+        form ((get compiler 'expand) `(do ,@body)))
+    ((get compiler 'compile) form :stmt)))
+
+(define-global load (path)
+  ((get compiler 'run) (compile-file path)))
+
+(define run-file (path)
+  ((get compiler 'run) ((get system 'read-file) path)))
+
 (define usage ()
   (print "usage: lumen [options] <object files>")
   (print "options:")
@@ -65,10 +77,10 @@
                         (= a "-e") (set expr val)))))
             (not (= "-" (char a 0))) (add pre a))))
     (step file pre
-      ((get compiler 'run-file) file))
+      (run-file file))
     (if (nil? input) (if expr (rep expr) (repl))
       (do (if target1 (set target target1))
-          (let code ((get compiler 'compile-file) input)
+          (let code (compile-file input)
             (if (or (nil? output) (= output "-"))
                 (print code)
               ((get system 'write-file) output code)))))))

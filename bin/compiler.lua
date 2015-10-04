@@ -1,5 +1,4 @@
 local reader = require("reader")
-local system = require("system")
 local function getenv(k, p)
   if string63(k) then
     local b = find(function (e)
@@ -360,7 +359,7 @@ function indentation()
   end
   return(s)
 end
-local reserved = {["do"] = true, ["with"] = true, ["debugger"] = true, ["function"] = true, ["then"] = true, ["for"] = true, ["false"] = true, ["<="] = true, ["not"] = true, ["end"] = true, ["="] = true, ["until"] = true, ["+"] = true, ["while"] = true, ["if"] = true, ["or"] = true, ["%"] = true, ["repeat"] = true, ["switch"] = true, [">="] = true, ["typeof"] = true, ["true"] = true, ["var"] = true, ["nil"] = true, ["instanceof"] = true, ["in"] = true, ["-"] = true, ["case"] = true, ["/"] = true, ["else"] = true, ["and"] = true, ["void"] = true, ["try"] = true, [">"] = true, ["throw"] = true, ["delete"] = true, ["=="] = true, ["continue"] = true, ["local"] = true, ["this"] = true, ["new"] = true, ["elseif"] = true, ["default"] = true, ["break"] = true, ["*"] = true, ["return"] = true, ["<"] = true, ["finally"] = true, ["catch"] = true}
+local reserved = {["else"] = true, ["<"] = true, ["true"] = true, ["/"] = true, ["end"] = true, ["typeof"] = true, ["function"] = true, ["switch"] = true, ["="] = true, ["or"] = true, ["try"] = true, ["catch"] = true, ["until"] = true, ["local"] = true, ["repeat"] = true, ["-"] = true, ["false"] = true, ["continue"] = true, ["=="] = true, ["and"] = true, ["if"] = true, ["for"] = true, [">="] = true, ["<="] = true, ["with"] = true, ["return"] = true, ["finally"] = true, ["nil"] = true, ["new"] = true, ["do"] = true, ["case"] = true, ["break"] = true, ["elseif"] = true, ["+"] = true, ["not"] = true, ["void"] = true, ["var"] = true, ["%"] = true, ["in"] = true, ["delete"] = true, ["throw"] = true, ["debugger"] = true, ["instanceof"] = true, ["this"] = true, ["while"] = true, ["then"] = true, ["default"] = true, ["*"] = true, [">"] = true}
 function reserved63(x)
   return(reserved[x])
 end
@@ -413,22 +412,22 @@ _x58.lua = "not "
 _x58.js = "!"
 __x57["not"] = _x58
 local __x59 = {}
-__x59["*"] = true
 __x59["/"] = true
+__x59["*"] = true
 __x59["%"] = true
 local __x60 = {}
-__x60["-"] = true
 __x60["+"] = true
+__x60["-"] = true
 local __x61 = {}
 local _x62 = {}
 _x62.lua = ".."
 _x62.js = "+"
 __x61.cat = _x62
 local __x63 = {}
-__x63[">="] = true
-__x63[">"] = true
-__x63["<"] = true
 __x63["<="] = true
+__x63[">="] = true
+__x63["<"] = true
+__x63[">"] = true
 local __x64 = {}
 local _x65 = {}
 _x65.lua = "=="
@@ -962,26 +961,14 @@ function eval(form)
   run(code)
   return(_37result)
 end
-local function run_file(path)
-  return(run(system["read-file"](path)))
-end
-local function compile_file(path)
-  local s = reader.stream(system["read-file"](path))
-  local body = reader["read-all"](s)
-  local form = expand(join({"do"}, body))
-  return(compile(form, {_stash = true, stmt = true}))
-end
-function load(path)
-  return(run(compile_file(path)))
-end
 setenv("do", {_stash = true, tr = true, special = function (...)
   local forms = unstash({...})
   local s = ""
-  local _x112 = forms
-  local _n12 = _35(_x112)
+  local _x111 = forms
+  local _n12 = _35(_x111)
   local _i12 = 0
   while _i12 < _n12 do
-    local x = _x112[_i12 + 1]
+    local x = _x111[_i12 + 1]
     s = s .. compile(x, {_stash = true, stmt = true})
     _i12 = _i12 + 1
   end
@@ -990,15 +977,15 @@ end, stmt = true})
 setenv("%if", {_stash = true, tr = true, special = function (cond, cons, alt)
   local _cond1 = compile(cond)
   indent_level = indent_level + 1
-  local _x115 = compile(cons, {_stash = true, stmt = true})
+  local _x114 = compile(cons, {_stash = true, stmt = true})
   indent_level = indent_level - 1
-  local _cons1 = _x115
+  local _cons1 = _x114
   local _e26
   if alt then
     indent_level = indent_level + 1
-    local _x116 = compile(alt, {_stash = true, stmt = true})
+    local _x115 = compile(alt, {_stash = true, stmt = true})
     indent_level = indent_level - 1
-    _e26 = _x116
+    _e26 = _x115
   end
   local _alt1 = _e26
   local ind = indentation()
@@ -1024,9 +1011,9 @@ end, stmt = true})
 setenv("while", {_stash = true, tr = true, special = function (cond, form)
   local _cond3 = compile(cond)
   indent_level = indent_level + 1
-  local _x118 = compile(form, {_stash = true, stmt = true})
+  local _x117 = compile(form, {_stash = true, stmt = true})
   indent_level = indent_level - 1
-  local body = _x118
+  local body = _x117
   local ind = indentation()
   if target == "js" then
     return(ind .. "while (" .. _cond3 .. ") {\n" .. body .. ind .. "}\n")
@@ -1038,9 +1025,9 @@ setenv("%for", {_stash = true, tr = true, special = function (t, k, form)
   local _t1 = compile(t)
   local ind = indentation()
   indent_level = indent_level + 1
-  local _x120 = compile(form, {_stash = true, stmt = true})
+  local _x119 = compile(form, {_stash = true, stmt = true})
   indent_level = indent_level - 1
-  local body = _x120
+  local body = _x119
   if target == "lua" then
     return(ind .. "for " .. k .. " in next, " .. _t1 .. " do\n" .. body .. ind .. "end\n")
   else
@@ -1051,14 +1038,14 @@ setenv("%try", {_stash = true, tr = true, special = function (form)
   local e = unique("e")
   local ind = indentation()
   indent_level = indent_level + 1
-  local _x126 = compile(form, {_stash = true, stmt = true})
+  local _x125 = compile(form, {_stash = true, stmt = true})
   indent_level = indent_level - 1
-  local body = _x126
+  local body = _x125
   local hf = {"return", {"%array", false, {"get", e, "\"message\""}}}
   indent_level = indent_level + 1
-  local _x130 = compile(hf, {_stash = true, stmt = true})
+  local _x129 = compile(hf, {_stash = true, stmt = true})
   indent_level = indent_level - 1
-  local h = _x130
+  local h = _x129
   return(ind .. "try {\n" .. body .. ind .. "}\n" .. ind .. "catch (" .. e .. ") {\n" .. h .. ind .. "}\n")
 end, stmt = true})
 setenv("%delete", {_stash = true, special = function (place)
@@ -1093,8 +1080,8 @@ setenv("return", {_stash = true, special = function (x)
   else
     _e27 = "return(" .. compile(x) .. ")"
   end
-  local _x140 = _e27
-  return(indentation() .. _x140)
+  local _x139 = _e27
+  return(indentation() .. _x139)
 end, stmt = true})
 setenv("new", {_stash = true, special = function (x)
   return("new " .. compile(x))
@@ -1209,4 +1196,4 @@ setenv("%object", {_stash = true, special = function (...)
   end
   return(s .. "}")
 end})
-return({["compile-file"] = compile_file, expand = expand, compile = compile, eval = eval, ["run-file"] = run_file, load = load})
+return({run = run, expand = expand, compile = compile, eval = eval})

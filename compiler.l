@@ -1,7 +1,6 @@
 ;; -*- mode: lisp -*-
 
 (define reader (require 'reader))
-(define system (require 'system))
 
 (define getenv (k p)
   (when (string? k)
@@ -547,18 +546,6 @@
       (run code)
       %result)))
 
-(define run-file (path)
-  (run ((get system 'read-file) path)))
-
-(define compile-file (path)
-  (let (s ((get reader 'stream) ((get system 'read-file) path))
-        body ((get reader 'read-all) s)
-        form (expand `(do ,@body)))
-    (compile form :stmt)))
-
-(define-global load (path)
-  (run (compile-file path)))
-
 (define-special do forms :stmt :tr
   (with s ""
     (step x forms
@@ -687,9 +674,7 @@
           (set c ", "))))
     (cat s "}")))
 
-(export eval
-        run-file
-        compile-file
-        load
+(export run
+        eval
         expand
         compile)

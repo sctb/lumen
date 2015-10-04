@@ -1086,6 +1086,18 @@ var repl = function () {
   _in.setEncoding("utf8");
   return(_in.on("data", rep1));
 };
+compile_file = function (path) {
+  var s = reader.stream(system["read-file"](path));
+  var body = reader["read-all"](s);
+  var form = compiler.expand(join(["do"], body));
+  return(compiler.compile(form, {_stash: true, stmt: true}));
+};
+load = function (path) {
+  return(compiler.run(compile_file(path)));
+};
+var run_file = function (path) {
+  return(compiler.run(system["read-file"](path)));
+};
 var usage = function () {
   print("usage: lumen [options] <object files>");
   print("options:");
@@ -1139,12 +1151,12 @@ var main = function () {
     }
     i = i + 1;
   }
-  var _x1 = pre;
-  var _n = _35(_x1);
+  var _x2 = pre;
+  var _n = _35(_x2);
   var _i = 0;
   while (_i < _n) {
-    var file = _x1[_i];
-    compiler["run-file"](file);
+    var file = _x2[_i];
+    run_file(file);
     _i = _i + 1;
   }
   if (nil63(input)) {
@@ -1157,7 +1169,7 @@ var main = function () {
     if (target1) {
       target = target1;
     }
-    var code = compiler["compile-file"](input);
+    var code = compile_file(input);
     if (nil63(output) || output === "-") {
       return(print(code));
     } else {

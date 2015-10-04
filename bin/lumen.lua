@@ -972,6 +972,18 @@ local function repl()
     end
   end
 end
+function compile_file(path)
+  local s = reader.stream(system["read-file"](path))
+  local body = reader["read-all"](s)
+  local form = compiler.expand(join({"do"}, body))
+  return(compiler.compile(form, {_stash = true, stmt = true}))
+end
+function load(path)
+  return(compiler.run(compile_file(path)))
+end
+local function run_file(path)
+  return(compiler.run(system["read-file"](path)))
+end
 local function usage()
   print("usage: lumen [options] <object files>")
   print("options:")
@@ -1025,12 +1037,12 @@ local function main()
     end
     i = i + 1
   end
-  local _x2 = pre
-  local _n = _35(_x2)
+  local _x3 = pre
+  local _n = _35(_x3)
   local _i = 0
   while _i < _n do
-    local file = _x2[_i + 1]
-    compiler["run-file"](file)
+    local file = _x3[_i + 1]
+    run_file(file)
     _i = _i + 1
   end
   if nil63(input) then
@@ -1043,7 +1055,7 @@ local function main()
     if target1 then
       target = target1
     end
-    local code = compiler["compile-file"](input)
+    local code = compile_file(input)
     if nil63(output) or output == "-" then
       return(print(code))
     else
