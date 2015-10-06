@@ -23,7 +23,7 @@ local function special63(k)
   return(is63(getenv(k, "special")))
 end
 local function special_form63(form)
-  return(not  atom63(form) and special63(hd(form)))
+  return(not atom63(form) and special63(hd(form)))
 end
 local function statement63(k)
   return(special63(k) and getenv(k, "stmt"))
@@ -38,7 +38,7 @@ local function variable63(k)
   local b = first(function (frame)
     return(frame[k])
   end, reverse(environment))
-  return(not  atom63(b) and is63(b.variable))
+  return(not atom63(b) and is63(b.variable))
 end
 function bound63(x)
   return(macro63(x) or special63(x) or symbol63(x) or variable63(x))
@@ -79,7 +79,7 @@ local function stash42(args)
     local k = nil
     for k in next, _o do
       local v = _o[k]
-      if not  number63(k) then
+      if not number63(k) then
         add(l, literal(k))
         add(l, v)
       end
@@ -90,7 +90,7 @@ local function stash42(args)
   end
 end
 local function bias(k)
-  if number63(k) and not ( target == "lua") then
+  if number63(k) and not( target == "lua") then
     if target == "js" then
       k = k - 1
     else
@@ -179,7 +179,7 @@ local function can_unquote63(depth)
   return(quoting63(depth) and depth == 1)
 end
 local function quasisplice63(x, depth)
-  return(can_unquote63(depth) and not  atom63(x) and hd(x) == "unquote-splicing")
+  return(can_unquote63(depth) and not atom63(x) and hd(x) == "unquote-splicing")
 end
 local function expand_local(_x34)
   local _id = _x34
@@ -265,7 +265,7 @@ local function quasiquote_list(form, depth)
   local k = nil
   for k in next, _o5 do
     local v = _o5[k]
-    if not  number63(k) then
+    if not number63(k) then
       local _e11
       if quasisplice63(v, depth) then
         _e11 = quasiexpand(v[2])
@@ -291,7 +291,7 @@ local function quasiquote_list(form, depth)
     _i6 = _i6 + 1
   end
   local pruned = keep(function (x)
-    return(_35(x) > 1 or not ( hd(x) == "list") or keys63(x))
+    return(_35(x) > 1 or not( hd(x) == "list") or keys63(x))
   end, xs)
   if one63(pruned) then
     return(hd(pruned))
@@ -372,7 +372,7 @@ function valid_id63(id)
   else
     local i = 0
     while i < _35(id) do
-      if not  valid_code63(code(id, i)) then
+      if not valid_code63(code(id, i)) then
         return(false)
       end
       i = i + 1
@@ -408,7 +408,7 @@ function mapo(f, t)
 end
 local __x57 = {}
 local _x58 = {}
-_x58.lua = "not "
+_x58.lua = "not"
 _x58.js = "!"
 __x57["not"] = _x58
 local __x59 = {}
@@ -453,7 +453,7 @@ local function index(k)
   end
 end
 local function precedence(form)
-  if not ( atom63(form) or unary63(form)) then
+  if not( atom63(form) or unary63(form)) then
     local _o7 = infix
     local k = nil
     for k in next, _o7 do
@@ -576,7 +576,7 @@ local function compile_atom(x)
   end
 end
 local function terminator(stmt63)
-  if not  stmt63 then
+  if not stmt63 then
     return("")
   else
     if target == "js" then
@@ -594,11 +594,11 @@ local function compile_special(form, stmt63)
   local self_tr63 = _id6.tr
   local stmt = _id6.stmt
   local special = _id6.special
-  local tr = terminator(stmt63 and not  self_tr63)
+  local tr = terminator(stmt63 and not self_tr63)
   return(apply(special, args) .. tr)
 end
 local function parenthesize_call63(x)
-  return(not  atom63(x) and hd(x) == "%function" or precedence(x) > 0)
+  return(not atom63(x) and hd(x) == "%function" or precedence(x) > 0)
 end
 local function compile_call(form)
   local f = hd(form)
@@ -689,7 +689,7 @@ function compile_function(args, body, ...)
   end
 end
 local function can_return63(form)
-  return(is63(form) and (atom63(form) or not ( hd(form) == "return") and not  statement63(hd(form))))
+  return(is63(form) and (atom63(form) or not( hd(form) == "return") and not statement63(hd(form))))
 end
 function compile(form, ...)
   local _r60 = unstash({...})
@@ -750,7 +750,7 @@ local function literal63(form)
   return(atom63(form) or hd(form) == "%array" or hd(form) == "%object")
 end
 local function standalone63(form)
-  return(not  atom63(form) and not  infix63(hd(form)) and not  literal63(form) and not ( "get" == hd(form)))
+  return(not atom63(form) and not infix63(hd(form)) and not literal63(form) and not( "get" == hd(form)))
 end
 local function lower_do(args, hoist, stmt63, tail63)
   local _x82 = almost(args)
@@ -779,7 +779,7 @@ local function lower_set(args, hoist, stmt63, tail63)
   local lh = _id15[1]
   local rh = _id15[2]
   add(hoist, {"set", lh, lower(rh, hoist)})
-  if not ( stmt63 and not  tail63) then
+  if not( stmt63 and not tail63) then
     return(lh)
   end
 end
@@ -1187,7 +1187,7 @@ setenv("%object", {_stash = true, special = function (...)
       local _id28 = v
       local _k2 = _id28[1]
       local _v2 = _id28[2]
-      if not  string63(_k2) then
+      if not string63(_k2) then
         error("Illegal key: " .. string(_k2))
       end
       s = s .. c .. key(_k2) .. sep .. compile(_v2)

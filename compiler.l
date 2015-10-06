@@ -259,7 +259,7 @@
           (add o x))))))
 
 (define infix
-  `((not: (js: ! lua: ,"not "))
+  `((not: (js: ! lua: ,"not"))
     (:* :/ :%)
     (:+ :-)
     (cat: (js: + lua: ..))

@@ -11,7 +11,7 @@ function nil63(x)
   return(x == nil)
 end
 function is63(x)
-  return(not  nil63(x))
+  return(not nil63(x))
 end
 function _35(x)
   return(#x)
@@ -49,7 +49,7 @@ end
 nan = 0 / 0
 inf = 1 / 0
 function nan63(n)
-  return(not ( n == n))
+  return(not( n == n))
 end
 function inf63(n)
   return(n == inf or n == -inf)
@@ -84,7 +84,7 @@ function cut(x, from, upto)
   local k = nil
   for k in next, _o do
     local v = _o[k]
-    if not  number63(k) then
+    if not number63(k) then
       l[k] = v
     end
   end
@@ -96,7 +96,7 @@ function keys(x)
   local k = nil
   for k in next, _o1 do
     local v = _o1[k]
-    if not  number63(k) then
+    if not number63(k) then
       t[k] = v
     end
   end
@@ -251,7 +251,7 @@ function map(f, x)
   local k = nil
   for k in next, _o5 do
     local v = _o5[k]
-    if not  number63(k) then
+    if not number63(k) then
       local y = f(v)
       if is63(y) then
         t[k] = y
@@ -272,7 +272,7 @@ function keys63(t)
   local k = nil
   for k in next, _o6 do
     local v = _o6[k]
-    if not  number63(k) then
+    if not number63(k) then
       return(true)
     end
   end
@@ -294,7 +294,7 @@ function stash(args)
     local k = nil
     for k in next, _o8 do
       local v = _o8[k]
-      if not  number63(k) then
+      if not number63(k) then
         p[k] = v
       end
     end
@@ -308,13 +308,13 @@ function unstash(args)
     return({})
   else
     local l = last(args)
-    if not  atom63(l) and l._stash then
+    if not atom63(l) and l._stash then
       local args1 = almost(args)
       local _o9 = l
       local k = nil
       for k in next, _o9 do
         local v = _o9[k]
-        if not ( k == "_stash") then
+        if not( k == "_stash") then
           args1[k] = v
         end
       end
@@ -417,7 +417,7 @@ function numeric63(s)
   local n = _35(s)
   local i = 0
   while i < n do
-    if not  number_code63(code(s, i)) then
+    if not number_code63(code(s, i)) then
       return(false)
     end
     i = i + 1
@@ -939,7 +939,7 @@ local function eval_print(form)
   local _id = {_e, _x}
   local ok = _id[1]
   local x = _id[2]
-  if not  ok then
+  if not ok then
     return(print("error: " .. x))
   else
     if is63(x) then
@@ -956,7 +956,7 @@ local function repl()
     buf = buf .. s
     local more = {}
     local form = reader["read-string"](buf, more)
-    if not ( form == more) then
+    if not( form == more) then
       eval_print(form)
       buf = ""
       return(system.write("> "))
@@ -1031,7 +1031,7 @@ local function main()
         end
       end
     else
-      if not ( "-" == char(a, 0)) then
+      if not( "-" == char(a, 0)) then
         add(pre, a)
       end
     end

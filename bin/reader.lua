@@ -29,7 +29,7 @@ local function skip_non_code(s)
         read_char(s)
       else
         if c == ";" then
-          while c and not ( c == "\n") do
+          while c and not( c == "\n") do
             c = read_char(s)
           end
           skip_non_code(s)
@@ -64,7 +64,7 @@ local function read_all(s)
 end
 local function read_string(str, more)
   local x = read(stream(str, more))
-  if not ( x == eof) then
+  if not( x == eof) then
     return(x)
   end
 end
@@ -101,7 +101,7 @@ read_table[""] = function (s)
   local str = ""
   while true do
     local c = peek_char(s)
-    if c and (not  whitespace[c] and not  delimiters[c]) then
+    if c and (not whitespace[c] and not delimiters[c]) then
       str = str .. read_char(s)
     else
       break

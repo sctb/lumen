@@ -457,7 +457,7 @@ mapo = function (f, t) {
 };
 var __x57 = [];
 var _x58 = [];
-_x58.lua = "not ";
+_x58.lua = "not";
 _x58.js = "!";
 __x57["not"] = _x58;
 var __x59 = [];
