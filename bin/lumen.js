@@ -924,8 +924,8 @@ setenv("guard", {_stash: true, macro: function (expr) {
   } else {
     var e = unique("e");
     var x = unique("x");
-    var ex = "|" + e + "," + x + "|";
-    return(["let", ex, ["xpcall", ["fn", join(), expr], "%message-handler"], ["list", e, x]]);
+    var msg = unique("msg");
+    return(["let", [x, "nil", msg, "nil", e, ["xpcall", ["fn", join(), ["set", x, expr]], ["fn", ["m"], ["set", msg, ["%message-handler", "m"]]]]], ["list", e, ["if", e, x, msg]]]);
   }
 }});
 setenv("each", {_stash: true, macro: function (x, t) {

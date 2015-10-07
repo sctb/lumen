@@ -143,10 +143,13 @@
 (define-macro guard (expr)
   (if (= target 'js)
       `((fn () (%try (list true ,expr))))
-    (let-unique (e x)
-      (let ex (cat "|" e "," x "|")
-        `(let ,ex (xpcall (fn () ,expr) %message-handler)
-           (list ,e ,x))))))
+    (let-unique (e x msg)
+      `(let (,x nil
+             ,msg nil
+             ,e (xpcall
+                 (fn () (set ,x ,expr))
+                 (fn (m) (set ,msg (%message-handler m)))))
+         (list ,e (if ,e ,x ,msg))))))
 
 (define-macro each (x t rest: body)
   (let-unique (o n i)

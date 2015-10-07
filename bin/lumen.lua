@@ -752,7 +752,7 @@ setenv("define-global", {_stash = true, macro = function (name, x, ...)
   local _r35 = unstash({...})
   local _id29 = _r35
   local body = cut(_id29, 0)
-  setenv(name, {_stash = true, variable = true, toplevel = true})
+  setenv(name, {_stash = true, toplevel = true, variable = true})
   if some63(body) then
     return(join({"%global-function", name}, bind42(x, body)))
   else
@@ -823,8 +823,8 @@ setenv("guard", {_stash = true, macro = function (expr)
   else
     local e = unique("e")
     local x = unique("x")
-    local ex = "|" .. e .. "," .. x .. "|"
-    return({"let", ex, {"xpcall", {"fn", join(), expr}, "%message-handler"}, {"list", e, x}})
+    local msg = unique("msg")
+    return({"let", {x, "nil", msg, "nil", e, {"xpcall", {"fn", join(), {"set", x, expr}}, {"fn", {"m"}, {"set", msg, {"%message-handler", "m"}}}}}, {"list", e, {"if", e, x, msg}}})
   end
 end})
 setenv("each", {_stash = true, macro = function (x, t, ...)
