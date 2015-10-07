@@ -1,13 +1,13 @@
-local delimiters = {["("] = true, [")"] = true, [";"] = true, ["\n"] = true}
-local whitespace = {[" "] = true, ["\t"] = true, ["\n"] = true}
+local delimiters = {[")"] = true, [";"] = true, ["\n"] = true, ["("] = true}
+local whitespace = {["\t"] = true, [" "] = true, ["\n"] = true}
 local function stream(str, more)
-  return({pos = 0, string = str, len = _35(str), more = more})
+  return({pos = 0, more = more, string = str, len = _35(str)})
 end
 local function peek_char(s)
   local _id = s
-  local pos = _id.pos
   local len = _id.len
   local string = _id.string
+  local pos = _id.pos
   if pos < len then
     return(char(string, pos))
   end
@@ -76,8 +76,8 @@ local function flag63(atom)
 end
 local function expected(s, c)
   local _id1 = s
-  local more = _id1.more
   local pos = _id1.pos
+  local more = _id1.more
   local _id2 = more
   local _e
   if _id2 then
@@ -96,7 +96,7 @@ local function wrap(s, x)
     return({x, y})
   end
 end
-local literals = {["true"] = true, ["false"] = false, nan = 0 / 0, ["-nan"] = 0 / 0, inf = 1 / 0, ["-inf"] = -1 / 0}
+local literals = {["-nan"] = 0 / 0, ["true"] = true, ["false"] = false, inf = 1 / 0, nan = 0 / 0, ["-inf"] = -1 / 0}
 read_table[""] = function (s)
   local str = ""
   while true do
@@ -116,6 +116,22 @@ read_table[""] = function (s)
       return(str)
     else
       return(n)
+    end
+  end
+end
+local _f = read_table[""]
+read_table[""] = function (s)
+  local expr = _f(s)
+  if not expr then
+    return("")
+  else
+    local i = search(expr, ".")
+    if i and i > 0 and i < _35(expr) then
+      local lh = clip(expr, 0, i)
+      local rh = clip(expr, i + 1, _35(expr))
+      return({"get", lh, {"quote", rh}})
+    else
+      return(expr)
     end
   end
 end
@@ -209,4 +225,4 @@ read_table[","] = function (s)
     return(wrap(s, "unquote"))
   end
 end
-return({stream = stream, read = read, ["read-all"] = read_all, ["read-string"] = read_string, ["read-table"] = read_table})
+return({stream = stream, ["read-table"] = read_table, ["read-string"] = read_string, ["read-all"] = read_all, read = read})

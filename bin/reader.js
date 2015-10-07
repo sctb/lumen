@@ -1,13 +1,13 @@
-var delimiters = {"(": true, ")": true, ";": true, "\n": true};
+var delimiters = {")": true, ";": true, "(": true, "\n": true};
 var whitespace = {" ": true, "\t": true, "\n": true};
 var stream = function (str, more) {
-  return({pos: 0, string: str, len: _35(str), more: more});
+  return({pos: 0, more: more, string: str, len: _35(str)});
 };
 var peek_char = function (s) {
   var _id = s;
   var pos = _id.pos;
-  var len = _id.len;
   var string = _id.string;
+  var len = _id.len;
   if (pos < len) {
     return(char(string, pos));
   }
@@ -76,8 +76,8 @@ var flag63 = function (atom) {
 };
 var expected = function (s, c) {
   var _id1 = s;
-  var more = _id1.more;
   var pos = _id1.pos;
+  var more = _id1.more;
   var _id2 = more;
   var _e;
   if (_id2) {
@@ -96,7 +96,7 @@ var wrap = function (s, x) {
     return([x, y]);
   }
 };
-var literals = {"true": true, "false": false, nan: 0 / 0, "-nan": 0 / 0, inf: 1 / 0, "-inf": -1 / 0};
+var literals = {"-inf": -1 / 0, "true": true, nan: 0 / 0, inf: 1 / 0, "-nan": 0 / 0, "false": false};
 read_table[""] = function (s) {
   var str = "";
   while (true) {
@@ -116,6 +116,22 @@ read_table[""] = function (s) {
       return(str);
     } else {
       return(n);
+    }
+  }
+};
+var _f = read_table[""];
+read_table[""] = function (s) {
+  var expr = _f(s);
+  if (! expr) {
+    return("");
+  } else {
+    var i = search(expr, ".");
+    if (i && i > 0 && i < _35(expr)) {
+      var lh = clip(expr, 0, i);
+      var rh = clip(expr, i + 1, _35(expr));
+      return(["get", lh, ["quote", rh]]);
+    } else {
+      return(expr);
     }
   }
 };
