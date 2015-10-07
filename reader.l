@@ -86,6 +86,16 @@
         (let n (number str)
           (if (or (nil? n) (nan? n) (inf? n)) str n))))))
 
+(let f (get read-table "")
+  (define-reader ("" s)
+    (let-when expr (f s)
+      (let i (search expr ".")
+        (if (and i (> i 0) (< i (# expr)))
+          (let (lh (clip expr 0 i)
+                rh (clip expr (+ i 1) (# expr)))
+            `(get ,lh ',rh))
+          expr)))))
+
 (define-reader ("(" s)
   (read-char s)
   (with r nil
