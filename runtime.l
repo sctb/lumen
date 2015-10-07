@@ -34,6 +34,7 @@
 (define-global number? (x) (= (type x) 'number))
 (define-global boolean? (x) (= (type x) 'boolean))
 (define-global function? (x) (= (type x) 'function))
+(define-global table? (x) (= (type x) (target js: 'object lua: 'table)))
 
 (define-global atom? (x)
   (or (nil? x) (string? x) (number? x) (boolean? x)))
@@ -288,18 +289,20 @@
       (string? x) (escape x)
       (atom? x) (tostring x)
       (function? x) "function"
-    (let (s "(" sp ""
-          xs () ks ()
-          d (+ (or depth 0) 1))
-      (each (k v) x
-        (if (number? k)
-            (set (get xs k) (string v d))
-          (do (add ks (cat k ":"))
-              (add ks (string v d)))))
-      (each v (join xs ks)
-        (cat! s sp v)
-        (set sp " "))
-      (cat s  ")"))))
+      (table? x)
+        (let (s "(" sp ""
+              xs () ks ()
+              d (+ (or depth 0) 1))
+          (each (k v) x
+            (if (number? k)
+                (set (get xs k) (string v d))
+              (do (add ks (cat k ":"))
+                  (add ks (string v d)))))
+          (each v (join xs ks)
+            (cat! s sp v)
+            (set sp " "))
+          (cat s  ")"))
+      (escape (tostring x))))
 
 (target lua:
   (define values (or unpack tunpack)))

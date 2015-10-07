@@ -43,6 +43,9 @@ end
 function function63(x)
   return(type(x) == "function")
 end
+function table63(x)
+  return(type(x) == "table")
+end
 function atom63(x)
   return(nil63(x) or string63(x) or number63(x) or boolean63(x))
 end
@@ -485,30 +488,34 @@ function string(x, depth)
                   if function63(x) then
                     return("function")
                   else
-                    local s = "("
-                    local sp = ""
-                    local xs = {}
-                    local ks = {}
-                    local d = (depth or 0) + 1
-                    local _o10 = x
-                    local k = nil
-                    for k in next, _o10 do
-                      local v = _o10[k]
-                      if number63(k) then
-                        xs[k] = string(v, d)
-                      else
-                        add(ks, k .. ":")
-                        add(ks, string(v, d))
+                    if table63(x) then
+                      local s = "("
+                      local sp = ""
+                      local xs = {}
+                      local ks = {}
+                      local d = (depth or 0) + 1
+                      local _o10 = x
+                      local k = nil
+                      for k in next, _o10 do
+                        local v = _o10[k]
+                        if number63(k) then
+                          xs[k] = string(v, d)
+                        else
+                          add(ks, k .. ":")
+                          add(ks, string(v, d))
+                        end
                       end
+                      local _o11 = join(xs, ks)
+                      local _i13 = nil
+                      for _i13 in next, _o11 do
+                        local v = _o11[_i13]
+                        s = s .. sp .. v
+                        sp = " "
+                      end
+                      return(s .. ")")
+                    else
+                      return(escape(tostring(x)))
                     end
-                    local _o11 = join(xs, ks)
-                    local _i13 = nil
-                    for _i13 in next, _o11 do
-                      local v = _o11[_i13]
-                      s = s .. sp .. v
-                      sp = " "
-                    end
-                    return(s .. ")")
                   end
                 end
               end
@@ -531,8 +538,8 @@ function toplevel63()
   return(one63(environment))
 end
 function setenv(k, ...)
-  local _r65 = unstash({...})
-  local _id1 = _r65
+  local _r66 = unstash({...})
+  local _id1 = _r66
   local _keys = cut(_id1, 0)
   if string63(k) then
     local _e7
