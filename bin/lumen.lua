@@ -752,7 +752,7 @@ setenv("define-global", {_stash = true, macro = function (name, x, ...)
   local _r35 = unstash({...})
   local _id29 = _r35
   local body = cut(_id29, 0)
-  setenv(name, {_stash = true, toplevel = true, variable = true})
+  setenv(name, {_stash = true, variable = true, toplevel = true})
   if some63(body) then
     return(join({"%global-function", name}, bind42(x, body)))
   else
@@ -933,10 +933,22 @@ local reader = require("reader")
 local compiler = require("compiler")
 local system = require("system")
 local function eval_print(form)
-  local _e,_x = xpcall(function ()
-    return(compiler.eval(form))
-  end, _37message_handler)
-  local _id = {_e, _x}
+  local _x = nil
+  local _msg = nil
+  local _e = xpcall(function ()
+    _x = compiler.eval(form)
+    return(_x)
+  end, function (m)
+    _msg = _37message_handler(m)
+    return(_msg)
+  end)
+  local _e1
+  if _e then
+    _e1 = _x
+  else
+    _e1 = _msg
+  end
+  local _id = {_e, _e1}
   local ok = _id[1]
   local x = _id[2]
   if not ok then
