@@ -529,7 +529,7 @@ escape = function (s) {
   return(s1 + "\"");
 };
 string = function (x, depth) {
-  if (depth && depth > 7) {
+  if (depth && depth > 40) {
     return("circular");
   } else {
     if (nil63(x)) {

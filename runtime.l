@@ -279,7 +279,7 @@
     (cat s1 "\"")))
 
 (define-global string (x depth)
-  (if (and depth (> depth 7)) "circular"
+  (if (and depth (> depth 40)) "circular"
       (nil? x) "nil"
       (nan? x) "nan"
       (= x inf) "inf"
