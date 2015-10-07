@@ -84,7 +84,13 @@
     (let x (get literals str)
       (if (is? x) x
         (let n (number str)
-          (if (or (nil? n) (nan? n) (inf? n)) str n))))))
+          (if (not (or (nil? n) (nan? n) (inf? n))) n
+            (let i (search str ".")
+              (if (and i (> i 0) (< i (# str)))
+                (let (lh (clip str 0 i)
+                      rh (clip str (+ i 1) (# str)))
+                  `(get ,lh ',rh))
+                str))))))))
 
 (define-reader ("(" s)
   (read-char s)

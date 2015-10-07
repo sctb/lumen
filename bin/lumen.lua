@@ -43,6 +43,9 @@ end
 function function63(x)
   return(type(x) == "function")
 end
+function table63(x)
+  return(type(x) == "table")
+end
 function atom63(x)
   return(nil63(x) or string63(x) or number63(x) or boolean63(x))
 end
@@ -485,30 +488,34 @@ function string(x, depth)
                   if function63(x) then
                     return("function")
                   else
-                    local s = "("
-                    local sp = ""
-                    local xs = {}
-                    local ks = {}
-                    local d = (depth or 0) + 1
-                    local _o10 = x
-                    local k = nil
-                    for k in next, _o10 do
-                      local v = _o10[k]
-                      if number63(k) then
-                        xs[k] = string(v, d)
-                      else
-                        add(ks, k .. ":")
-                        add(ks, string(v, d))
+                    if table63(x) then
+                      local s = "("
+                      local sp = ""
+                      local xs = {}
+                      local ks = {}
+                      local d = (depth or 0) + 1
+                      local _o10 = x
+                      local k = nil
+                      for k in next, _o10 do
+                        local v = _o10[k]
+                        if number63(k) then
+                          xs[k] = string(v, d)
+                        else
+                          add(ks, k .. ":")
+                          add(ks, string(v, d))
+                        end
                       end
+                      local _o11 = join(xs, ks)
+                      local _i13 = nil
+                      for _i13 in next, _o11 do
+                        local v = _o11[_i13]
+                        s = s .. sp .. v
+                        sp = " "
+                      end
+                      return(s .. ")")
+                    else
+                      return(escape(tostring(x)))
                     end
-                    local _o11 = join(xs, ks)
-                    local _i13 = nil
-                    for _i13 in next, _o11 do
-                      local v = _o11[_i13]
-                      s = s .. sp .. v
-                      sp = " "
-                    end
-                    return(s .. ")")
                   end
                 end
               end
@@ -531,8 +538,8 @@ function toplevel63()
   return(one63(environment))
 end
 function setenv(k, ...)
-  local _r65 = unstash({...})
-  local _id1 = _r65
+  local _r66 = unstash({...})
+  local _id1 = _r66
   local _keys = cut(_id1, 0)
   if string63(k) then
     local _e7
@@ -752,7 +759,7 @@ setenv("define-global", {_stash = true, macro = function (name, x, ...)
   local _r35 = unstash({...})
   local _id29 = _r35
   local body = cut(_id29, 0)
-  setenv(name, {_stash = true, toplevel = true, variable = true})
+  setenv(name, {_stash = true, variable = true, toplevel = true})
   if some63(body) then
     return(join({"%global-function", name}, bind42(x, body)))
   else
@@ -933,10 +940,22 @@ local reader = require("reader")
 local compiler = require("compiler")
 local system = require("system")
 local function eval_print(form)
-  local _e,_x = xpcall(function ()
-    return(compiler.eval(form))
-  end, _37message_handler)
-  local _id = {_e, _x}
+  local _x = nil
+  local _msg = nil
+  local _e = xpcall(function ()
+    _x = compiler.eval(form)
+    return(_x)
+  end, function (m)
+    _msg = _37message_handler(m)
+    return(_msg)
+  end)
+  local _e1
+  if _e then
+    _e1 = _x
+  else
+    _e1 = _msg
+  end
+  local _id = {_e, _e1}
   local ok = _id[1]
   local x = _id[2]
   if not ok then
