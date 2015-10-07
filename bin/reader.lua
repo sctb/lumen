@@ -1,13 +1,13 @@
-local delimiters = {[")"] = true, [";"] = true, ["\n"] = true, ["("] = true}
-local whitespace = {["\t"] = true, [" "] = true, ["\n"] = true}
+local delimiters = {["\n"] = true, ["("] = true, [")"] = true, [";"] = true}
+local whitespace = {[" "] = true, ["\n"] = true, ["\t"] = true}
 local function stream(str, more)
-  return({pos = 0, more = more, string = str, len = _35(str)})
+  return({more = more, len = _35(str), string = str, pos = 0})
 end
 local function peek_char(s)
   local _id = s
-  local len = _id.len
-  local string = _id.string
   local pos = _id.pos
+  local string = _id.string
+  local len = _id.len
   if pos < len then
     return(char(string, pos))
   end
@@ -76,8 +76,8 @@ local function flag63(atom)
 end
 local function expected(s, c)
   local _id1 = s
-  local pos = _id1.pos
   local more = _id1.more
+  local pos = _id1.pos
   local _id2 = more
   local _e
   if _id2 then
@@ -96,7 +96,7 @@ local function wrap(s, x)
     return({x, y})
   end
 end
-local literals = {["-nan"] = 0 / 0, ["true"] = true, ["false"] = false, inf = 1 / 0, nan = 0 / 0, ["-inf"] = -1 / 0}
+local literals = {nan = 0 / 0, ["true"] = true, inf = 1 / 0, ["-nan"] = 0 / 0, ["-inf"] = -1 / 0, ["false"] = false}
 read_table[""] = function (s)
   local str = ""
   while true do
@@ -112,26 +112,17 @@ read_table[""] = function (s)
     return(x)
   else
     local n = number(str)
-    if nil63(n) or nan63(n) or inf63(n) then
-      return(str)
-    else
+    if not( nil63(n) or nan63(n) or inf63(n)) then
       return(n)
-    end
-  end
-end
-local _f = read_table[""]
-read_table[""] = function (s)
-  local expr = _f(s)
-  if not expr then
-    return("")
-  else
-    local i = search(expr, ".")
-    if i and i > 0 and i < _35(expr) then
-      local lh = clip(expr, 0, i)
-      local rh = clip(expr, i + 1, _35(expr))
-      return({"get", lh, {"quote", rh}})
     else
-      return(expr)
+      local i = search(str, ".")
+      if i and i > 0 and i < _35(str) then
+        local lh = clip(str, 0, i)
+        local rh = clip(str, i + 1, _35(str))
+        return({"get", lh, {"quote", rh}})
+      else
+        return(str)
+      end
     end
   end
 end
@@ -225,4 +216,4 @@ read_table[","] = function (s)
     return(wrap(s, "unquote"))
   end
 end
-return({stream = stream, ["read-table"] = read_table, ["read-string"] = read_string, ["read-all"] = read_all, read = read})
+return({read = read, stream = stream, ["read-table"] = read_table, ["read-string"] = read_string, ["read-all"] = read_all})
