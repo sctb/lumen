@@ -146,4 +146,5 @@
 (export stream
         read
         read-all
-        read-string)
+        read-string
+        read-table)
