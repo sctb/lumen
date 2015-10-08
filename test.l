@@ -409,7 +409,6 @@ c"
     (set (get t 'foo) 'bar)
     (test= 'bar (get t 'foo))
     (test= 'bar (get t "foo"))
-    (test= 'bar t.foo)
     (let k 'foo
       (test= 'bar (get t k)))
     (test= 'bar (get t (cat "f" "oo")))))
