@@ -34,6 +34,7 @@
 (define-global number? (x) (= (type x) 'number))
 (define-global boolean? (x) (= (type x) 'boolean))
 (define-global function? (x) (= (type x) 'function))
+(define-global list? (x) (= (type x) (target js: 'object lua: 'table)))
 
 (define-global atom? (x)
   (or (nil? x) (string? x) (number? x) (boolean? x)))
