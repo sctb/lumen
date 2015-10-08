@@ -44,7 +44,8 @@
       (variable? x)))
 
 (define-global quoted (form)
-  (if (string? form) (escape form)
+  (if (quoted-literal? form) form
+      (string? form) (escape form)
       (atom? form) form
     `(list ,@(map quoted form))))
 
@@ -143,6 +144,7 @@
   (macroexpand (apply (macro-function name) body)))
 
 (define-global macroexpand (form)
+  (set form (quote-literals! form))
   (if (symbol? form)
       (macroexpand (symbol-expansion form))
       (atom? form) form
@@ -535,6 +537,29 @@
   (define run (code)
     (let |f,e| (load1 code)
       (if f (f) (error (cat e " in " code))))))
+
+(define fn-prefix "%fn-")
+
+(define-global quoted-literal? (e)
+  (when (string? e)
+    (for i (# fn-prefix)
+      (if (not (= (char e i) (char fn-prefix i)))
+        (return false)))
+    (return true)))
+
+(define-global quote-literals! (form)
+  (if (function? form)
+    (let var (cat fn-prefix (unique "fn"))
+      (set %fn form)
+      (run (compile `(set ,var %fn)))
+      var)
+    (atom? form) form
+    (do
+      (for i (# form)
+        (let e (at form i)
+          (if (function? e) (set (get form i) (quote-literals! e))
+            (not (atom? e)) (quote-literals! e))))
+      form)))
 
 (define-global %result)
 
