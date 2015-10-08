@@ -900,3 +900,15 @@ c"
     (test= '(10 20 42) (f 10 bar: 20 (list foo: 42))))
   (let f (fn args args)
     (test= '(1 2 3) (f 1 2 3))))
+
+(define-test global
+  (test= nil (get-global '%abc))
+  (set (get-global '%abc) 42)
+  (test= 42 (get-global '%abc))
+  (test= 42 %abc)
+  (let v '%xyz
+    (test= nil (get-global v))
+    (set (get-global v) 42)
+    (test= 42 (get-global v))
+    (test= 42 %xyz)))
+

@@ -11,6 +11,8 @@
 (target lua: (define tsort (get table 'sort)))
 (target lua: (define tunpack (get table 'unpack)))
 
+(target lua: (define-global global _G))
+
 (define-global nil? (x)
   (target
     js: (or (= x nil) (= x null))
