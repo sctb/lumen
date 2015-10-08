@@ -83,8 +83,7 @@ if __name__ == "__main__":
         if "luajit" in args: Targets.add("lua")
         if "all"    in args: Targets = set(["js", "lua"])
         if len(Targets) <= 0:
-            prn("Unknown target(s) %s" % args)
-            exit(1)
+            Targets = set(["js", "lua"])
     if "clean" in args:
         clean()
     elif "test" in args:
