@@ -279,9 +279,8 @@
         (cat! s1 c1)))
     (cat s1 "\"")))
 
-(define-global string (x depth)
-  (if (and depth (> depth 40)) "circular"
-      (nil? x) "nil"
+(define-global string (x depth ancestors)
+  (if (nil? x) "nil"
       (nan? x) "nan"
       (= x inf) "inf"
       (= x -inf) "-inf"
@@ -292,12 +291,15 @@
       (not (list? x)) (escape (type x))
     (let (s "(" sp ""
           xs () ks ()
-          d (+ (or depth 0) 1))
+          d (+ (or depth 0) 1)
+          ans (join (list x) (or ancestors ())))
+      (when (in? x (or ancestors ()))
+        (return "circular"))
       (each (k v) x
         (if (number? k)
-            (set (get xs k) (string v d))
+            (set (get xs k) (string v d ans))
           (do (add ks (cat k ":"))
-              (add ks (string v d)))))
+              (add ks (string v d ans)))))
       (each v (join xs ks)
         (cat! s sp v)
         (set sp " "))
