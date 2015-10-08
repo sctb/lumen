@@ -147,7 +147,10 @@ b
 c"
     (test= 5 (# s)))
   (test= 3 (# "a\nb"))
-  (test= 3 (# "a\\b")))
+  (test= 3 (# "a\\b"))
+  (let l '(1 2 3)
+    (set (at l 1) l)
+    (test= "(1 circular 3)" (string l))))
 
 (define-test quote
   (test= 7 (quote 7))
@@ -859,11 +862,6 @@ c"
   (test= false (list? (fn ())))
   (test= true (list? '(1)))
   (test= true (list? (obj))))
-
-(define-test string
-  (let l '(1 2 3)
-    (set (at l 1) l) l)
-    (test= "(1 circular 3)" (string l)))
 
 (define-test apply
   (test= 4 (apply (fn (a b) (+ a b)) '(2 2)))
