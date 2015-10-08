@@ -289,6 +289,7 @@
       (string? x) (escape x)
       (atom? x) (tostring x)
       (function? x) "function"
+      (not (list? x)) (escape (type x))
     (let (s "(" sp ""
           xs () ks ()
           d (+ (or depth 0) 1))
