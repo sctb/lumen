@@ -877,7 +877,14 @@ c"
     (test= 4 (eval '(+ 2 2)))
     (test= 5 (eval '(let a 3 (+ 2 a))))
     (test= 9 (eval '(do (define x 7) (+ x 2))))
-    (test= 6 (eval '(apply + '(1 2 3))))))
+    (test= 6 (eval '(apply + '(1 2 3))))
+    (test= true (function? (eval (fn (x) x))))
+    (test= true (function? (eval '(fn (x) x))))
+    (test= true (function? (eval `(quote ,(fn (x) x)))))
+    (test= true (function? (at (eval `(quote (list ,(fn (x) x)))) 1)))
+    (test= 42 ((at (eval `(quote (list ,(fn (x) x)))) 1) 42))
+    (let x 42
+      (test= 42 ((eval `(quote ,(fn () x))))))))
 
 (define-test call
   (let f (fn () 42)

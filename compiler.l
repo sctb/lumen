@@ -2,6 +2,15 @@
 
 (define reader (require 'reader))
 
+(target js: (set (get global 'require) require))
+(target js: (define run eval))
+
+(target lua: (define load1 load))
+(target lua:
+  (define run (code)
+    (let |f,e| (load1 code)
+      (if f (f) (error (cat e " in " code))))))
+
 (define getenv (k p)
   (when (string? k)
     (let b (find (fn (e)
@@ -43,8 +52,26 @@
       (symbol? x)
       (variable? x)))
 
+(define prefix "%fn-")
+
+(define remapped? (e)
+  (if (string? e)
+    (= prefix (clip e 0 (# prefix)))))
+
+(define remap (e)
+  (if (function? e)
+    (let var (cat prefix (unique "fn"))
+      (set (get global (compile var)) e)
+      var)
+    e))
+
+(define remap-list (e)
+  (if (list? e) (map remap-list e)
+    (remap e)))
+
 (define-global quoted (form)
-  (if (string? form) (escape form)
+  (if (remapped? form) form
+      (string? form) (escape form)
       (atom? form) form
     `(list ,@(map quoted form))))
 
@@ -140,9 +167,10 @@
     `(,x ,name ,args ,@(macroexpand body))))
 
 (define expand-macro ((name rest: body))
-  (macroexpand (apply (macro-function name) body)))
+  (macroexpand (apply (macro-function name) (map remap-list body))))
 
 (define-global macroexpand (form)
+  (set form (remap form))
   (if (symbol? form)
       (macroexpand (symbol-expansion form))
       (atom? form) form
@@ -526,15 +554,6 @@
 
 (define expand (form)
   (lower (macroexpand form)))
-
-(target js: (set (get global 'require) require))
-(target js: (define run eval))
-
-(target lua: (define load1 load))
-(target lua:
-  (define run (code)
-    (let |f,e| (load1 code)
-      (if f (f) (error (cat e " in " code))))))
 
 (define-global %result)
 
