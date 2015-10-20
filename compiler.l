@@ -320,6 +320,9 @@
       (string-literal? x) (escape-newlines x)
       (string? x) (id x)
       (boolean? x) (if x "true" "false")
+      (nan? x) "nan"
+      (= x inf) "inf"
+      (= x -inf) "-inf"
       (number? x) (cat x "")
     (error (cat "Cannot compile atom: " (string x)))))
 
