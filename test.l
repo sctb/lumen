@@ -147,7 +147,10 @@ b
 c"
     (test= 5 (# s)))
   (test= 3 (# "a\nb"))
-  (test= 3 (# "a\\b")))
+  (test= 3 (# "a\\b"))
+  (let l '(1 2 3)
+    (set (at l 1) l)
+    (test= "(1 circular 3)" (string l))))
 
 (define-test quote
   (test= 7 (quote 7))
@@ -850,7 +853,14 @@ c"
   (test= true (atom? true))
   (test= false (atom? (fn ())))
   (test= false (atom? '(1)))
-  (test= false (atom? (obj))))
+  (test= false (atom? (obj)))
+  (test= false (list? nil))
+  (test= false (list? "abc"))
+  (test= false (list? 42))
+  (test= false (list? true))
+  (test= false (list? (fn ())))
+  (test= true (list? '(1)))
+  (test= true (list? (obj))))
 
 (define-test apply
   (test= 4 (apply (fn (a b) (+ a b)) '(2 2)))
@@ -866,7 +876,14 @@ c"
     (test= 4 (eval '(+ 2 2)))
     (test= 5 (eval '(let a 3 (+ 2 a))))
     (test= 9 (eval '(do (define x 7) (+ x 2))))
-    (test= 6 (eval '(apply + '(1 2 3))))))
+    (test= 6 (eval '(apply + '(1 2 3))))
+    (test= true (function? (eval (fn (x) x))))
+    (test= true (function? (eval '(fn (x) x))))
+    (test= true (function? (eval `(quote ,(fn (x) x)))))
+    (test= true (function? (at (eval `(quote (list ,(fn (x) x)))) 1)))
+    (test= 42 ((at (eval `(quote (list ,(fn (x) x)))) 1) 42))
+    (let x 42
+      (test= 42 ((eval `(quote ,(fn () x))))))))
 
 (define-test call
   (let f (fn () 42)
@@ -889,3 +906,15 @@ c"
     (test= '(10 20 42) (f 10 bar: 20 (list foo: 42))))
   (let f (fn args args)
     (test= '(1 2 3) (f 1 2 3))))
+
+(define-test global
+  (test= nil (get-global '%abc))
+  (set (get-global '%abc) 42)
+  (test= 42 (get-global '%abc))
+  (test= 42 %abc)
+  (let v '%xyz
+    (test= nil (get-global v))
+    (set (get-global v) 42)
+    (test= 42 (get-global v))
+    (test= 42 %xyz)))
+

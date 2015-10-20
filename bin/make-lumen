@@ -1,0 +1,99 @@
+#!/bin/sh
+
+cd "$(dirname "$0")"
+cd ..
+
+read -r -d '' script <<'EOF'
+import sys
+import os
+
+Colors = True
+ShouldClean = True
+RunTests = True
+Targets = set(["js", "lua"])
+RecompileCount = 2
+
+def prn(x):
+    if Colors:
+        print("\033[1;37;44m%s\033[0m" % x)
+    else:
+        print(x)
+
+def run(cmd, verbose=True):
+    if verbose:
+        prn(cmd)
+    os.system(cmd)
+
+def compile(src, dst=None):
+    dst = dst or ('obj/%s' % src)
+    for target in Targets:
+        run("time -p LUMEN_HOST=luajit bin/lumen -c %s.l -o %s.%s -t %s" % (src, dst, target, target))
+
+def test(host, target, verbose=False):
+    prn("")
+    prn("test %s:" % host)
+    run("time -p LUMEN_HOST=%s bin/lumen obj/test.%s -e '(run)'" % (host, target), verbose=verbose)
+
+def clean():
+    run("git checkout bin/*.{js,lua}")
+
+def build(n):
+    if ShouldClean:
+        clean()
+    for i in xrange(n):
+        run("rm -f obj/*.{js,lua}")
+        for src in ["runtime", "macros", "main", "compiler", "reader"]:
+            compile(src)
+        for target in Targets:
+            run("cat obj/{runtime,macros,main}.%s > bin/lumen.%s" % (target, target))
+        for target in Targets:
+            run("cp obj/{compiler,reader}.%s bin/" % target)
+
+def tests():
+    compile("test")
+    if "js" in Targets:
+        test(host="node", target="js")
+    if "lua" in Targets:
+        test(host="lua", target="lua")
+        test(host="luajit", target="lua")
+
+def exit(i=0):
+    prn("")
+    prn("Total time: ")
+    sys.exit(i)
+
+def is_int(s):
+    try: 
+        int(s)
+        return True
+    except ValueError:
+        return False
+
+if __name__ == "__main__":
+    args = sys.argv[1:]
+    for arg in list(args):
+        if is_int(arg):
+            RecompileCount = int(arg)
+            args.remove(arg)
+    if len(args) > 0:
+        Targets = set()
+        if "js"     in args: Targets.add("js")
+        if "node"   in args: Targets.add("js")
+        if "lua"    in args: Targets.add("lua")
+        if "luajit" in args: Targets.add("lua")
+        if "all"    in args: Targets = set(["js", "lua"])
+        if len(Targets) <= 0:
+            Targets = set(["js", "lua"])
+    if "clean" in args:
+        clean()
+    elif "test" in args:
+        tests()
+    else:
+        build(n=RecompileCount)
+        if RunTests:
+            tests()
+    exit(0)
+EOF
+
+time -p python -c "${script}" "$@"
+

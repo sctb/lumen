@@ -216,3 +216,7 @@
       (each k names
         (set (get x k) k))
       `(return (obj ,@x)))))
+
+(define-macro get-global (name)
+  `(get global (compile ,name)))
+
