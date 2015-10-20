@@ -1,12 +1,12 @@
-local delimiters = {[")"] = true, ["("] = true, [";"] = true, ["\n"] = true}
-local whitespace = {["\t"] = true, ["\n"] = true, [" "] = true}
+local delimiters = {["("] = true, [")"] = true, ["\n"] = true, [";"] = true}
+local whitespace = {[" "] = true, ["\n"] = true, ["\t"] = true}
 local function stream(str, more)
-  return({len = _35(str), string = str, pos = 0, more = more})
+  return({more = more, pos = 0, len = _35(str), string = str})
 end
 local function peek_char(s)
   local _id = s
-  local len = _id.len
   local pos = _id.pos
+  local len = _id.len
   local string = _id.string
   if pos < len then
     return(char(string, pos))
@@ -76,8 +76,8 @@ local function flag63(atom)
 end
 local function expected(s, c)
   local _id1 = s
-  local pos = _id1.pos
   local more = _id1.more
+  local pos = _id1.pos
   local _id2 = more
   local _e
   if _id2 then
@@ -96,7 +96,6 @@ local function wrap(s, x)
     return({x, y})
   end
 end
-local literals = {["-inf"] = -1 / 0, nan = 0 / 0, ["false"] = false, ["true"] = true, ["-nan"] = 0 / 0, inf = 1 / 0}
 read_table[""] = function (s)
   local str = ""
   while true do
@@ -107,15 +106,34 @@ read_table[""] = function (s)
       break
     end
   end
-  local x = literals[str]
-  if is63(x) then
-    return(x)
+  if str == "true" then
+    return(true)
   else
-    local n = number(str)
-    if nil63(n) or nan63(n) or inf63(n) then
-      return(str)
+    if str == "false" then
+      return(false)
     else
-      return(n)
+      if str == "nan" then
+        return(nan)
+      else
+        if str == "-nan" then
+          return(nan)
+        else
+          if str == "inf" then
+            return(inf)
+          else
+            if str == "-inf" then
+              return(-inf)
+            else
+              local n = number(str)
+              if nil63(n) or nan63(n) or inf63(n) then
+                return(str)
+              else
+                return(n)
+              end
+            end
+          end
+        end
+      end
     end
   end
 end
@@ -209,4 +227,4 @@ read_table[","] = function (s)
     return(wrap(s, "unquote"))
   end
 end
-return({["read-string"] = read_string, ["read-table"] = read_table, read = read, ["read-all"] = read_all, stream = stream})
+return({["read-string"] = read_string, ["read-all"] = read_all, read = read, ["read-table"] = read_table, stream = stream})

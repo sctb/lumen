@@ -359,7 +359,7 @@ function indentation()
   end
   return(s)
 end
-local reserved = {["instanceof"] = true, ["-"] = true, ["false"] = true, ["/"] = true, ["true"] = true, ["+"] = true, ["continue"] = true, ["<"] = true, [">"] = true, ["%"] = true, ["catch"] = true, ["in"] = true, ["then"] = true, ["not"] = true, ["while"] = true, ["void"] = true, ["finally"] = true, ["else"] = true, ["or"] = true, ["debugger"] = true, ["=="] = true, ["repeat"] = true, ["*"] = true, ["and"] = true, ["new"] = true, ["delete"] = true, ["<="] = true, ["for"] = true, ["elseif"] = true, ["typeof"] = true, ["="] = true, ["do"] = true, ["with"] = true, ["case"] = true, ["nil"] = true, ["local"] = true, ["throw"] = true, [">="] = true, ["switch"] = true, ["this"] = true, ["var"] = true, ["function"] = true, ["until"] = true, ["default"] = true, ["break"] = true, ["end"] = true, ["try"] = true, ["return"] = true, ["if"] = true}
+local reserved = {["else"] = true, ["<"] = true, ["true"] = true, ["/"] = true, ["end"] = true, ["typeof"] = true, ["function"] = true, ["switch"] = true, ["="] = true, ["or"] = true, ["try"] = true, ["catch"] = true, ["until"] = true, ["local"] = true, ["repeat"] = true, ["-"] = true, ["false"] = true, ["continue"] = true, ["=="] = true, ["and"] = true, ["if"] = true, ["for"] = true, [">="] = true, ["<="] = true, ["with"] = true, ["return"] = true, ["finally"] = true, ["nil"] = true, ["new"] = true, ["do"] = true, ["case"] = true, ["break"] = true, ["elseif"] = true, ["+"] = true, ["not"] = true, ["void"] = true, ["var"] = true, ["%"] = true, ["in"] = true, ["delete"] = true, ["throw"] = true, ["debugger"] = true, ["instanceof"] = true, ["this"] = true, ["while"] = true, ["then"] = true, ["default"] = true, ["*"] = true, [">"] = true}
 function reserved63(x)
   return(reserved[x])
 end
@@ -408,8 +408,8 @@ function mapo(f, t)
 end
 local __x57 = {}
 local _x58 = {}
-_x58.js = "!"
 _x58.lua = "not"
+_x58.js = "!"
 __x57["not"] = _x58
 local __x59 = {}
 __x59["/"] = true
@@ -420,28 +420,28 @@ __x60["+"] = true
 __x60["-"] = true
 local __x61 = {}
 local _x62 = {}
-_x62.js = "+"
 _x62.lua = ".."
+_x62.js = "+"
 __x61.cat = _x62
 local __x63 = {}
 __x63["<="] = true
-__x63[">"] = true
 __x63[">="] = true
 __x63["<"] = true
+__x63[">"] = true
 local __x64 = {}
 local _x65 = {}
-_x65.js = "==="
 _x65.lua = "=="
+_x65.js = "==="
 __x64["="] = _x65
 local __x66 = {}
 local _x67 = {}
-_x67.js = "&&"
 _x67.lua = "and"
+_x67.js = "&&"
 __x66["and"] = _x67
 local __x68 = {}
 local _x69 = {}
-_x69.js = "||"
 _x69.lua = "or"
+_x69.js = "||"
 __x68["or"] = _x69
 local infix = {__x57, __x59, __x60, __x61, __x63, __x64, __x66, __x68}
 local function unary63(form)
@@ -563,10 +563,22 @@ local function compile_atom(x)
                 return("false")
               end
             else
-              if number63(x) then
-                return(x .. "")
+              if nan63(x) then
+                return("nan")
               else
-                error("Cannot compile atom: " .. string(x))
+                if x == inf then
+                  return("inf")
+                else
+                  if x == -inf then
+                    return("-inf")
+                  else
+                    if number63(x) then
+                      return(x .. "")
+                    else
+                      error("Cannot compile atom: " .. string(x))
+                    end
+                  end
+                end
               end
             end
           end
@@ -591,9 +603,9 @@ local function compile_special(form, stmt63)
   local x = _id5[1]
   local args = cut(_id5, 1)
   local _id6 = getenv(x)
-  local special = _id6.special
-  local stmt = _id6.stmt
   local self_tr63 = _id6.tr
+  local stmt = _id6.stmt
+  local special = _id6.special
   local tr = terminator(stmt63 and not self_tr63)
   return(apply(special, args) .. tr)
 end
@@ -961,7 +973,7 @@ function eval(form)
   run(code)
   return(_37result)
 end
-setenv("do", {_stash = true, special = function (...)
+setenv("do", {_stash = true, tr = true, special = function (...)
   local forms = unstash({...})
   local s = ""
   local _x111 = forms
@@ -973,8 +985,8 @@ setenv("do", {_stash = true, special = function (...)
     _i12 = _i12 + 1
   end
   return(s)
-end, tr = true, stmt = true})
-setenv("%if", {_stash = true, special = function (cond, cons, alt)
+end, stmt = true})
+setenv("%if", {_stash = true, tr = true, special = function (cond, cons, alt)
   local _cond1 = compile(cond)
   indent_level = indent_level + 1
   local _x114 = compile(cons, {_stash = true, stmt = true})
@@ -1007,8 +1019,8 @@ setenv("%if", {_stash = true, special = function (cond, cons, alt)
   else
     return(s .. "\n")
   end
-end, tr = true, stmt = true})
-setenv("while", {_stash = true, special = function (cond, form)
+end, stmt = true})
+setenv("while", {_stash = true, tr = true, special = function (cond, form)
   local _cond3 = compile(cond)
   indent_level = indent_level + 1
   local _x117 = compile(form, {_stash = true, stmt = true})
@@ -1020,8 +1032,8 @@ setenv("while", {_stash = true, special = function (cond, form)
   else
     return(ind .. "while " .. _cond3 .. " do\n" .. body .. ind .. "end\n")
   end
-end, tr = true, stmt = true})
-setenv("%for", {_stash = true, special = function (t, k, form)
+end, stmt = true})
+setenv("%for", {_stash = true, tr = true, special = function (t, k, form)
   local _t1 = compile(t)
   local ind = indentation()
   indent_level = indent_level + 1
@@ -1033,8 +1045,8 @@ setenv("%for", {_stash = true, special = function (t, k, form)
   else
     return(ind .. "for (" .. k .. " in " .. _t1 .. ") {\n" .. body .. ind .. "}\n")
   end
-end, tr = true, stmt = true})
-setenv("%try", {_stash = true, special = function (form)
+end, stmt = true})
+setenv("%try", {_stash = true, tr = true, special = function (form)
   local e = unique("e")
   local ind = indentation()
   indent_level = indent_level + 1
@@ -1047,7 +1059,7 @@ setenv("%try", {_stash = true, special = function (form)
   indent_level = indent_level - 1
   local h = _x129
   return(ind .. "try {\n" .. body .. ind .. "}\n" .. ind .. "catch (" .. e .. ") {\n" .. h .. ind .. "}\n")
-end, tr = true, stmt = true})
+end, stmt = true})
 setenv("%delete", {_stash = true, special = function (place)
   return(indentation() .. "delete " .. compile(place))
 end, stmt = true})
@@ -1057,22 +1069,22 @@ end, stmt = true})
 setenv("%function", {_stash = true, special = function (args, body)
   return(compile_function(args, body))
 end})
-setenv("%global-function", {_stash = true, special = function (name, args, body)
+setenv("%global-function", {_stash = true, tr = true, special = function (name, args, body)
   if target == "lua" then
     local x = compile_function(args, body, {_stash = true, name = name})
     return(indentation() .. x)
   else
     return(compile({"set", name, {"%function", args, body}}, {_stash = true, stmt = true}))
   end
-end, tr = true, stmt = true})
-setenv("%local-function", {_stash = true, special = function (name, args, body)
+end, stmt = true})
+setenv("%local-function", {_stash = true, tr = true, special = function (name, args, body)
   if target == "lua" then
     local x = compile_function(args, body, {_stash = true, name = name, prefix = "local"})
     return(indentation() .. x)
   else
     return(compile({"%local", name, {"%function", args, body}}, {_stash = true, stmt = true}))
   end
-end, tr = true, stmt = true})
+end, stmt = true})
 setenv("return", {_stash = true, special = function (x)
   local _e27
   if nil63(x) then
@@ -1196,4 +1208,4 @@ setenv("%object", {_stash = true, special = function (...)
   end
   return(s .. "}")
 end})
-return({compile = compile, eval = eval, run = run, expand = expand})
+return({run = run, expand = expand, compile = compile, eval = eval})
