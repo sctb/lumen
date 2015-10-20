@@ -77,11 +77,11 @@
 	    (cat! str (read-char s))
 	  (break))))
     (if (= str "true") true
-      (= str "false") false
-      (= str "nan") nan
-      (= str "-nan") nan
-      (= str "inf") inf
-      (= str "-inf") -inf
+        (= str "false") false
+        (= str "nan") nan
+        (= str "-nan") nan
+        (= str "inf") inf
+        (= str "-inf") -inf
       (let n (number str)
         (if (or (nil? n) (nan? n) (inf? n)) str n)))))
 
