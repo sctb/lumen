@@ -303,7 +303,7 @@
         (cat! s1 (if (= c "\n") "\\n" c))))))
 
 (define id (id)
-  (with id1 ""
+  (with id1 (if (and (reserved? id) (not (infix? id))) "_" "")
     (for i (# id)
       (let (c (char id i)
             n (code c)
@@ -623,6 +623,9 @@
 
 (define-special new (x)
   (cat "new " (compile x)))
+
+(define-special typeof (x)
+  (cat "typeof(" (compile x) ")"))
 
 (define-special error (x) :stmt
   (let e (if (= target 'js)

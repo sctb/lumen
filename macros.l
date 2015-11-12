@@ -55,7 +55,7 @@
     (let ((lh rh rest: bs2) bs
           (id val rest: bs1) (bind lh rh))
       (let renames ()
-        (if (or (bound? id) (reserved? id) (toplevel?))
+        (if (or (bound? id) (toplevel?))
             (let id1 (unique id)
               (set renames (list id id1))
               (set id id1))
