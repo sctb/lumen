@@ -779,7 +779,7 @@ setenv("let", {_stash: true, macro: function (bs) {
       var val = _id13[1];
       var bs1 = cut(_id13, 2);
       var renames = [];
-      if (bound63(id) || reserved63(id) || toplevel63()) {
+      if (bound63(id) || toplevel63()) {
         var id1 = unique(id);
         renames = [id, id1];
         id = id1;

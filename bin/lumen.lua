@@ -678,7 +678,7 @@ setenv("let", {_stash = true, macro = function (bs, ...)
       local val = _id13[2]
       local bs1 = cut(_id13, 2)
       local renames = {}
-      if bound63(id) or reserved63(id) or toplevel63() then
+      if bound63(id) or toplevel63() then
         local id1 = unique(id)
         renames = {id, id1}
         id = id1
