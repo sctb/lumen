@@ -538,7 +538,11 @@ local function id(id)
     id1 = id1 .. c1
     i = i + 1
   end
-  return(id1)
+  if reserved63(id1) then
+    return("_" .. id1)
+  else
+    return(id1)
+  end
 end
 local function compile_atom(x)
   if x == "nil" and target == "lua" then
@@ -1097,6 +1101,9 @@ setenv("return", {_stash = true, special = function (x)
 end, stmt = true})
 setenv("new", {_stash = true, special = function (x)
   return("new " .. compile(x))
+end})
+setenv("typeof", {_stash = true, special = function (x)
+  return("typeof(" .. compile(x) .. ")")
 end})
 setenv("error", {_stash = true, special = function (x)
   local _e28
