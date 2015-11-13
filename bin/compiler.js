@@ -592,7 +592,11 @@ var id = function (id) {
     id1 = id1 + c1;
     i = i + 1;
   }
-  return(id1);
+  if (reserved63(id1)) {
+    return("_" + id1);
+  } else {
+    return(id1);
+  }
 };
 var compile_atom = function (x) {
   if (x === "nil" && target === "lua") {
@@ -1144,6 +1148,9 @@ setenv("return", {_stash: true, special: function (x) {
 }, stmt: true});
 setenv("new", {_stash: true, special: function (x) {
   return("new " + compile(x));
+}});
+setenv("typeof", {_stash: true, special: function (x) {
+  return("typeof(" + compile(x) + ")");
 }});
 setenv("error", {_stash: true, special: function (x) {
   var _e36;
