@@ -5,9 +5,9 @@ cd "$(dirname "$0")"
 home="$(pwd)"
 cd "${dir}"
 
-if [ ! -z ${LUMEN_HOST} ]
+if [ ! -z "${LUMEN_HOST}" ]
 then
-    host=${LUMEN_HOST}
+    host="${LUMEN_HOST}"
 elif luajit -v > /dev/null 2>&1
 then
     host=luajit
