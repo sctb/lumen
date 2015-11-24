@@ -86,9 +86,9 @@
         (= str "-nan") nan
         (= str "inf") inf
         (= str "-inf") -inf
-      (if (not (digit? str (edge str))) str
-	(let n (number str)
-	  (if (or (nil? n) (nan? n) (inf? n)) str n))))))
+        (not (digit? str (edge str))) str
+      (let n (number str)
+        (if (or (nil? n) (nan? n) (inf? n)) str n)))))
 
 (define-reader ("(" s)
   (read-char s)
