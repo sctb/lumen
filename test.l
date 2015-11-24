@@ -55,7 +55,10 @@
     (test= true (nan? (read "nan")))
     (test= true (nan? (read "-nan")))
     (test= true (inf? (read "inf")))
-    (test= true (inf? (read "-inf")))))
+    (test= true (inf? (read "-inf")))
+    (test= "0?" (read "0?"))
+    (test= "0!" (read "0!"))
+    (test= "0." (read "0."))))
 
 (define-test read-more
   (let read (get reader 'read-string)
