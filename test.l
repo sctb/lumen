@@ -554,12 +554,9 @@ c"
     (test= 'zz end)
     (test= 'yy try)
     (test= '99 return))
-  (define in (in) (+ in 1))
-  (test= '22 (in 21))
-  (define in (end try return) (list (+ end 1) (cat try " " return)))
-  (test= (list 22 "foo bar") (in 21 'foo 'bar))
-  (define var (var if) (+ var if))
-  (test= '22 (var 21 1)))
+  (define var (if end return)
+    (return (+ if end return)))
+  (test= 6 (var 1 2 3)))
 
 (define-test destructuring
   (let ((a b c) '(1 2 3))
