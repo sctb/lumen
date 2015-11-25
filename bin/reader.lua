@@ -1,13 +1,13 @@
-local delimiters = {["("] = true, [")"] = true, ["\n"] = true, [";"] = true}
-local whitespace = {[" "] = true, ["\n"] = true, ["\t"] = true}
+local delimiters = {["\n"] = true, [")"] = true, [";"] = true, ["("] = true}
+local whitespace = {["\n"] = true, ["\t"] = true, [" "] = true}
 local function stream(str, more)
-  return({more = more, pos = 0, len = _35(str), string = str})
+  return({more = more, pos = 0, string = str, len = _35(str)})
 end
 local function peek_char(s)
   local _id = s
-  local pos = _id.pos
-  local len = _id.len
   local string = _id.string
+  local len = _id.len
+  local pos = _id.pos
   if pos < len then
     return(char(string, pos))
   end
@@ -96,10 +96,6 @@ local function wrap(s, x)
     return({x, y})
   end
 end
-local function digit63(s, i)
-  local c = code(s, i)
-  return(c >= 48 and c <= 57)
-end
 read_table[""] = function (s)
   local str = ""
   while true do
@@ -128,7 +124,7 @@ read_table[""] = function (s)
             if str == "-inf" then
               return(-inf)
             else
-              if not digit63(str, edge(str)) then
+              if not number_code63(code(str, edge(str))) then
                 return(str)
               else
                 local n = number(str)
@@ -235,4 +231,4 @@ read_table[","] = function (s)
     return(wrap(s, "unquote"))
   end
 end
-return({["read-string"] = read_string, ["read-all"] = read_all, read = read, ["read-table"] = read_table, stream = stream})
+return({read = read, stream = stream, ["read-table"] = read_table, ["read-all"] = read_all, ["read-string"] = read_string})

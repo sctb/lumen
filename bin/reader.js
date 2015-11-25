@@ -1,13 +1,13 @@
-var delimiters = {"(": true, ")": true, "\n": true, ";": true};
-var whitespace = {" ": true, "\n": true, "\t": true};
+var delimiters = {";": true, "\n": true, ")": true, "(": true};
+var whitespace = {"\t": true, " ": true, "\n": true};
 var stream = function (str, more) {
-  return({more: more, pos: 0, len: _35(str), string: str});
+  return({more: more, string: str, len: _35(str), pos: 0});
 };
 var peek_char = function (s) {
   var _id = s;
-  var pos = _id.pos;
-  var len = _id.len;
   var string = _id.string;
+  var len = _id.len;
+  var pos = _id.pos;
   if (pos < len) {
     return(char(string, pos));
   }
@@ -96,10 +96,6 @@ var wrap = function (s, x) {
     return([x, y]);
   }
 };
-var digit63 = function (s, i) {
-  var c = code(s, i);
-  return(c >= 48 && c <= 57);
-};
 read_table[""] = function (s) {
   var str = "";
   while (true) {
@@ -128,7 +124,7 @@ read_table[""] = function (s) {
             if (str === "-inf") {
               return(-inf);
             } else {
-              if (! digit63(str, edge(str))) {
+              if (! number_code63(code(str, edge(str)))) {
                 return(str);
               } else {
                 var n = number(str);

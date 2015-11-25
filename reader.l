@@ -68,10 +68,6 @@
     (if (= y (get s 'more)) y
       (list x y))))
 
-(define digit? (s i)
-  (let c (code s i)
-    (and (>= c 48) (<= c 57))))
-
 (define-reader ("" s) ; atom
   (let (str "")
     (while true
@@ -86,7 +82,7 @@
         (= str "-nan") nan
         (= str "inf") inf
         (= str "-inf") -inf
-        (not (digit? str (edge str))) str
+        (not (number-code? (code str (edge str)))) str
       (let n (number str)
         (if (or (nil? n) (nan? n) (inf? n)) str n)))))
 
