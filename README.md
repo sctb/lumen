@@ -429,3 +429,6 @@ Macros allow you to write functions that manipulate expressions before they have
 hi
 30
 ```
+
+##### Acknowledgements
+Lumen was conceived and designed with [Daniel Gackle](https://github.com/gruseom), and many fixes and improvements have been contributed by [Sudo Arc](https://github.com/laarc).
