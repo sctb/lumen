@@ -824,7 +824,8 @@ setenv("guard", {_stash = true, macro = function (expr)
     local e = unique("e")
     local x = unique("x")
     local msg = unique("msg")
-    return({"let", {x, "nil", msg, "nil", e, {"xpcall", {"fn", join(), {"set", x, expr}}, {"fn", {"m"}, {"set", msg, {"%message-handler", "m"}}}}}, {"list", e, {"if", e, x, msg}}})
+    local trace = unique("trace")
+    return({"let", {x, "nil", msg, "nil", trace, "nil", e, {"xpcall", {"fn", join(), {"set", x, expr}}, {"fn", {"m"}, {"set", trace, {{"get", "debug", {"quote", "traceback"}}}}, {"set", msg, {"%message-handler", "m", trace}}}}}, {"list", e, {"if", e, x, msg}, {"if", e, "nil", trace}}})
   end
 end})
 setenv("each", {_stash = true, macro = function (x, t, ...)
@@ -935,11 +936,13 @@ local system = require("system")
 local function eval_print(form)
   local _x = nil
   local _msg = nil
+  local _trace = nil
   local _e = xpcall(function ()
     _x = compiler.eval(form)
     return(_x)
   end, function (m)
-    _msg = _37message_handler(m)
+    _trace = debug.traceback()
+    _msg = _37message_handler(m, _trace)
     return(_msg)
   end)
   local _e1
@@ -948,11 +951,18 @@ local function eval_print(form)
   else
     _e1 = _msg
   end
-  local _id = {_e, _e1}
+  local _e2
+  if _e then
+    _e2 = nil
+  else
+    _e2 = _trace
+  end
+  local _id = {_e, _e1, _e2}
   local ok = _id[1]
   local x = _id[2]
+  local trace = _id[3]
   if not ok then
-    return(print("error: " .. x))
+    return(print("error: " .. x .. "\n" .. trace))
   else
     if is63(x) then
       return(print(string(x)))

@@ -72,7 +72,7 @@
       (test= more (read "`(a b ,(z" more))
       (test= more (read "`\"biz" more))
       (test= more (read "'\"boz" more)))
-    (test= (list false "Expected ) at 5") (guard (read "(open")))))
+    (test= (list false "Expected ) at 5") (cut (guard (read "(open")) 0 2))))
 
 (define-test boolean
   (test= true (or true false))
@@ -466,12 +466,13 @@ c"
       (test= 12 a))))
 
 (define-test guard
-  (test= '(true 42) (guard 42))
-  (test= '(false foo) (guard (error "foo")))
-  (test= '(false foo) (guard (do (error "foo") (error "baz"))))
-  (test= '(false baz) (guard (do (guard (error "foo")) (error "baz"))))
-  (test= '(true 42) (guard (if true 42 (error "baz"))))
-  (test= '(false baz) (guard (if false 42 (error "baz")))))
+  (let-macro ((guard2 (x) `(cut (guard ,x) 0 2)))
+    (test= '(true 42) (guard2 42))
+    (test= '(false foo) (guard2 (error "foo")))
+    (test= '(false foo) (guard2 (do (error "foo") (error "baz"))))
+    (test= '(false baz) (guard2 (do (guard2 (error "foo")) (error "baz"))))
+    (test= '(true 42) (guard2 (if true 42 (error "baz"))))
+    (test= '(false baz) (guard2 (if false 42 (error "baz"))))))
 
 (define-test let
   (let a 10

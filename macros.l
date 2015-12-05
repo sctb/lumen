@@ -143,13 +143,17 @@
 (define-macro guard (expr)
   (if (= target 'js)
       `((fn () (%try (list true ,expr))))
-    (let-unique (e x msg)
+    (let-unique (e x msg trace)
       `(let (,x nil
              ,msg nil
+             ,trace nil
              ,e (xpcall
                  (fn () (set ,x ,expr))
-                 (fn (m) (set ,msg (%message-handler m)))))
-         (list ,e (if ,e ,x ,msg))))))
+                 (fn (m)
+                   (set ,trace ((get debug 'traceback)))
+                   (set ,msg (%message-handler m ,trace)))))
+         (list ,e (if ,e ,x ,msg)
+                  (if ,e nil ,trace))))))
 
 (define-macro each (x t rest: body)
   (let-unique (o n i)
