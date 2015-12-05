@@ -1,6 +1,6 @@
 Lumen
 =
-Lumen is a Lisp for Lua and JavaScript. You can get started by running `bin/lumen` on a machine with Node.js, Lua, or LuaJIT installed.
+Lumen is a very small, self-hosted Lisp for Lua and JavaScript. It provides a flexible compilation environment with an extensible reader, macros, and extensible special forms, but otherwise attempts to match the target runtime environment as closely as possible. You can get started by running `bin/lumen` on a machine with Node.js, Lua, or LuaJIT installed.
 ## Introduction
 Every piece of code in Lumen is an expression, and expressions can be evaluated to give values. Lumen has a few kinds of expressions that evaluate to themselves:
 ```
