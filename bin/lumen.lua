@@ -553,10 +553,6 @@ function setenv(k, ...)
     return(frame[k])
   end
 end
-function _37message_handler(msg)
-  local i = search(msg, ": ")
-  return(clip(msg, i + 2))
-end
 local math = math
 abs = math.abs
 acos = math.acos

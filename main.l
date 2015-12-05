@@ -6,8 +6,10 @@
 
 (define eval-print (form)
   (let ((ok x trace) (guard ((get compiler 'eval) form)))
-    (if (not ok) (print (target js: trace
-                                lua: (cat "error: " x "\n" trace)))
+    (if (not ok)
+        (target
+          js: (print trace)
+          lua: (print (cat "error: " x "\n" trace)))
         (is? x) (print (string x)))))
 
 (define rep (s)
