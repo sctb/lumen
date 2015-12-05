@@ -1101,14 +1101,14 @@ setenv("%try", {_stash: true, tr: true, special: function (form) {
   var e = unique("e");
   var ind = indentation();
   indent_level = indent_level + 1;
-  var _x121 = compile(form, {_stash: true, stmt: true});
+  var _x122 = compile(form, {_stash: true, stmt: true});
   indent_level = indent_level - 1;
-  var body = _x121;
-  var hf = ["return", ["%array", false, ["get", e, "\"message\""]]];
+  var body = _x122;
+  var hf = ["return", ["%array", false, ["get", e, "\"message\""], ["get", e, "\"stack\""]]];
   indent_level = indent_level + 1;
-  var _x125 = compile(hf, {_stash: true, stmt: true});
+  var _x127 = compile(hf, {_stash: true, stmt: true});
   indent_level = indent_level - 1;
-  var h = _x125;
+  var h = _x127;
   return(ind + "try {\n" + body + ind + "}\n" + ind + "catch (" + e + ") {\n" + h + ind + "}\n");
 }, stmt: true});
 setenv("%delete", {_stash: true, special: function (place) {
@@ -1143,8 +1143,8 @@ setenv("return", {_stash: true, special: function (x) {
   } else {
     _e35 = "return(" + compile(x) + ")";
   }
-  var _x135 = _e35;
-  return(indentation() + _x135);
+  var _x137 = _e35;
+  return(indentation() + _x137);
 }, stmt: true});
 setenv("new", {_stash: true, special: function (x) {
   return("new " + compile(x));

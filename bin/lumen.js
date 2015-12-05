@@ -925,7 +925,8 @@ setenv("guard", {_stash: true, macro: function (expr) {
     var e = unique("e");
     var x = unique("x");
     var msg = unique("msg");
-    return(["let", [x, "nil", msg, "nil", e, ["xpcall", ["fn", join(), ["set", x, expr]], ["fn", ["m"], ["set", msg, ["%message-handler", "m"]]]]], ["list", e, ["if", e, x, msg]]]);
+    var trace = unique("trace");
+    return(["let", [x, "nil", msg, "nil", trace, "nil", e, ["xpcall", ["fn", join(), ["set", x, expr]], ["fn", ["m"], ["set", trace, [["get", "debug", ["quote", "traceback"]]]], ["set", msg, ["%message-handler", "m", trace]]]]], ["list", e, ["if", e, x, msg], ["if", e, "nil", trace]]]);
   }
 }});
 setenv("each", {_stash: true, macro: function (x, t) {
@@ -1053,13 +1054,14 @@ var eval_print = function (form) {
       return([true, compiler.eval(form)]);
     }
     catch (_e) {
-      return([false, _e.message]);
+      return([false, _e.message, _e.stack]);
     }
   })();
   var ok = _id[0];
   var x = _id[1];
+  var trace = _id[2];
   if (! ok) {
-    return(print("error: " + x));
+    return(print(trace));
   } else {
     if (is63(x)) {
       return(print(string(x)));

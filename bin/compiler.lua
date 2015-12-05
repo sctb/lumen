@@ -1054,14 +1054,14 @@ setenv("%try", {_stash = true, tr = true, special = function (form)
   local e = unique("e")
   local ind = indentation()
   indent_level = indent_level + 1
-  local _x125 = compile(form, {_stash = true, stmt = true})
+  local _x126 = compile(form, {_stash = true, stmt = true})
   indent_level = indent_level - 1
-  local body = _x125
-  local hf = {"return", {"%array", false, {"get", e, "\"message\""}}}
+  local body = _x126
+  local hf = {"return", {"%array", false, {"get", e, "\"message\""}, {"get", e, "\"stack\""}}}
   indent_level = indent_level + 1
-  local _x129 = compile(hf, {_stash = true, stmt = true})
+  local _x131 = compile(hf, {_stash = true, stmt = true})
   indent_level = indent_level - 1
-  local h = _x129
+  local h = _x131
   return(ind .. "try {\n" .. body .. ind .. "}\n" .. ind .. "catch (" .. e .. ") {\n" .. h .. ind .. "}\n")
 end, stmt = true})
 setenv("%delete", {_stash = true, special = function (place)
@@ -1096,8 +1096,8 @@ setenv("return", {_stash = true, special = function (x)
   else
     _e27 = "return(" .. compile(x) .. ")"
   end
-  local _x139 = _e27
-  return(indentation() .. _x139)
+  local _x141 = _e27
+  return(indentation() .. _x141)
 end, stmt = true})
 setenv("new", {_stash = true, special = function (x)
   return("new " .. compile(x))
