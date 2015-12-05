@@ -752,7 +752,7 @@ setenv("define-global", {_stash = true, macro = function (name, x, ...)
   local _r35 = unstash({...})
   local _id29 = _r35
   local body = cut(_id29, 0)
-  setenv(name, {_stash = true, toplevel = true, variable = true})
+  setenv(name, {_stash = true, variable = true, toplevel = true})
   if some63(body) then
     return(join({"%global-function", name}, bind42(x, body)))
   else
@@ -821,11 +821,10 @@ setenv("guard", {_stash = true, macro = function (expr)
   if target == "js" then
     return({{"fn", join(), {"%try", {"list", true, expr}}}})
   else
-    local e = unique("e")
     local x = unique("x")
     local msg = unique("msg")
     local trace = unique("trace")
-    return({"let", {x, "nil", msg, "nil", trace, "nil", e, {"xpcall", {"fn", join(), {"set", x, expr}}, {"fn", {"m"}, {"set", trace, {{"get", "debug", {"quote", "traceback"}}}}, {"set", msg, {"%message-handler", "m", trace}}}}}, {"list", e, {"if", e, x, msg}, {"if", e, "nil", trace}}})
+    return({"let", {x, "nil", msg, "nil", trace, "nil"}, {"if", {"xpcall", {"fn", join(), {"set", x, expr}}, {"fn", {"m"}, {"set", msg, {"clip", "m", {"+", {"search", "m", "\": \""}, 2}}}, {"set", trace, {{"get", "debug", {"quote", "traceback"}}}}}}, {"list", true, x}, {"list", false, msg, trace}}})
   end
 end})
 setenv("each", {_stash = true, macro = function (x, t, ...)
@@ -937,27 +936,20 @@ local function eval_print(form)
   local _x = nil
   local _msg = nil
   local _trace = nil
-  local _e = xpcall(function ()
+  local _e
+  if xpcall(function ()
     _x = compiler.eval(form)
     return(_x)
   end, function (m)
+    _msg = clip(m, search(m, ": ") + 2)
     _trace = debug.traceback()
-    _msg = _37message_handler(m, _trace)
-    return(_msg)
-  end)
-  local _e1
-  if _e then
-    _e1 = _x
+    return(_trace)
+  end) then
+    _e = {true, _x}
   else
-    _e1 = _msg
+    _e = {false, _msg, _trace}
   end
-  local _e2
-  if _e then
-    _e2 = nil
-  else
-    _e2 = _trace
-  end
-  local _id = {_e, _e1, _e2}
+  local _id = _e
   local ok = _id[1]
   local x = _id[2]
   local trace = _id[3]
@@ -1059,11 +1051,11 @@ local function main()
     end
     i = i + 1
   end
-  local _x3 = pre
-  local _n = _35(_x3)
+  local _x4 = pre
+  local _n = _35(_x4)
   local _i = 0
   while _i < _n do
-    local file = _x3[_i + 1]
+    local file = _x4[_i + 1]
     run_file(file)
     _i = _i + 1
   end

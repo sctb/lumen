@@ -853,7 +853,7 @@ setenv("define-global", {_stash: true, macro: function (name, x) {
   var _r35 = unstash(Array.prototype.slice.call(arguments, 2));
   var _id29 = _r35;
   var body = cut(_id29, 0);
-  setenv(name, {_stash: true, toplevel: true, variable: true});
+  setenv(name, {_stash: true, variable: true, toplevel: true});
   if (some63(body)) {
     return(join(["%global-function", name], bind42(x, body)));
   } else {
@@ -922,11 +922,10 @@ setenv("guard", {_stash: true, macro: function (expr) {
   if (target === "js") {
     return([["fn", join(), ["%try", ["list", true, expr]]]]);
   } else {
-    var e = unique("e");
     var x = unique("x");
     var msg = unique("msg");
     var trace = unique("trace");
-    return(["let", [x, "nil", msg, "nil", trace, "nil", e, ["xpcall", ["fn", join(), ["set", x, expr]], ["fn", ["m"], ["set", trace, [["get", "debug", ["quote", "traceback"]]]], ["set", msg, ["%message-handler", "m", trace]]]]], ["list", e, ["if", e, x, msg], ["if", e, "nil", trace]]]);
+    return(["let", [x, "nil", msg, "nil", trace, "nil"], ["if", ["xpcall", ["fn", join(), ["set", x, expr]], ["fn", ["m"], ["set", msg, ["clip", "m", ["+", ["search", "m", "\": \""], 2]]], ["set", trace, [["get", "debug", ["quote", "traceback"]]]]]], ["list", true, x], ["list", false, msg, trace]]]);
   }
 }});
 setenv("each", {_stash: true, macro: function (x, t) {
