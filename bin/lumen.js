@@ -528,7 +528,7 @@ escape = function (s) {
   }
   return(s1 + "\"");
 };
-string = function (x, depth) {
+str = function (x, depth) {
   if (depth && depth > 40) {
     return("circular");
   } else {
@@ -577,10 +577,10 @@ string = function (x, depth) {
                       }
                       var _k8 = _e16;
                       if (number63(_k8)) {
-                        xs[_k8] = string(v, d);
+                        xs[_k8] = str(v, d);
                       } else {
                         add(ks, _k8 + ":");
-                        add(ks, string(v, d));
+                        add(ks, str(v, d));
                       }
                     }
                     var _o11 = join(xs, ks);
@@ -1063,7 +1063,7 @@ var eval_print = function (form) {
     return(print(trace));
   } else {
     if (is63(x)) {
-      return(print(string(x)));
+      return(print(str(x)));
     }
   }
 };

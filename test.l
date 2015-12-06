@@ -15,11 +15,11 @@
 
 (define equal? (a b)
   (if (atom? a) (= a b)
-    (= (string a) (string b))))
+    (= (str a) (str b))))
 
 (define-macro test= (a b)
   `(test (equal? ,a ,b)
-	 (cat "failed: expected " (string ,a) ", was " (string ,b))))
+	 (cat "failed: expected " (str ,a) ", was " (str ,b))))
 
 (define-macro define-test (name rest: body)
   `(add tests (list ',name (fn () ,@body))))

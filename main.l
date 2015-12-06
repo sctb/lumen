@@ -10,7 +10,7 @@
         (target
           js: (print trace)
           lua: (print (cat "error: " x "\n" trace)))
-        (is? x) (print (string x)))))
+        (is? x) (print (str x)))))
 
 (define rep (s)
   (eval-print ((get reader 'read-string) s)))

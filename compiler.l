@@ -327,7 +327,7 @@
       (= x inf) "inf"
       (= x -inf) "-inf"
       (number? x) (cat x "")
-    (error (cat "Cannot compile atom: " (string x)))))
+    (error (cat "Cannot compile atom: " (str x)))))
 
 (define terminator (stmt?)
   (if (not stmt?) ""
@@ -677,7 +677,7 @@
       (when (number? k)
         (let ((k v) v)
           (unless (string? k)
-            (error (cat "Illegal key: " (string k))))
+            (error (cat "Illegal key: " (str k))))
           (cat! s c (key k) sep (compile v))
           (set c ", "))))
     (cat s "}")))

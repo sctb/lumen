@@ -1,12 +1,5 @@
 environment = {{}}
 target = "lua"
-local ssub = string.sub
-local sbyte = string.byte
-local sfind = string.find
-local tinsert = table.insert
-local tremove = table.remove
-local tsort = table.sort
-local tunpack = table.unpack
 function nil63(x)
   return(x == nil)
 end
@@ -55,7 +48,7 @@ function inf63(n)
   return(n == inf or n == -inf)
 end
 function clip(s, from, upto)
-  return(ssub(s, from + 1, upto))
+  return(string.sub(s, from + 1, upto))
 end
 function cut(x, from, upto)
   local l = {}
@@ -119,7 +112,7 @@ function code(s, n)
   if n then
     _e2 = n + 1
   end
-  return(sbyte(s, _e2))
+  return(string.byte(s, _e2))
 end
 function string_literal63(x)
   return(string63(x) and char(x, 0) == "\"")
@@ -128,10 +121,10 @@ function id_literal63(x)
   return(string63(x) and char(x, 0) == "|")
 end
 function add(l, x)
-  return(tinsert(l, x))
+  return(table.insert(l, x))
 end
 function drop(l)
-  return(tremove(l))
+  return(table.remove(l))
 end
 function last(l)
   return(l[edge(l) + 1])
@@ -231,7 +224,7 @@ function pair(l)
   return(l1)
 end
 function sort(l, f)
-  tsort(l, f)
+  table.sort(l, f)
   return(l)
 end
 function map(f, x)
@@ -330,7 +323,7 @@ function search(s, pattern, start)
     _e3 = start + 1
   end
   local _start = _e3
-  local i = sfind(s, pattern, _start, true)
+  local i = string.find(s, pattern, _start, true)
   return(i and i - 1)
 end
 function split(s, sep)
@@ -453,7 +446,7 @@ function escape(s)
   end
   return(s1 .. "\"")
 end
-function string(x, depth)
+function str(x, depth)
   if depth and depth > 40 then
     return("circular")
   else
@@ -495,10 +488,10 @@ function string(x, depth)
                     for k in next, _o10 do
                       local v = _o10[k]
                       if number63(k) then
-                        xs[k] = string(v, d)
+                        xs[k] = str(v, d)
                       else
                         add(ks, k .. ":")
-                        add(ks, string(v, d))
+                        add(ks, str(v, d))
                       end
                     end
                     local _o11 = join(xs, ks)
@@ -519,7 +512,7 @@ function string(x, depth)
     end
   end
 end
-local values = unpack or tunpack
+local values = unpack or table.unpack
 function apply(f, args)
   local _args = stash(args)
   return(f(values(_args)))
@@ -953,7 +946,7 @@ local function eval_print(form)
     return(print("error: " .. x .. "\n" .. trace))
   else
     if is63(x) then
-      return(print(string(x)))
+      return(print(str(x)))
     end
   end
 end
