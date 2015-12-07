@@ -405,14 +405,14 @@ The shorthand for quasiquotation is ` for `quasiquote` and , for `unquote`:
 
 A different way to unquote expressions is `unquote-splicing`, which takes the values contained in a nested list and places them in the enclosing one:
 ```
-> (let a (1 2 3)
+> (let a '(1 2 3)
     (quasiquote (9 8 (unquote-splicing a))))
 (9 8 1 2 3)
 ```
 
 The shorthand for `unquote-splicing` is `,@`:
 ```
-> (let a (1 2 3)
+> (let a '(1 2 3)
     `(9 8 ,@a))
 (9 8 1 2 3)
 ```
