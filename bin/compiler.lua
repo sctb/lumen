@@ -1,11 +1,9 @@
 local reader = require("reader")
 local function getenv(k, p)
   if string63(k) then
-    local n = _35(environment)
-    local i = 0
-    while i < n do
-      local e = environment[n - i - 1 + 1]
-      local b = e[k]
+    local i = edge(environment)
+    while i >= 0 do
+      local b = environment[i + 1][k]
       if is63(b) then
         local _e9
         if p then
@@ -14,8 +12,9 @@ local function getenv(k, p)
           _e9 = b
         end
         return(_e9)
+      else
+        i = i - 1
       end
-      i = i + 1
     end
   end
 end
@@ -365,7 +364,7 @@ function indentation()
   end
   return(s)
 end
-local reserved = {["else"] = true, ["<"] = true, ["true"] = true, ["/"] = true, ["end"] = true, ["typeof"] = true, ["function"] = true, ["switch"] = true, ["="] = true, ["or"] = true, ["try"] = true, ["catch"] = true, ["until"] = true, ["local"] = true, ["repeat"] = true, ["-"] = true, ["false"] = true, ["continue"] = true, ["=="] = true, ["and"] = true, ["if"] = true, ["for"] = true, [">="] = true, ["<="] = true, ["with"] = true, ["return"] = true, ["finally"] = true, ["nil"] = true, ["new"] = true, ["do"] = true, ["case"] = true, ["break"] = true, ["elseif"] = true, ["+"] = true, ["not"] = true, ["void"] = true, ["var"] = true, ["%"] = true, ["in"] = true, ["delete"] = true, ["throw"] = true, ["debugger"] = true, ["instanceof"] = true, ["this"] = true, ["while"] = true, ["then"] = true, ["default"] = true, ["*"] = true, [">"] = true}
+local reserved = {["new"] = true, ["in"] = true, ["false"] = true, ["typeof"] = true, ["*"] = true, ["or"] = true, ["if"] = true, ["do"] = true, ["function"] = true, ["="] = true, ["while"] = true, ["elseif"] = true, ["=="] = true, ["then"] = true, ["/"] = true, ["debugger"] = true, ["true"] = true, ["until"] = true, ["nil"] = true, ["and"] = true, ["switch"] = true, ["instanceof"] = true, ["var"] = true, ["default"] = true, ["end"] = true, ["return"] = true, ["repeat"] = true, ["-"] = true, ["this"] = true, ["try"] = true, ["else"] = true, ["with"] = true, ["+"] = true, [">"] = true, ["void"] = true, ["for"] = true, ["catch"] = true, ["break"] = true, [">="] = true, ["throw"] = true, ["%"] = true, ["case"] = true, ["<"] = true, ["<="] = true, ["finally"] = true, ["continue"] = true, ["not"] = true, ["local"] = true, ["delete"] = true}
 function reserved63(x)
   return(reserved[x])
 end
@@ -418,12 +417,12 @@ _x58.lua = "not"
 _x58.js = "!"
 __x57["not"] = _x58
 local __x59 = {}
+__x59["%"] = true
 __x59["/"] = true
 __x59["*"] = true
-__x59["%"] = true
 local __x60 = {}
-__x60["+"] = true
 __x60["-"] = true
+__x60["+"] = true
 local __x61 = {}
 local _x62 = {}
 _x62.lua = ".."
@@ -431,8 +430,8 @@ _x62.js = "+"
 __x61.cat = _x62
 local __x63 = {}
 __x63["<="] = true
-__x63[">="] = true
 __x63["<"] = true
+__x63[">="] = true
 __x63[">"] = true
 local __x64 = {}
 local _x65 = {}
@@ -613,9 +612,9 @@ local function compile_special(form, stmt63)
   local x = _id5[1]
   local args = cut(_id5, 1)
   local _id6 = getenv(x)
-  local self_tr63 = _id6.tr
   local stmt = _id6.stmt
   local special = _id6.special
+  local self_tr63 = _id6.tr
   local tr = terminator(stmt63 and not self_tr63)
   return(apply(special, args) .. tr)
 end
@@ -1221,4 +1220,4 @@ setenv("%object", {_stash = true, special = function (...)
   end
   return(s .. "}")
 end})
-return({run = run, expand = expand, compile = compile, eval = eval})
+return({expand = expand, compile = compile, run = run, eval = eval})
