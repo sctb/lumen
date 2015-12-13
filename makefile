@@ -4,7 +4,7 @@ LUMEN_LUA  ?= lua
 LUMEN_NODE ?= node
 LUMEN_HOST ?= $(LUMEN_LUA)
 
-LUMEN := LUMEN_HOST=$(LUMEN_HOST) bin/lumen
+LUMEN := LUMEN_HOST="$(LUMEN_HOST)" bin/lumen
 
 OBJS :=	obj/runtime.o	\
 	obj/macros.o	\
