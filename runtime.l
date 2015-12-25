@@ -190,11 +190,10 @@
   (if (none? args) ()
     (let l (last args)
       (if (and (not (atom? l)) (get l '_stash))
-          (let args1 (almost args)
+          (with args1 (almost args)
             (each (k v) l
               (unless (= k '_stash)
-                (set (get args1 k) v)))
-            args1)
+                (set (get args1 k) v))))
         args))))
 
 (define-global search (s pattern start)
