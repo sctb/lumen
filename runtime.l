@@ -3,6 +3,19 @@
 (define-global environment (list (obj)))
 (define-global target (language))
 
+(define-global toplevel? ()
+  (one? environment))
+
+(define-global setenv (k rest: keys)
+  (when (string? k)
+    (let (frame (if (get keys 'toplevel)
+                    (hd environment)
+                  (last environment))
+          entry (or (get frame k) (obj)))
+      (each (k v) keys
+        (set (get entry k) v))
+      (set (get frame k) entry))))
+
 (define-global nil? (x)
   (target
     js: (or (= x nil) (= x null))
@@ -57,11 +70,42 @@
         (unless (number? k)
           (set (get l k) v))))))
 
+(define-global empty? (t)
+  (each x t
+    (return false))
+  true)
+
+(define-global keys? (t)
+  (each (k v) t
+    (unless (number? k)
+      (return true)))
+  false)
+
 (define-global keys (x)
   (with t ()
     (each (k v) x
       (unless (number? k)
         (set (get t k) v)))))
+
+(define-global stash (args)
+  (when (keys? args)
+    (let p ()
+      (each (k v) args
+        (unless (number? k)
+          (set (get p k) v)))
+      (set (get p '_stash) true)
+      (add args p)))
+  args)
+
+(define-global unstash (args)
+  (if (none? args) ()
+    (let l (last args)
+      (if (and (not (atom? l)) (get l '_stash))
+          (with args1 (almost args)
+            (each (k v) l
+              (unless (= k '_stash)
+                (set (get args1 k) v))))
+        args))))
 
 (define-global edge (x)
   (- (# x) 1))
@@ -85,6 +129,22 @@
 (define-global id-literal? (x)
   (and (string? x) (= (char x 0) "|")))
 
+(define-global number (s)
+  (target
+    js: (let n (parseFloat s)
+          (unless (isNaN n) n))
+    lua: (tonumber s)))
+
+(define-global number-code? (n)
+  (and (> n 47) (< n 58)))
+
+(define-global numeric? (s)
+  (let n (# s)
+    (for i n
+      (unless (number-code? (code s i))
+        (return false))))
+  true)
+
 (define-global add (l x)
   (target js: (do ((get l 'push) x) nil)
           lua: ((get table 'insert) l x)))
@@ -106,10 +166,14 @@
         (add l1 (at l i))
         (dec i)))))
 
-(define-global reduce (f x)
-  (if (none? x) x
-      (one? x) (hd x)
-    (f (hd x) (reduce f (tl x)))))
+(define-global reduce (f x y)
+  (if (none? x) (if (is? y) y x)
+    (with a (hd x)
+      (step b (tl x)
+        (set a (f a b))))))
+
+(define-macro reducing (f x y)
+  `(reduce (fn (a b) (,f a b)) ,x ,y))
 
 (define-global join ls
   (if (two? ls)
@@ -152,49 +216,14 @@
 
 (define-global map (f x)
   (with t ()
-    (step v x
-      (let y (f v)
-        (if (is? y)
-          (add t y))))
     (each (k v) x
-      (unless (number? k)
-        (let y (f v)
-          (when (is? y)
+      (let y (f v)
+        (when (is? y)
+          (if (number? k) (add t y)
             (set (get t k) y)))))))
 
 (define-global keep (f x)
   (map (fn (v) (when (f v) v)) x))
-
-(define-global keys? (t)
-  (each (k v) t
-    (unless (number? k)
-      (return true)))
-  false)
-
-(define-global empty? (t)
-  (each x t
-    (return false))
-  true)
-
-(define-global stash (args)
-  (when (keys? args)
-    (let p ()
-      (each (k v) args
-        (unless (number? k)
-          (set (get p k) v)))
-      (set (get p '_stash) true)
-      (add args p)))
-  args)
-
-(define-global unstash (args)
-  (if (none? args) ()
-    (let l (last args)
-      (if (and (not (atom? l)) (get l '_stash))
-          (with args1 (almost args)
-            (each (k v) l
-              (unless (= k '_stash)
-                (set (get args1 k) v))))
-        args))))
 
 (define-global search (s pattern start)
   (target
@@ -216,45 +245,28 @@
         (add l s)))))
 
 (define-global cat xs
-  (if (none? xs) ""
-    (reduce (fn (a b) (cat a b)) xs)))
+  (reducing cat xs ""))
 
 (define-global + xs
-  (reduce (fn (a b) (+ a b)) xs))
+  (reducing + xs 0))
 
 (define-global - xs
-  (reduce (fn (b a) (- a b)) (reverse xs)))
+  (reducing - xs 0))
 
 (define-global * xs
-  (reduce (fn (a b) (* a b)) xs))
+  (reducing * xs 1))
 
 (define-global / xs
-  (reduce (fn (b a) (/ a b)) (reverse xs)))
+  (reducing / xs 1))
 
 (define-global % xs
-  (reduce (fn (b a) (% a b)) (reverse xs)))
+  (reducing % xs 1))
 
 (define-global > (a b) (> a b))
 (define-global < (a b) (< a b))
 (define-global = (a b) (= a b))
 (define-global >= (a b) (>= a b))
 (define-global <= (a b) (<= a b))
-
-(define-global number (s)
-  (target
-    js: (let n (parseFloat s)
-          (unless (isNaN n) n))
-    lua: (tonumber s)))
-
-(define-global number-code? (n)
-  (and (> n 47) (< n 58)))
-
-(define-global numeric? (s)
-  (let n (# s)
-    (for i n
-      (unless (number-code? (code s i))
-        (return false))))
-  true)
 
 (target js: (define tostring (x) ((get x 'toString))))
 
@@ -301,19 +313,6 @@
             lua: (f (values args)))))
 
 (define-global call (f) (f))
-
-(define-global toplevel? ()
-  (one? environment))
-
-(define-global setenv (k rest: keys)
-  (when (string? k)
-    (let (frame (if (get keys 'toplevel)
-                    (hd environment)
-                  (last environment))
-          entry (or (get frame k) (obj)))
-      (each (k v) keys
-        (set (get entry k) v))
-      (set (get frame k) entry))))
 
 (target js:
   (define-global print (x)

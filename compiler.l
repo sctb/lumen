@@ -501,8 +501,8 @@
 (define lower-infix (form hoist)
   (let ((x rest: args) form)
     (lower (reduce (fn (a b)
-                     (list x b a))
-                   (reverse args))
+                     (list x a b))
+                   args)
            hoist)))
 
 (define lower-special (form hoist)
