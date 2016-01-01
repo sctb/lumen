@@ -792,16 +792,10 @@ c"
   (test= (list "a" "b" "") (split "azzbzz" "zz")))
 
 (define-test reduce
-  (test= 'a (reduce (fn (a b) (+ a b)) '(a)))
-  (test= 6 (reduce (fn (a b) (+ a b)) '(1 2 3)))
-  (test= '(1 (2 3))
-         (reduce
-          (fn (a b) (list a b))
-          '(1 2 3)))
-  (test= '(1 2 3 4 5)
-         (reduce
-          (fn (a b) (join a b))
-          '((1) (2 3) (4 5)))))
+  (test= 'a (reducing + '(a)))
+  (test= 6 (reducing + '(1 2 3)))
+  (test= '((1 2) 3) (reducing list '(1 2 3)))
+  (test= '(1 2 3 4 5) (reducing join '((1) (2 3) (4 5)))))
 
 (define-test keep
   (test= () (keep (fn (x) x) ()))
