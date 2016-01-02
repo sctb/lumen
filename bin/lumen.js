@@ -424,33 +424,53 @@ cat = function () {
 };
 _43 = function () {
   var xs = unstash(Array.prototype.slice.call(arguments, 0));
-  return(reduce(function (a, b) {
-    return(a + b);
-  }, xs));
+  if (none63(xs)) {
+    return(0);
+  } else {
+    return(reduce(function (a, b) {
+      return(a + b);
+    }, xs));
+  }
 };
 _ = function () {
   var xs = unstash(Array.prototype.slice.call(arguments, 0));
-  return(reduce(function (b, a) {
-    return(a - b);
-  }, reverse(xs)));
+  if (none63(xs)) {
+    return(0);
+  } else {
+    return(reduce(function (b, a) {
+      return(a - b);
+    }, reverse(xs)));
+  }
 };
 _42 = function () {
   var xs = unstash(Array.prototype.slice.call(arguments, 0));
-  return(reduce(function (a, b) {
-    return(a * b);
-  }, xs));
+  if (none63(xs)) {
+    return(1);
+  } else {
+    return(reduce(function (a, b) {
+      return(a * b);
+    }, xs));
+  }
 };
 _47 = function () {
   var xs = unstash(Array.prototype.slice.call(arguments, 0));
-  return(reduce(function (b, a) {
-    return(a / b);
-  }, reverse(xs)));
+  if (none63(xs)) {
+    return(1);
+  } else {
+    return(reduce(function (b, a) {
+      return(a / b);
+    }, reverse(xs)));
+  }
 };
 _37 = function () {
   var xs = unstash(Array.prototype.slice.call(arguments, 0));
-  return(reduce(function (b, a) {
-    return(a % b);
-  }, reverse(xs)));
+  if (none63(xs)) {
+    return(1);
+  } else {
+    return(reduce(function (b, a) {
+      return(a % b);
+    }, reverse(xs)));
+  }
 };
 _62 = function (a, b) {
   return(a > b);

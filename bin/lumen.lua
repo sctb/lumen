@@ -348,33 +348,53 @@ function cat(...)
 end
 function _43(...)
   local xs = unstash({...})
-  return(reduce(function (a, b)
-    return(a + b)
-  end, xs))
+  if none63(xs) then
+    return(0)
+  else
+    return(reduce(function (a, b)
+      return(a + b)
+    end, xs))
+  end
 end
 function _(...)
   local xs = unstash({...})
-  return(reduce(function (b, a)
-    return(a - b)
-  end, reverse(xs)))
+  if none63(xs) then
+    return(0)
+  else
+    return(reduce(function (b, a)
+      return(a - b)
+    end, reverse(xs)))
+  end
 end
 function _42(...)
   local xs = unstash({...})
-  return(reduce(function (a, b)
-    return(a * b)
-  end, xs))
+  if none63(xs) then
+    return(1)
+  else
+    return(reduce(function (a, b)
+      return(a * b)
+    end, xs))
+  end
 end
 function _47(...)
   local xs = unstash({...})
-  return(reduce(function (b, a)
-    return(a / b)
-  end, reverse(xs)))
+  if none63(xs) then
+    return(1)
+  else
+    return(reduce(function (b, a)
+      return(a / b)
+    end, reverse(xs)))
+  end
 end
 function _37(...)
   local xs = unstash({...})
-  return(reduce(function (b, a)
-    return(a % b)
-  end, reverse(xs)))
+  if none63(xs) then
+    return(1)
+  else
+    return(reduce(function (b, a)
+      return(a % b)
+    end, reverse(xs)))
+  end
 end
 function _62(a, b)
   return(a > b)
