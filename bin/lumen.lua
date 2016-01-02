@@ -229,24 +229,15 @@ function sort(l, f)
 end
 function map(f, x)
   local t = {}
-  local _x4 = x
-  local _n6 = _35(_x4)
-  local _i6 = 0
-  while _i6 < _n6 do
-    local v = _x4[_i6 + 1]
-    local y = f(v)
-    if is63(y) then
-      add(t, y)
-    end
-    _i6 = _i6 + 1
-  end
   local _o5 = x
   local k = nil
   for k in next, _o5 do
     local v = _o5[k]
-    if not number63(k) then
-      local y = f(v)
-      if is63(y) then
+    local y = f(v)
+    if is63(y) then
+      if number63(k) then
+        add(t, y)
+      else
         t[k] = y
       end
     end
@@ -273,9 +264,9 @@ function keys63(t)
 end
 function empty63(t)
   local _o7 = t
-  local _i9 = nil
-  for _i9 in next, _o7 do
-    local x = _o7[_i9]
+  local _i8 = nil
+  for _i8 in next, _o7 do
+    local x = _o7[_i8]
     return(false)
   end
   return(true)
@@ -357,33 +348,53 @@ function cat(...)
 end
 function _43(...)
   local xs = unstash({...})
-  return(reduce(function (a, b)
-    return(a + b)
-  end, xs))
+  if none63(xs) then
+    return(0)
+  else
+    return(reduce(function (a, b)
+      return(a + b)
+    end, xs))
+  end
 end
 function _(...)
   local xs = unstash({...})
-  return(reduce(function (b, a)
-    return(a - b)
-  end, reverse(xs)))
+  if none63(xs) then
+    return(0)
+  else
+    return(reduce(function (b, a)
+      return(a - b)
+    end, reverse(xs)))
+  end
 end
 function _42(...)
   local xs = unstash({...})
-  return(reduce(function (a, b)
-    return(a * b)
-  end, xs))
+  if none63(xs) then
+    return(1)
+  else
+    return(reduce(function (a, b)
+      return(a * b)
+    end, xs))
+  end
 end
 function _47(...)
   local xs = unstash({...})
-  return(reduce(function (b, a)
-    return(a / b)
-  end, reverse(xs)))
+  if none63(xs) then
+    return(1)
+  else
+    return(reduce(function (b, a)
+      return(a / b)
+    end, reverse(xs)))
+  end
 end
 function _37(...)
   local xs = unstash({...})
-  return(reduce(function (b, a)
-    return(a % b)
-  end, reverse(xs)))
+  if none63(xs) then
+    return(1)
+  else
+    return(reduce(function (b, a)
+      return(a % b)
+    end, reverse(xs)))
+  end
 end
 function _62(a, b)
   return(a > b)
@@ -495,9 +506,9 @@ function str(x, depth)
                       end
                     end
                     local _o11 = join(xs, ks)
-                    local _i13 = nil
-                    for _i13 in next, _o11 do
-                      local v = _o11[_i13]
+                    local _i12 = nil
+                    for _i12 in next, _o11 do
+                      local v = _o11[_i12]
                       s = s .. sp .. v
                       sp = " "
                     end
