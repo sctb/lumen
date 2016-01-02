@@ -273,17 +273,6 @@ sort = function (l, f) {
 };
 map = function (f, x) {
   var t = [];
-  var _x3 = x;
-  var _n6 = _35(_x3);
-  var _i6 = 0;
-  while (_i6 < _n6) {
-    var v = _x3[_i6];
-    var y = f(v);
-    if (is63(y)) {
-      add(t, y);
-    }
-    _i6 = _i6 + 1;
-  }
   var _o5 = x;
   var k = undefined;
   for (k in _o5) {
@@ -295,9 +284,11 @@ map = function (f, x) {
       _e8 = k;
     }
     var _k4 = _e8;
-    if (! number63(_k4)) {
-      var y = f(v);
-      if (is63(y)) {
+    var y = f(v);
+    if (is63(y)) {
+      if (number63(_k4)) {
+        add(t, y);
+      } else {
         t[_k4] = y;
       }
     }
@@ -331,16 +322,16 @@ keys63 = function (t) {
 };
 empty63 = function (t) {
   var _o7 = t;
-  var _i9 = undefined;
-  for (_i9 in _o7) {
-    var x = _o7[_i9];
+  var _i8 = undefined;
+  for (_i8 in _o7) {
+    var x = _o7[_i8];
     var _e10;
-    if (numeric63(_i9)) {
-      _e10 = parseInt(_i9);
+    if (numeric63(_i8)) {
+      _e10 = parseInt(_i8);
     } else {
-      _e10 = _i9;
+      _e10 = _i8;
     }
-    var __i9 = _e10;
+    var __i8 = _e10;
     return(false);
   }
   return(true);
@@ -584,16 +575,16 @@ str = function (x, depth) {
                       }
                     }
                     var _o11 = join(xs, ks);
-                    var _i13 = undefined;
-                    for (_i13 in _o11) {
-                      var v = _o11[_i13];
+                    var _i12 = undefined;
+                    for (_i12 in _o11) {
+                      var v = _o11[_i12];
                       var _e17;
-                      if (numeric63(_i13)) {
-                        _e17 = parseInt(_i13);
+                      if (numeric63(_i12)) {
+                        _e17 = parseInt(_i12);
                       } else {
-                        _e17 = _i13;
+                        _e17 = _i12;
                       }
-                      var __i13 = _e17;
+                      var __i12 = _e17;
                       s = s + sp + v;
                       sp = " ";
                     }

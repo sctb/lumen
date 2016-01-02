@@ -152,14 +152,10 @@
 
 (define-global map (f x)
   (with t ()
-    (step v x
-      (let y (f v)
-        (if (is? y)
-          (add t y))))
     (each (k v) x
-      (unless (number? k)
-        (let y (f v)
-          (when (is? y)
+      (let y (f v)
+        (when (is? y)
+          (if (number? k) (add t y)
             (set (get t k) y)))))))
 
 (define-global keep (f x)
