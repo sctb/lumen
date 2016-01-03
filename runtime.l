@@ -220,19 +220,24 @@
     (reduce (fn (a b) (cat a b)) xs)))
 
 (define-global + xs
-  (reduce (fn (a b) (+ a b)) xs))
+  (if (none? xs) 0
+    (reduce (fn (a b) (+ a b)) xs)))
 
 (define-global - xs
-  (reduce (fn (b a) (- a b)) (reverse xs)))
+  (if (none? xs) 0
+    (reduce (fn (b a) (- a b)) (reverse xs))))
 
 (define-global * xs
-  (reduce (fn (a b) (* a b)) xs))
+  (if (none? xs) 1
+    (reduce (fn (a b) (* a b)) xs)))
 
 (define-global / xs
-  (reduce (fn (b a) (/ a b)) (reverse xs)))
+  (if (none? xs) 1
+    (reduce (fn (b a) (/ a b)) (reverse xs))))
 
 (define-global % xs
-  (reduce (fn (b a) (% a b)) (reverse xs)))
+  (if (none? xs) 1
+    (reduce (fn (b a) (% a b)) (reverse xs))))
 
 (define-global > (a b) (> a b))
 (define-global < (a b) (< a b))
