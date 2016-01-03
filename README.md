@@ -397,7 +397,7 @@ When you want to quote some parts of an expression, but want other parts to be e
 (1 5 10)
 ```
 
-The shorthand for quasiquotation is ` for `quasiquote` and , for `unquote`:
+The shorthand for quasiquotation is `` ` `` for `quasiquote` and `,` for `unquote`:
 ```
 > (let x 10 `(1 5 ,x))
 (1 5 10)
@@ -431,4 +431,4 @@ hi
 ```
 
 ##### Acknowledgements
-Lumen was conceived and designed with [Daniel Gackle](https://github.com/gruseom), and many fixes and improvements have been contributed by [Sudo Arc](https://github.com/laarc).
+Lumen was conceived and designed with [Daniel Gackle](https://github.com/gruseom), and many fixes and improvements have been contributed by [Laarc](https://github.com/laarc).
