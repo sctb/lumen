@@ -566,6 +566,7 @@ sinh = math.sinh
 sqrt = math.sqrt
 tan = math.tan
 tanh = math.tanh
+browser63 = false
 setenv("quote", {_stash = true, macro = function (form)
   return(quoted(form))
 end})
@@ -741,7 +742,7 @@ setenv("define-global", {_stash = true, macro = function (name, x, ...)
   local _r35 = unstash({...})
   local _id29 = _r35
   local body = cut(_id29, 0)
-  setenv(name, {_stash = true, toplevel = true, variable = true})
+  setenv(name, {_stash = true, variable = true, toplevel = true})
   if some63(body) then
     return(join({"%global-function", name}, bind42(x, body)))
   else
@@ -1066,4 +1067,6 @@ local function main()
     end
   end
 end
-main()
+if not browser63 then
+  main()
+end

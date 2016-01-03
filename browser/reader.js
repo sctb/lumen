@@ -1,3 +1,6 @@
+if (typeof define !== 'function') { var define = require('amdefine')(module) }
+define(function(require) {
+var exports = {};
 var delimiters = {"\n": true, ";": true, "(": true, ")": true};
 var whitespace = {" ": true, "\t": true, "\n": true};
 var stream = function (str, more) {
@@ -236,3 +239,5 @@ exports.read = read;
 exports["read-all"] = read_all;
 exports["read-string"] = read_string;
 exports["read-table"] = read_table;
+return exports;
+});

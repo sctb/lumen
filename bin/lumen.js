@@ -671,6 +671,10 @@ sinh = math.sinh;
 sqrt = math.sqrt;
 tan = math.tan;
 tanh = math.tanh;
+browser63 = !( typeof(window) === "undefined");
+if (browser63) {
+  global = window;
+}
 setenv("quote", {_stash: true, macro: function (form) {
   return(quoted(form));
 }});
@@ -1178,4 +1182,6 @@ var main = function () {
     }
   }
 };
-main();
+if (! browser63) {
+  main();
+}

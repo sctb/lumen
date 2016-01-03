@@ -2,6 +2,10 @@
 
 (target js: (define fs (require 'fs)))
 
+(target js:
+  (when browser?
+    (define-global process (obj argv: ()))))
+
 (target lua:
   (define call-with-file (f path mode)
     (let |h,e| ((get io 'open) path mode)
@@ -32,7 +36,8 @@
 
 (define path-separator
   (target
-    js: (get (require 'path) 'sep)
+    js: (if browser? "/"
+          (get (require 'path) 'sep))
     lua: (char (get (get _G 'package) 'config) 0)))
 
 (define path-join parts

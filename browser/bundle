@@ -1,0 +1,59 @@
+#!/bin/sh
+
+optimize="${optimize:-uglify2}"
+
+dir="$(pwd)"
+cd "$(dirname "$0")"
+cd ..
+home="$(pwd)"
+
+make -B
+make -B
+
+out=browser
+mkdir -p "${out}/obj"
+cp {obj,bin}/*.js "${out}/obj"
+rm "${out}/obj/lumen.js"
+cd "${out}/obj"
+for x in *.js; do
+cat <<end >"${x}.tmp"
+if (typeof define !== 'function') { var define = require('amdefine')(module) }
+define(function(require) {
+var exports = {};
+`cat "${x}"`
+return exports;
+});
+end
+mv "${x}.tmp" "../${x}"
+rm "${x}"
+done
+cd ..
+for x in {fs,process,path}.js; do echo "" > "${x}"; done
+cd "${home}"
+cp "${out}/lib/"*.js "${out}"
+
+objs=fs,process,path,runtime,macros,reader,compiler,system,main
+require=runtime,macros,main
+
+node "${out}/r.js" -o \
+  baseUrl="${out}" \
+  name=almond \
+  include=${objs} \
+  insertRequire=${require} \
+  out="${out}/lumen.js" \
+  preserveLicenseComments=false \
+  generateSourceMaps=true \
+  optimize=none \
+  wrap=true
+
+node "${out}/r.js" -o \
+  baseUrl="${out}" \
+  name=almond \
+  include=${objs} \
+  insertRequire=${require} \
+  out="${out}/lumen-min.js" \
+  preserveLicenseComments=false \
+  generateSourceMaps=true \
+  optimize=uglify2 \
+  wrap=true
+

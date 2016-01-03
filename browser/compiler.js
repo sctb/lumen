@@ -1,3 +1,6 @@
+if (typeof define !== 'function') { var define = require('amdefine')(module) }
+define(function(require) {
+var exports = {};
 var reader = require("reader");
 var getenv = function (k, p) {
   if (string63(k)) {
@@ -1285,3 +1288,5 @@ exports.run = run;
 exports.eval = eval;
 exports.expand = expand;
 exports.compile = compile;
+return exports;
+});
