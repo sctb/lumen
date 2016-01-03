@@ -88,4 +88,6 @@
                 (print code)
               ((get system 'write-file) output code)))))))
 
-(main)
+(unless browser?
+  (main))
+

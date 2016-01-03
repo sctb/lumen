@@ -1,0 +1,8 @@
+#!/bin/sh
+
+dir="$(pwd)"
+cd "$(dirname "$0")"
+home="$(pwd)"
+
+exec python -m SimpleHTTPServer
+

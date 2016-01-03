@@ -1,3 +1,6 @@
+if (typeof define !== 'function') { var define = require('amdefine')(module) }
+define(function(require) {
+var exports = {};
 var fs = require("fs");
 if (browser63) {
   process = {argv: []};
@@ -48,3 +51,5 @@ exports["get-environment-variable"] = get_environment_variable;
 exports.write = write;
 exports.exit = exit;
 exports.argv = argv;
+return exports;
+});
