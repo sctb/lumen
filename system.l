@@ -36,8 +36,7 @@
     lua: (char (get (get _G 'package) 'config) 0)))
 
 (define path-join parts
-  (if (none? parts) ""
-    (reduce (fn (x y) (cat x path-separator y)) parts)))
+  (or (reduce (fn (x y) (cat x path-separator y)) parts) ""))
 
 (define get-environment-variable (name)
   (target

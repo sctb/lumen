@@ -107,10 +107,18 @@
 
 (define-test numeric
   (test= 4 (+ 2 2))
+  (test= 4 (apply + '(2 2)))
+  (test= 0 (apply + ()))
   (test= 18 18.00)
   (test= 4 (- 7 3))
+  (test= 4 (apply - '(7 3)))
+  (test= 0 (apply - ()))
   (test= 5.0 (/ 10 2))
+  (test= 5.0 (apply / '(10 2)))
+  (test= 1 (apply / ()))
   (test= 6 (* 2 3.00))
+  (test= 6 (apply * '(2 3.00)))
+  (test= 1 (apply * ()))
   (test= true (> 2.01 2))
   (test= true (>= 5.0 5.0))
   (test= true (> 2.1e3 2000))

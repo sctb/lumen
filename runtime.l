@@ -107,7 +107,7 @@
         (dec i)))))
 
 (define-global reduce (f x)
-  (if (none? x) x
+  (if (none? x) nil
       (one? x) (hd x)
     (f (hd x) (reduce f (tl x)))))
 
@@ -124,7 +124,7 @@
                 (set (get c k) v))
               c)
           (or a b ())))
-    (reduce join ls)))
+    (or (reduce join ls) ())))
 
 (define-global find (f t)
   (each x t
@@ -216,23 +216,22 @@
         (add l s)))))
 
 (define-global cat xs
-  (if (none? xs) ""
-    (reduce (fn (a b) (cat a b)) xs)))
+  (or (reduce (fn (a b) (cat a b)) xs) ""))
 
 (define-global + xs
-  (reduce (fn (a b) (+ a b)) xs))
+  (or (reduce (fn (a b) (+ a b)) xs) 0))
 
 (define-global - xs
-  (reduce (fn (b a) (- a b)) (reverse xs)))
+  (or (reduce (fn (b a) (- a b)) (reverse xs)) 0))
 
 (define-global * xs
-  (reduce (fn (a b) (* a b)) xs))
+  (or (reduce (fn (a b) (* a b)) xs) 1))
 
 (define-global / xs
-  (reduce (fn (b a) (/ a b)) (reverse xs)))
+  (or (reduce (fn (b a) (/ a b)) (reverse xs)) 1))
 
 (define-global % xs
-  (reduce (fn (b a) (% a b)) (reverse xs)))
+  (or (reduce (fn (b a) (% a b)) (reverse xs)) 0))
 
 (define-global > (a b) (> a b))
 (define-global < (a b) (< a b))

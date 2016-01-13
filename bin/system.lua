@@ -25,13 +25,9 @@ end
 local path_separator = char(_G.package.config, 0)
 local function path_join(...)
   local parts = unstash({...})
-  if none63(parts) then
-    return("")
-  else
-    return(reduce(function (x, y)
-      return(x .. path_separator .. y)
-    end, parts))
-  end
+  return(reduce(function (x, y)
+    return(x .. path_separator .. y)
+  end, parts) or "")
 end
 local function get_environment_variable(name)
   return(os.getenv(name))
@@ -43,4 +39,4 @@ local function exit(code)
   return(os.exit(code))
 end
 local argv = arg
-return({write = write, ["read-file"] = read_file, ["path-join"] = path_join, ["write-file"] = write_file, exit = exit, ["file-exists?"] = file_exists63, argv = argv, ["path-separator"] = path_separator, ["get-environment-variable"] = get_environment_variable})
+return({["get-environment-variable"] = get_environment_variable, write = write, ["write-file"] = write_file, ["path-join"] = path_join, argv = argv, ["file-exists?"] = file_exists63, ["read-file"] = read_file, ["path-separator"] = path_separator, exit = exit})

@@ -11,13 +11,9 @@ var file_exists63 = function (path) {
 var path_separator = require("path").sep;
 var path_join = function () {
   var parts = unstash(Array.prototype.slice.call(arguments, 0));
-  if (none63(parts)) {
-    return("");
-  } else {
-    return(reduce(function (x, y) {
-      return(x + path_separator + y);
-    }, parts));
-  }
+  return(reduce(function (x, y) {
+    return(x + path_separator + y);
+  }, parts) || "");
 };
 var get_environment_variable = function (name) {
   return(process.env[name]);
