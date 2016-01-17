@@ -105,7 +105,8 @@
         (= str "-inf") -inf
         (not (number-code? (code str (edge str)))) str
       (let n (number str)
-        (if (or (nil? n) (nan? n) (inf? n)) str n))))))
+        (if (or (nil? n) (nan? n) (inf? n)) str n)))
+    dot-syntax)))
 
 (define-reader ("(" s)
   (read-char s)

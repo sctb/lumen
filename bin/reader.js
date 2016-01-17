@@ -175,7 +175,7 @@ read_table[""] = function (s) {
     }
     _e1 = _e2;
   }
-  return(process_atom(_e1));
+  return(process_atom(_e1, dot_syntax));
 };
 read_table["("] = function (s) {
   read_char(s);

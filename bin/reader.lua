@@ -175,7 +175,7 @@ read_table[""] = function (s)
     end
     _e1 = _e2
   end
-  return(process_atom(_e1))
+  return(process_atom(_e1, dot_syntax))
 end
 read_table["("] = function (s)
   read_char(s)
