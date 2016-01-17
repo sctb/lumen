@@ -1,12 +1,12 @@
-local delimiters = {["("] = true, ["\n"] = true, [";"] = true, [")"] = true}
+local delimiters = {["("] = true, [")"] = true, ["\n"] = true, [";"] = true}
 local whitespace = {[" "] = true, ["\n"] = true, ["\t"] = true}
 local function stream(str, more)
-  return({len = _35(str), pos = 0, more = more, string = str})
+  return({more = more, pos = 0, len = _35(str), string = str})
 end
 local function peek_char(s)
   local _id = s
-  local len = _id.len
   local pos = _id.pos
+  local len = _id.len
   local string = _id.string
   if pos < len then
     return(char(string, pos))
@@ -96,6 +96,26 @@ local function wrap(s, x)
     return({x, y})
   end
 end
+local function dot_syntax63(x)
+  return(string63(x) and not( "." == char(x, 0)) and not( "." == char(x, edge(x))) and search(x, ".") and not search(x, ".."))
+end
+local function dot_syntax(x)
+  if dot_syntax63(x) then
+    return(reduce(function (a, b)
+      local n = number(a)
+      if is63(n) then
+        return({"at", b, n})
+      else
+        return({"get", b, {"quote", a}})
+      end
+    end, reverse(split(x, "."))))
+  else
+    return(x)
+  end
+end
+function process_atom(x)
+  return(dot_syntax(x))
+end
 read_table[""] = function (s)
   local str = ""
   while true do
@@ -106,40 +126,56 @@ read_table[""] = function (s)
       break
     end
   end
+  local _e1
   if str == "true" then
-    return(true)
+    _e1 = true
   else
+    local _e2
     if str == "false" then
-      return(false)
+      _e2 = false
     else
+      local _e3
       if str == "nan" then
-        return(nan)
+        _e3 = nan
       else
+        local _e4
         if str == "-nan" then
-          return(nan)
+          _e4 = nan
         else
+          local _e5
           if str == "inf" then
-            return(inf)
+            _e5 = inf
           else
+            local _e6
             if str == "-inf" then
-              return(-inf)
+              _e6 = -inf
             else
+              local _e7
               if not number_code63(code(str, edge(str))) then
-                return(str)
+                _e7 = str
               else
                 local n = number(str)
+                local _e8
                 if nil63(n) or nan63(n) or inf63(n) then
-                  return(str)
+                  _e8 = str
                 else
-                  return(n)
+                  _e8 = n
                 end
+                _e7 = _e8
               end
+              _e6 = _e7
             end
+            _e5 = _e6
           end
+          _e4 = _e5
         end
+        _e3 = _e4
       end
+      _e2 = _e3
     end
+    _e1 = _e2
   end
+  return(process_atom(_e1))
 end
 read_table["("] = function (s)
   read_char(s)
@@ -231,4 +267,4 @@ read_table[","] = function (s)
     return(wrap(s, "unquote"))
   end
 end
-return({["read-table"] = read_table, ["read-string"] = read_string, stream = stream, ["read-all"] = read_all, read = read})
+return({["read-string"] = read_string, ["dot-syntax"] = dot_syntax, ["read-all"] = read_all, read = read, ["dot-syntax?"] = dot_syntax63, ["read-table"] = read_table, stream = stream})
