@@ -70,6 +70,7 @@
 
 (define dot-syntax? (x)
   (and (string? x)
+       (not (string-literal? x))
        (not (= "." (char x 0)))
        (not (= "." (char x (edge x))))
        (search x ".")
@@ -130,15 +131,17 @@
 
 (define-reader ("\"" s)
   (read-char s)
-  (with r nil
-    (let str "\""
-      (while (nil? r)
-        (let c (peek-char s)
-          (if (= c "\"") (set r (cat str (read-char s)))
-              (nil? c) (set r (expected s "\""))
-            (do (when (= c "\\")
-                  (cat! str (read-char s)))
-                (cat! str (read-char s)))))))))
+  (process-atom
+    (with r nil
+      (let str "\""
+        (while (nil? r)
+          (let c (peek-char s)
+            (if (= c "\"") (set r (cat str (read-char s)))
+                (nil? c) (set r (expected s "\""))
+              (do (when (= c "\\")
+                    (cat! str (read-char s)))
+                  (cat! str (read-char s))))))))
+    dot-syntax))
 
 (define-reader ("|" s)
   (read-char s)

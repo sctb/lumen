@@ -97,7 +97,7 @@ local function wrap(s, x)
   end
 end
 local function dot_syntax63(x)
-  return(string63(x) and not( "." == char(x, 0)) and not( "." == char(x, edge(x))) and search(x, ".") and not search(x, ".."))
+  return(string63(x) and not string_literal63(x) and not( "." == char(x, 0)) and not( "." == char(x, edge(x))) and search(x, ".") and not search(x, ".."))
 end
 local function dot_syntax(x)
   if dot_syntax63(x) then
@@ -230,7 +230,7 @@ read_table["\""] = function (s)
       end
     end
   end
-  return(r)
+  return(process_atom(r, dot_syntax))
 end
 read_table["|"] = function (s)
   read_char(s)

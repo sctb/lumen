@@ -97,7 +97,7 @@ var wrap = function (s, x) {
   }
 };
 var dot_syntax63 = function (x) {
-  return(string63(x) && !( "." === char(x, 0)) && !( "." === char(x, edge(x))) && search(x, ".") && ! search(x, ".."));
+  return(string63(x) && ! string_literal63(x) && !( "." === char(x, 0)) && !( "." === char(x, edge(x))) && search(x, ".") && ! search(x, ".."));
 };
 var dot_syntax = function (x) {
   if (dot_syntax63(x)) {
@@ -230,7 +230,7 @@ read_table["\""] = function (s) {
       }
     }
   }
-  return(r);
+  return(process_atom(r, dot_syntax));
 };
 read_table["|"] = function (s) {
   read_char(s);
