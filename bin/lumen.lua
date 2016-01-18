@@ -301,7 +301,7 @@ function unstash(args)
     return({})
   else
     local l = last(args)
-    if not atom63(l) and l._stash then
+    if not( atom63(l) or function63(l)) and l._stash then
       local args1 = almost(args)
       local _o9 = l
       local k = nil
@@ -737,7 +737,7 @@ setenv("define-global", {_stash = true, macro = function (name, x, ...)
   local _r35 = unstash({...})
   local _id29 = _r35
   local body = cut(_id29, 0)
-  setenv(name, {_stash = true, toplevel = true, variable = true})
+  setenv(name, {_stash = true, variable = true, toplevel = true})
   if some63(body) then
     return(join({"%global-function", name}, bind42(x, body)))
   else
