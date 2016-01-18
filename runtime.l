@@ -189,7 +189,7 @@
 (define-global unstash (args)
   (if (none? args) ()
     (let l (last args)
-      (if (and (not (atom? l)) (get l '_stash))
+      (if (and (not (or (atom? l) (function? l))) (get l '_stash))
           (with args1 (almost args)
             (each (k v) l
               (unless (= k '_stash)

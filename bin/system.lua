@@ -39,4 +39,4 @@ local function exit(code)
   return(os.exit(code))
 end
 local argv = arg
-return({["get-environment-variable"] = get_environment_variable, write = write, ["write-file"] = write_file, ["path-join"] = path_join, argv = argv, ["file-exists?"] = file_exists63, ["read-file"] = read_file, ["path-separator"] = path_separator, exit = exit})
+return({argv = argv, ["get-environment-variable"] = get_environment_variable, ["path-separator"] = path_separator, ["read-file"] = read_file, ["write-file"] = write_file, ["path-join"] = path_join, ["file-exists?"] = file_exists63, exit = exit, write = write})
