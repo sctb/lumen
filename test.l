@@ -411,6 +411,7 @@ c"
 (define-test at
   (let l '(a b c d)
     (test= 'a (at l 0))
+    (test= 'a l.0)
     (test= 'b (at l 1))
     (set (at l 0) 9)
     (test= 9 (at l 0))
@@ -422,6 +423,7 @@ c"
     (set (get t 'foo) 'bar)
     (test= 'bar (get t 'foo))
     (test= 'bar (get t "foo"))
+    (test= 'bar t.foo)
     (let k 'foo
       (test= 'bar (get t k)))
     (test= 'bar (get t (cat "f" "oo")))))

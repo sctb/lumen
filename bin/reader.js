@@ -1,7 +1,7 @@
 var delimiters = {"(": true, ")": true, "\n": true, ";": true};
-var whitespace = {" ": true, "\n": true, "\t": true};
+var whitespace = {"\t": true, " ": true, "\n": true};
 var stream = function (str, more) {
-  return({more: more, pos: 0, len: _35(str), string: str});
+  return({len: _35(str), more: more, pos: 0, string: str});
 };
 var peek_char = function (s) {
   var _id = s;
@@ -76,8 +76,8 @@ var flag63 = function (atom) {
 };
 var expected = function (s, c) {
   var _id1 = s;
-  var more = _id1.more;
   var pos = _id1.pos;
+  var more = _id1.more;
   var _id2 = more;
   var _e;
   if (_id2) {
@@ -112,9 +112,13 @@ var dot_syntax = function (x) {
 };
 read_table[""] = function (s) {
   var str = "";
+  var dot63 = false;
   while (true) {
     var c = peek_char(s);
     if (c && (! whitespace[c] && ! delimiters[c])) {
+      if (c === ".") {
+        dot63 = true;
+      }
       str = str + read_char(s);
     } else {
       break;
