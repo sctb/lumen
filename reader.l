@@ -68,39 +68,47 @@
     (if (= y (get s 'more)) y
       (list x y))))
 
-(define dot-syntax (x)
-  (if (and (string? x)
-           (not (string-literal? x))
-           (not (= "." (char x 0)))
-           (not (= "." (char x (edge x))))
-           (search x ".")
-           (not (search x "..")))
-      (reduce (fn (a b)
-                  (let n (number a)
-                    (if (is? n)
-                      `(at ,b ,n)
-                      `(get ,b (quote ,a)))))
-                (reverse (split x ".")))
-    x))
+(define maybe-number (str)
+  (when (number-code? (code str (edge str)))
+    (number str)))
+
+(define real? (x)
+  (and (number? x) (not (nan? x)) (not (inf? x))))
+
+(define valid-access? (str)
+  (and (> (# str) 2)
+       (not (= "." (char str 0)))
+       (not (= "." (char str (edge str))))
+       (not (search str ".."))))
+
+(define parse-access (str)
+  (reduce (fn (a b)
+            (let n (number a)
+              (if (is? n)
+                  `(at ,b ,n)
+                `(get ,b (quote ,a)))))
+          (reverse (split str "."))))
 
 (define-reader ("" s) ; atom
-  (let (str "")
+  (let (str "" dot? false)
     (while true
       (let c (peek-char s)
 	(if (and c (and (not (get whitespace c))
 			(not (get delimiters c))))
-	    (cat! str (read-char s))
+	    (do (if (= c ".") (set dot? true))
+                (cat! str (read-char s)))
 	  (break))))
-  (dot-syntax
-    (if (= str "true") true
-        (= str "false") false
-        (= str "nan") nan
-        (= str "-nan") nan
-        (= str "inf") inf
-        (= str "-inf") -inf
-        (not (number-code? (code str (edge str)))) str
-      (let n (number str)
-        (if (or (nil? n) (nan? n) (inf? n)) str n))))))
+  (if (= str "true") true
+      (= str "false") false
+      (= str "nan") nan
+      (= str "-nan") nan
+      (= str "inf") inf
+      (= str "-inf") -inf
+    (let n (maybe-number str)
+      (if (real? n) n
+          (and dot? (valid-access? str))
+          (parse-access str)
+        str)))))
 
 (define-reader ("(" s)
   (read-char s)
@@ -164,4 +172,3 @@
         read-all
         read-string
         read-table)
-

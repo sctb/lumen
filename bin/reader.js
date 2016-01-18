@@ -1,13 +1,13 @@
-var delimiters = {"(": true, ")": true, "\n": true, ";": true};
-var whitespace = {"\t": true, " ": true, "\n": true};
+var delimiters = {")": true, "(": true, ";": true, "\n": true};
+var whitespace = {"\n": true, "\t": true, " ": true};
 var stream = function (str, more) {
-  return({len: _35(str), more: more, pos: 0, string: str});
+  return({string: str, pos: 0, more: more, len: _35(str)});
 };
 var peek_char = function (s) {
   var _id = s;
+  var string = _id.string;
   var pos = _id.pos;
   var len = _id.len;
-  var string = _id.string;
   if (pos < len) {
     return(char(string, pos));
   }
@@ -96,19 +96,26 @@ var wrap = function (s, x) {
     return([x, y]);
   }
 };
-var dot_syntax = function (x) {
-  if (string63(x) && ! string_literal63(x) && !( "." === char(x, 0)) && !( "." === char(x, edge(x))) && search(x, ".") && ! search(x, "..")) {
-    return(reduce(function (a, b) {
-      var n = number(a);
-      if (is63(n)) {
-        return(["at", b, n]);
-      } else {
-        return(["get", b, ["quote", a]]);
-      }
-    }, reverse(split(x, "."))));
-  } else {
-    return(x);
+var maybe_number = function (str) {
+  if (number_code63(code(str, edge(str)))) {
+    return(number(str));
   }
+};
+var real63 = function (x) {
+  return(number63(x) && ! nan63(x) && ! inf63(x));
+};
+var valid_access63 = function (str) {
+  return(_35(str) > 2 && !( "." === char(str, 0)) && !( "." === char(str, edge(str))) && ! search(str, ".."));
+};
+var parse_access = function (str) {
+  return(reduce(function (a, b) {
+    var n = number(a);
+    if (is63(n)) {
+      return(["at", b, n]);
+    } else {
+      return(["get", b, ["quote", a]]);
+    }
+  }, reverse(split(str, "."))));
 };
 read_table[""] = function (s) {
   var str = "";
@@ -124,56 +131,40 @@ read_table[""] = function (s) {
       break;
     }
   }
-  var _e1;
   if (str === "true") {
-    _e1 = true;
+    return(true);
   } else {
-    var _e2;
     if (str === "false") {
-      _e2 = false;
+      return(false);
     } else {
-      var _e3;
       if (str === "nan") {
-        _e3 = nan;
+        return(nan);
       } else {
-        var _e4;
         if (str === "-nan") {
-          _e4 = nan;
+          return(nan);
         } else {
-          var _e5;
           if (str === "inf") {
-            _e5 = inf;
+            return(inf);
           } else {
-            var _e6;
             if (str === "-inf") {
-              _e6 = -inf;
+              return(-inf);
             } else {
-              var _e7;
-              if (! number_code63(code(str, edge(str)))) {
-                _e7 = str;
+              var n = maybe_number(str);
+              if (real63(n)) {
+                return(n);
               } else {
-                var n = number(str);
-                var _e8;
-                if (nil63(n) || nan63(n) || inf63(n)) {
-                  _e8 = str;
+                if (dot63 && valid_access63(str)) {
+                  return(parse_access(str));
                 } else {
-                  _e8 = n;
+                  return(str);
                 }
-                _e7 = _e8;
               }
-              _e6 = _e7;
             }
-            _e5 = _e6;
           }
-          _e4 = _e5;
         }
-        _e3 = _e4;
       }
-      _e2 = _e3;
     }
-    _e1 = _e2;
   }
-  return(dot_syntax(_e1));
 };
 read_table["("] = function (s) {
   read_char(s);
