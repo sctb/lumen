@@ -1,13 +1,13 @@
-var delimiters = {"\n": true, ";": true, "(": true, ")": true};
-var whitespace = {" ": true, "\t": true, "\n": true};
+var delimiters = {"(": true, ")": true, "\n": true, ";": true};
+var whitespace = {" ": true, "\n": true, "\t": true};
 var stream = function (str, more) {
-  return({string: str, more: more, len: _35(str), pos: 0});
+  return({more: more, pos: 0, len: _35(str), string: str});
 };
 var peek_char = function (s) {
   var _id = s;
-  var string = _id.string;
-  var len = _id.len;
   var pos = _id.pos;
+  var len = _id.len;
+  var string = _id.string;
   if (pos < len) {
     return(char(string, pos));
   }
@@ -76,8 +76,8 @@ var flag63 = function (atom) {
 };
 var expected = function (s, c) {
   var _id1 = s;
-  var pos = _id1.pos;
   var more = _id1.more;
+  var pos = _id1.pos;
   var _id2 = more;
   var _e;
   if (_id2) {
@@ -96,6 +96,20 @@ var wrap = function (s, x) {
     return([x, y]);
   }
 };
+var dot_syntax = function (x) {
+  if (string63(x) && ! string_literal63(x) && !( "." === char(x, 0)) && !( "." === char(x, edge(x))) && search(x, ".") && ! search(x, "..")) {
+    return(reduce(function (a, b) {
+      var n = number(a);
+      if (is63(n)) {
+        return(["at", b, n]);
+      } else {
+        return(["get", b, ["quote", a]]);
+      }
+    }, reverse(split(x, "."))));
+  } else {
+    return(x);
+  }
+};
 read_table[""] = function (s) {
   var str = "";
   while (true) {
@@ -106,40 +120,56 @@ read_table[""] = function (s) {
       break;
     }
   }
+  var _e1;
   if (str === "true") {
-    return(true);
+    _e1 = true;
   } else {
+    var _e2;
     if (str === "false") {
-      return(false);
+      _e2 = false;
     } else {
+      var _e3;
       if (str === "nan") {
-        return(nan);
+        _e3 = nan;
       } else {
+        var _e4;
         if (str === "-nan") {
-          return(nan);
+          _e4 = nan;
         } else {
+          var _e5;
           if (str === "inf") {
-            return(inf);
+            _e5 = inf;
           } else {
+            var _e6;
             if (str === "-inf") {
-              return(-inf);
+              _e6 = -inf;
             } else {
+              var _e7;
               if (! number_code63(code(str, edge(str)))) {
-                return(str);
+                _e7 = str;
               } else {
                 var n = number(str);
+                var _e8;
                 if (nil63(n) || nan63(n) || inf63(n)) {
-                  return(str);
+                  _e8 = str;
                 } else {
-                  return(n);
+                  _e8 = n;
                 }
+                _e7 = _e8;
               }
+              _e6 = _e7;
             }
+            _e5 = _e6;
           }
+          _e4 = _e5;
         }
+        _e3 = _e4;
       }
+      _e2 = _e3;
     }
+    _e1 = _e2;
   }
+  return(dot_syntax(_e1));
 };
 read_table["("] = function (s) {
   read_char(s);

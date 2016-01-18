@@ -68,6 +68,21 @@
     (if (= y (get s 'more)) y
       (list x y))))
 
+(define dot-syntax (x)
+  (if (and (string? x)
+           (not (string-literal? x))
+           (not (= "." (char x 0)))
+           (not (= "." (char x (edge x))))
+           (search x ".")
+           (not (search x "..")))
+      (reduce (fn (a b)
+                  (let n (number a)
+                    (if (is? n)
+                      `(at ,b ,n)
+                      `(get ,b (quote ,a)))))
+                (reverse (split x ".")))
+    x))
+
 (define-reader ("" s) ; atom
   (let (str "")
     (while true
@@ -76,6 +91,7 @@
 			(not (get delimiters c))))
 	    (cat! str (read-char s))
 	  (break))))
+  (dot-syntax
     (if (= str "true") true
         (= str "false") false
         (= str "nan") nan
@@ -84,7 +100,7 @@
         (= str "-inf") -inf
         (not (number-code? (code str (edge str)))) str
       (let n (number str)
-        (if (or (nil? n) (nan? n) (inf? n)) str n)))))
+        (if (or (nil? n) (nan? n) (inf? n)) str n))))))
 
 (define-reader ("(" s)
   (read-char s)
@@ -148,3 +164,4 @@
         read-all
         read-string
         read-table)
+
