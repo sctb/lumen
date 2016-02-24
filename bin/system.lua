@@ -18,9 +18,11 @@ local function write_file(path, data)
   end, path, "w"))
 end
 local function file_exists63(path)
-  return(call_with_file(io.open(path), function (f)
-    return(is63(f))
-  end))
+  local f = io.open(path)
+  if f then
+    f.close(f)
+  end
+  return(is63(f))
 end
 local path_separator = char(_G.package.config, 0)
 local function path_join(...)
@@ -39,4 +41,4 @@ local function exit(code)
   return(os.exit(code))
 end
 local argv = arg
-return({["path-separator"] = path_separator, ["file-exists?"] = file_exists63, write = write, ["get-environment-variable"] = get_environment_variable, exit = exit, argv = argv, ["path-join"] = path_join, ["write-file"] = write_file, ["read-file"] = read_file})
+return({exit = exit, ["write-file"] = write_file, ["path-separator"] = path_separator, ["read-file"] = read_file, argv = argv, write = write, ["get-environment-variable"] = get_environment_variable, ["path-join"] = path_join, ["file-exists?"] = file_exists63})

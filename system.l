@@ -27,8 +27,9 @@
 (define file-exists? (path)
   (target
     js: ((get fs 'existsSync) path 'utf8)
-    lua: (call-with-file ((get io 'open) path)
-           (fn (f) (is? f)))))
+    lua: (let f ((get io 'open) path)
+           (if f ((get f 'close) f))
+           (is? f))))
 
 (define path-separator
   (target
