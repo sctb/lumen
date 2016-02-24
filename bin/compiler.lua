@@ -364,7 +364,7 @@ function indentation()
   end
   return(s)
 end
-local reserved = {["repeat"] = true, ["="] = true, ["+"] = true, ["local"] = true, ["finally"] = true, ["/"] = true, ["break"] = true, ["false"] = true, ["elseif"] = true, ["in"] = true, ["if"] = true, ["then"] = true, ["instanceof"] = true, ["-"] = true, ["this"] = true, ["not"] = true, ["switch"] = true, ["%"] = true, ["return"] = true, ["or"] = true, ["delete"] = true, ["true"] = true, [">="] = true, ["and"] = true, ["<="] = true, ["try"] = true, ["*"] = true, ["do"] = true, ["new"] = true, ["continue"] = true, ["case"] = true, ["with"] = true, ["function"] = true, ["until"] = true, ["<"] = true, ["var"] = true, ["typeof"] = true, [">"] = true, ["throw"] = true, ["for"] = true, ["=="] = true, ["void"] = true, ["catch"] = true, ["end"] = true, ["nil"] = true, ["debugger"] = true, ["else"] = true, ["while"] = true, ["default"] = true}
+local reserved = {["until"] = true, ["instanceof"] = true, ["with"] = true, ["elseif"] = true, ["<"] = true, [">"] = true, ["%"] = true, ["while"] = true, ["else"] = true, ["local"] = true, ["typeof"] = true, ["not"] = true, ["false"] = true, ["end"] = true, ["for"] = true, ["delete"] = true, ["*"] = true, ["=="] = true, ["default"] = true, ["catch"] = true, ["void"] = true, ["and"] = true, ["return"] = true, ["switch"] = true, ["true"] = true, ["break"] = true, ["="] = true, ["do"] = true, ["this"] = true, ["<="] = true, ["debugger"] = true, ["case"] = true, ["repeat"] = true, [">="] = true, ["or"] = true, ["throw"] = true, ["nil"] = true, ["continue"] = true, ["try"] = true, ["var"] = true, ["in"] = true, ["function"] = true, ["new"] = true, ["+"] = true, ["if"] = true, ["finally"] = true, ["-"] = true, ["then"] = true, ["/"] = true}
 function reserved63(x)
   return(reserved[x])
 end
@@ -430,8 +430,8 @@ _x63.js = "+"
 __x62.cat = _x63
 local __x64 = {}
 __x64["<="] = true
-__x64[">="] = true
 __x64["<"] = true
+__x64[">="] = true
 __x64[">"] = true
 local __x65 = {}
 local _x66 = {}
@@ -612,9 +612,9 @@ local function compile_special(form, stmt63)
   local x = _id5[1]
   local args = cut(_id5, 1)
   local _id6 = getenv(x)
-  local stmt = _id6.stmt
   local self_tr63 = _id6.tr
   local special = _id6.special
+  local stmt = _id6.stmt
   local tr = terminator(stmt63 and not self_tr63)
   return(apply(special, args) .. tr)
 end
@@ -671,8 +671,8 @@ end
 function compile_function(args, body, ...)
   local _r57 = unstash({...})
   local _id12 = _r57
-  local prefix = _id12.prefix
   local name = _id12.name
+  local prefix = _id12.prefix
   local _e18
   if name then
     _e18 = compile(name)
@@ -982,7 +982,7 @@ function eval(form)
   run(code)
   return(_37result)
 end
-setenv("do", stash({special = function (...)
+setenv("do", stash({tr = true, special = function (...)
   local forms = unstash({...})
   local s = ""
   local _x112 = forms
@@ -994,8 +994,8 @@ setenv("do", stash({special = function (...)
     _i12 = _i12 + 1
   end
   return(s)
-end, tr = true, stmt = true}))
-setenv("%if", stash({special = function (cond, cons, alt)
+end, stmt = true}))
+setenv("%if", stash({tr = true, special = function (cond, cons, alt)
   local _cond1 = compile(cond)
   indent_level = indent_level + 1
   local _x115 = compile(cons, stash({stmt = true}))
@@ -1028,8 +1028,8 @@ setenv("%if", stash({special = function (cond, cons, alt)
   else
     return(s .. "\n")
   end
-end, tr = true, stmt = true}))
-setenv("while", stash({special = function (cond, form)
+end, stmt = true}))
+setenv("while", stash({tr = true, special = function (cond, form)
   local _cond3 = compile(cond)
   indent_level = indent_level + 1
   local _x118 = compile(form, stash({stmt = true}))
@@ -1041,8 +1041,8 @@ setenv("while", stash({special = function (cond, form)
   else
     return(ind .. "while " .. _cond3 .. " do\n" .. body .. ind .. "end\n")
   end
-end, tr = true, stmt = true}))
-setenv("%for", stash({special = function (t, k, form)
+end, stmt = true}))
+setenv("%for", stash({tr = true, special = function (t, k, form)
   local _t1 = compile(t)
   local ind = indentation()
   indent_level = indent_level + 1
@@ -1054,8 +1054,8 @@ setenv("%for", stash({special = function (t, k, form)
   else
     return(ind .. "for (" .. k .. " in " .. _t1 .. ") {\n" .. body .. ind .. "}\n")
   end
-end, tr = true, stmt = true}))
-setenv("%try", stash({special = function (form)
+end, stmt = true}))
+setenv("%try", stash({tr = true, special = function (form)
   local e = unique("e")
   local ind = indentation()
   indent_level = indent_level + 1
@@ -1068,33 +1068,33 @@ setenv("%try", stash({special = function (form)
   indent_level = indent_level - 1
   local h = _x132
   return(ind .. "try {\n" .. body .. ind .. "}\n" .. ind .. "catch (" .. e .. ") {\n" .. h .. ind .. "}\n")
-end, tr = true, stmt = true}))
-setenv("%delete", stash({special = function (place)
+end, stmt = true}))
+setenv("%delete", stash({stmt = true, special = function (place)
   return(indentation() .. "delete " .. compile(place))
-end, stmt = true}))
-setenv("break", stash({special = function ()
+end}))
+setenv("break", stash({stmt = true, special = function ()
   return(indentation() .. "break")
-end, stmt = true}))
+end}))
 setenv("%function", stash({special = function (args, body)
   return(compile_function(args, body))
 end}))
-setenv("%global-function", stash({special = function (name, args, body)
+setenv("%global-function", stash({tr = true, special = function (name, args, body)
   if target == "lua" then
     local x = compile_function(args, body, stash({name = name}))
     return(indentation() .. x)
   else
     return(compile({"set", name, {"%function", args, body}}, stash({stmt = true})))
   end
-end, tr = true, stmt = true}))
-setenv("%local-function", stash({special = function (name, args, body)
+end, stmt = true}))
+setenv("%local-function", stash({tr = true, special = function (name, args, body)
   if target == "lua" then
-    local x = compile_function(args, body, stash({prefix = "local", name = name}))
+    local x = compile_function(args, body, stash({name = name, prefix = "local"}))
     return(indentation() .. x)
   else
     return(compile({"%local", name, {"%function", args, body}}, stash({stmt = true})))
   end
-end, tr = true, stmt = true}))
-setenv("return", stash({special = function (x)
+end, stmt = true}))
+setenv("return", stash({stmt = true, special = function (x)
   local _e28
   if nil63(x) then
     _e28 = "return"
@@ -1103,14 +1103,14 @@ setenv("return", stash({special = function (x)
   end
   local _x142 = _e28
   return(indentation() .. _x142)
-end, stmt = true}))
+end}))
 setenv("new", stash({special = function (x)
   return("new " .. compile(x))
 end}))
 setenv("typeof", stash({special = function (x)
   return("typeof(" .. compile(x) .. ")")
 end}))
-setenv("error", stash({special = function (x)
+setenv("error", stash({stmt = true, special = function (x)
   local _e29
   if target == "js" then
     _e29 = "throw " .. compile({"new", {"Error", x}})
@@ -1119,8 +1119,8 @@ setenv("error", stash({special = function (x)
   end
   local e = _e29
   return(indentation() .. e)
-end, stmt = true}))
-setenv("%local", stash({special = function (name, value)
+end}))
+setenv("%local", stash({stmt = true, special = function (name, value)
   local _id26 = compile(name)
   local value1 = compile(value)
   local _e30
@@ -1139,8 +1139,8 @@ setenv("%local", stash({special = function (name, value)
   local keyword = _e31
   local ind = indentation()
   return(ind .. keyword .. _id26 .. rh)
-end, stmt = true}))
-setenv("set", stash({special = function (lh, rh)
+end}))
+setenv("set", stash({stmt = true, special = function (lh, rh)
   local _lh1 = compile(lh)
   local _e32
   if nil63(rh) then
@@ -1150,7 +1150,7 @@ setenv("set", stash({special = function (lh, rh)
   end
   local _rh1 = compile(_e32)
   return(indentation() .. _lh1 .. " = " .. _rh1)
-end, stmt = true}))
+end}))
 setenv("get", stash({special = function (t, k)
   local _t3 = compile(t)
   local k1 = compile(k)

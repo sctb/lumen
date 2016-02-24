@@ -717,7 +717,7 @@ setenv("define-global", stash({macro = function (name, x, ...)
   local _r35 = unstash({...})
   local _id29 = _r35
   local body = cut(_id29, 0)
-  setenv(name, stash({toplevel = true, variable = true}))
+  setenv(name, stash({variable = true, toplevel = true}))
   if some63(body) then
     return(join({"%global-function", name}, bind42(x, body)))
   else
