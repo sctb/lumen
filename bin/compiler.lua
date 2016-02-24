@@ -364,7 +364,7 @@ function indentation()
   end
   return(s)
 end
-local reserved = {["throw"] = true, ["else"] = true, ["if"] = true, [">="] = true, ["with"] = true, ["var"] = true, ["this"] = true, ["default"] = true, ["local"] = true, ["return"] = true, ["finally"] = true, ["false"] = true, ["delete"] = true, ["debugger"] = true, [">"] = true, ["or"] = true, ["<"] = true, ["switch"] = true, ["while"] = true, ["%"] = true, ["try"] = true, ["then"] = true, ["break"] = true, ["=="] = true, ["until"] = true, ["nil"] = true, ["<="] = true, ["repeat"] = true, ["not"] = true, ["*"] = true, ["for"] = true, ["do"] = true, ["-"] = true, ["and"] = true, ["elseif"] = true, ["typeof"] = true, ["void"] = true, ["case"] = true, ["end"] = true, ["new"] = true, ["true"] = true, ["catch"] = true, ["continue"] = true, ["instanceof"] = true, ["="] = true, ["function"] = true, ["/"] = true, ["in"] = true, ["+"] = true}
+local reserved = {["instanceof"] = true, ["continue"] = true, ["*"] = true, ["true"] = true, ["var"] = true, ["default"] = true, ["function"] = true, ["while"] = true, ["delete"] = true, ["this"] = true, ["finally"] = true, ["end"] = true, ["catch"] = true, ["until"] = true, [">"] = true, ["not"] = true, ["<"] = true, ["<="] = true, ["return"] = true, ["typeof"] = true, ["case"] = true, ["switch"] = true, ["with"] = true, ["void"] = true, ["then"] = true, ["-"] = true, ["break"] = true, ["+"] = true, ["if"] = true, ["new"] = true, ["for"] = true, ["else"] = true, ["repeat"] = true, ["or"] = true, ["and"] = true, ["false"] = true, ["try"] = true, ["elseif"] = true, ["/"] = true, ["in"] = true, ["do"] = true, ["throw"] = true, ["local"] = true, ["debugger"] = true, ["=="] = true, ["="] = true, ["nil"] = true, ["%"] = true, [">="] = true}
 function reserved63(x)
   return(reserved[x])
 end
@@ -417,8 +417,8 @@ _x59.lua = "not"
 _x59.js = "!"
 __x58["not"] = _x59
 local __x60 = {}
-__x60["/"] = true
 __x60["*"] = true
+__x60["/"] = true
 __x60["%"] = true
 local __x61 = {}
 __x61["-"] = true
@@ -429,10 +429,10 @@ _x63.lua = ".."
 _x63.js = "+"
 __x62.cat = _x63
 local __x64 = {}
-__x64["<"] = true
-__x64["<="] = true
 __x64[">"] = true
 __x64[">="] = true
+__x64["<"] = true
+__x64["<="] = true
 local __x65 = {}
 local _x66 = {}
 _x66.lua = "=="

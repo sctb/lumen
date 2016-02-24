@@ -422,62 +422,68 @@ function escape(s)
   end
   return(s1 .. "\"")
 end
-function str(x, depth)
-  if depth and depth > 40 then
-    return("circular")
+function str(x, stack)
+  if nil63(x) then
+    return("nil")
   else
-    if nil63(x) then
-      return("nil")
+    if nan63(x) then
+      return("nan")
     else
-      if nan63(x) then
-        return("nan")
+      if x == inf then
+        return("inf")
       else
-        if x == inf then
-          return("inf")
+        if x == -inf then
+          return("-inf")
         else
-          if x == -inf then
-            return("-inf")
-          else
-            if boolean63(x) then
-              if x then
-                return("true")
-              else
-                return("false")
-              end
+          if boolean63(x) then
+            if x then
+              return("true")
             else
-              if string63(x) then
-                return(escape(x))
+              return("false")
+            end
+          else
+            if string63(x) then
+              return(escape(x))
+            else
+              if atom63(x) then
+                return(tostring(x))
               else
-                if atom63(x) then
-                  return(tostring(x))
+                if function63(x) then
+                  return("function")
                 else
-                  if function63(x) then
-                    return("function")
+                  if stack and in63(x, stack) then
+                    return("circular")
                   else
-                    local s = "("
-                    local sp = ""
-                    local xs = {}
-                    local ks = {}
-                    local d = (depth or 0) + 1
-                    local _o9 = x
-                    local k = nil
-                    for k in next, _o9 do
-                      local v = _o9[k]
-                      if number63(k) then
-                        xs[k] = str(v, d)
-                      else
-                        add(ks, k .. ":")
-                        add(ks, str(v, d))
+                    if not( type(x) == "table") then
+                      return(escape(tostring(x)))
+                    else
+                      local s = "("
+                      local sp = ""
+                      local xs = {}
+                      local ks = {}
+                      local l = stack or {}
+                      add(l, x)
+                      local _o9 = x
+                      local k = nil
+                      for k in next, _o9 do
+                        local v = _o9[k]
+                        if number63(k) then
+                          xs[k] = str(v, l)
+                        else
+                          add(ks, k .. ":")
+                          add(ks, str(v, l))
+                        end
                       end
+                      drop(l)
+                      local _o10 = join(xs, ks)
+                      local _i12 = nil
+                      for _i12 in next, _o10 do
+                        local v = _o10[_i12]
+                        s = s .. sp .. v
+                        sp = " "
+                      end
+                      return(s .. ")")
                     end
-                    local _o10 = join(xs, ks)
-                    local _i12 = nil
-                    for _i12 in next, _o10 do
-                      local v = _o10[_i12]
-                      s = s .. sp .. v
-                      sp = " "
-                    end
-                    return(s .. ")")
                   end
                 end
               end
@@ -717,7 +723,7 @@ setenv("define-global", stash33({macro = function (name, x, ...)
   local _r35 = unstash({...})
   local _id29 = _r35
   local body = cut(_id29, 0)
-  setenv(name, stash33({toplevel = true, variable = true}))
+  setenv(name, stash33({variable = true, toplevel = true}))
   if some63(body) then
     return(join({"%global-function", name}, bind42(x, body)))
   else
