@@ -63,12 +63,12 @@
 
 (define stash* (args)
   (if (keys? args)
-      (let l '(%object "_stash" true)
+      (let l '(%object)
         (each (k v) args
           (unless (number? k)
             (add l (literal k))
             (add l v)))
-        (join args (list l)))
+        (join args (list (list 'stash l))))
     args))
 
 (define bias (k)
