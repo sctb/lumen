@@ -177,7 +177,7 @@
     (return false))
   true)
 
-(define-global stash (args)
+(define-global stash! (args)
   (set parameters args)
   nil)
 
@@ -287,7 +287,7 @@
   (define values (or unpack (get table 'unpack))))
 
 (define-global apply (f args)
-  (stash (keys args))
+  (stash! (keys args))
   (target js: ((get f 'apply) f args)
           lua: (f (values args))))
 

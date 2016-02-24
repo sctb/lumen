@@ -68,7 +68,7 @@
           (unless (number? k)
             (add l (literal k))
             (add l v)))
-        `(,@args (stash ,l)))
+        `(,@args (stash! ,l)))
     args))
 
 (define bias (k)
