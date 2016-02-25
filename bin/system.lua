@@ -41,4 +41,8 @@ local function exit(code)
   return(os.exit(code))
 end
 local argv = arg
-return({["file-exists?"] = file_exists63, ["read-file"] = read_file, write = write, ["path-join"] = path_join, ["get-environment-variable"] = get_environment_variable, ["path-separator"] = path_separator, ["write-file"] = write_file, exit = exit, argv = argv})
+local function reload(module)
+  package.loaded[module] = nil
+  return(require(module))
+end
+return({write = write, ["file-exists?"] = file_exists63, exit = exit, ["path-separator"] = path_separator, ["path-join"] = path_join, reload = reload, ["get-environment-variable"] = get_environment_variable, argv = argv, ["write-file"] = write_file, ["read-file"] = read_file})

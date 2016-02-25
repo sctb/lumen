@@ -26,6 +26,10 @@ var exit = function (code) {
   return(process.exit(code));
 };
 var argv = cut(process.argv, 2);
+var reload = function (module) {
+  delete require.cache[require.resolve(module)];
+  return(require(module));
+};
 exports["read-file"] = read_file;
 exports["write-file"] = write_file;
 exports["file-exists?"] = file_exists63;
@@ -35,3 +39,4 @@ exports["get-environment-variable"] = get_environment_variable;
 exports.write = write;
 exports.exit = exit;
 exports.argv = argv;
+exports.reload = reload;

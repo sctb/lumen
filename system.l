@@ -56,6 +56,12 @@
 (define argv
   (target js: (cut (get process 'argv) 2) lua: arg))
 
+(define reload (module)
+  (wipe (target
+          lua: (get (get package 'loaded) module)
+          js: (get (get require 'cache) ((get require 'resolve) module))))
+  (require module))
+
 (export read-file
         write-file
         file-exists?
@@ -64,4 +70,5 @@
         get-environment-variable
         write
         exit
-        argv)
+        argv
+        reload)
