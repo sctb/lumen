@@ -145,7 +145,10 @@
   (let x nil
     (test= 9 (do (list nothing fooey (set x 10)) 9))
     (test= 10 x))
-  (test= 12 (do (get but zz) 12)))
+  (test= 12 (do (get but zz) 12))
+  (let y nil
+    (let ignore (do |y = 10;| 42)
+      (test= 10 x))))
 
 (define-test string
   (test= 3 (# "foo"))
