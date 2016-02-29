@@ -418,10 +418,11 @@
       (= (hd form) '%object)))
 
 (define standalone? (form)
-  (and (not (atom? form))
-       (not (infix? (hd form)))
-       (not (literal? form))
-       (not (= 'get (hd form)))))
+  (or (and (not (atom? form))
+           (not (infix? (hd form)))
+           (not (literal? form))
+           (not (= 'get (hd form))))
+      (id-literal? form)))
 
 (define lower-do (args hoist stmt? tail?)
   (step x (almost args)

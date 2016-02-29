@@ -45,4 +45,4 @@ local function reload(module)
   package.loaded[module] = nil
   return(require(module))
 end
-return({write = write, ["file-exists?"] = file_exists63, exit = exit, ["path-separator"] = path_separator, ["path-join"] = path_join, reload = reload, ["get-environment-variable"] = get_environment_variable, argv = argv, ["write-file"] = write_file, ["read-file"] = read_file})
+return({reload = reload, ["file-exists?"] = file_exists63, ["path-separator"] = path_separator, ["get-environment-variable"] = get_environment_variable, argv = argv, write = write, ["write-file"] = write_file, exit = exit, ["read-file"] = read_file, ["path-join"] = path_join})
