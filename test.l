@@ -478,7 +478,8 @@ c"
   (let a 11
     (let b ((fn () (inc a)))
       (test= 12 b)
-      (test= 12 a))))
+      (test= 12 a)))
+  (test= 1 ((fn () (return (if true (return 1) 2))))))
 
 (define-test guard
   (let-macro ((guard1 (x) `(cut (guard ,x) 0 2)))

@@ -556,7 +556,11 @@
 (define-special do forms :stmt :tr
   (with s ""
     (step x forms
-      (cat! s (compile x :stmt)))))
+      (cat! s (compile x :stmt))
+      (unless (atom? x)
+        (if (or (= (hd x) 'return)
+                (= (hd x) 'break))
+            (break))))))
 
 (define-special %if (cond cons alt) :stmt :tr
   (let (cond (compile cond)
