@@ -39,6 +39,9 @@ boolean63 = function (x) {
 function63 = function (x) {
   return(type(x) === "function");
 };
+obj63 = function (x) {
+  return(type(x) === "object");
+};
 atom63 = function (x) {
   return(nil63(x) || string63(x) || number63(x) || boolean63(x));
 };
@@ -373,7 +376,7 @@ unstash = function (args) {
     return([]);
   } else {
     var l = last(args);
-    if (type(l) === "object" && l._stash) {
+    if (obj63(l) && l._stash) {
       var args1 = almost(args);
       var _o9 = l;
       var k = undefined;
@@ -397,7 +400,7 @@ unstash = function (args) {
   }
 };
 destash33 = function (l, args1) {
-  if (type(l) === "object" && l._stash) {
+  if (obj63(l) && l._stash) {
     var _o10 = l;
     var k = undefined;
     for (k in _o10) {
@@ -642,9 +645,9 @@ toplevel63 = function () {
   return(one63(environment));
 };
 setenv = function (k) {
-  var _r69 = unstash(Array.prototype.slice.call(arguments, 1));
-  var _k10 = destash33(k, _r69);
-  var _id1 = _r69;
+  var _r70 = unstash(Array.prototype.slice.call(arguments, 1));
+  var _k10 = destash33(k, _r70);
+  var _id1 = _r70;
   var _keys = cut(_id1, 0);
   if (string63(_k10)) {
     var _e19;
@@ -894,7 +897,7 @@ setenv("define-global", {_stash: true, macro: function (name, x) {
   var _x133 = destash33(x, _r35);
   var _id29 = _r35;
   var body = cut(_id29, 0);
-  setenv(_name7, {_stash: true, toplevel: true, variable: true});
+  setenv(_name7, {_stash: true, variable: true, toplevel: true});
   if (some63(body)) {
     return(join(["%global-function", _name7], bind42(_x133, body)));
   } else {

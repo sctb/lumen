@@ -27,6 +27,9 @@
 (define-global boolean? (x) (= (type x) 'boolean))
 (define-global function? (x) (= (type x) 'function))
 
+(define-global obj? (x)
+  (= (type x) (target lua: 'table js: 'object)))
+
 (define-global atom? (x)
   (or (nil? x) (string? x) (number? x) (boolean? x)))
 
@@ -189,7 +192,7 @@
 (define-global unstash (args)
   (if (none? args) ()
     (let l (last args)
-      (if (and (= (type l) (target js: 'object lua: 'table)) (get l '_stash))
+      (if (and (obj? l) (get l '_stash))
           (with args1 (almost args)
             (each (k v) l
               (unless (= k '_stash)
@@ -197,7 +200,7 @@
         args))))
 
 (define-global destash! (l args1)
-  (if (and (= (type l) (target js: 'object lua: 'table)) (get l '_stash))
+  (if (and (obj? l) (get l '_stash))
       (each (k v) l
         (unless (= k '_stash)
           (set (get args1 k) v)))

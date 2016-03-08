@@ -873,7 +873,11 @@ c"
   (test= true (atom? true))
   (test= false (atom? (fn ())))
   (test= false (atom? '(1)))
-  (test= false (atom? (obj))))
+  (test= false (atom? (obj)))
+  (test= true (obj? (obj a: 10)))
+  (test= false (obj? 1))
+  (test= false (obj? 'zz))
+  (test= false (obj? (fn ()))))
 
 (define-test apply
   (test= 4 (apply (fn (a b) (+ a b)) '(2 2)))

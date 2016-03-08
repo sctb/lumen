@@ -36,6 +36,9 @@ end
 function function63(x)
   return(type(x) == "function")
 end
+function obj63(x)
+  return(type(x) == "table")
+end
 function atom63(x)
   return(nil63(x) or string63(x) or number63(x) or boolean63(x))
 end
@@ -301,7 +304,7 @@ function unstash(args)
     return({})
   else
     local l = last(args)
-    if type(l) == "table" and l._stash then
+    if obj63(l) and l._stash then
       local args1 = almost(args)
       local _o9 = l
       local k = nil
@@ -318,7 +321,7 @@ function unstash(args)
   end
 end
 function destash33(l, args1)
-  if type(l) == "table" and l._stash then
+  if obj63(l) and l._stash then
     local _o10 = l
     local k = nil
     for k in next, _o10 do
@@ -540,9 +543,9 @@ function toplevel63()
   return(one63(environment))
 end
 function setenv(k, ...)
-  local _r66 = unstash({...})
-  local _k = destash33(k, _r66)
-  local _id1 = _r66
+  local _r67 = unstash({...})
+  local _k = destash33(k, _r67)
+  local _id1 = _r67
   local _keys = cut(_id1, 0)
   if string63(_k) then
     local _e7
