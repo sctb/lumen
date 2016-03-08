@@ -2,7 +2,6 @@
 
 (define-global environment (list (obj)))
 (define-global target (language))
-(define-global parameters)
 
 (define-global nil? (x)
   (target
@@ -177,16 +176,32 @@
     (return false))
   true)
 
-(define-global stash! (args)
-  (set parameters args)
-  nil)
+(define-global stash (args)
+  (when (keys? args)
+    (let p ()
+      (each (k v) args
+        (unless (number? k)
+          (set (get p k) v)))
+      (set (get p '_stash) true)
+      (add args p)))
+  args)
 
 (define-global unstash (args)
-  (when parameters
-    (each (k v) parameters
-      (set (get args k) v))
-    (set parameters nil))
-  args)
+  (if (none? args) ()
+    (let l (last args)
+      (if (and (= (type l) (target js: 'object lua: 'table)) (get l '_stash))
+          (with args1 (almost args)
+            (each (k v) l
+              (unless (= k '_stash)
+                (set (get args1 k) v))))
+        args))))
+
+(define-global destash! (l args1)
+  (if (and (= (type l) (target js: 'object lua: 'table)) (get l '_stash))
+      (each (k v) l
+        (unless (= k '_stash)
+          (set (get args1 k) v)))
+    l))
 
 (define-global search (s pattern start)
   (target
@@ -291,9 +306,9 @@
   (define values (or unpack (get table 'unpack))))
 
 (define-global apply (f args)
-  (stash! (keys args))
-  (target js: ((get f 'apply) f args)
-          lua: (f (values args))))
+  (let args (stash args)
+    (target js: ((get f 'apply) f args)
+            lua: (f (values args)))))
 
 (define-global call (f) (f))
 

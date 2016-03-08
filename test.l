@@ -925,4 +925,19 @@ c"
     (define f (:a) (add l a) a)
     (define g (a b :c) (add l (list a b c)) c)
     (test= 42 (f a: (g (f a: 10) (f a: 20) c: (f a: 42))))
-    (test= '(10 20 42 (10 20 42) 42) l)))
+    (test= '(10 20 42 (10 20 42) 42) l))
+  (let l nil
+    (define f x (set l x))
+    (define g (a b) (+ a b))
+    (f (g 1 2 foo: 7))
+    (test= '(3) l))
+  (let l nil
+    (define f x (set l x) 10)
+    (define g (a b) (+ (f) a b))
+    (test= 13 (g 1 2 foo: 7))
+    (test= '() l))
+  (let l nil
+    (define f (x rest: ys) (set l ys))
+    (define g () nil)
+    (f 1 'x g)
+    (test= (list 'x g) l)))

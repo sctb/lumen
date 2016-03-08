@@ -63,12 +63,12 @@
 
 (define stash* (args)
   (if (keys? args)
-      (let l '(%object)
+      (let l '(%object "_stash" true)
         (each (k v) args
           (unless (number? k)
             (add l (literal k))
             (add l v)))
-        `(,@args (stash! ,l)))
+        (join args (list l)))
     args))
 
 (define bias (k)
@@ -112,6 +112,10 @@
                   (join! bs (list v x))))))
           (when (keys? args)
             (join! bs (list r (rest)))
+            (let n (if (= target 'lua) (edge args1) (# args1))
+              (for i n
+                (let v (at args1 i)
+                  (join! bs (list v `(destash! ,v ,r))))))
             (join! bs (list (keys args) r))))
         (list args1 `(let ,bs ,@body))))))
 
@@ -482,8 +486,8 @@
             ,(lower-body body))
         `(while true
            (do ,@pre
-               (%if (not ,c (break))
-               ,(lower-body body))))))))
+               (%if (not ,c) (break))
+               ,(lower-body body)))))))
 
 (define lower-for (args hoist)
   (let ((t k rest: body) args)
