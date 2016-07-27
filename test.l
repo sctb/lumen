@@ -176,7 +176,10 @@ c"
   (test= "|(|" '|(|)
   (test= (quote unquote) 'unquote)
   (test= (quote (unquote)) '(unquote))
-  (test= (quote (unquote a)) '(unquote a)))
+  (test= (quote (unquote a)) '(unquote a))
+  (let x '(10 20 a: 33)
+    (test= 20 (at x 1))
+    (test= 33 (get x 'a))))
 
 (define-test list
   (test= '() (list))

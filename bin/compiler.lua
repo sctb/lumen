@@ -377,7 +377,7 @@ function indentation()
   end
   return(s)
 end
-local reserved = {["var"] = true, ["this"] = true, ["switch"] = true, ["try"] = true, ["<="] = true, ["true"] = true, ["debugger"] = true, ["until"] = true, [">="] = true, ["+"] = true, ["-"] = true, ["/"] = true, ["then"] = true, ["with"] = true, ["catch"] = true, ["else"] = true, ["%"] = true, ["for"] = true, ["="] = true, ["default"] = true, ["continue"] = true, ["elseif"] = true, ["end"] = true, ["finally"] = true, ["nil"] = true, ["=="] = true, ["void"] = true, ["repeat"] = true, ["or"] = true, ["if"] = true, ["typeof"] = true, ["instanceof"] = true, ["and"] = true, ["local"] = true, ["not"] = true, ["return"] = true, ["delete"] = true, ["break"] = true, ["throw"] = true, ["do"] = true, ["*"] = true, [">"] = true, ["in"] = true, ["function"] = true, ["case"] = true, ["new"] = true, ["false"] = true, ["while"] = true, ["<"] = true}
+local reserved = {["not"] = true, ["=="] = true, ["finally"] = true, ["default"] = true, ["in"] = true, ["break"] = true, ["elseif"] = true, ["instanceof"] = true, ["new"] = true, ["%"] = true, ["debugger"] = true, ["-"] = true, ["catch"] = true, ["/"] = true, ["until"] = true, ["with"] = true, ["+"] = true, ["else"] = true, ["or"] = true, ["<="] = true, ["if"] = true, ["local"] = true, ["delete"] = true, ["true"] = true, [">"] = true, ["var"] = true, ["<"] = true, ["function"] = true, ["while"] = true, ["switch"] = true, ["nil"] = true, ["end"] = true, ["typeof"] = true, ["return"] = true, ["void"] = true, ["continue"] = true, ["then"] = true, [">="] = true, ["case"] = true, ["do"] = true, ["for"] = true, ["="] = true, ["this"] = true, ["throw"] = true, ["try"] = true, ["repeat"] = true, ["false"] = true, ["*"] = true, ["and"] = true}
 function reserved63(x)
   return(reserved[x])
 end
@@ -430,9 +430,9 @@ _x60.js = "!"
 _x60.lua = "not"
 __x59["not"] = _x60
 local __x61 = {}
-__x61["/"] = true
-__x61["*"] = true
 __x61["%"] = true
+__x61["*"] = true
+__x61["/"] = true
 local __x62 = {}
 __x62["+"] = true
 __x62["-"] = true
@@ -442,10 +442,10 @@ _x64.js = "+"
 _x64.lua = ".."
 __x63.cat = _x64
 local __x65 = {}
+__x65["<"] = true
 __x65["<="] = true
 __x65[">"] = true
 __x65[">="] = true
-__x65["<"] = true
 local __x66 = {}
 local _x67 = {}
 _x67.js = "==="
@@ -625,9 +625,9 @@ local function compile_special(form, stmt63)
   local x = _id5[1]
   local args = cut(_id5, 1)
   local _id6 = getenv(x)
-  local self_tr63 = _id6.tr
-  local special = _id6.special
   local stmt = _id6.stmt
+  local special = _id6.special
+  local self_tr63 = _id6.tr
   local tr = terminator(stmt63 and not self_tr63)
   return(apply(special, args) .. tr)
 end
@@ -688,8 +688,8 @@ function compile_function(args, body, ...)
   local _args = destash33(args, _r57)
   local _body = destash33(body, _r57)
   local _id12 = _r57
-  local prefix = _id12.prefix
   local name = _id12.name
+  local prefix = _id12.prefix
   local _e19
   if name then
     _e19 = compile(name)
@@ -1119,7 +1119,7 @@ setenv("%global-function", {_stash = true, tr = true, special = function (name, 
 end, stmt = true})
 setenv("%local-function", {_stash = true, tr = true, special = function (name, args, body)
   if target == "lua" then
-    local x = compile_function(args, body, {_stash = true, prefix = "local", name = name})
+    local x = compile_function(args, body, {_stash = true, name = name, prefix = "local"})
     return(indentation() .. x)
   else
     return(compile({"%local", name, {"%function", args, body}}, {_stash = true, stmt = true}))
@@ -1251,4 +1251,4 @@ setenv("%object", {_stash = true, special = function (...)
   end
   return(s .. "}")
 end})
-return({expand = expand, compile = compile, eval = eval, run = run})
+return({run = run, eval = eval, expand = expand, compile = compile})
