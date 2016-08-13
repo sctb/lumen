@@ -4,6 +4,10 @@
 (define-macro quasiquote (form)
   (quasiexpand form 1))
 
+(define-macro set args
+  `(do ,@(map (fn ((lh rh)) `(%set ,lh ,rh))
+              (pair args))))
+
 (define-macro at (l i)
   (if (and (= target 'lua) (number? i))
       (inc i)

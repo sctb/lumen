@@ -662,11 +662,6 @@
         ind (indentation))
     (cat ind keyword id rh)))
 
-(define-special set (lh rh) :stmt
-  (let (lh (compile lh)
-        rh (compile (if (nil? rh) 'nil rh)))
-    (cat (indentation) lh " = " rh)))
-
 (define-special %set (lh rh) :stmt
   (let (lh (compile lh)
         rh (compile (if (nil? rh) 'nil rh)))
