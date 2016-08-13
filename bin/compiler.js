@@ -422,7 +422,7 @@ indentation = function () {
   }
   return(s);
 };
-var reserved = {"switch": true, "return": true, ">=": true, "for": true, "debugger": true, "while": true, "else": true, ">": true, "delete": true, "true": true, "continue": true, "nil": true, "local": true, "instanceof": true, "catch": true, "not": true, "case": true, "/": true, "-": true, "do": true, "==": true, "then": true, "and": true, "finally": true, "throw": true, "this": true, "in": true, "void": true, "=": true, "false": true, "<=": true, "until": true, "break": true, "new": true, "end": true, "with": true, "var": true, "typeof": true, "function": true, "try": true, "or": true, "default": true, "repeat": true, "+": true, "elseif": true, "<": true, "%": true, "if": true, "*": true};
+var reserved = {"default": true, "delete": true, "<": true, "if": true, "local": true, "elseif": true, "repeat": true, "true": true, "continue": true, "+": true, "-": true, "/": true, "debugger": true, "new": true, "or": true, "break": true, "%": true, ">=": true, "this": true, "case": true, "with": true, "not": true, "while": true, "=": true, "until": true, "and": true, "nil": true, "switch": true, "catch": true, "else": true, "false": true, "for": true, ">": true, "void": true, "==": true, "var": true, "finally": true, "throw": true, "do": true, "typeof": true, "end": true, "*": true, "function": true, "instanceof": true, "try": true, "return": true, "<=": true, "in": true, "then": true};
 reserved63 = function (x) {
   return(reserved[x]);
 };
@@ -482,22 +482,22 @@ _x60.js = "!";
 _x60.lua = "not";
 __x59["not"] = _x60;
 var __x61 = [];
-__x61["*"] = true;
 __x61["%"] = true;
 __x61["/"] = true;
+__x61["*"] = true;
 var __x62 = [];
-__x62["+"] = true;
 __x62["-"] = true;
+__x62["+"] = true;
 var __x63 = [];
 var _x64 = [];
 _x64.js = "+";
 _x64.lua = "..";
 __x63.cat = _x64;
 var __x65 = [];
-__x65[">"] = true;
 __x65["<="] = true;
 __x65["<"] = true;
 __x65[">="] = true;
+__x65[">"] = true;
 var __x66 = [];
 var _x67 = [];
 _x67.js = "===";
@@ -682,9 +682,9 @@ var compile_special = function (form, stmt63) {
   var x = _id5[0];
   var args = cut(_id5, 1);
   var _id6 = getenv(x);
-  var self_tr63 = _id6.tr;
   var stmt = _id6.stmt;
   var special = _id6.special;
+  var self_tr63 = _id6.tr;
   var tr = terminator(stmt63 && ! self_tr63);
   return(apply1(special, args) + tr);
 };
@@ -886,7 +886,7 @@ var lower_if = function (args, hoist, stmt63, tail63) {
   var _else = _id16[2];
   if (stmt63 || tail63) {
     var _e34;
-    if (_else) {
+    if (yes(_else)) {
       _e34 = [lower_body([_else], tail63)];
     }
     return(add(hoist, join(["%if", lower(cond, hoist), lower_body([_then], tail63)], _e34)));
@@ -894,7 +894,7 @@ var lower_if = function (args, hoist, stmt63, tail63) {
     var e = unique("e");
     add(hoist, ["%local", e]);
     var _e33;
-    if (_else) {
+    if (yes(_else)) {
       _e33 = [lower(["set", e, _else])];
     }
     add(hoist, join(["%if", lower(cond, hoist), lower(["set", e, _then])], _e33));

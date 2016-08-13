@@ -451,13 +451,13 @@
         (add hoist
              `(%if ,(lower cond hoist)
                    ,(lower-body (list then) tail?)
-                   ,@(if else (list (lower-body (list else) tail?)))))
+                   ,@(if (yes else) (list (lower-body (list else) tail?)))))
       (let-unique (e)
         (add hoist `(%local ,e))
         (add hoist
              `(%if ,(lower cond hoist)
                    ,(lower `(set ,e ,then))
-                   ,@(if else
+                   ,@(if (yes else)
                          (list (lower `(set ,e ,else))))))
         e))))
 

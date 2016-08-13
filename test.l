@@ -367,7 +367,8 @@ c"
   (test= 1 (if true (with a 1) 2))
   (test= 1 (if false 2 (let a 1 a)))
   (test= 1 (if false 2 true (with a 1)))
-  (test= 1 (if false 2 false 3 (let a 1 a))))
+  (test= 1 (if false 2 false 3 (let a 1 a)))
+  (test= 0 (if false 1 0)))
 
 (define-test case
   (let x 10
