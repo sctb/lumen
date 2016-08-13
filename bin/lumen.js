@@ -691,6 +691,7 @@ sinh = math.sinh;
 sqrt = math.sqrt;
 tan = math.tan;
 tanh = math.tanh;
+trunc = math.floor;
 setenv("quote", {_stash: true, macro: function (form) {
   return(quoted(form));
 }});
@@ -890,7 +891,7 @@ setenv("define-global", {_stash: true, macro: function (name, x) {
   var _x133 = destash33(x, _r35);
   var _id29 = _r35;
   var body = cut(_id29, 0);
-  setenv(_name7, {_stash: true, variable: true, toplevel: true});
+  setenv(_name7, {_stash: true, toplevel: true, variable: true});
   if (some63(body)) {
     return(join(["%global-function", _name7], bind42(_x133, body)));
   } else {

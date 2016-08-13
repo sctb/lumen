@@ -588,6 +588,7 @@ sinh = math.sinh
 sqrt = math.sqrt
 tan = math.tan
 tanh = math.tanh
+trunc = math.floor
 setenv("quote", {_stash = true, macro = function (form)
   return(quoted(form))
 end})

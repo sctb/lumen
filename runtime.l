@@ -350,3 +350,4 @@
 (define-global sqrt (get math 'sqrt))
 (define-global tan (get math 'tan))
 (define-global tanh (get math 'tanh))
+(define-global trunc (get math 'floor))
