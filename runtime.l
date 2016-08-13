@@ -1,5 +1,3 @@
-;; -*- mode: lisp -*-
-
 (define-global environment (list (obj)))
 (define-global target (language))
 

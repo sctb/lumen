@@ -1,5 +1,3 @@
-;; -*- mode: lisp -*-
-
 (define reader (require 'reader))
 
 (define getenv (k p)

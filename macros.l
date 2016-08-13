@@ -1,5 +1,3 @@
-;; -*- mode: lisp -*-
-
 (define-macro quote (form)
   (quoted form))
 

@@ -1,5 +1,3 @@
-;; -*- mode: lisp -*-
-
 (define passed 0)
 (define failed 0)
 (define tests ())
