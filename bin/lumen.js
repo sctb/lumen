@@ -243,7 +243,8 @@ first = function (f, l) {
   var _x1 = l;
   var _n5 = _35(_x1);
   var _i5 = 0;
-  while (_i5 < _n5) {
+  var _j = _n5;
+  while (_i5 < _j) {
     var x = _x1[_i5];
     var y = f(x);
     if (y) {
@@ -260,7 +261,8 @@ in63 = function (x, t) {
 pair = function (l) {
   var l1 = [];
   var i = 0;
-  while (i < _35(l)) {
+  var _j1 = _35(l);
+  while (i < _j1) {
     add(l1, [l[i], l[i + 1]]);
     i = i + 1;
     i = i + 1;
@@ -272,7 +274,8 @@ map = function (f, x) {
   var _x3 = x;
   var _n6 = _35(_x3);
   var _i6 = 0;
-  while (_i6 < _n6) {
+  var _j2 = _n6;
+  while (_i6 < _j2) {
     var v = _x3[_i6];
     var y = f(v);
     if (is63(y)) {
@@ -501,7 +504,8 @@ number_code63 = function (n) {
 numeric63 = function (s) {
   var n = _35(s);
   var i = 0;
-  while (i < n) {
+  var _j3 = n;
+  while (i < _j3) {
     if (! number_code63(code(s, i))) {
       return(false);
     }
@@ -515,7 +519,8 @@ var tostring = function (x) {
 escape = function (s) {
   var s1 = "\"";
   var i = 0;
-  while (i < _35(s)) {
+  var _j4 = _35(s);
+  while (i < _j4) {
     var c = char(s, i);
     var _e13;
     if (c === "\n") {
@@ -900,7 +905,7 @@ setenv("define-global", {_stash: true, macro: function (name, x) {
   var _x140 = destash33(x, _r37);
   var _id31 = _r37;
   var body = cut(_id31, 0);
-  setenv(_name7, {_stash: true, toplevel: true, variable: true});
+  setenv(_name7, {_stash: true, variable: true, toplevel: true});
   if (some63(body)) {
     return(join(["%global-function", _name7], bind42(_x140, body)));
   } else {
@@ -1032,7 +1037,8 @@ setenv("for", {_stash: true, macro: function (i, to) {
   var _to1 = destash33(to, _r61);
   var _id53 = _r61;
   var body = cut(_id53, 0);
-  return(["let", _i3, 0, join(["while", ["<", _i3, _to1]], body, [["inc", _i3]])]);
+  var j = unique("j");
+  return(["let", [_i3, 0, j, _to1], join(["while", ["<", _i3, j]], body, [["inc", _i3]])]);
 }});
 setenv("step", {_stash: true, macro: function (v, t) {
   var _r63 = unstash(Array.prototype.slice.call(arguments, 2));
@@ -1206,7 +1212,8 @@ var main = function () {
   var argv = system.argv;
   var n = _35(argv);
   var i = 0;
-  while (i < n) {
+  var _j = n;
+  while (i < _j) {
     var a = argv[i];
     if (a === "-c" || a === "-o" || a === "-t" || a === "-e") {
       if (i === n - 1) {
@@ -1240,7 +1247,8 @@ var main = function () {
   var _x2 = pre;
   var _n = _35(_x2);
   var _i = 0;
-  while (_i < _n) {
+  var _j1 = _n;
+  while (_i < _j1) {
     var file = _x2[_i];
     run_file(file);
     _i = _i + 1;

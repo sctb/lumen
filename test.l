@@ -406,7 +406,12 @@ c"
     (for i 5
       (add l i))
     (test= '(0 1 2 3 4) l))
-  (test= '(0 1) (with l () (for i 2 (add l i)))))
+  (test= '(0 1) (with l () (for i 2 (add l i))))
+  (let (n 0 l '(a b c d e))
+    (for i (# l)
+      (inc n i)
+      (set l '(a b c)))
+    (test= 10 n)))
 
 (define-test table
   (test= 10 (get (obj a: 10) 'a))
