@@ -542,7 +542,7 @@
           (statement? x) (lower-special form hoist)
         (lower-call form hoist)))))
 
-(define expand (form)
+(define-global expand (form)
   (lower (macroexpand form)))
 
 (target js: (set (get global 'require) require))
