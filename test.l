@@ -891,7 +891,7 @@ c"
   (test= true (in? 7 '(2 4 foo: 7)))
   (test= true (in? true '(2 4 :bar))))
 
-(define-test find
+(define-test first
   (test= nil (first (fn (x) x) ()))
   (test= 7 (first (fn (x) x) '(7)))
   (test= true (first (fn (x) (= x 7)) '(2 4 7)))
