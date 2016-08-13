@@ -72,9 +72,9 @@
       (test= more (read "`(a b ,(z" more))
       (test= more (read "`\"biz" more))
       (test= more (read "'\"boz" more)))
-    (let ((ok msg) (guard (read "(open")))
+    (let ((ok e) (guard (read "(open")))
       (test= false ok)
-      (test= "Expected ) at 5" msg))))
+      (test= "Expected ) at 5" (get e 'message)))))
 
 (define-test boolean
   (test= true (or true false))
@@ -486,7 +486,10 @@ c"
   (test= 1 ((fn () (return (if true (return 1) 2))))))
 
 (define-test guard
-  (let-macro ((guard1 (x) `(cut (guard ,x) 0 2)))
+  (let-macro ((guard1 (x)
+                (let-unique (ok v)
+                  `(let ((,ok ,v) (guard ,x))
+                     (list ,ok (if ,ok ,v (get ,v 'message)))))))
     (test= '(true 42) (guard1 42))
     (test= '(false foo) (guard1 (error "foo")))
     (test= '(false foo) (guard1 (do (error "foo") (error "baz"))))

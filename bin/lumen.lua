@@ -781,7 +781,7 @@ setenv("define-global", {_stash = true, macro = function (name, x, ...)
   local _x147 = destash33(x, _r35)
   local _id29 = _r35
   local body = cut(_id29, 0)
-  setenv(_name7, {_stash = true, toplevel = true, variable = true})
+  setenv(_name7, {_stash = true, variable = true, toplevel = true})
   if some63(body) then
     return(join({"%global-function", _name7}, bind42(_x147, body)))
   else
@@ -869,12 +869,15 @@ setenv("guard", {_stash = true, macro = function (expr)
     local x = unique("x")
     local msg = unique("msg")
     local trace = unique("trace")
-    return({"let", {x, "nil", msg, "nil", trace, "nil"}, {"if", {"xpcall", {"fn", join(), {"set", x, expr}}, {"fn", {"m"}, {"set", msg, {"clip", "m", {"+", {"search", "m", "\": \""}, 2}}}, {"set", trace, {{"get", "debug", {"quote", "traceback"}}}}}}, {"list", true, x}, {"list", false, msg, trace}}})
+    local _x261 = {"obj"}
+    _x261.message = msg
+    _x261.stack = trace
+    return({"let", {x, "nil", msg, "nil", trace, "nil"}, {"if", {"xpcall", {"fn", join(), {"set", x, expr}}, {"fn", {"m"}, {"set", msg, {"clip", "m", {"+", {"search", "m", "\": \""}, 2}}}, {"set", trace, {{"get", "debug", {"quote", "traceback"}}}}}}, {"list", true, x}, {"list", false, _x261}}})
   end
 end})
 setenv("each", {_stash = true, macro = function (x, t, ...)
   local _r57 = unstash({...})
-  local _x276 = destash33(x, _r57)
+  local _x278 = destash33(x, _r57)
   local _t1 = destash33(t, _r57)
   local _id48 = _r57
   local body = cut(_id48, 0)
@@ -882,14 +885,14 @@ setenv("each", {_stash = true, macro = function (x, t, ...)
   local n = unique("n")
   local i = unique("i")
   local _e3
-  if atom63(_x276) then
-    _e3 = {i, _x276}
+  if atom63(_x278) then
+    _e3 = {i, _x278}
   else
     local _e4
-    if _35(_x276) > 1 then
-      _e4 = _x276
+    if _35(_x278) > 1 then
+      _e4 = _x278
     else
-      _e4 = {i, hd(_x276)}
+      _e4 = {i, hd(_x278)}
     end
     _e3 = _e4
   end
@@ -1000,17 +1003,16 @@ local function eval_print(form)
   end) then
     _e = {true, _x}
   else
-    _e = {false, _msg, _trace}
+    _e = {false, {message = _msg, stack = _trace}}
   end
   local _id = _e
   local ok = _id[1]
-  local x = _id[2]
-  local trace = _id[3]
+  local v = _id[2]
   if not ok then
-    return(print("error: " .. x .. "\n" .. trace))
+    return(print("error: " .. v.message .. "\n" .. v.stack))
   else
-    if is63(x) then
-      return(print(str(x)))
+    if is63(v) then
+      return(print(str(v)))
     end
   end
 end

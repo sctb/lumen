@@ -156,7 +156,7 @@
                 (set ,msg (clip m (+ (search m ": ") 2)))
                 (set ,trace ((get debug 'traceback)))))
              (list true ,x)
-           (list false ,msg ,trace))))))
+           (list false (obj message: ,msg stack: ,trace)))))))
 
 (define-macro each (x t rest: body)
   (let-unique (o n i)

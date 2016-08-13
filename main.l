@@ -3,12 +3,12 @@
 (define system (require 'system))
 
 (define eval-print (form)
-  (let ((ok x trace) (guard ((get compiler 'eval) form)))
+  (let ((ok v) (guard ((get compiler 'eval) form)))
     (if (not ok)
         (target
-          js: (print trace)
-          lua: (print (cat "error: " x "\n" trace)))
-        (is? x) (print (str x)))))
+          js: (print (get v 'stack))
+          lua: (print (cat "error: " (get v 'message) "\n" (get v 'stack))))
+        (is? v) (print (str v)))))
 
 (define rep (s)
   (eval-print ((get reader 'read-string) s)))

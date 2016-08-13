@@ -610,7 +610,7 @@
   (let-unique (e)
     (let (ind (indentation)
           body (with-indent (compile form :stmt))
-          hf `(return (%array false (get ,e "message") (get ,e "stack")))
+          hf `(return (%array false ,e))
           h (with-indent (compile hf :stmt)))
       (cat ind "try {\n" body ind "}\n"
            ind "catch (" e ") {\n" h ind "}\n"))))

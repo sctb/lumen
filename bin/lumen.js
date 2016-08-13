@@ -891,7 +891,7 @@ setenv("define-global", {_stash: true, macro: function (name, x) {
   var _x133 = destash33(x, _r35);
   var _id29 = _r35;
   var body = cut(_id29, 0);
-  setenv(_name7, {_stash: true, variable: true, toplevel: true});
+  setenv(_name7, {_stash: true, toplevel: true, variable: true});
   if (some63(body)) {
     return(join(["%global-function", _name7], bind42(_x133, body)));
   } else {
@@ -979,12 +979,15 @@ setenv("guard", {_stash: true, macro: function (expr) {
     var x = unique("x");
     var msg = unique("msg");
     var trace = unique("trace");
-    return(["let", [x, "nil", msg, "nil", trace, "nil"], ["if", ["xpcall", ["fn", join(), ["set", x, expr]], ["fn", ["m"], ["set", msg, ["clip", "m", ["+", ["search", "m", "\": \""], 2]]], ["set", trace, [["get", "debug", ["quote", "traceback"]]]]]], ["list", true, x], ["list", false, msg, trace]]]);
+    var _x240 = ["obj"];
+    _x240.message = msg;
+    _x240.stack = trace;
+    return(["let", [x, "nil", msg, "nil", trace, "nil"], ["if", ["xpcall", ["fn", join(), ["set", x, expr]], ["fn", ["m"], ["set", msg, ["clip", "m", ["+", ["search", "m", "\": \""], 2]]], ["set", trace, [["get", "debug", ["quote", "traceback"]]]]]], ["list", true, x], ["list", false, _x240]]]);
   }
 }});
 setenv("each", {_stash: true, macro: function (x, t) {
   var _r57 = unstash(Array.prototype.slice.call(arguments, 2));
-  var _x254 = destash33(x, _r57);
+  var _x256 = destash33(x, _r57);
   var _t1 = destash33(t, _r57);
   var _id48 = _r57;
   var body = cut(_id48, 0);
@@ -992,14 +995,14 @@ setenv("each", {_stash: true, macro: function (x, t) {
   var n = unique("n");
   var i = unique("i");
   var _e4;
-  if (atom63(_x254)) {
-    _e4 = [i, _x254];
+  if (atom63(_x256)) {
+    _e4 = [i, _x256];
   } else {
     var _e5;
-    if (_35(_x254) > 1) {
-      _e5 = _x254;
+    if (_35(_x256) > 1) {
+      _e5 = _x256;
     } else {
-      _e5 = [i, hd(_x254)];
+      _e5 = [i, hd(_x256)];
     }
     _e4 = _e5;
   }
@@ -1115,17 +1118,16 @@ var eval_print = function (form) {
       return([true, compiler.eval(form)]);
     }
     catch (_e) {
-      return([false, _e.message, _e.stack]);
+      return([false, _e]);
     }
   })();
   var ok = _id[0];
-  var x = _id[1];
-  var trace = _id[2];
+  var v = _id[1];
   if (! ok) {
-    return(print(trace));
+    return(print(v.stack));
   } else {
-    if (is63(x)) {
-      return(print(str(x)));
+    if (is63(v)) {
+      return(print(str(v)));
     }
   }
 };
