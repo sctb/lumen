@@ -274,11 +274,14 @@ var expand_definition = function (_x42) {
   drop(environment);
   return(_x44);
 };
-var expand_macro = function (_x46) {
+expand1 = function (_x46) {
   var _id3 = _x46;
   var name = _id3[0];
   var body = cut(_id3, 1);
-  return(macroexpand(apply1(macro_function(name), body)));
+  return(apply1(macro_function(name), body));
+};
+expand_macro = function (form) {
+  return(macroexpand(expand1(form)));
 };
 macroexpand = function (form) {
   if (symbol63(form)) {
@@ -419,7 +422,7 @@ indentation = function () {
   }
   return(s);
 };
-var reserved = {"or": true, "break": true, "var": true, "not": true, "<=": true, ">=": true, "delete": true, "false": true, "=": true, "continue": true, "catch": true, "default": true, "/": true, "debugger": true, "repeat": true, "elseif": true, "finally": true, "return": true, "switch": true, "true": true, "while": true, "==": true, "-": true, "function": true, "typeof": true, "do": true, "end": true, ">": true, "until": true, "then": true, "<": true, "and": true, "with": true, "+": true, "in": true, "else": true, "*": true, "case": true, "if": true, "throw": true, "try": true, "this": true, "nil": true, "%": true, "new": true, "for": true, "instanceof": true, "local": true, "void": true};
+var reserved = {"switch": true, "return": true, ">=": true, "for": true, "debugger": true, "while": true, "else": true, ">": true, "delete": true, "true": true, "continue": true, "nil": true, "local": true, "instanceof": true, "catch": true, "not": true, "case": true, "/": true, "-": true, "do": true, "==": true, "then": true, "and": true, "finally": true, "throw": true, "this": true, "in": true, "void": true, "=": true, "false": true, "<=": true, "until": true, "break": true, "new": true, "end": true, "with": true, "var": true, "typeof": true, "function": true, "try": true, "or": true, "default": true, "repeat": true, "+": true, "elseif": true, "<": true, "%": true, "if": true, "*": true};
 reserved63 = function (x) {
   return(reserved[x]);
 };
@@ -479,22 +482,22 @@ _x60.js = "!";
 _x60.lua = "not";
 __x59["not"] = _x60;
 var __x61 = [];
-__x61["%"] = true;
 __x61["*"] = true;
+__x61["%"] = true;
 __x61["/"] = true;
 var __x62 = [];
-__x62["-"] = true;
 __x62["+"] = true;
+__x62["-"] = true;
 var __x63 = [];
 var _x64 = [];
 _x64.js = "+";
 _x64.lua = "..";
 __x63.cat = _x64;
 var __x65 = [];
-__x65["<="] = true;
 __x65[">"] = true;
-__x65[">="] = true;
+__x65["<="] = true;
 __x65["<"] = true;
+__x65[">="] = true;
 var __x66 = [];
 var _x67 = [];
 _x67.js = "===";
@@ -679,9 +682,9 @@ var compile_special = function (form, stmt63) {
   var x = _id5[0];
   var args = cut(_id5, 1);
   var _id6 = getenv(x);
+  var self_tr63 = _id6.tr;
   var stmt = _id6.stmt;
   var special = _id6.special;
-  var self_tr63 = _id6.tr;
   var tr = terminator(stmt63 && ! self_tr63);
   return(apply1(special, args) + tr);
 };
@@ -699,10 +702,10 @@ var compile_call = function (form) {
   }
 };
 var op_delims = function (parent, child) {
-  var _r55 = unstash(Array.prototype.slice.call(arguments, 2));
-  var _parent = destash33(parent, _r55);
-  var _child = destash33(child, _r55);
-  var _id7 = _r55;
+  var _r56 = unstash(Array.prototype.slice.call(arguments, 2));
+  var _parent = destash33(parent, _r56);
+  var _child = destash33(child, _r56);
+  var _id7 = _r56;
   var right = _id7.right;
   var _e26;
   if (right) {
@@ -738,10 +741,10 @@ var compile_infix = function (form) {
   }
 };
 compile_function = function (args, body) {
-  var _r57 = unstash(Array.prototype.slice.call(arguments, 2));
-  var _args = destash33(args, _r57);
-  var _body = destash33(body, _r57);
-  var _id12 = _r57;
+  var _r58 = unstash(Array.prototype.slice.call(arguments, 2));
+  var _args = destash33(args, _r58);
+  var _body = destash33(body, _r58);
+  var _id12 = _r58;
   var name = _id12.name;
   var prefix = _id12.prefix;
   var _e27;
@@ -784,9 +787,9 @@ var can_return63 = function (form) {
   return(is63(form) && (atom63(form) || !( hd(form) === "return") && ! statement63(hd(form))));
 };
 compile = function (form) {
-  var _r59 = unstash(Array.prototype.slice.call(arguments, 1));
-  var _form = destash33(form, _r59);
-  var _id14 = _r59;
+  var _r60 = unstash(Array.prototype.slice.call(arguments, 1));
+  var _form = destash33(form, _r60);
+  var _id14 = _r60;
   var stmt = _id14.stmt;
   if (nil63(_form)) {
     return("");
