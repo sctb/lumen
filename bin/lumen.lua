@@ -6,6 +6,12 @@ end
 function is63(x)
   return(not nil63(x))
 end
+function no(x)
+  return(nil63(x) or x == false)
+end
+function yes(x)
+  return(not no(x))
+end
 function _35(x)
   return(#x)
 end
@@ -258,7 +264,7 @@ function map(f, x)
 end
 function keep(f, x)
   return(map(function (v)
-    if f(v) then
+    if yes(f(v)) then
       return(v)
     end
   end, x))
@@ -543,9 +549,9 @@ function toplevel63()
   return(one63(environment))
 end
 function setenv(k, ...)
-  local _r67 = unstash({...})
-  local _k = destash33(k, _r67)
-  local _id1 = _r67
+  local _r69 = unstash({...})
+  local _k = destash33(k, _r69)
+  local _id1 = _r69
   local _keys = cut(_id1, 0)
   if string63(_k) then
     local _e7
@@ -778,7 +784,7 @@ setenv("define-global", {_stash = true, macro = function (name, x, ...)
   local _x147 = destash33(x, _r35)
   local _id29 = _r35
   local body = cut(_id29, 0)
-  setenv(_name7, {_stash = true, variable = true, toplevel = true})
+  setenv(_name7, {_stash = true, toplevel = true, variable = true})
   if some63(body) then
     return(join({"%global-function", _name7}, bind42(_x147, body)))
   else

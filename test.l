@@ -817,6 +817,7 @@ c"
 
 (define-test keep
   (test= () (keep (fn (x) x) ()))
+  (test= '(0 1 2) (keep (fn (x) x) '(0 1 2)))
   (let even (fn (x) (= (% x 2) 0))
     (test= '(6) (keep even '(5 6 7))))
   (test= '((1) (2 3)) (keep some? '(() (1) () (2 3))))

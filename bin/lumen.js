@@ -6,6 +6,12 @@ nil63 = function (x) {
 is63 = function (x) {
   return(! nil63(x));
 };
+no = function (x) {
+  return(nil63(x) || x === false);
+};
+yes = function (x) {
+  return(! no(x));
+};
 _35 = function (x) {
   return(x.length || 0);
 };
@@ -309,7 +315,7 @@ map = function (f, x) {
 };
 keep = function (f, x) {
   return(map(function (v) {
-    if (f(v)) {
+    if (yes(f(v))) {
       return(v);
     }
   }, x));
@@ -645,9 +651,9 @@ toplevel63 = function () {
   return(one63(environment));
 };
 setenv = function (k) {
-  var _r70 = unstash(Array.prototype.slice.call(arguments, 1));
-  var _k10 = destash33(k, _r70);
-  var _id1 = _r70;
+  var _r72 = unstash(Array.prototype.slice.call(arguments, 1));
+  var _k10 = destash33(k, _r72);
+  var _id1 = _r72;
   var _keys = cut(_id1, 0);
   if (string63(_k10)) {
     var _e19;
@@ -897,7 +903,7 @@ setenv("define-global", {_stash: true, macro: function (name, x) {
   var _x133 = destash33(x, _r35);
   var _id29 = _r35;
   var body = cut(_id29, 0);
-  setenv(_name7, {_stash: true, toplevel: true, variable: true});
+  setenv(_name7, {_stash: true, variable: true, toplevel: true});
   if (some63(body)) {
     return(join(["%global-function", _name7], bind42(_x133, body)));
   } else {

@@ -419,7 +419,7 @@ indentation = function () {
   }
   return(s);
 };
-var reserved = {"or": true, "if": true, "new": true, "try": true, "continue": true, "true": true, "while": true, "instanceof": true, "not": true, ">": true, "do": true, "<": true, "then": true, "nil": true, "<=": true, "debugger": true, "in": true, "default": true, "repeat": true, "break": true, "%": true, "this": true, "catch": true, "throw": true, "+": true, "var": true, "and": true, "void": true, "function": true, "else": true, "case": true, "end": true, "switch": true, "elseif": true, "local": true, "delete": true, "/": true, "*": true, "-": true, "return": true, "with": true, "for": true, "=": true, ">=": true, "typeof": true, "==": true, "until": true, "false": true, "finally": true};
+var reserved = {"not": true, "else": true, "switch": true, ">=": true, "debugger": true, "break": true, "new": true, "or": true, "*": true, "nil": true, "local": true, "==": true, "return": true, "var": true, "<": true, "then": true, "instanceof": true, ">": true, "case": true, "%": true, "elseif": true, "delete": true, "until": true, "true": true, "with": true, "for": true, "do": true, "+": true, "/": true, "-": true, "try": true, "throw": true, "while": true, "repeat": true, "and": true, "<=": true, "default": true, "this": true, "if": true, "in": true, "continue": true, "=": true, "end": true, "finally": true, "void": true, "false": true, "typeof": true, "catch": true, "function": true};
 reserved63 = function (x) {
   return(reserved[x]);
 };
@@ -479,9 +479,9 @@ _x60.lua = "not";
 _x60.js = "!";
 __x59["not"] = _x60;
 var __x61 = [];
-__x61["*"] = true;
-__x61["/"] = true;
 __x61["%"] = true;
+__x61["/"] = true;
+__x61["*"] = true;
 var __x62 = [];
 __x62["-"] = true;
 __x62["+"] = true;
@@ -491,10 +491,10 @@ _x64.lua = "..";
 _x64.js = "+";
 __x63.cat = _x64;
 var __x65 = [];
-__x65[">"] = true;
 __x65[">="] = true;
 __x65["<"] = true;
 __x65["<="] = true;
+__x65[">"] = true;
 var __x66 = [];
 var _x67 = [];
 _x67.lua = "==";
@@ -680,8 +680,8 @@ var compile_special = function (form, stmt63) {
   var args = cut(_id5, 1);
   var _id6 = getenv(x);
   var stmt = _id6.stmt;
-  var self_tr63 = _id6.tr;
   var special = _id6.special;
+  var self_tr63 = _id6.tr;
   var tr = terminator(stmt63 && ! self_tr63);
   return(apply(special, args) + tr);
 };
@@ -1055,7 +1055,7 @@ eval = function (form) {
   run(code);
   return(_37result);
 };
-setenv("do", {_stash: true, stmt: true, tr: true, special: function () {
+setenv("do", {_stash: true, stmt: true, special: function () {
   var forms = unstash(Array.prototype.slice.call(arguments, 0));
   var s = "";
   var _x115 = forms;
@@ -1072,8 +1072,8 @@ setenv("do", {_stash: true, stmt: true, tr: true, special: function () {
     _i12 = _i12 + 1;
   }
   return(s);
-}});
-setenv("%if", {_stash: true, stmt: true, tr: true, special: function (cond, cons, alt) {
+}, tr: true});
+setenv("%if", {_stash: true, stmt: true, special: function (cond, cons, alt) {
   var _cond1 = compile(cond);
   indent_level = indent_level + 1;
   var _x118 = compile(cons, {_stash: true, stmt: true});
@@ -1106,8 +1106,8 @@ setenv("%if", {_stash: true, stmt: true, tr: true, special: function (cond, cons
   } else {
     return(s + "\n");
   }
-}});
-setenv("while", {_stash: true, stmt: true, tr: true, special: function (cond, form) {
+}, tr: true});
+setenv("while", {_stash: true, stmt: true, special: function (cond, form) {
   var _cond3 = compile(cond);
   indent_level = indent_level + 1;
   var _x121 = compile(form, {_stash: true, stmt: true});
@@ -1119,8 +1119,8 @@ setenv("while", {_stash: true, stmt: true, tr: true, special: function (cond, fo
   } else {
     return(ind + "while " + _cond3 + " do\n" + body + ind + "end\n");
   }
-}});
-setenv("%for", {_stash: true, stmt: true, tr: true, special: function (t, k, form) {
+}, tr: true});
+setenv("%for", {_stash: true, stmt: true, special: function (t, k, form) {
   var _t1 = compile(t);
   var ind = indentation();
   indent_level = indent_level + 1;
@@ -1132,8 +1132,8 @@ setenv("%for", {_stash: true, stmt: true, tr: true, special: function (t, k, for
   } else {
     return(ind + "for (" + k + " in " + _t1 + ") {\n" + body + ind + "}\n");
   }
-}});
-setenv("%try", {_stash: true, stmt: true, tr: true, special: function (form) {
+}, tr: true});
+setenv("%try", {_stash: true, stmt: true, special: function (form) {
   var e = unique("e");
   var ind = indentation();
   indent_level = indent_level + 1;
@@ -1146,33 +1146,33 @@ setenv("%try", {_stash: true, stmt: true, tr: true, special: function (form) {
   indent_level = indent_level - 1;
   var h = _x135;
   return(ind + "try {\n" + body + ind + "}\n" + ind + "catch (" + e + ") {\n" + h + ind + "}\n");
-}});
-setenv("%delete", {_stash: true, special: function (place) {
+}, tr: true});
+setenv("%delete", {_stash: true, stmt: true, special: function (place) {
   return(indentation() + "delete " + compile(place));
-}, stmt: true});
-setenv("break", {_stash: true, special: function () {
+}});
+setenv("break", {_stash: true, stmt: true, special: function () {
   return(indentation() + "break");
-}, stmt: true});
+}});
 setenv("%function", {_stash: true, special: function (args, body) {
   return(compile_function(args, body));
 }});
-setenv("%global-function", {_stash: true, stmt: true, tr: true, special: function (name, args, body) {
+setenv("%global-function", {_stash: true, stmt: true, special: function (name, args, body) {
   if (target === "lua") {
     var x = compile_function(args, body, {_stash: true, name: name});
     return(indentation() + x);
   } else {
     return(compile(["set", name, ["%function", args, body]], {_stash: true, stmt: true}));
   }
-}});
-setenv("%local-function", {_stash: true, stmt: true, tr: true, special: function (name, args, body) {
+}, tr: true});
+setenv("%local-function", {_stash: true, stmt: true, special: function (name, args, body) {
   if (target === "lua") {
     var x = compile_function(args, body, {_stash: true, name: name, prefix: "local"});
     return(indentation() + x);
   } else {
     return(compile(["%local", name, ["%function", args, body]], {_stash: true, stmt: true}));
   }
-}});
-setenv("return", {_stash: true, special: function (x) {
+}, tr: true});
+setenv("return", {_stash: true, stmt: true, special: function (x) {
   var _e38;
   if (nil63(x)) {
     _e38 = "return";
@@ -1181,14 +1181,14 @@ setenv("return", {_stash: true, special: function (x) {
   }
   var _x145 = _e38;
   return(indentation() + _x145);
-}, stmt: true});
+}});
 setenv("new", {_stash: true, special: function (x) {
   return("new " + compile(x));
 }});
 setenv("typeof", {_stash: true, special: function (x) {
   return("typeof(" + compile(x) + ")");
 }});
-setenv("error", {_stash: true, special: function (x) {
+setenv("error", {_stash: true, stmt: true, special: function (x) {
   var _e39;
   if (target === "js") {
     _e39 = "throw " + compile(["new", ["Error", x]]);
@@ -1197,8 +1197,8 @@ setenv("error", {_stash: true, special: function (x) {
   }
   var e = _e39;
   return(indentation() + e);
-}, stmt: true});
-setenv("%local", {_stash: true, special: function (name, value) {
+}});
+setenv("%local", {_stash: true, stmt: true, special: function (name, value) {
   var _id26 = compile(name);
   var value1 = compile(value);
   var _e40;
@@ -1217,8 +1217,8 @@ setenv("%local", {_stash: true, special: function (name, value) {
   var keyword = _e41;
   var ind = indentation();
   return(ind + keyword + _id26 + rh);
-}, stmt: true});
-setenv("set", {_stash: true, special: function (lh, rh) {
+}});
+setenv("set", {_stash: true, stmt: true, special: function (lh, rh) {
   var _lh1 = compile(lh);
   var _e42;
   if (nil63(rh)) {
@@ -1228,7 +1228,7 @@ setenv("set", {_stash: true, special: function (lh, rh) {
   }
   var _rh1 = compile(_e42);
   return(indentation() + _lh1 + " = " + _rh1);
-}, stmt: true});
+}});
 setenv("get", {_stash: true, special: function (t, k) {
   var _t3 = compile(t);
   var k1 = compile(k);
