@@ -29,7 +29,8 @@
 (define-global function? (x) (= (type x) 'function))
 
 (define-global obj? (x)
-  (= (type x) (target lua: 'table js: 'object)))
+  (and (is? x)
+       (= (type x) (target lua: 'table js: 'object))))
 
 (define-global atom? (x)
   (or (nil? x) (string? x) (number? x) (boolean? x)))

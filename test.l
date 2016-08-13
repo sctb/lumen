@@ -874,6 +874,7 @@ c"
   (test= false (atom? '(1)))
   (test= false (atom? (obj)))
   (test= true (obj? (obj a: 10)))
+  (test= false (obj? null))
   (test= false (obj? 1))
   (test= false (obj? 'zz))
   (test= false (obj? (fn ()))))

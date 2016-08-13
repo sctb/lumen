@@ -46,7 +46,7 @@ function63 = function (x) {
   return(type(x) === "function");
 };
 obj63 = function (x) {
-  return(type(x) === "object");
+  return(is63(x) && type(x) === "object");
 };
 atom63 = function (x) {
   return(nil63(x) || string63(x) || number63(x) || boolean63(x));

@@ -377,7 +377,7 @@ function indentation()
   end
   return(s)
 end
-local reserved = {["this"] = true, ["switch"] = true, ["for"] = true, ["in"] = true, ["try"] = true, ["instanceof"] = true, ["void"] = true, ["%"] = true, ["+"] = true, ["<="] = true, ["/"] = true, ["-"] = true, ["var"] = true, [">="] = true, ["default"] = true, ["while"] = true, ["nil"] = true, ["throw"] = true, ["*"] = true, ["delete"] = true, [">"] = true, ["<"] = true, ["do"] = true, ["not"] = true, ["return"] = true, ["continue"] = true, ["="] = true, ["end"] = true, ["new"] = true, ["local"] = true, ["if"] = true, ["=="] = true, ["and"] = true, ["else"] = true, ["until"] = true, ["debugger"] = true, ["finally"] = true, ["with"] = true, ["false"] = true, ["case"] = true, ["then"] = true, ["elseif"] = true, ["or"] = true, ["break"] = true, ["function"] = true, ["catch"] = true, ["typeof"] = true, ["repeat"] = true, ["true"] = true}
+local reserved = {["then"] = true, ["while"] = true, ["nil"] = true, ["<"] = true, ["case"] = true, [">"] = true, ["new"] = true, ["and"] = true, ["not"] = true, ["end"] = true, ["void"] = true, ["break"] = true, ["+"] = true, ["continue"] = true, ["-"] = true, ["/"] = true, ["default"] = true, ["until"] = true, ["do"] = true, ["%"] = true, ["debugger"] = true, ["delete"] = true, ["return"] = true, ["function"] = true, ["="] = true, ["instanceof"] = true, ["finally"] = true, ["=="] = true, ["typeof"] = true, ["repeat"] = true, ["elseif"] = true, ["true"] = true, ["try"] = true, ["false"] = true, ["<="] = true, ["throw"] = true, [">="] = true, ["var"] = true, ["this"] = true, ["with"] = true, ["in"] = true, ["*"] = true, ["local"] = true, ["if"] = true, ["for"] = true, ["switch"] = true, ["or"] = true, ["catch"] = true, ["else"] = true}
 function reserved63(x)
   return(reserved[x])
 end
@@ -426,40 +426,40 @@ function mapo(f, t)
 end
 local __x59 = {}
 local _x60 = {}
-_x60.lua = "not"
 _x60.js = "!"
+_x60.lua = "not"
 __x59["not"] = _x60
 local __x61 = {}
 __x61["%"] = true
-__x61["*"] = true
 __x61["/"] = true
+__x61["*"] = true
 local __x62 = {}
-__x62["+"] = true
 __x62["-"] = true
+__x62["+"] = true
 local __x63 = {}
 local _x64 = {}
-_x64.lua = ".."
 _x64.js = "+"
+_x64.lua = ".."
 __x63.cat = _x64
 local __x65 = {}
-__x65["<"] = true
 __x65[">="] = true
+__x65["<"] = true
 __x65[">"] = true
 __x65["<="] = true
 local __x66 = {}
 local _x67 = {}
-_x67.lua = "=="
 _x67.js = "==="
+_x67.lua = "=="
 __x66["="] = _x67
 local __x68 = {}
 local _x69 = {}
-_x69.lua = "and"
 _x69.js = "&&"
+_x69.lua = "and"
 __x68["and"] = _x69
 local __x70 = {}
 local _x71 = {}
-_x71.lua = "or"
 _x71.js = "||"
+_x71.lua = "or"
 __x70["or"] = _x71
 local infix = {__x59, __x61, __x62, __x63, __x65, __x66, __x68, __x70}
 local function unary63(form)
@@ -625,8 +625,8 @@ local function compile_special(form, stmt63)
   local x = _id5[1]
   local args = cut(_id5, 1)
   local _id6 = getenv(x)
-  local self_tr63 = _id6.tr
   local stmt = _id6.stmt
+  local self_tr63 = _id6.tr
   local special = _id6.special
   local tr = terminator(stmt63 and not self_tr63)
   return(apply(special, args) .. tr)
@@ -688,8 +688,8 @@ function compile_function(args, body, ...)
   local _args = destash33(args, _r57)
   local _body = destash33(body, _r57)
   local _id12 = _r57
-  local name = _id12.name
   local prefix = _id12.prefix
+  local name = _id12.name
   local _e19
   if name then
     _e19 = compile(name)
@@ -1119,7 +1119,7 @@ setenv("%global-function", {_stash = true, stmt = true, tr = true, special = fun
 end})
 setenv("%local-function", {_stash = true, stmt = true, tr = true, special = function (name, args, body)
   if target == "lua" then
-    local x = compile_function(args, body, {_stash = true, name = name, prefix = "local"})
+    local x = compile_function(args, body, {_stash = true, prefix = "local", name = name})
     return(indentation() .. x)
   else
     return(compile({"%local", name, {"%function", args, body}}, {_stash = true, stmt = true}))
@@ -1251,4 +1251,4 @@ setenv("%object", {_stash = true, special = function (...)
   end
   return(s .. "}")
 end})
-return({eval = eval, compile = compile, run = run, expand = expand})
+return({eval = eval, run = run, compile = compile, expand = expand})
