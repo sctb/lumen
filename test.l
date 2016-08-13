@@ -455,6 +455,20 @@ c"
     (each ((x)) t
       (test= true (number? x)))))
 
+(define-test step
+  (let n 0
+    (step x '(1 2 3) (inc n x))
+    (test= 6 n))
+  (let n 0
+    (step (x y) '((1 2) (3 4))
+      (inc n (+ x y)))
+    (test= 10 n))
+  (let xs ()
+    (let l (list (obj a: 1 b: 2) (obj a: 2 b: 4))
+      (step (:a :b) l
+        (add xs (+ a b))))
+    (test= '(3 6) xs)))
+
 (define-test fn
   (let f (fn (n) (+ n 10))
     (test= 20 (f 10))

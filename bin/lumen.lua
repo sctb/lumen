@@ -781,7 +781,7 @@ setenv("define-global", {_stash = true, macro = function (name, x, ...)
   local _x147 = destash33(x, _r35)
   local _id29 = _r35
   local body = cut(_id29, 0)
-  setenv(_name7, {_stash = true, variable = true, toplevel = true})
+  setenv(_name7, {_stash = true, toplevel = true, variable = true})
   if some63(body) then
     return(join({"%global-function", _name7}, bind42(_x147, body)))
   else
@@ -870,8 +870,8 @@ setenv("guard", {_stash = true, macro = function (expr)
     local msg = unique("msg")
     local trace = unique("trace")
     local _x261 = {"obj"}
-    _x261.message = msg
     _x261.stack = trace
+    _x261.message = msg
     return({"let", {x, "nil", msg, "nil", trace, "nil"}, {"if", {"xpcall", {"fn", join(), {"set", x, expr}}, {"fn", {"m"}, {"set", msg, {"clip", "m", {"+", {"search", "m", "\": \""}, 2}}}, {"set", trace, {{"get", "debug", {"quote", "traceback"}}}}}}, {"list", true, x}, {"list", false, _x261}}})
   end
 end})
@@ -1003,7 +1003,7 @@ local function eval_print(form)
   end) then
     _e = {true, _x}
   else
-    _e = {false, {message = _msg, stack = _trace}}
+    _e = {false, {stack = _trace, message = _msg}}
   end
   local _id = _e
   local ok = _id[1]

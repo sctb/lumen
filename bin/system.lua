@@ -51,4 +51,4 @@ local function run(command)
   f.close(f)
   return(x)
 end
-return({argv = argv, ["get-environment-variable"] = get_environment_variable, ["read-file"] = read_file, ["file-exists?"] = file_exists63, run = run, reload = reload, write = write, exit = exit, ["path-join"] = path_join, ["path-separator"] = path_separator, ["write-file"] = write_file})
+return({["file-exists?"] = file_exists63, ["get-environment-variable"] = get_environment_variable, ["path-separator"] = path_separator, write = write, ["path-join"] = path_join, run = run, reload = reload, ["write-file"] = write_file, argv = argv, ["read-file"] = read_file, exit = exit})
