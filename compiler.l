@@ -56,7 +56,7 @@
         (let i (get names x)
           (inc (get names x))
           (unique (cat x i)))
-      (do (%set (get names x) 1)
+      (do (set (get names x) 1)
           (cat "_" x)))))
 
 (define stash* (args)
@@ -168,7 +168,7 @@
                    ;; don't splice, just expand
                    (quasiexpand (at v 1))
                  (quasiexpand v depth))
-          (%set (get (last xs) k) v))))
+          (set (get (last xs) k) v))))
     ;; collect sibling lists
     (step x form
       (if (quasisplice? x depth)
@@ -299,7 +299,7 @@
   (let (s "(" c "")
     (step x args
       (cat! s c (compile x))
-      (%set c ", "))
+      (set c ", "))
     (cat s ")")))
 
 (define escape-newlines (s)
@@ -546,7 +546,7 @@
 (define-global expand (form)
   (lower (macroexpand form)))
 
-(target js: (%set (get global 'require) require))
+(target js: (set (get global 'require) require))
 (target js: (define run eval))
 
 (target lua: (define load1 load))
@@ -559,9 +559,9 @@
 
 (define-global eval (form)
   (let previous target
-    (%set target (language))
-    (let code (compile (expand `(%set %result ,form)))
-      (%set target previous)
+    (set target (language))
+    (let code (compile (expand `(set %result ,form)))
+      (set target previous)
       (run code)
       %result)))
 
@@ -672,7 +672,7 @@
 	k1 (compile k))
     (when (and (= target 'lua)
                (= (char t 0) "{"))
-      (%set t (cat "(" t ")")))
+      (set t (cat "(" t ")")))
     (if (and (string-literal? k)
              (valid-id? (inner k)))
         (cat t "." (inner k))
@@ -685,7 +685,7 @@
     (each (k v) forms
       (when (number? k)
         (cat! s c (compile v))
-        (%set c ", ")))
+        (set c ", ")))
     (cat open s close)))
 
 (define-special %object forms
@@ -697,7 +697,7 @@
           (unless (string? k)
             (error (cat "Illegal key: " (str k))))
           (cat! s c (key k) sep (compile v))
-          (%set c ", "))))
+          (set c ", "))))
     (cat s "}")))
 
 (export run

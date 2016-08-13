@@ -55,18 +55,18 @@
           n (# x)
           upto (if (or (nil? upto) (> upto n)) n upto))
       (while (< i upto)
-        (%set (at l j) (at x i))
+        (set (at l j) (at x i))
         (inc i)
         (inc j))
       (each (k v) x
         (unless (number? k)
-          (%set (get l k) v))))))
+          (set (get l k) v))))))
 
 (define-global keys (x)
   (with t ()
     (each (k v) x
       (unless (number? k)
-        (%set (get t k) v)))))
+        (set (get t k) v)))))
 
 (define-global edge (x)
   (- (# x) 1))
@@ -122,11 +122,11 @@
         (if (and a b)
             (let (c () o (# a))
               (each (k v) a
-                (%set (get c k) v))
+                (set (get c k) v))
               (each (k v) b
                 (when (number? k)
                   (inc k o))
-                (%set (get c k) v))
+                (set (get c k) v))
               c)
           (or a b ())))
     (or (reduce join ls) ())))
@@ -160,7 +160,7 @@
       (unless (number? k)
         (let y (f v)
           (when (is? y)
-            (%set (get t k) y)))))))
+            (set (get t k) y)))))))
 
 (define-global keep (f x)
   (map (fn (v) (when (yes (f v)) v)) x))
@@ -181,8 +181,8 @@
     (let p ()
       (each (k v) args
         (unless (number? k)
-          (%set (get p k) v)))
-      (%set (get p '_stash) true)
+          (set (get p k) v)))
+      (set (get p '_stash) true)
       (add args p)))
   args)
 
@@ -193,14 +193,14 @@
           (with args1 (almost args)
             (each (k v) l
               (unless (= k '_stash)
-                (%set (get args1 k) v))))
+                (set (get args1 k) v))))
         args))))
 
 (define-global destash! (l args1)
   (if (and (obj? l) (get l '_stash))
       (each (k v) l
         (unless (= k '_stash)
-          (%set (get args1 k) v)))
+          (set (get args1 k) v)))
     l))
 
 (define-global search (s pattern start)
@@ -219,7 +219,7 @@
           (let i (search s sep)
             (if (nil? i) (break)
               (do (add l (clip s 0 i))
-                  (%set s (clip s (+ i n)))))))
+                  (set s (clip s (+ i n)))))))
         (add l s)))))
 
 (define-global cat xs
@@ -293,13 +293,13 @@
       (add l x)
       (each (k v) x
         (if (number? k)
-            (%set (get xs k) (str v l))
+            (set (get xs k) (str v l))
           (do (add ks (cat k ":"))
               (add ks (str v l)))))
       (drop l)
       (each v (join xs ks)
         (cat! s sp v)
-        (%set sp " "))
+        (set sp " "))
       (cat s  ")"))))
 
 (target lua:
@@ -322,8 +322,8 @@
                   (last environment))
           entry (or (get frame k) (obj)))
       (each (k v) keys
-        (%set (get entry k) v))
-      (%set (get frame k) entry))))
+        (set (get entry k) v))
+      (set (get frame k) entry))))
 
 (target js:
   (define-global print (x)
