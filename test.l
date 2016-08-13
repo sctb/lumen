@@ -16,8 +16,10 @@
     (= (str a) (str b))))
 
 (define-macro test= (a b)
-  `(test (equal? ,a ,b)
-	 (cat "failed: expected " (str ,a) ", was " (str ,b))))
+  (let-unique (x y)
+    `(let (,x ,a ,y ,b)
+       (test (equal? ,x ,y)
+             (cat "failed: expected " (str ,x) ", was " (str ,y))))))
 
 (define-macro define-test (name rest: body)
   `(add tests (list ',name (fn () ,@body))))
