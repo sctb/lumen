@@ -425,7 +425,7 @@ indentation = function () {
   }
   return(s);
 };
-var reserved = {"break": true, "for": true, "then": true, "void": true, "debugger": true, "true": true, "try": true, "==": true, "if": true, "until": true, "<": true, "catch": true, "this": true, "while": true, "end": true, ">": true, "instanceof": true, "typeof": true, "delete": true, "and": true, "with": true, "local": true, "return": true, "%": true, "*": true, "switch": true, "new": true, "not": true, "nil": true, "var": true, "throw": true, "default": true, "case": true, "finally": true, "function": true, "elseif": true, "in": true, "continue": true, ">=": true, "do": true, "<=": true, "=": true, "false": true, "or": true, "/": true, "-": true, "repeat": true, "+": true, "else": true};
+var reserved = {"continue": true, "var": true, "end": true, ">": true, "true": true, "finally": true, "repeat": true, "case": true, "this": true, "with": true, "function": true, "throw": true, "until": true, "==": true, "not": true, "*": true, "catch": true, "elseif": true, "else": true, "instanceof": true, "break": true, "void": true, "new": true, "local": true, "=": true, "for": true, "false": true, "try": true, "typeof": true, "nil": true, "%": true, "do": true, "while": true, "debugger": true, "default": true, "then": true, "return": true, "and": true, "delete": true, "if": true, "in": true, ">=": true, "/": true, "switch": true, "-": true, "<": true, "or": true, "+": true, "<=": true};
 reserved63 = function (x) {
   return(reserved[x]);
 };
@@ -482,40 +482,40 @@ mapo = function (f, t) {
 };
 var __x59 = [];
 var _x60 = [];
-_x60.js = "!";
 _x60.lua = "not";
+_x60.js = "!";
 __x59["not"] = _x60;
 var __x61 = [];
-__x61["%"] = true;
 __x61["*"] = true;
 __x61["/"] = true;
+__x61["%"] = true;
 var __x62 = [];
 __x62["-"] = true;
 __x62["+"] = true;
 var __x63 = [];
 var _x64 = [];
-_x64.js = "+";
 _x64.lua = "..";
+_x64.js = "+";
 __x63.cat = _x64;
 var __x65 = [];
-__x65["<="] = true;
-__x65[">"] = true;
 __x65[">="] = true;
+__x65[">"] = true;
 __x65["<"] = true;
+__x65["<="] = true;
 var __x66 = [];
 var _x67 = [];
-_x67.js = "===";
 _x67.lua = "==";
+_x67.js = "===";
 __x66["="] = _x67;
 var __x68 = [];
 var _x69 = [];
-_x69.js = "&&";
 _x69.lua = "and";
+_x69.js = "&&";
 __x68["and"] = _x69;
 var __x70 = [];
 var _x71 = [];
-_x71.js = "||";
 _x71.lua = "or";
+_x71.js = "||";
 __x70["or"] = _x71;
 var infix = [__x59, __x61, __x62, __x63, __x65, __x66, __x68, __x70];
 var unary63 = function (form) {

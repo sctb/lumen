@@ -34,13 +34,16 @@
 (define-macro if branches
   (hd (expand-if branches)))
 
-(define-macro case (x rest: clauses)
-  (let bs (map (fn ((a b))
-                 (if (nil? b)
-                     (list a)
-                   `((= ',a ,x) ,b)))
-               (pair clauses))
-    `(if ,@(apply join bs))))
+(define-macro case (expr rest: clauses)
+  (let-unique (x)
+    (let (eq (fn (_) `(= ',_ ,x))
+          cl (fn ((a b))
+               (if (nil? b) (list a)
+                   (or (string? a) (number? a)) (list (eq a) b)
+                   (one? a) (list (eq (hd a)) b)
+                   (> (# a) 1) (list `(or ,@(map eq a)) b))))
+      `(let ,x ,expr
+         (if ,@(apply join (map cl (pair clauses))))))))
 
 (define-macro when (cond rest: body)
   `(if ,cond (do ,@body)))
