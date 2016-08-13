@@ -781,7 +781,7 @@ setenv("define-global", {_stash = true, macro = function (name, x, ...)
   local _x147 = destash33(x, _r35)
   local _id29 = _r35
   local body = cut(_id29, 0)
-  setenv(_name7, {_stash = true, toplevel = true, variable = true})
+  setenv(_name7, {_stash = true, variable = true, toplevel = true})
   if some63(body) then
     return(join({"%global-function", _name7}, bind42(_x147, body)))
   else
@@ -870,8 +870,8 @@ setenv("guard", {_stash = true, macro = function (expr)
     local msg = unique("msg")
     local trace = unique("trace")
     local _x261 = {"obj"}
-    _x261.stack = trace
     _x261.message = msg
+    _x261.stack = trace
     return({"let", {x, "nil", msg, "nil", trace, "nil"}, {"if", {"xpcall", {"fn", join(), {"set", x, expr}}, {"fn", {"m"}, {"set", msg, {"clip", "m", {"+", {"search", "m", "\": \""}, 2}}}, {"set", trace, {{"get", "debug", {"quote", "traceback"}}}}}}, {"list", true, x}, {"list", false, _x261}}})
   end
 end})
@@ -884,28 +884,28 @@ setenv("each", {_stash = true, macro = function (x, t, ...)
   local o = unique("o")
   local n = unique("n")
   local i = unique("i")
-  local _e3
+  local _e5
   if atom63(_x278) then
-    _e3 = {i, _x278}
+    _e5 = {i, _x278}
   else
-    local _e4
+    local _e6
     if _35(_x278) > 1 then
-      _e4 = _x278
+      _e6 = _x278
     else
-      _e4 = {i, hd(_x278)}
+      _e6 = {i, hd(_x278)}
     end
-    _e3 = _e4
+    _e5 = _e6
   end
-  local _id49 = _e3
+  local _id49 = _e5
   local k = _id49[1]
   local v = _id49[2]
-  local _e5
+  local _e7
   if target == "lua" then
-    _e5 = body
+    _e7 = body
   else
-    _e5 = {join({"let", k, {"if", {"numeric?", k}, {"parseInt", k}, k}}, body)}
+    _e7 = {join({"let", k, {"if", {"numeric?", k}, {"parseInt", k}, k}}, body)}
   end
-  return({"let", {o, _t1, k, "nil"}, {"%for", o, k, join({"let", {v, {"get", o, k}}}, _e5)}})
+  return({"let", {o, _t1, k, "nil"}, {"%for", o, k, join({"let", {v, {"get", o, k}}}, _e7)}})
 end})
 setenv("for", {_stash = true, macro = function (i, to, ...)
   local _r59 = unstash({...})
@@ -959,10 +959,22 @@ setenv("cat!", {_stash = true, macro = function (a, ...)
   return({"set", _a3, join({"cat", _a3}, bs)})
 end})
 setenv("inc", {_stash = true, macro = function (n, by)
-  return({"set", n, {"+", n, by or 1}})
+  local _e8
+  if nil63(by) then
+    _e8 = 1
+  else
+    _e8 = by
+  end
+  return({"set", n, {"+", n, _e8}})
 end})
 setenv("dec", {_stash = true, macro = function (n, by)
-  return({"set", n, {"-", n, by or 1}})
+  local _e9
+  if nil63(by) then
+    _e9 = 1
+  else
+    _e9 = by
+  end
+  return({"set", n, {"-", n, _e9}})
 end})
 setenv("with-indent", {_stash = true, macro = function (form)
   local x = unique("x")
@@ -1003,7 +1015,7 @@ local function eval_print(form)
   end) then
     _e = {true, _x}
   else
-    _e = {false, {stack = _trace, message = _msg}}
+    _e = {false, {message = _msg, stack = _trace}}
   end
   local _id = _e
   local ok = _id[1]

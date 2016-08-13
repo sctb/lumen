@@ -203,10 +203,10 @@
   `(set ,a (cat ,a ,@bs)))
 
 (define-macro inc (n by)
-  `(set ,n (+ ,n ,(or by 1))))
+  `(set ,n (+ ,n ,(if (nil? by) 1 by))))
 
 (define-macro dec (n by)
-  `(set ,n (- ,n ,(or by 1))))
+  `(set ,n (- ,n ,(if (nil? by) 1 by))))
 
 (define-macro with-indent (form)
   (let-unique (x)

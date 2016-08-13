@@ -469,6 +469,18 @@ c"
         (add xs (+ a b))))
     (test= '(3 6) xs)))
 
+(define-test inc
+  (let x 2 (inc x) (test= 3 x))
+  (let x 2 (test= 3 (inc x)))
+  (let x 2 (test= 4 (inc x 2)))
+  (let x 2 (test= 2 (inc x 0))))
+
+(define-test dec
+  (let x 2 (dec x) (test= 1 x))
+  (let x 2 (test= 1 (dec x)))
+  (let x 4 (test= 2 (dec x 2)))
+  (let x 2 (test= 2 (dec x 0))))
+
 (define-test fn
   (let f (fn (n) (+ n 10))
     (test= 20 (f 10))
