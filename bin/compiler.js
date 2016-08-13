@@ -419,7 +419,7 @@ indentation = function () {
   }
   return(s);
 };
-var reserved = {"else": true, "instanceof": true, "debugger": true, "end": true, "until": true, "false": true, "and": true, "=": true, "/": true, ">=": true, "-": true, "local": true, "not": true, "typeof": true, "void": true, "if": true, "then": true, "catch": true, "this": true, "in": true, "throw": true, "elseif": true, "+": true, "new": true, "finally": true, "<": true, "nil": true, "or": true, "repeat": true, "while": true, "switch": true, "var": true, ">": true, "return": true, "delete": true, "==": true, "do": true, "<=": true, "function": true, "*": true, "break": true, "%": true, "for": true, "case": true, "continue": true, "default": true, "true": true, "try": true, "with": true};
+var reserved = {"return": true, "this": true, "not": true, "end": true, "catch": true, "false": true, "-": true, "until": true, "function": true, "typeof": true, "true": true, "nil": true, "default": true, ">": true, "throw": true, "in": true, "else": true, "*": true, "<": true, "if": true, "while": true, "break": true, "or": true, "case": true, "local": true, "elseif": true, "with": true, "and": true, "new": true, "repeat": true, "instanceof": true, "<=": true, "finally": true, "void": true, "var": true, "delete": true, "debugger": true, "switch": true, "=": true, "continue": true, "/": true, "+": true, "do": true, ">=": true, "then": true, "try": true, "for": true, "==": true, "%": true};
 reserved63 = function (x) {
   return(reserved[x]);
 };
@@ -491,10 +491,10 @@ _x64.lua = "..";
 _x64.js = "+";
 __x63.cat = _x64;
 var __x65 = [];
-__x65[">"] = true;
-__x65["<="] = true;
-__x65["<"] = true;
 __x65[">="] = true;
+__x65[">"] = true;
+__x65["<"] = true;
+__x65["<="] = true;
 var __x66 = [];
 var _x67 = [];
 _x67.lua = "==";

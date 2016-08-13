@@ -848,10 +848,6 @@ c"
   (test= true (first (fn (x) (= x 7)) '(2 4 7)))
   (test= 4 (first (fn (x) (and (> x 3) x)) '(1 2 3 4 5 6))))
 
-(define-test sort
-  (test= '(a b c) (sort '(c a b)))
-  (test= '(3 2 1) (sort '(1 2 3) >)))
-
 (define-test type
   (test= true (string? "abc"))
   (test= false (string? 17))

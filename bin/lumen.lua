@@ -232,10 +232,6 @@ function pair(l)
   end
   return(l1)
 end
-function sort(l, f)
-  table.sort(l, f)
-  return(l)
-end
 function map(f, x)
   local t = {}
   local _x4 = x
@@ -549,9 +545,9 @@ function toplevel63()
   return(one63(environment))
 end
 function setenv(k, ...)
-  local _r69 = unstash({...})
-  local _k = destash33(k, _r69)
-  local _id1 = _r69
+  local _r68 = unstash({...})
+  local _k = destash33(k, _r68)
+  local _id1 = _r68
   local _keys = cut(_id1, 0)
   if string63(_k) then
     local _e7
