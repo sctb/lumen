@@ -1,6 +1,7 @@
 ;; -*- mode: lisp -*-
 
 (target js: (define fs (require 'fs)))
+(target js: (define child_process (require 'child_process)))
 
 (target lua:
   (define call-with-file (f path mode)
@@ -62,6 +63,13 @@
           js: (get (get require 'cache) ((get require 'resolve) module))))
   (require module))
 
+(define run (command)
+  (target
+    js: ((get (child_process.execSync command) 'toString))
+    lua: (let f (io.popen command)
+           (with x (f.read f '*all)
+             (f.close f)))))
+
 (export read-file
         write-file
         file-exists?
@@ -71,4 +79,5 @@
         write
         exit
         argv
-        reload)
+        reload
+        run)
