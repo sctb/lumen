@@ -898,8 +898,8 @@ setenv("guard", {_stash = true, macro = function (expr)
     local msg = unique("msg")
     local trace = unique("trace")
     local _x275 = {"obj"}
-    _x275.message = msg
     _x275.stack = trace
+    _x275.message = msg
     return({"let", {x, "nil", msg, "nil", trace, "nil"}, {"if", {"xpcall", {"fn", join(), {"set", x, expr}}, {"fn", {"m"}, {"set", msg, {"clip", "m", {"+", {"search", "m", "\": \""}, 2}}, trace, {{"get", "debug", {"quote", "traceback"}}}}}}, {"list", true, x}, {"list", false, _x275}}})
   end
 end})
@@ -1044,7 +1044,7 @@ local function eval_print(form)
   end) then
     _e = {true, _x}
   else
-    _e = {false, {stack = _trace, message = _msg}}
+    _e = {false, {message = _msg, stack = _trace}}
   end
   local _id = _e
   local ok = _id[1]

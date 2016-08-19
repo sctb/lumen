@@ -447,7 +447,7 @@
 
 (define lower-if (args hoist stmt? tail?)
   (let ((cond then else) args)
-    (if (or stmt? tail?)
+    (if stmt?
         (add hoist
              `(%if ,(lower cond hoist)
                    ,(lower-body (list then) tail?)

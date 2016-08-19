@@ -1008,8 +1008,8 @@ setenv("guard", {_stash: true, macro: function (expr) {
     var msg = unique("msg");
     var trace = unique("trace");
     var _x253 = ["obj"];
-    _x253.stack = trace;
     _x253.message = msg;
+    _x253.stack = trace;
     return(["let", [x, "nil", msg, "nil", trace, "nil"], ["if", ["xpcall", ["fn", join(), ["set", x, expr]], ["fn", ["m"], ["set", msg, ["clip", "m", ["+", ["search", "m", "\": \""], 2]], trace, [["get", "debug", ["quote", "traceback"]]]]]], ["list", true, x], ["list", false, _x253]]]);
   }
 }});
