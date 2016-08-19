@@ -1,4 +1,5 @@
 var fs = require("fs");
+var child_process = require("child_process");
 var read_file = function (path) {
   return(fs.readFileSync(path, "utf8"));
 };
@@ -30,6 +31,9 @@ var reload = function (module) {
   delete require.cache[require.resolve(module)];
   return(require(module));
 };
+var run = function (command) {
+  return(child_process.execSync(command).toString());
+};
 exports["read-file"] = read_file;
 exports["write-file"] = write_file;
 exports["file-exists?"] = file_exists63;
@@ -40,3 +44,4 @@ exports.write = write;
 exports.exit = exit;
 exports.argv = argv;
 exports.reload = reload;
+exports.run = run;
