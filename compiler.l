@@ -21,7 +21,7 @@
   (is? (getenv k 'special)))
 
 (define special-form? (form)
-  (and (not (atom? form)) (special? (hd form))))
+  (and (not (atom? form)) (special? form.0)))
 
 (define statement? (k)
   (and (special? k) (getenv k 'stmt)))
@@ -36,7 +36,7 @@
   (let b (first (fn (frame)
                   (get frame k))
                 (reverse environment))
-    (and (not (atom? b)) (is? (get b 'variable)))))
+    (and (not (atom? b)) (is? b.variable))))
 
 (define-global bound? (x)
   (or (macro? x)
@@ -92,7 +92,7 @@
                 (join! bs (bind k x))))))))))
 
 (define-macro arguments% (from)
-  `((get (get (get Array 'prototype) 'slice) 'call) arguments ,from))
+  `(Array.prototype.slice.call arguments ,from))
 
 (define-global bind* (args body)
   (let args1 ()
@@ -131,7 +131,7 @@
 (define quasisplice? (x depth)
   (and (can-unquote? depth)
        (not (atom? x))
-       (= (hd x) 'unquote-splicing)))
+       (= x.0 'unquote-splicing)))
 
 (define expand-local ((x name value))
   `(%local ,name ,(macroexpand value)))
@@ -151,13 +151,12 @@
   (if (symbol? form)
       (macroexpand (symbol-expansion form))
       (atom? form) form
-    (let x (hd form)
-      (if (= x '%local) (expand-local form)
-          (= x '%function) (expand-function form)
-          (= x '%global-function) (expand-definition form)
-          (= x '%local-function) (expand-definition form)
-	  (macro? x) (expand-macro form)
-        (map macroexpand form)))))
+    (if (= form.0 '%local) (expand-local form)
+        (= form.0 '%function) (expand-function form)
+        (= form.0 '%global-function) (expand-definition form)
+        (= form.0 '%local-function) (expand-definition form)
+	  (macro? form.0) (expand-macro form)
+        (map macroexpand form))))
 
 (define quasiquote-list (form depth)
   (let xs (list '(list))
@@ -165,24 +164,24 @@
       (unless (number? k)
         (let v (if (quasisplice? v depth)
                    ;; don't splice, just expand
-                   (quasiexpand (at v 1))
+                   (quasiexpand v.1)
                  (quasiexpand v depth))
           (set (get (last xs) k) v))))
     ;; collect sibling lists
     (step x form
       (if (quasisplice? x depth)
-          (let x (quasiexpand (at x 1))
+          (let x (quasiexpand x.1)
             (add xs x)
             (add xs '(list)))
         (add (last xs) (quasiexpand x depth))))
     (let pruned
         (keep (fn (x)
                 (or (> (# x) 1)
-                    (not (= (hd x) 'list))
+                    (not (= x.0 'list))
                     (keys? x)))
               xs)
       (if (one? pruned)
-          (hd pruned)
+          pruned.0
         `(join ,@pruned)))))
 
 (define-global quasiexpand (form depth)
@@ -190,21 +189,21 @@
       (if (atom? form) (list 'quote form)
           ;; unquote
           (and (can-unquote? depth)
-               (= (hd form) 'unquote))
-          (quasiexpand (at form 1))
+               (= form.0 'unquote))
+          (quasiexpand form.1)
           ;; decrease quasiquoting depth
-          (or (= (hd form) 'unquote)
-              (= (hd form) 'unquote-splicing))
+          (or (= form.0 'unquote)
+              (= form.0 'unquote-splicing))
           (quasiquote-list form (- depth 1))
           ;; increase quasiquoting depth
-          (= (hd form) 'quasiquote)
+          (= form.0 'quasiquote)
           (quasiquote-list form (+ depth 1))
         (quasiquote-list form depth))
       (atom? form) form
-      (= (hd form) 'quote) form
-      (= (hd form) 'quasiquote)
+      (= form.0 'quote) form
+      (= form.0 'quasiquote)
       ;; start quasiquoting
-      (quasiexpand (at form 1) 1)
+      (quasiexpand form.1 1)
     (map (fn (x) (quasiexpand x depth)) form)))
 
 (define-global expand-if ((a b rest: c))
@@ -273,7 +272,7 @@
     (or: (js: ,"||" lua: or))))
 
 (define unary? (form)
-  (and (two? form) (in? (hd form) '(not -))))
+  (and (two? form) (in? form.0 '(not -))))
 
 (define index (k)
   (target js: k lua: (when (number? k) (- k 1))))
@@ -281,7 +280,7 @@
 (define precedence (form)
   (unless (or (atom? form) (unary? form))
     (each (k v) infix
-      (if (get v (hd form)) (return (index k)))))
+      (if (get v form.0) (return (index k)))))
   0)
 
 (define getop (op)
@@ -347,11 +346,11 @@
 
 (define parenthesize-call? (x)
   (or (and (not (atom? x))
-           (= (hd x) '%function))
+           (= x.0 '%function))
       (> (precedence x) 0)))
 
 (define compile-call (form)
-  (let (f (hd form)
+  (let (f form.0
         f1 (compile f)
         args (compile-args (stash* (tl form))))
     (if (parenthesize-call? f)
@@ -391,8 +390,8 @@
 (define can-return? (form)
   (and (is? form)
        (or (atom? form)
-           (and (not (= (hd form) 'return))
-                (not (statement? (hd form)))))))
+           (and (not (= form.0 'return))
+                (not (statement? form.0))))))
 
 (define-global compile (form :stmt)
   (if (nil? form) ""
@@ -401,7 +400,7 @@
     (let (tr (terminator stmt)
           ind (if stmt (indentation) "")
           form (if (atom? form) (compile-atom form)
-                   (infix? (hd form)) (compile-infix form)
+                   (infix? form.0) (compile-infix form)
                  (compile-call form)))
       (cat ind form tr))))
 
@@ -411,21 +410,21 @@
         `(do ,@hoist ,e)
         (is? e) e
         (> (# hoist) 1) `(do ,@hoist)
-      (hd hoist))))
+      hoist.0)))
 
 (define lower-body (body tail?)
   (lower-statement `(do ,@body) tail?))
 
 (define literal? (form)
   (or (atom? form)
-      (= (hd form) '%array)
-      (= (hd form) '%object)))
+      (= form.0 '%array)
+      (= form.0 '%object)))
 
 (define standalone? (form)
   (or (and (not (atom? form))
-           (not (infix? (hd form)))
+           (not (infix? form.0))
            (not (literal? form))
-           (not (= 'get (hd form))))
+           (not (= 'get form.0)))
       (id-literal? form)))
 
 (define lower-do (args hoist stmt? tail?)
@@ -508,7 +507,7 @@
     (if (some? form) form)))
 
 (define lower-infix? (form)
-  (and (infix? (hd form)) (> (# form) 3)))
+  (and (infix? form.0) (> (# form) 3)))
 
 (define lower-infix (form hoist)
   (let ((x rest: args) form)
@@ -545,7 +544,7 @@
 (define expand (form)
   (lower (macroexpand form)))
 
-(target js: (set (get global 'require) require))
+(target js: (set global.require require))
 (target js: (define run eval))
 
 (target lua: (define load1 load))
@@ -569,8 +568,8 @@
     (step x forms
       (cat! s (compile x :stmt))
       (unless (atom? x)
-        (if (or (= (hd x) 'return)
-                (= (hd x) 'break))
+        (if (or (= x.0 'return)
+                (= x.0 'break))
             (break))))))
 
 (define-special %if (cond cons alt) :stmt :tr
@@ -689,8 +688,9 @@
 
 (define-special %object forms
   (let (s "{" c ""
-        sep (if (= target 'lua) " = " ": "))
-    (each (k v) (pair forms)
+        sep (if (= target 'lua) " = " ": ")
+        f (fn ((a) (b)) (< a b)))
+    (each (k v) (sort (pair forms) f)
       (when (number? k)
         (let ((k v) v)
           (unless (string? k)

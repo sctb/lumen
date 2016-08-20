@@ -5,7 +5,7 @@
 (define system (require 'system))
 
 (define eval-print (form)
-  (let ((ok x trace) (guard ((get compiler 'eval) form)))
+  (let ((ok x trace) (guard (compiler.eval form)))
     (if (not ok)
         (target
           js: (print trace)
@@ -13,38 +13,38 @@
         (is? x) (print (str x)))))
 
 (define rep (s)
-  (eval-print ((get reader 'read-string) s)))
+  (eval-print (reader.read-string s)))
 
 (define repl ()
   (let buf ""
     (define rep1 (s)
       (cat! buf s)
       (let (more ()
-            form ((get reader 'read-string) buf more))
+            form (reader.read-string buf more))
           (unless (= form more)
             (eval-print form)
             (set buf "")
-            ((get system 'write) "> ")))))
-  ((get system 'write) "> ")
+            (system.write "> ")))))
+  (system.write "> ")
   (target
-    js: (let in (get process 'stdin)
-          ((get in 'setEncoding) 'utf8)
-          ((get in 'on) 'data rep1))
+    js: (let in process.stdin
+          (in.setEncoding 'utf8)
+          (in.on 'data rep1))
     lua: (while true
-           (let s ((get io 'read))
+           (let s (io.read)
              (if s (rep1 (cat s "\n")) (break))))))
 
 (define-global compile-file (path)
-  (let (s ((get reader 'stream) ((get system 'read-file) path))
-        body ((get reader 'read-all) s)
-        form ((get compiler 'expand) `(do ,@body)))
-    ((get compiler 'compile) form :stmt)))
+  (let (s (reader.stream (system.read-file path))
+        body (reader.read-all s)
+        form (compiler.expand `(do ,@body)))
+    (compiler.compile form :stmt)))
 
 (define-global load (path)
-  ((get compiler 'run) (compile-file path)))
+  (compiler.run (compile-file path)))
 
 (define run-file (path)
-  ((get compiler 'run) ((get system 'read-file) path)))
+  (compiler.run (system.read-file path)))
 
 (define usage ()
   (print "usage: lumen [options] <object files>")
@@ -53,10 +53,10 @@
   (print "  -o <output>\tOutput file")
   (print "  -t <target>\tTarget language (default: lua)")
   (print "  -e <expr>\tExpression to evaluate")
-  ((get system 'exit)))
+  (system.exit))
 
 (define main ()
-  (let arg (hd (get system 'argv))
+  (let arg system.argv.0
     (when (or (= arg "-h")
               (= arg "--help"))
       (usage)))
@@ -65,15 +65,14 @@
         output nil
         target1 nil
         expr nil
-        argv (get system 'argv)
-        n (# argv))
+        n (# system.argv))
     (for i n
-      (let a (at argv i)
+      (let a (at system.argv i)
         (if (or (= a "-c") (= a "-o") (= a "-t") (= a "-e"))
             (if (= i (- n 1))
                 (print (cat "missing argument for " a))
               (do (inc i)
-                  (let val (at argv i)
+                  (let val (at system.argv i)
                     (if (= a "-c") (set input val)
                         (= a "-o") (set output val)
                         (= a "-t") (set target1 val)
@@ -86,6 +85,6 @@
           (let code (compile-file input)
             (if (or (nil? output) (= output "-"))
                 (print code)
-              ((get system 'write-file) output code)))))))
+              (system.write-file output code)))))))
 
 (main)

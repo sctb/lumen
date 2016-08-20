@@ -20,10 +20,13 @@
 
 (define-macro list body
   (let-unique (x)
-    (let (l () forms ())
+    (let (l () ks () forms ())
       (each (k v) body
-        (if (number? k)
-            (set (get l k) v)
+        (if (string? k)
+            (add ks k)
+          (set (get l k) v)))
+      (step k (sort ks)
+        (let v (get body k)
           (add forms `(set (get ,x ',k) ,v))))
       (if (some? forms)
           `(let ,x (%array ,@l) ,@forms ,x)
@@ -151,7 +154,7 @@
               (fn () (set ,x ,expr))
               (fn (m)
                 (set ,msg (clip m (+ (search m ": ") 2)))
-                (set ,trace ((get debug 'traceback)))))
+                (set ,trace (debug.traceback))))
              (list true ,x)
            (list false ,msg ,trace))))))
 

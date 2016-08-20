@@ -11,14 +11,14 @@
 (define-global is? (x) (not (nil? x)))
 
 (define-global # (x)
-  (target js: (or (get x 'length) 0) lua: |#x|))
+  (target js: (or x.length 0) lua: |#x|))
 
 (define-global none? (x) (= (# x) 0))
 (define-global some? (x) (> (# x) 0))
 (define-global one? (x) (= (# x) 1))
 (define-global two? (x) (= (# x) 2))
 
-(define-global hd (l) (at l 0))
+(define-global hd (l) l.0)
 
 (target js: (define-global type (x) (typeof x)))
 
@@ -43,8 +43,8 @@
   (or (= n inf) (= n -inf)))
 
 (define-global clip (s from upto)
-  (target js: ((get s 'substring) from upto)
-          lua: ((get string 'sub) s (+ from 1) upto)))
+  (target js: (s.substring from upto)
+          lua: (string.sub s (+ from 1) upto)))
 
 (define-global cut (x from upto)
   (with l ()
@@ -75,12 +75,12 @@
 (define-global tl (l) (cut l 1))
 
 (define-global char (s n)
-  (target js: ((get s 'charAt) n) lua: (clip s n (+ n 1))))
+  (target js: (s.charAt n) lua: (clip s n (+ n 1))))
 
 (define-global code (s n)
   (target
-    js: ((get s 'charCodeAt) n)
-    lua: ((get string 'byte) s (if n (+ n 1)))))
+    js: (s.charCodeAt n)
+    lua: (string.byte s (if n (+ n 1)))))
 
 (define-global string-literal? (x)
   (and (string? x) (= (char x 0) "\"")))
@@ -89,12 +89,12 @@
   (and (string? x) (= (char x 0) "|")))
 
 (define-global add (l x)
-  (target js: (do ((get l 'push) x) nil)
-          lua: ((get table 'insert) l x)))
+  (target js: (do (l.push x) nil)
+          lua: (table.insert l x)))
 
 (define-global drop (l)
-  (target js: ((get l 'pop))
-          lua: ((get table 'remove) l)))
+  (target js: (l.pop)
+          lua: (table.remove l)))
 
 (define-global last (l)
   (at l (edge l)))
@@ -111,23 +111,17 @@
 
 (define-global reduce (f x)
   (if (none? x) nil
-      (one? x) (hd x)
-    (f (hd x) (reduce f (tl x)))))
+      (one? x) x.0
+    (f x.0 (reduce f (tl x)))))
 
 (define-global join ls
-  (if (two? ls)
-      (let ((a b) ls)
-        (if (and a b)
-            (let (c () o (# a))
-              (each (k v) a
-                (set (get c k) v))
-              (each (k v) b
-                (when (number? k)
-                  (inc k o))
-                (set (get c k) v))
-              c)
-          (or a b ())))
-    (or (reduce join ls) ())))
+  (with r ()
+    (step l ls
+      (when l
+        (let n (# r)
+          (each (k v) l
+            (if (number? k) (inc k n))
+            (set (get r k) v)))))))
 
 (define-global find (f t)
   (each x t
@@ -150,8 +144,8 @@
 
 (define-global sort (l f)
   (target
-    lua: (do ((get table 'sort) l f) l)
-    js: ((get l 'sort) (when f (fn (a b) (if (f a b) -1 1))))))
+    lua: (do (table.sort l f) l)
+    js: (l.sort (when f (fn (a b) (if (f a b) -1 1))))))
 
 (define-global map (f x)
   (with t ()
@@ -185,14 +179,14 @@
       (each (k v) args
         (unless (number? k)
           (set (get p k) v)))
-      (set (get p '_stash) true)
+      (set p._stash true)
       (add args p)))
   args)
 
 (define-global unstash (args)
   (if (none? args) ()
     (let l (last args)
-      (if (and (obj? l) (get l '_stash))
+      (if (and (obj? l) l._stash)
           (with args1 (almost args)
             (each (k v) l
               (unless (= k '_stash)
@@ -200,7 +194,7 @@
         args))))
 
 (define-global destash! (l args1)
-  (if (and (obj? l) (get l '_stash))
+  (if (and (obj? l) l._stash)
       (each (k v) l
         (unless (= k '_stash)
           (set (get args1 k) v)))
@@ -208,10 +202,10 @@
 
 (define-global search (s pattern start)
   (target
-    js: (let i ((get s 'indexOf) pattern start)
+    js: (let i (s.indexOf pattern start)
           (if (>= i 0) i))
     lua: (let (start (if start (+ start 1))
-               i ((get string 'find) s pattern start true))
+               i (string.find s pattern start true))
            (and i (- i 1)))))
 
 (define-global split (s sep)
@@ -265,7 +259,7 @@
         (return false))))
   true)
 
-(target js: (define tostring (x) ((get x 'toString))))
+(target js: (define tostring (x) (x.toString)))
 
 (define-global escape (s)
   (let s1 "\""
@@ -306,11 +300,11 @@
       (cat s  ")"))))
 
 (target lua:
-  (define values (or unpack (get table 'unpack))))
+  (define values (or unpack table.unpack)))
 
 (define-global apply (f args)
   (let args (stash args)
-    (target js: ((get f 'apply) f args)
+    (target js: (f.apply f args)
             lua: (f (values args)))))
 
 (define-global call (f) (f))
@@ -320,8 +314,8 @@
 
 (define-global setenv (k rest: keys)
   (when (string? k)
-    (let (frame (if (get keys 'toplevel)
-                    (hd environment)
+    (let (frame (if keys.toplevel
+                    environment.0
                   (last environment))
           entry (or (get frame k) (obj)))
       (each (k v) keys
@@ -330,26 +324,26 @@
 
 (target js:
   (define-global print (x)
-    ((get console 'log) x)))
+    (console.log x)))
 
 (define math (target js: Math lua: math))
 
-(define-global abs (get math 'abs))
-(define-global acos (get math 'acos))
-(define-global asin (get math 'asin))
-(define-global atan (get math 'atan))
-(define-global atan2 (get math 'atan2))
-(define-global ceil (get math 'ceil))
-(define-global cos (get math 'cos))
-(define-global floor (get math 'floor))
-(define-global log (get math 'log))
-(define-global log10 (get math 'log10))
-(define-global max (get math 'max))
-(define-global min (get math 'min))
-(define-global pow (get math 'pow))
-(define-global random (get math 'random))
-(define-global sin (get math 'sin))
-(define-global sinh (get math 'sinh))
-(define-global sqrt (get math 'sqrt))
-(define-global tan (get math 'tan))
-(define-global tanh (get math 'tanh))
+(define-global abs math.abs)
+(define-global acos math.acos)
+(define-global asin math.asin)
+(define-global atan math.atan)
+(define-global atan2 math.atan2)
+(define-global ceil math.ceil)
+(define-global cos math.cos)
+(define-global floor math.floor)
+(define-global log math.log)
+(define-global log10 math.log10)
+(define-global max math.max)
+(define-global min math.min)
+(define-global pow math.pow)
+(define-global random math.random)
+(define-global sin math.sin)
+(define-global sinh math.sinh)
+(define-global sqrt math.sqrt)
+(define-global tan math.tan)
+(define-global tanh math.tanh)
