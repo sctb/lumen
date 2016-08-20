@@ -20,10 +20,13 @@
 
 (define-macro list body
   (let-unique (x)
-    (let (l () forms ())
+    (let (l () ks () forms ())
       (each (k v) body
-        (if (number? k)
-            (set (get l k) v)
+        (if (string? k)
+            (add ks k)
+          (set (get l k) v)))
+      (step k (sort ks)
+        (let v (get body k)
           (add forms `(set (get ,x ',k) ,v))))
       (if (some? forms)
           `(let ,x (%array ,@l) ,@forms ,x)

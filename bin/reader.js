@@ -1,13 +1,13 @@
-var delimiters = {";": true, ")": true, "\n": true, "(": true};
-var whitespace = {"\t": true, " ": true, "\n": true};
+var delimiters = {"(": true, ")": true, ";": true, "\n": true};
+var whitespace = {" ": true, "\n": true, "\t": true};
 var stream = function (str, more) {
-  return({more: more, len: _35(str), string: str, pos: 0});
+  return({len: _35(str), more: more, pos: 0, string: str});
 };
 var peek_char = function (s) {
   var _id = s;
+  var pos = _id.pos;
   var len = _id.len;
   var string = _id.string;
-  var pos = _id.pos;
   if (pos < len) {
     return(char(string, pos));
   }
@@ -76,8 +76,8 @@ var flag63 = function (atom) {
 };
 var expected = function (s, c) {
   var _id1 = s;
-  var more = _id1.more;
   var pos = _id1.pos;
+  var more = _id1.more;
   var _id2 = more;
   var _e;
   if (_id2) {

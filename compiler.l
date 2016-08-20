@@ -688,8 +688,9 @@
 
 (define-special %object forms
   (let (s "{" c ""
-        sep (if (= target 'lua) " = " ": "))
-    (each (k v) (pair forms)
+        sep (if (= target 'lua) " = " ": ")
+        f (fn ((a) (b)) (< a b)))
+    (each (k v) (sort (pair forms) f)
       (when (number? k)
         (let ((k v) v)
           (unless (string? k)
