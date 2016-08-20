@@ -163,9 +163,9 @@ reduce = function (f, x) {
     return(undefined);
   } else {
     if (one63(x)) {
-      return(hd(x));
+      return(x[0]);
     } else {
-      return(f(hd(x), reduce(f, tl(x))));
+      return(f(x[0], reduce(f, tl(x))));
     }
   }
 };
@@ -652,7 +652,7 @@ setenv = function (k) {
   if (string63(_k10)) {
     var _e19;
     if (_keys.toplevel) {
-      _e19 = hd(environment);
+      _e19 = environment[0];
     } else {
       _e19 = last(environment);
     }
@@ -897,7 +897,7 @@ setenv("define-global", {_stash: true, macro: function (name, x) {
   var _x133 = destash33(x, _r35);
   var _id29 = _r35;
   var body = cut(_id29, 0);
-  setenv(_name7, {_stash: true, variable: true, toplevel: true});
+  setenv(_name7, {_stash: true, toplevel: true, variable: true});
   if (some63(body)) {
     return(join(["%global-function", _name7], bind42(_x133, body)));
   } else {
@@ -1166,7 +1166,7 @@ var usage = function () {
   return(system.exit());
 };
 var main = function () {
-  var arg = hd(system.argv);
+  var arg = system.argv[0];
   if (arg === "-h" || arg === "--help") {
     usage();
   }
@@ -1175,17 +1175,16 @@ var main = function () {
   var output = undefined;
   var target1 = undefined;
   var expr = undefined;
-  var argv = system.argv;
-  var n = _35(argv);
+  var n = _35(system.argv);
   var i = 0;
   while (i < n) {
-    var a = argv[i];
+    var a = system.argv[i];
     if (a === "-c" || a === "-o" || a === "-t" || a === "-e") {
       if (i === n - 1) {
         print("missing argument for " + a);
       } else {
         i = i + 1;
-        var val = argv[i];
+        var val = system.argv[i];
         if (a === "-c") {
           input = val;
         } else {

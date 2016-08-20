@@ -149,9 +149,9 @@ function reduce(f, x)
     return(nil)
   else
     if one63(x) then
-      return(hd(x))
+      return(x[1])
     else
-      return(f(hd(x), reduce(f, tl(x))))
+      return(f(x[1], reduce(f, tl(x))))
     end
   end
 end
@@ -550,7 +550,7 @@ function setenv(k, ...)
   if string63(_k) then
     local _e7
     if _keys.toplevel then
-      _e7 = hd(environment)
+      _e7 = environment[1]
     else
       _e7 = last(environment)
     end
@@ -778,7 +778,7 @@ setenv("define-global", {_stash = true, macro = function (name, x, ...)
   local _x147 = destash33(x, _r35)
   local _id29 = _r35
   local body = cut(_id29, 0)
-  setenv(_name7, {_stash = true, toplevel = true, variable = true})
+  setenv(_name7, {_stash = true, variable = true, toplevel = true})
   if some63(body) then
     return(join({"%global-function", _name7}, bind42(_x147, body)))
   else
@@ -1047,7 +1047,7 @@ local function usage()
   return(system.exit())
 end
 local function main()
-  local arg = hd(system.argv)
+  local arg = system.argv[1]
   if arg == "-h" or arg == "--help" then
     usage()
   end
@@ -1056,17 +1056,16 @@ local function main()
   local output = nil
   local target1 = nil
   local expr = nil
-  local argv = system.argv
-  local n = _35(argv)
+  local n = _35(system.argv)
   local i = 0
   while i < n do
-    local a = argv[i + 1]
+    local a = system.argv[i + 1]
     if a == "-c" or a == "-o" or a == "-t" or a == "-e" then
       if i == n - 1 then
         print("missing argument for " .. a)
       else
         i = i + 1
-        local val = argv[i + 1]
+        local val = system.argv[i + 1]
         if a == "-c" then
           input = val
         else

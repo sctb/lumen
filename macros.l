@@ -151,7 +151,7 @@
               (fn () (set ,x ,expr))
               (fn (m)
                 (set ,msg (clip m (+ (search m ": ") 2)))
-                (set ,trace ((get debug 'traceback)))))
+                (set ,trace (debug.traceback))))
              (list true ,x)
            (list false ,msg ,trace))))))
 

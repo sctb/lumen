@@ -13,7 +13,7 @@
 
 (define read-char (s)
   (let c (peek-char s)
-    (if c (do (inc (get s 'pos)) c))))
+    (if c (do (inc s.pos) c))))
 
 (define skip-non-code (s)
   (while true
@@ -65,7 +65,7 @@
 
 (define wrap (s x)
   (let y (read s)
-    (if (= y (get s 'more)) y
+    (if (= y s.more) y
       (list x y))))
 
 (define maybe-number (str)
@@ -128,7 +128,7 @@
                 (add l x)))))))))
 
 (define-reader (")" s)
-  (error (cat "Unexpected ) at " (get s 'pos))))
+  (error (cat "Unexpected ) at " s.pos)))
 
 (define-reader ("\"" s)
   (read-char s)
