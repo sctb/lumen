@@ -65,10 +65,10 @@
 
 (define run (command)
   (target
-    js: ((get (child_process.execSync command) 'toString))
-    lua: (let f (io.popen command)
-           (with x (f.read f '*all)
-             (f.close f)))))
+    js: ((get ((get child_process 'execSync) command) 'toString))
+    lua: (let f ((get io 'popen) command)
+           (with x ((get f 'read) f '*all)
+             ((get f 'close) f)))))
 
 (export read-file
         write-file
