@@ -607,7 +607,7 @@ setenv("at", {_stash = true, macro = function (l, i)
 end})
 setenv("wipe", {_stash = true, macro = function (place)
   if target == "lua" then
-    return({"set", place, "nil"})
+    return({"%set", place, "nil"})
   else
     return({"%delete", place})
   end
@@ -624,7 +624,7 @@ setenv("list", {_stash = true, macro = function (...)
     if number63(k) then
       l[k] = v
     else
-      add(forms, {"set", {"get", x, {"quote", k}}, v})
+      add(forms, {"%set", {"get", x, {"quote", k}}, v})
     end
   end
   if some63(forms) then
@@ -760,7 +760,7 @@ setenv("define-reader", {_stash = true, macro = function (_x128, ...)
   local __x128 = destash33(_x128, _r31)
   local _id25 = _r31
   local body = cut(_id25, 0)
-  return({"set", {"get", "read-table", char}, join({"fn", {s}}, body)})
+  return({"%set", {"get", "read-table", char}, join({"fn", {s}}, body)})
 end})
 setenv("define", {_stash = true, macro = function (name, x, ...)
   local _r33 = unstash({...})
@@ -781,11 +781,11 @@ setenv("define-global", {_stash = true, macro = function (name, x, ...)
   local _x147 = destash33(x, _r35)
   local _id29 = _r35
   local body = cut(_id29, 0)
-  setenv(_name7, {_stash = true, variable = true, toplevel = true})
+  setenv(_name7, {_stash = true, toplevel = true, variable = true})
   if some63(body) then
     return(join({"%global-function", _name7}, bind42(_x147, body)))
   else
-    return({"set", _name7, _x147})
+    return({"%set", _name7, _x147})
   end
 end})
 setenv("with-frame", {_stash = true, macro = function (...)
@@ -872,7 +872,7 @@ setenv("guard", {_stash = true, macro = function (expr)
     local _x261 = {"obj"}
     _x261.message = msg
     _x261.stack = trace
-    return({"let", {x, "nil", msg, "nil", trace, "nil"}, {"if", {"xpcall", {"fn", join(), {"set", x, expr}}, {"fn", {"m"}, {"set", msg, {"clip", "m", {"+", {"search", "m", "\": \""}, 2}}}, {"set", trace, {{"get", "debug", {"quote", "traceback"}}}}}}, {"list", true, x}, {"list", false, _x261}}})
+    return({"let", {x, "nil", msg, "nil", trace, "nil"}, {"if", {"xpcall", {"fn", join(), {"%set", x, expr}}, {"fn", {"m"}, {"%set", msg, {"clip", "m", {"+", {"search", "m", "\": \""}, 2}}}, {"%set", trace, {{"get", "debug", {"quote", "traceback"}}}}}}, {"list", true, x}, {"list", false, _x261}}})
   end
 end})
 setenv("each", {_stash = true, macro = function (x, t, ...)
@@ -949,14 +949,14 @@ setenv("join!", {_stash = true, macro = function (a, ...)
   local _a1 = destash33(a, _r65)
   local _id55 = _r65
   local bs = cut(_id55, 0)
-  return({"set", _a1, join({"join", _a1}, bs)})
+  return({"%set", _a1, join({"join", _a1}, bs)})
 end})
 setenv("cat!", {_stash = true, macro = function (a, ...)
   local _r67 = unstash({...})
   local _a3 = destash33(a, _r67)
   local _id57 = _r67
   local bs = cut(_id57, 0)
-  return({"set", _a3, join({"cat", _a3}, bs)})
+  return({"%set", _a3, join({"cat", _a3}, bs)})
 end})
 setenv("inc", {_stash = true, macro = function (n, by)
   local _e8
@@ -965,7 +965,7 @@ setenv("inc", {_stash = true, macro = function (n, by)
   else
     _e8 = by
   end
-  return({"set", n, {"+", n, _e8}})
+  return({"%set", n, {"+", n, _e8}})
 end})
 setenv("dec", {_stash = true, macro = function (n, by)
   local _e9
@@ -974,7 +974,7 @@ setenv("dec", {_stash = true, macro = function (n, by)
   else
     _e9 = by
   end
-  return({"set", n, {"-", n, _e9}})
+  return({"%set", n, {"-", n, _e9}})
 end})
 setenv("with-indent", {_stash = true, macro = function (form)
   local x = unique("x")
@@ -984,7 +984,7 @@ setenv("export", {_stash = true, macro = function (...)
   local names = unstash({...})
   if target == "js" then
     return(join({"do"}, map(function (k)
-      return({"set", {"get", "exports", {"quote", k}}, k})
+      return({"%set", {"get", "exports", {"quote", k}}, k})
     end, names)))
   else
     local x = {}

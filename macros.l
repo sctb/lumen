@@ -8,12 +8,12 @@
   (if (and (= target 'lua) (number? i))
       (inc i)
       (= target 'lua)
-      (set i `(+ ,i 1)))
+      (%set i `(+ ,i 1)))
   `(get ,l ,i))
 
 (define-macro wipe (place)
   (if (= target 'lua)
-      `(set ,place nil)
+      `(%set ,place nil)
     `(%delete ,place)))
 
 (define-macro list body
@@ -21,8 +21,8 @@
     (let (l () forms ())
       (each (k v) body
         (if (number? k)
-            (set (get l k) v)
-          (add forms `(set (get ,x ',k) ,v))))
+            (%set (get l k) v)
+          (add forms `(%set (get ,x ',k) ,v))))
       (if (some? forms)
           `(let ,x (%array ,@l) ,@forms ,x)
         `(%array ,@l)))))
@@ -55,8 +55,8 @@
       (let renames ()
         (if (or (bound? id) (toplevel?))
             (let id1 (unique id)
-              (set renames (list id id1))
-              (set id id1))
+              (%set renames (list id id1))
+              (%set id id1))
           (setenv id :variable))
         `(do (%local ,id ,val)
              (let-symbol ,renames
@@ -87,7 +87,7 @@
   `(setenv ',name symbol: ',expansion))
 
 (define-macro define-reader ((char s) rest: body)
-  `(set (get read-table ,char) (fn (,s) ,@body)))
+  `(%set (get read-table ,char) (fn (,s) ,@body)))
 
 (define-macro define (name x rest: body)
   (setenv name :variable)
@@ -99,7 +99,7 @@
   (setenv name :toplevel :variable)
   (if (some? body)
       `(%global-function ,name ,@(bind* x body))
-    `(set ,name ,x)))
+    `(%set ,name ,x)))
 
 (define-macro with-frame body
   (let-unique (x)
@@ -151,10 +151,10 @@
              ,msg nil
              ,trace nil)
          (if (xpcall
-              (fn () (set ,x ,expr))
+              (fn () (%set ,x ,expr))
               (fn (m)
-                (set ,msg (clip m (+ (search m ": ") 2)))
-                (set ,trace ((get debug 'traceback)))))
+                (%set ,msg (clip m (+ (search m ": ") 2)))
+                (%set ,trace ((get debug 'traceback)))))
              (list true ,x)
            (list false (obj message: ,msg stack: ,trace)))))))
 
@@ -188,7 +188,7 @@
 (define-macro set-of xs
   (let l ()
     (each x xs
-      (set (get l x) true))
+      (%set (get l x) true))
     `(obj ,@l)))
 
 (define-macro language () `',target)
@@ -197,16 +197,16 @@
   (get clauses target))
 
 (define-macro join! (a rest: bs)
-  `(set ,a (join ,a ,@bs)))
+  `(%set ,a (join ,a ,@bs)))
 
 (define-macro cat! (a rest: bs)
-  `(set ,a (cat ,a ,@bs)))
+  `(%set ,a (cat ,a ,@bs)))
 
 (define-macro inc (n by)
-  `(set ,n (+ ,n ,(if (nil? by) 1 by))))
+  `(%set ,n (+ ,n ,(if (nil? by) 1 by))))
 
 (define-macro dec (n by)
-  `(set ,n (- ,n ,(if (nil? by) 1 by))))
+  `(%set ,n (- ,n ,(if (nil? by) 1 by))))
 
 (define-macro with-indent (form)
   (let-unique (x)
@@ -217,9 +217,9 @@
 (define-macro export names
   (if (= target 'js)
       `(do ,@(map (fn (k)
-                    `(set (get exports ',k) ,k))
+                    `(%set (get exports ',k) ,k))
                   names))
     (let x (obj)
       (each k names
-        (set (get x k) k))
+        (%set (get x k) k))
       `(return (obj ,@x)))))

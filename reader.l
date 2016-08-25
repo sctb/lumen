@@ -20,7 +20,7 @@
           (get whitespace c) (read-char s)
           (= c ";")
           (do (while (and c (not (= c "\n")))
-                (set c (read-char s)))
+                (%set c (read-char s)))
               (skip-non-code s))
         (break)))))
 
@@ -93,7 +93,7 @@
       (let c (peek-char s)
 	(if (and c (and (not (get whitespace c))
 			(not (get delimiters c))))
-	    (do (if (= c ".") (set dot? true))
+	    (do (if (= c ".") (%set dot? true))
                 (cat! str (read-char s)))
 	  (break))))
   (if (= str "true") true
@@ -115,14 +115,14 @@
       (while (nil? r)
         (skip-non-code s)
         (let c (peek-char s)
-          (if (= c ")") (do (read-char s) (set r l))
-              (nil? c) (set r (expected s ")"))
+          (if (= c ")") (do (read-char s) (%set r l))
+              (nil? c) (%set r (expected s ")"))
             (let x (read s)
               (if (key? x)
                   (let (k (clip x 0 (edge x))
                         v (read s))
-                    (set (get l k) v))
-                  (flag? x) (set (get l (clip x 1)) true)
+                    (%set (get l k) v))
+                  (flag? x) (%set (get l (clip x 1)) true)
                 (add l x)))))))))
 
 (define-reader (")" s)
@@ -134,8 +134,8 @@
     (let str "\""
       (while (nil? r)
         (let c (peek-char s)
-          (if (= c "\"") (set r (cat str (read-char s)))
-              (nil? c) (set r (expected s "\""))
+          (if (= c "\"") (%set r (cat str (read-char s)))
+              (nil? c) (%set r (expected s "\""))
             (do (when (= c "\\")
                   (cat! str (read-char s)))
                 (cat! str (read-char s)))))))))
@@ -146,8 +146,8 @@
     (let str "|"
       (while (nil? r)
         (let c (peek-char s)
-          (if (= c "|") (set r (cat str (read-char s)))
-              (nil? c) (set r (expected s "|"))
+          (if (= c "|") (%set r (cat str (read-char s)))
+              (nil? c) (%set r (expected s "|"))
             (cat! str (read-char s))))))))
 
 (define-reader ("'" s)

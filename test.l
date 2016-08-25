@@ -7,7 +7,7 @@
 
 (define-macro test (x msg)
   `(if (not ,x)
-       (do (set failed (+ failed 1))
+       (do (%set failed (+ failed 1))
 	   (return ,msg))
      (inc passed)))
 
@@ -91,18 +91,18 @@
   (test= true (or true (error 'bad)))
   (test= false (and false (error 'bad)))
   (let a true
-    (test= true (or true (do (set a false) false)))
+    (test= true (or true (do (%set a false) false)))
     (test= true a)
-    (test= false (and false (do (set a false) true)))
+    (test= false (and false (do (%set a false) true)))
     (test= true a))
   (let b true
-    (test= true (or (do (set b false) false) (do (set b true) b)))
+    (test= true (or (do (%set b false) false) (do (%set b true) b)))
     (test= true b)
-    (test= true (or (do (set b true) b) (do (set b true) b)))
+    (test= true (or (do (%set b true) b) (do (%set b true) b)))
     (test= true b)
-    (test= true (and (do (set b false) true) (do (set b true) b)))
+    (test= true (and (do (%set b false) true) (do (%set b true) b)))
     (test= true b)
-    (test= false (and (do (set b false) b) (do (set b true) b)))
+    (test= false (and (do (%set b false) b) (do (%set b true) b)))
     (test= false b)))
 
 (define-test numeric
@@ -143,7 +143,7 @@
 (define-test standalone
   (test= 10 (do (+ illegal) 10))
   (let x nil
-    (test= 9 (do (list nothing fooey (set x 10)) 9))
+    (test= 9 (do (list nothing fooey (%set x 10)) 9))
     (test= 10 x))
   (test= 12 (do (get but zz) 12))
   (let y nil
@@ -306,14 +306,14 @@ c"
 
 (define-test set
   (let a 42
-    (set a 'bar)
+    (%set a 'bar)
     (test= 'bar a)
-    (let x (set a 10)
+    (let x (%set a 10)
       (test= 10 x)
       (test= 10 a))
-    (set a false)
+    (%set a false)
     (test= false a)
-    (set a)
+    (%set a)
     (test= nil a)))
 
 (define-test wipe
@@ -330,17 +330,17 @@ c"
 
 (define-test do
   (let a 17
-    (do (set a 10)
+    (do (%set a 10)
 	(test= 10 a))
     (test= 10 (do a))
-    (let b (do (set a 2) (+ a 5))
+    (let b (do (%set a 2) (+ a 5))
       (test= a 2)
       (test= b 7))
-    (do (set a 10)
-        (do (set a 20)
+    (do (%set a 10)
+        (do (%set a 20)
             (test= 20 a)))
-    (test= 20 (do (set a 10)
-                  (do (set a 20) a)))))
+    (test= 20 (do (%set a 10)
+                  (do (%set a 20) a)))))
 
 (define-test if
   (test= 'a (macroexpand '(if a)))
@@ -420,14 +420,14 @@ c"
     (test= 'a (at l 0))
     (test= 'a l.0)
     (test= 'b (at l 1))
-    (set (at l 0) 9)
+    (%set (at l 0) 9)
     (test= 9 (at l 0))
-    (set (at l 3) 10)
+    (%set (at l 3) 10)
     (test= 10 (at l 3))))
 
 (define-test get-set
   (let t (obj)
-    (set (get t 'foo) 'bar)
+    (%set (get t 'foo) 'bar)
     (test= 'bar (get t 'foo))
     (test= 'bar (get t "foo"))
     (test= 'bar t.foo)
@@ -556,7 +556,7 @@ c"
   (let (a (let (a 10) a))
     (test= 10 a))
   (let (a (+ (let (a 0)
-               (set a 10)
+               (%set a 10)
                (+ a 2))
              3))
     (test= a 15))
@@ -662,7 +662,7 @@ c"
       (test= 20 (b))))
   (let-macro ((a (x)
                 (let (x 10)
-                  (set x 20))
+                  (%set x 20))
                 `(+ ,x 1)))
     (test= 2 (a 1))))
 
@@ -913,7 +913,7 @@ c"
   (test= 4 (apply (fn (a b) (+ a b)) '(2 2)))
   (test= '(2 2) (apply (fn a a) '(2 2)))
   (let t '(1)
-    (set (get t 'foo) 17)
+    (%set (get t 'foo) 17)
     (test= 17 (apply (fn a (get a 'foo)) t)))
   (test= 42 (apply (fn (:foo) foo) (list foo: 42)))
   (test= 42 (apply (fn ((:foo)) foo) (list (list foo: 42))))
@@ -962,17 +962,17 @@ c"
     (test= 42 (f a: (g (f a: 10) (f a: 20) c: (f a: 42))))
     (test= '(10 20 42 (10 20 42) 42) l))
   (let l nil
-    (define f x (set l x))
+    (define f x (%set l x))
     (define g (a b) (+ a b))
     (f (g 1 2 foo: 7))
     (test= '(3) l))
   (let l nil
-    (define f x (set l x) 10)
+    (define f x (%set l x) 10)
     (define g (a b) (+ (f) a b))
     (test= 13 (g 1 2 foo: 7))
     (test= '() l))
   (let l nil
-    (define f (x rest: ys) (set l ys))
+    (define f (x rest: ys) (%set l ys))
     (define g () nil)
     (f 1 'x g)
     (test= (list 'x g) l)))
