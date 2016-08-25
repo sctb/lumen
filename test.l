@@ -886,7 +886,8 @@ c"
     (set (get t 'foo) 17)
     (test= 17 (apply (fn a (get a 'foo)) t)))
   (test= 42 (apply (fn (:foo) foo) (list foo: 42)))
-  (test= 42 (apply (fn ((:foo)) foo) (list (list foo: 42)))))
+  (test= 42 (apply (fn ((:foo)) foo) (list (list foo: 42))))
+  (test= 116 (apply + 1 5 '(100 10))))
 
 (define-test eval
   (let eval (get compiler 'eval)
