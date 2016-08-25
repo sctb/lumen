@@ -1,5 +1,3 @@
-;; -*- mode: lisp -*-
-
 (define passed 0)
 (define failed 0)
 (define tests ())
@@ -18,8 +16,10 @@
     (= (str a) (str b))))
 
 (define-macro test= (a b)
-  `(test (equal? ,a ,b)
-	 (cat "failed: expected " (str ,a) ", was " (str ,b))))
+  (let-unique (x y)
+    `(let (,x ,a ,y ,b)
+       (test (equal? ,x ,y)
+             (cat "failed: expected " (str ,x) ", was " (str ,y))))))
 
 (define-macro define-test (name rest: body)
   `(add tests (list ',name (fn () ,@body))))
@@ -72,9 +72,9 @@
       (test= more (read "`(a b ,(z" more))
       (test= more (read "`\"biz" more))
       (test= more (read "'\"boz" more)))
-    (let ((ok msg) (guard (read "(open")))
+    (let ((ok e) (guard (read "(open")))
       (test= false ok)
-      (test= "Expected ) at 5" msg))))
+      (test= "Expected ) at 5" (get e 'message)))))
 
 (define-test boolean
   (test= true (or true false))
@@ -178,7 +178,10 @@ c"
   (test= "|(|" '|(|)
   (test= (quote unquote) 'unquote)
   (test= (quote (unquote)) '(unquote))
-  (test= (quote (unquote a)) '(unquote a)))
+  (test= (quote (unquote a)) '(unquote a))
+  (let x '(10 20 a: 33)
+    (test= 20 (at x 1))
+    (test= 33 (get x 'a))))
 
 (define-test list
   (test= '() (list))
@@ -302,6 +305,11 @@ c"
     (test= 4 break)))
 
 (define-test set
+  (test= 1 (set xx 1))
+  (test= 1 xx)
+  (test= 2 (set yy 1 zz 2))
+  (test= 1 yy)
+  (test= 2 zz)
   (let a 42
     (set a 'bar)
     (test= 'bar a)
@@ -364,14 +372,21 @@ c"
   (test= 1 (if true (with a 1) 2))
   (test= 1 (if false 2 (let a 1 a)))
   (test= 1 (if false 2 true (with a 1)))
-  (test= 1 (if false 2 false 3 (let a 1 a))))
+  (test= 1 (if false 2 false 3 (let a 1 a)))
+  (test= 0 (if false 1 0)))
 
 (define-test case
   (let x 10
-    (test= 2 (case x 9 9 10 2 4)))
+    (test= 2 (case x 9 9 10 2 4))
+    (test= 2 (case x 9 9 (10) 2 4))
+    (test= 2 (case x 9 9 (10 20) 2 4)))
   (let x 'z
     (test= 9 (case x z 9 10))
-    (test= 7 (case x a 1 b 2 7))))
+    (test= 7 (case x a 1 b 2 7))
+    (test= 2 (case x a 1 (z) 2 7))
+    (test= 2 (case x a 1 (b z) 2 7)))
+  (let (n 0 f (fn () (inc n))) ; no multiple eval
+    (test= 'b (case (f) 0 'a 1 'b 'c))))
 
 (define-test while
   (let i 0
@@ -397,7 +412,12 @@ c"
     (for i 5
       (add l i))
     (test= '(0 1 2 3 4) l))
-  (test= '(0 1) (with l () (for i 2 (add l i)))))
+  (test= '(0 1) (with l () (for i 2 (add l i))))
+  (let (n 0 l '(a b c d e))
+    (for i (# l)
+      (inc n i)
+      (set l '(a b c)))
+    (test= 10 n)))
 
 (define-test table
   (test= 10 (get (obj a: 10) 'a))
@@ -451,6 +471,32 @@ c"
     (each ((x)) t
       (test= true (number? x)))))
 
+(define-test step
+  (let n 0
+    (step x '(1 2 3) (inc n x))
+    (test= 6 n))
+  (let n 0
+    (step (x y) '((1 2) (3 4))
+      (inc n (+ x y)))
+    (test= 10 n))
+  (let xs ()
+    (let l (list (obj a: 1 b: 2) (obj a: 2 b: 4))
+      (step (:a :b) l
+        (add xs (+ a b))))
+    (test= '(3 6) xs)))
+
+(define-test inc
+  (let x 2 (inc x) (test= 3 x))
+  (let x 2 (test= 3 (inc x)))
+  (let x 2 (test= 4 (inc x 2)))
+  (let x 2 (test= 2 (inc x 0))))
+
+(define-test dec
+  (let x 2 (dec x) (test= 1 x))
+  (let x 2 (test= 1 (dec x)))
+  (let x 4 (test= 2 (dec x 2)))
+  (let x 2 (test= 2 (dec x 0))))
+
 (define-test fn
   (let f (fn (n) (+ n 10))
     (test= 20 (f 10))
@@ -482,7 +528,10 @@ c"
   (test= 1 ((fn () (return (if true (return 1) 2))))))
 
 (define-test guard
-  (let-macro ((guard1 (x) `(cut (guard ,x) 0 2)))
+  (let-macro ((guard1 (x)
+                (let-unique (ok v)
+                  `(let ((,ok ,v) (guard ,x))
+                     (list ,ok (if ,ok ,v (get ,v 'message)))))))
     (test= '(true 42) (guard1 42))
     (test= '(false foo) (guard1 (error "foo")))
     (test= '(false foo) (guard1 (do (error "foo") (error "baz"))))
@@ -546,7 +595,8 @@ c"
   (test= nil (let-when frips (= 'a 'b) 19))
   (test= 19 (let-when frips 20 (- frips 1)))
   (test= 20 (let-when (a b) '(19 20) b))
-  (test= nil (let-when (a b) nil b)))
+  (test= nil (let-when (a b) nil b))
+  (test= 123 (let-when a 0 (+ a 123))))
 
 (define zzop 99)
 (define zzap 100)
@@ -819,12 +869,12 @@ c"
 
 (define-test keep
   (test= () (keep (fn (x) x) ()))
-  (let even (fn (x) (= (% x 2) 0))
-    (test= '(6) (keep even '(5 6 7))))
+  (test= '(0 1 2) (keep (fn (x) x) '(0 1 2)))
   (test= '((1) (2 3)) (keep some? '(() (1) () (2 3))))
-  (let even? (fn (x) (= (% x 2) 0))
-    (test= '(2 4 6) (keep even? '(1 2 3 4 5 6)))
-    (test= '(2 4 6 b: 8) (keep even? '(1 2 3 4 5 6 a: 7 b: 8)))))
+  (let even (fn (x) (= (% x 2) 0))
+    (test= '(6) (keep even '(5 6 7)))
+    (test= '(2 4 6) (keep even '(1 2 3 4 5 6)))
+    (test= '(2 4 6 b: 8) (keep even '(1 2 3 4 5 6 a: 7 b: 8)))))
 
 (define-test in?
   (test= true (in? 'x '(x y z)))
@@ -841,15 +891,11 @@ c"
   (test= true (in? 7 '(2 4 foo: 7)))
   (test= true (in? true '(2 4 :bar))))
 
-(define-test find
+(define-test first
   (test= nil (first (fn (x) x) ()))
   (test= 7 (first (fn (x) x) '(7)))
   (test= true (first (fn (x) (= x 7)) '(2 4 7)))
   (test= 4 (first (fn (x) (and (> x 3) x)) '(1 2 3 4 5 6))))
-
-(define-test sort
-  (test= '(a b c) (sort '(c a b)))
-  (test= '(3 2 1) (sort '(1 2 3) >)))
 
 (define-test type
   (test= true (string? "abc"))
@@ -875,6 +921,7 @@ c"
   (test= false (atom? '(1)))
   (test= false (atom? (obj)))
   (test= true (obj? (obj a: 10)))
+  (test= false (obj? null))
   (test= false (obj? 1))
   (test= false (obj? 'zz))
   (test= false (obj? (fn ()))))
@@ -886,7 +933,8 @@ c"
     (set (get t 'foo) 17)
     (test= 17 (apply (fn a (get a 'foo)) t)))
   (test= 42 (apply (fn (:foo) foo) (list foo: 42)))
-  (test= 42 (apply (fn ((:foo)) foo) (list (list foo: 42)))))
+  (test= 42 (apply (fn ((:foo)) foo) (list (list foo: 42))))
+  (test= 116 (apply + 1 5 '(100 10))))
 
 (define-test eval
   (let eval (get compiler 'eval)

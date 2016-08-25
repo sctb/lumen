@@ -1,5 +1,3 @@
-;; -*- mode: lisp -*-
-
 (target js: (define fs (require 'fs)))
 (target js: (define child_process (require 'child_process)))
 

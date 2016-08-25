@@ -1,5 +1,3 @@
-;; -*- mode: lisp -*-
-
 (define-global environment (list (obj)))
 (define-global target (language))
 
@@ -9,6 +7,9 @@
     lua: (= x nil)))
 
 (define-global is? (x) (not (nil? x)))
+
+(define-global no (x) (or (nil? x) (= x false)))
+(define-global yes (x) (not (no x)))
 
 (define-global # (x)
   (target js: (or (get x 'length) 0) lua: |#x|))
@@ -28,7 +29,8 @@
 (define-global function? (x) (= (type x) 'function))
 
 (define-global obj? (x)
-  (= (type x) (target lua: 'table js: 'object)))
+  (and (is? x)
+       (= (type x) (target lua: 'table js: 'object))))
 
 (define-global atom? (x)
   (or (nil? x) (string? x) (number? x) (boolean? x)))
@@ -148,11 +150,6 @@
       (add l1 (list (at l i) (at l (+ i 1))))
       (inc i))))
 
-(define-global sort (l f)
-  (target
-    lua: (do ((get table 'sort) l f) l)
-    js: ((get l 'sort) (when f (fn (a b) (if (f a b) -1 1))))))
-
 (define-global map (f x)
   (with t ()
     (step v x
@@ -166,7 +163,7 @@
             (set (get t k) y)))))))
 
 (define-global keep (f x)
-  (map (fn (v) (when (f v) v)) x))
+  (map (fn (v) (when (yes (f v)) v)) x))
 
 (define-global keys? (t)
   (each (k v) t
@@ -308,7 +305,7 @@
 (target lua:
   (define values (or unpack (get table 'unpack))))
 
-(define-global apply (f args)
+(define-global apply1 (f args)
   (let args (stash args)
     (target js: ((get f 'apply) f args)
             lua: (f (values args)))))
@@ -353,3 +350,4 @@
 (define-global sqrt (get math 'sqrt))
 (define-global tan (get math 'tan))
 (define-global tanh (get math 'tanh))
+(define-global trunc (get math 'floor))

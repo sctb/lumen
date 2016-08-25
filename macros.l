@@ -1,10 +1,12 @@
-;; -*- mode: lisp -*-
-
 (define-macro quote (form)
   (quoted form))
 
 (define-macro quasiquote (form)
   (quasiexpand form 1))
+
+(define-macro set args
+  `(do ,@(map (fn ((lh rh)) `(%set ,lh ,rh))
+              (pair args))))
 
 (define-macro at (l i)
   (if (and (= target 'lua) (number? i))
@@ -32,13 +34,16 @@
 (define-macro if branches
   (hd (expand-if branches)))
 
-(define-macro case (x rest: clauses)
-  (let bs (map (fn ((a b))
-                 (if (nil? b)
-                     (list a)
-                   `((= ',a ,x) ,b)))
-               (pair clauses))
-    `(if ,@(apply join bs))))
+(define-macro case (expr rest: clauses)
+  (let-unique (x)
+    (let (eq (fn (_) `(= ',_ ,x))
+          cl (fn ((a b))
+               (if (nil? b) (list a)
+                   (or (string? a) (number? a)) (list (eq a) b)
+                   (one? a) (list (eq (hd a)) b)
+                   (> (# a) 1) (list `(or ,@(map eq a)) b))))
+      `(let ,x ,expr
+         (if ,@(apply join (map cl (pair clauses))))))))
 
 (define-macro when (cond rest: body)
   `(if ,cond (do ,@body)))
@@ -57,8 +62,8 @@
       (let renames ()
         (if (or (bound? id) (toplevel?))
             (let id1 (unique id)
-              (set renames (list id id1))
-              (set id id1))
+              (set renames (list id id1)
+                   id id1))
           (setenv id :variable))
         `(do (%local ,id ,val)
              (let-symbol ,renames
@@ -70,7 +75,7 @@
 (define-macro let-when (x v rest: body)
   (let-unique (y)
     `(let ,y ,v
-       (when ,y
+       (when (yes ,y)
          (let (,x ,y)
            ,@body)))))
 
@@ -140,6 +145,11 @@
 (define-macro fn (args rest: body)
   `(%function ,@(bind* args body)))
 
+(define-macro apply (f rest: args)
+  (if (> (# args) 1)
+      `(apply1 ,f (join (list ,@(almost args)) ,(last args)))
+      `(apply1 ,f ,@args)))
+
 (define-macro guard (expr)
   (if (= target 'js)
       `((fn () (%try (list true ,expr))))
@@ -150,10 +160,10 @@
          (if (xpcall
               (fn () (set ,x ,expr))
               (fn (m)
-                (set ,msg (clip m (+ (search m ": ") 2)))
-                (set ,trace ((get debug 'traceback)))))
+                (set ,msg (clip m (+ (search m ": ") 2))
+                     ,trace ((get debug 'traceback)))))
              (list true ,x)
-           (list false ,msg ,trace))))))
+           (list false (obj message: ,msg stack: ,trace)))))))
 
 (define-macro each (x t rest: body)
   (let-unique (o n i)
@@ -170,10 +180,11 @@
                        ,@body)))))))))
 
 (define-macro for (i to rest: body)
-  `(let ,i 0
-     (while (< ,i ,to)
-       ,@body
-       (inc ,i))))
+  (let-unique (j)
+    `(let (,i 0 ,j ,to)
+       (while (< ,i ,j)
+         ,@body
+         (inc ,i)))))
 
 (define-macro step (v t rest: body)
   (let-unique (x n i)
@@ -200,10 +211,10 @@
   `(set ,a (cat ,a ,@bs)))
 
 (define-macro inc (n by)
-  `(set ,n (+ ,n ,(or by 1))))
+  `(set ,n (+ ,n ,(if (nil? by) 1 by))))
 
 (define-macro dec (n by)
-  `(set ,n (- ,n ,(or by 1))))
+  `(set ,n (- ,n ,(if (nil? by) 1 by))))
 
 (define-macro with-indent (form)
   (let-unique (x)

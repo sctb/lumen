@@ -1,5 +1,3 @@
-;; -*- mode: lisp -*-
-
 (define reader (require 'reader))
 
 (define getenv (k p)
@@ -144,8 +142,11 @@
   (with-bindings (args)
     `(,x ,name ,args ,@(macroexpand body))))
 
-(define expand-macro ((name rest: body))
-  (macroexpand (apply (macro-function name) body)))
+(define-global expand1 ((name rest: body))
+  (apply (macro-function name) body))
+
+(define-global expand-macro (form)
+  (macroexpand (expand1 form)))
 
 (define-global macroexpand (form)
   (if (symbol? form)
@@ -440,24 +441,24 @@
 
 (define lower-set (args hoist stmt? tail?)
   (let ((lh rh) args)
-    (add hoist `(set ,lh ,(lower rh hoist)))
+    (add hoist `(%set ,lh ,(lower rh hoist)))
     (unless (and stmt? (not tail?))
       lh)))
 
 (define lower-if (args hoist stmt? tail?)
   (let ((cond then else) args)
-    (if (or stmt? tail?)
+    (if stmt?
         (add hoist
              `(%if ,(lower cond hoist)
                    ,(lower-body (list then) tail?)
-                   ,@(if else (list (lower-body (list else) tail?)))))
+                   ,@(if (yes else) (list (lower-body (list else) tail?)))))
       (let-unique (e)
         (add hoist `(%local ,e))
         (add hoist
              `(%if ,(lower cond hoist)
-                   ,(lower `(set ,e ,then))
-                   ,@(if else
-                         (list (lower `(set ,e ,else))))))
+                   ,(lower `(%set ,e ,then))
+                   ,@(if (yes else)
+                         (list (lower `(%set ,e ,else))))))
         e))))
 
 (define lower-short (x args hoist)
@@ -528,7 +529,7 @@
       (lower-infix? form) (lower-infix form hoist)
     (let ((x rest: args) form)
       (if (= x 'do) (lower-do args hoist stmt? tail?)
-          (= x 'set) (lower-set args hoist stmt? tail?)
+          (= x '%set) (lower-set args hoist stmt? tail?)
           (= x '%if) (lower-if args hoist stmt? tail?)
           (= x '%try) (lower-try args hoist tail?)
           (= x 'while) (lower-while args hoist)
@@ -542,7 +543,7 @@
           (statement? x) (lower-special form hoist)
         (lower-call form hoist)))))
 
-(define expand (form)
+(define-global expand (form)
   (lower (macroexpand form)))
 
 (target js: (set (get global 'require) require))
@@ -609,7 +610,7 @@
   (let-unique (e)
     (let (ind (indentation)
           body (with-indent (compile form :stmt))
-          hf `(return (%array false (get ,e "message") (get ,e "stack")))
+          hf `(return (%array false ,e))
           h (with-indent (compile hf :stmt)))
       (cat ind "try {\n" body ind "}\n"
            ind "catch (" e ") {\n" h ind "}\n"))))
@@ -627,7 +628,7 @@
   (if (= target 'lua)
       (let x (compile-function args body name: name)
         (cat (indentation) x))
-    (compile `(set ,name (%function ,args ,body)) :stmt)))
+    (compile `(%set ,name (%function ,args ,body)) :stmt)))
 
 (define-special %local-function (name args body) :stmt :tr
   (if (= target 'lua)
@@ -661,7 +662,7 @@
         ind (indentation))
     (cat ind keyword id rh)))
 
-(define-special set (lh rh) :stmt
+(define-special %set (lh rh) :stmt
   (let (lh (compile lh)
         rh (compile (if (nil? rh) 'nil rh)))
     (cat (indentation) lh " = " rh)))
