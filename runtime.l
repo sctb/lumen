@@ -150,6 +150,11 @@
       (add l1 (list (at l i) (at l (+ i 1))))
       (inc i))))
 
+(define-global sort (l f)
+  (target
+    lua: (do ((get table 'sort) l f) l)
+    js: ((get l 'sort) (when f (fn (a b) (if (f a b) -1 1))))))
+
 (define-global map (f x)
   (with t ()
     (step v x
