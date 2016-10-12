@@ -234,6 +234,10 @@ function pair(l)
   end
   return(l1)
 end
+function sort(l, f)
+  table.sort(l, f)
+  return(l)
+end
 function map(f, x)
   local t = {}
   local _x4 = x
@@ -550,9 +554,9 @@ function toplevel63()
   return(one63(environment))
 end
 function setenv(k, ...)
-  local _r68 = unstash({...})
-  local _k = destash33(k, _r68)
-  local _id1 = _r68
+  local _r69 = unstash({...})
+  local _k = destash33(k, _r69)
+  local _id1 = _r69
   local _keys = cut(_id1, 0)
   if string63(_k) then
     local _e7
@@ -898,8 +902,8 @@ setenv("guard", {_stash = true, macro = function (expr)
     local msg = unique("msg")
     local trace = unique("trace")
     local _x275 = {"obj"}
-    _x275.stack = trace
     _x275.message = msg
+    _x275.stack = trace
     return({"let", {x, "nil", msg, "nil", trace, "nil"}, {"if", {"xpcall", {"fn", join(), {"set", x, expr}}, {"fn", {"m"}, {"set", msg, {"clip", "m", {"+", {"search", "m", "\": \""}, 2}}, trace, {{"get", "debug", {"quote", "traceback"}}}}}}, {"list", true, x}, {"list", false, _x275}}})
   end
 end})
