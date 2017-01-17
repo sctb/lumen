@@ -871,10 +871,10 @@ c"
   (test= () (keep (fn (x) x) ()))
   (test= '(0 1 2) (keep (fn (x) x) '(0 1 2)))
   (test= '((1) (2 3)) (keep some? '(() (1) () (2 3))))
-  (let even (fn (x) (= (% x 2) 0))
-    (test= '(6) (keep even '(5 6 7)))
-    (test= '(2 4 6) (keep even '(1 2 3 4 5 6)))
-    (test= '(2 4 6 b: 8) (keep even '(1 2 3 4 5 6 a: 7 b: 8)))))
+  (let evens (fn (x) (= (% x 2) 0))
+    (test= '(6) (keep evens '(5 6 7)))
+    (test= '(2 4 6) (keep evens '(1 2 3 4 5 6)))
+    (test= '(2 4 6 b: 8) (keep evens '(1 2 3 4 5 6 a: 7 b: 8)))))
 
 (define-test in?
   (test= true (in? 'x '(x y z)))
