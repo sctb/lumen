@@ -938,8 +938,7 @@ setenv("for", {_stash = true, macro = function (i, to, ...)
   local _to1 = destash33(to, _r63)
   local _id53 = _r63
   local body = cut(_id53, 0)
-  local j = unique("j")
-  return({"let", {_i3, 0, j, _to1}, join({"while", {"<", _i3, j}}, body, {{"inc", _i3}})})
+  return({"let", _i3, 0, join({"while", {"<", _i3, _to1}}, body, {{"inc", _i3}})})
 end})
 setenv("step", {_stash = true, macro = function (v, t, ...)
   local _r65 = unstash({...})
@@ -1041,7 +1040,7 @@ local function eval_print(form)
   end) then
     _e = {true, _x}
   else
-    _e = {false, {stack = _trace, message = _msg}}
+    _e = {false, {message = _msg, stack = _trace}}
   end
   local _id = _e
   local ok = _id[1]

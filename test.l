@@ -445,7 +445,7 @@ c"
     (for i (# l)
       (inc n i)
       (set l '(a b c)))
-    (test= 10 n)))
+    (test= 3 n)))
 
 (define-test table
   (test= 10 (get (obj a: 10) 'a))
