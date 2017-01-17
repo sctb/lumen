@@ -511,7 +511,12 @@ c"
     (let l (list (obj a: 1 b: 2) (obj a: 2 b: 4))
       (step (:a :b) l
         (add xs (+ a b))))
-    (test= '(3 6) xs)))
+    (test= '(3 6) xs))
+  (let l '(a b)
+    (step x l
+      (if (= x 'a) (add l 'c)
+          (= x 'c) (add l 'd)))
+    (test= '(a b c d) l)))
 
 (define-test inc
   (let x 2 (inc x) (test= 3 x))
