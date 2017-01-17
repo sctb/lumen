@@ -8,7 +8,7 @@
 (define-macro test (x msg)
   `(if (not ,x)
        (do (set failed (+ failed 1))
-	   (return ,msg))
+           (return ,msg))
      (inc passed)))
 
 (define equal? (a b)
@@ -303,8 +303,8 @@ c"
 
 (define-test calls
   (let (f (fn () 42)
-	l (list f)
-	t (obj f: f))
+        l (list f)
+        t (obj f: f))
     (test= 42 (f))
     (test= 42 ((at l 0)))
     (test= 42 ((get t 'f)))
@@ -364,7 +364,7 @@ c"
 (define-test do
   (let a 17
     (do (set a 10)
-	(test= 10 a))
+        (test= 10 a))
     (test= 10 (do a))
     (let b (do (set a 2) (+ a 5))
       (test= a 2)
@@ -573,7 +573,7 @@ c"
   (let (a 10)
     (test= 10 a))
   (let (a 11
-	b 12)
+        b 12)
     (test= 11 a)
     (test= 12 b))
   (let (a 1)
