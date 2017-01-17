@@ -142,11 +142,11 @@
   (with-bindings (args)
     `(,x ,name ,args ,@(macroexpand body))))
 
+(define expand-macro (form)
+  (macroexpand (expand1 form)))
+
 (define-global expand1 ((name rest: body))
   (apply (macro-function name) body))
-
-(define-global expand-macro (form)
-  (macroexpand (expand1 form)))
 
 (define-global macroexpand (form)
   (if (symbol? form)
