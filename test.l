@@ -76,6 +76,34 @@
       (test= false ok)
       (test= "Expected ) at 5" (get e 'message)))))
 
+(define-test nil?
+  (test= true (nil? nil))
+  (test= true (nil? null))
+  (test= false (nil? true))
+  (test= false (nil? false))
+  (test= false (nil? (obj))))
+
+(define-test is?
+  (test= false (is? nil))
+  (test= false (is? null))
+  (test= true (is? true))
+  (test= true (is? false))
+  (test= true (is? (obj))))
+
+(define-test false?
+  (test= true (false? nil))
+  (test= true (false? null))
+  (test= false (false? true))
+  (test= true (false? false))
+  (test= false (false? (obj))))
+
+(define-test true?
+  (test= false (true? nil))
+  (test= false (true? null))
+  (test= true (true? true))
+  (test= false (true? false))
+  (test= true (true? (obj))))
+
 (define-test boolean
   (test= true (or true false))
   (test= false (or false false))
