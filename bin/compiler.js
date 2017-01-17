@@ -279,7 +279,7 @@ expand1 = function (_x46) {
   var _id3 = _x46;
   var name = _id3[0];
   var body = cut(_id3, 1);
-  return(apply1(macro_function(name), body));
+  return(apply(macro_function(name), body));
 };
 expand_macro = function (form) {
   return(macroexpand(expand1(form)));
@@ -425,7 +425,7 @@ indentation = function () {
   }
   return(s);
 };
-var reserved = {"/": true, "%": true, "finally": true, "debugger": true, "-": true, "case": true, "with": true, "then": true, ">=": true, "do": true, "<=": true, "void": true, "else": true, "instanceof": true, "default": true, "=": true, "throw": true, "true": true, "return": true, "nil": true, "break": true, "not": true, "*": true, "for": true, "and": true, "delete": true, "+": true, "elseif": true, "until": true, "continue": true, "in": true, "==": true, "while": true, "if": true, "repeat": true, "end": true, "or": true, "switch": true, "new": true, "typeof": true, "catch": true, "<": true, "try": true, ">": true, "false": true, "this": true, "var": true, "function": true, "local": true};
+var reserved = {"in": true, "void": true, "*": true, ">=": true, "then": true, "continue": true, "finally": true, "local": true, "typeof": true, "switch": true, "until": true, "or": true, "if": true, "var": true, "default": true, "for": true, "case": true, "%": true, "/": true, "elseif": true, "else": true, "+": true, "return": true, "-": true, "break": true, ">": true, "delete": true, "function": true, "false": true, "true": true, "new": true, "this": true, "debugger": true, "do": true, "and": true, "=": true, "repeat": true, "instanceof": true, "with": true, "==": true, "end": true, "try": true, "<=": true, "throw": true, "while": true, "catch": true, "<": true, "not": true, "nil": true};
 reserved63 = function (x) {
   return(reserved[x]);
 };
@@ -482,40 +482,40 @@ mapo = function (f, t) {
 };
 var __x59 = [];
 var _x60 = [];
-_x60.lua = "not";
 _x60.js = "!";
+_x60.lua = "not";
 __x59["not"] = _x60;
 var __x61 = [];
-__x61["/"] = true;
-__x61["*"] = true;
 __x61["%"] = true;
+__x61["*"] = true;
+__x61["/"] = true;
 var __x62 = [];
 __x62["-"] = true;
 __x62["+"] = true;
 var __x63 = [];
 var _x64 = [];
-_x64.lua = "..";
 _x64.js = "+";
+_x64.lua = "..";
 __x63.cat = _x64;
 var __x65 = [];
-__x65[">="] = true;
-__x65[">"] = true;
 __x65["<="] = true;
+__x65[">"] = true;
+__x65[">="] = true;
 __x65["<"] = true;
 var __x66 = [];
 var _x67 = [];
-_x67.lua = "==";
 _x67.js = "===";
+_x67.lua = "==";
 __x66["="] = _x67;
 var __x68 = [];
 var _x69 = [];
-_x69.lua = "and";
 _x69.js = "&&";
+_x69.lua = "and";
 __x68["and"] = _x69;
 var __x70 = [];
 var _x71 = [];
-_x71.lua = "or";
 _x71.js = "||";
+_x71.lua = "or";
 __x70["or"] = _x71;
 var infix = [__x59, __x61, __x62, __x63, __x65, __x66, __x68, __x70];
 var unary63 = function (form) {
@@ -693,7 +693,7 @@ var compile_special = function (form, stmt63) {
   var stmt = _id6.stmt;
   var special = _id6.special;
   var tr = terminator(stmt63 && ! self_tr63);
-  return(apply1(special, args) + tr);
+  return(apply(special, args) + tr);
 };
 var parenthesize_call63 = function (x) {
   return(! atom63(x) && hd(x) === "%function" || precedence(x) > 0);

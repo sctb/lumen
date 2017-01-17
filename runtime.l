@@ -310,7 +310,7 @@
 (target lua:
   (define values (or unpack (get table 'unpack))))
 
-(define-global apply1 (f args)
+(define-global apply (f args)
   (let args (stash args)
     (target js: ((get f 'apply) f args)
             lua: (f (values args)))))

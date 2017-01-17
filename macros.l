@@ -147,8 +147,8 @@
 
 (define-macro apply (f rest: args)
   (if (> (# args) 1)
-      `(apply1 ,f (join (list ,@(almost args)) ,(last args)))
-      `(apply1 ,f ,@args)))
+      `((do apply) ,f (join (list ,@(almost args)) ,(last args)))
+      `((do apply) ,f ,@args)))
 
 (define-macro guard (expr)
   (if (= target 'js)

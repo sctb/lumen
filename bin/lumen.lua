@@ -543,7 +543,7 @@ function str(x, stack)
   end
 end
 local values = unpack or table.unpack
-function apply1(f, args)
+function apply(f, args)
   local _args = stash(args)
   return(f(values(_args)))
 end
@@ -684,7 +684,7 @@ setenv("case", {_stash = true, macro = function (expr, ...)
       end
     end
   end
-  return({"let", x, _expr1, join({"if"}, apply1(join, map(cl, pair(clauses))))})
+  return({"let", x, _expr1, join({"if"}, apply(join, map(cl, pair(clauses))))})
 end})
 setenv("when", {_stash = true, macro = function (cond, ...)
   local _r17 = unstash({...})
@@ -874,7 +874,7 @@ setenv("let-unique", {_stash = true, macro = function (names, ...)
   local bs = map(function (n)
     return({n, {"unique", {"quote", n}}})
   end, _names1)
-  return(join({"let", apply1(join, bs)}, body))
+  return(join({"let", apply(join, bs)}, body))
 end})
 setenv("fn", {_stash = true, macro = function (args, ...)
   local _r55 = unstash({...})
@@ -889,9 +889,9 @@ setenv("apply", {_stash = true, macro = function (f, ...)
   local _id47 = _r57
   local args = cut(_id47, 0)
   if _35(args) > 1 then
-    return({"apply1", _f1, {"join", join({"list"}, almost(args)), last(args)}})
+    return({{"do", "apply"}, _f1, {"join", join({"list"}, almost(args)), last(args)}})
   else
-    return(join({"apply1", _f1}, args))
+    return(join({{"do", "apply"}, _f1}, args))
   end
 end})
 setenv("guard", {_stash = true, macro = function (expr)
@@ -901,15 +901,15 @@ setenv("guard", {_stash = true, macro = function (expr)
     local x = unique("x")
     local msg = unique("msg")
     local trace = unique("trace")
-    local _x275 = {"obj"}
-    _x275.message = msg
-    _x275.stack = trace
-    return({"let", {x, "nil", msg, "nil", trace, "nil"}, {"if", {"xpcall", {"fn", join(), {"set", x, expr}}, {"fn", {"m"}, {"set", msg, {"clip", "m", {"+", {"search", "m", "\": \""}, 2}}, trace, {{"get", "debug", {"quote", "traceback"}}}}}}, {"list", true, x}, {"list", false, _x275}}})
+    local _x279 = {"obj"}
+    _x279.stack = trace
+    _x279.message = msg
+    return({"let", {x, "nil", msg, "nil", trace, "nil"}, {"if", {"xpcall", {"fn", join(), {"set", x, expr}}, {"fn", {"m"}, {"set", msg, {"clip", "m", {"+", {"search", "m", "\": \""}, 2}}, trace, {{"get", "debug", {"quote", "traceback"}}}}}}, {"list", true, x}, {"list", false, _x279}}})
   end
 end})
 setenv("each", {_stash = true, macro = function (x, t, ...)
   local _r61 = unstash({...})
-  local _x292 = destash33(x, _r61)
+  local _x296 = destash33(x, _r61)
   local _t1 = destash33(t, _r61)
   local _id50 = _r61
   local body = cut(_id50, 0)
@@ -917,14 +917,14 @@ setenv("each", {_stash = true, macro = function (x, t, ...)
   local n = unique("n")
   local i = unique("i")
   local _e5
-  if atom63(_x292) then
-    _e5 = {i, _x292}
+  if atom63(_x296) then
+    _e5 = {i, _x296}
   else
     local _e6
-    if _35(_x292) > 1 then
-      _e6 = _x292
+    if _35(_x296) > 1 then
+      _e6 = _x296
     else
-      _e6 = {i, hd(_x292)}
+      _e6 = {i, hd(_x296)}
     end
     _e5 = _e6
   end
