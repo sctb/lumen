@@ -179,9 +179,8 @@ join = function () {
   var ls = unstash(Array.prototype.slice.call(arguments, 0));
   var r = [];
   var _x1 = ls;
-  var _n2 = _35(_x1);
   var _i2 = 0;
-  while (_i2 < _n2) {
+  while (_i2 < _35(_x1)) {
     var l = _x1[_i2];
     if (l) {
       var n = _35(r);
@@ -226,9 +225,8 @@ find = function (f, t) {
 };
 first = function (f, l) {
   var _x2 = l;
-  var _n5 = _35(_x2);
   var _i5 = 0;
-  while (_i5 < _n5) {
+  while (_i5 < _35(_x2)) {
     var x = _x2[_i5];
     var y = f(x);
     if (y) {
@@ -268,9 +266,8 @@ sort = function (l, f) {
 map = function (f, x) {
   var t = [];
   var _x4 = x;
-  var _n6 = _35(_x4);
   var _i6 = 0;
-  while (_i6 < _n6) {
+  while (_i6 < _35(_x4)) {
     var v = _x4[_i6];
     var y = f(v);
     if (is63(y)) {
@@ -1249,9 +1246,8 @@ var main = function () {
     i = i + 1;
   }
   var _x2 = pre;
-  var _n = _35(_x2);
   var _i = 0;
-  while (_i < _n) {
+  while (_i < _35(_x2)) {
     var file = _x2[_i];
     run_file(file);
     _i = _i + 1;

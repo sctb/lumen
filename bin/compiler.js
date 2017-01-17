@@ -340,9 +340,8 @@ var quasiquote_list = function (form, depth) {
     }
   }
   var _x49 = form;
-  var _n6 = _35(_x49);
   var _i6 = 0;
-  while (_i6 < _n6) {
+  while (_i6 < _35(_x49)) {
     var x = _x49[_i6];
     if (quasisplice63(x, depth)) {
       var _x50 = quasiexpand(x[1]);
@@ -422,7 +421,7 @@ indentation = function () {
   }
   return(s);
 };
-var reserved = {"void": true, "break": true, "switch": true, "or": true, "in": true, "not": true, "elseif": true, "return": true, "%": true, "until": true, "-": true, "with": true, "+": true, "this": true, "throw": true, "/": true, "nil": true, "then": true, "do": true, "try": true, "if": true, "for": true, "false": true, "typeof": true, "continue": true, "new": true, "debugger": true, "function": true, "default": true, ">": true, "instanceof": true, "<": true, "true": true, "delete": true, "end": true, "case": true, "*": true, "var": true, "and": true, "finally": true, "else": true, ">=": true, "repeat": true, "<=": true, "while": true, "=": true, "local": true, "catch": true, "==": true};
+var reserved = {"true": true, "typeof": true, "nil": true, "local": true, "new": true, "default": true, "or": true, "this": true, "until": true, "%": true, "debugger": true, "+": true, "do": true, "continue": true, "-": true, "/": true, "case": true, "else": true, "void": true, ">=": true, "<": true, "then": true, "in": true, "elseif": true, "==": true, "<=": true, ">": true, "while": true, "instanceof": true, "switch": true, "try": true, "var": true, "delete": true, "if": true, "end": true, "repeat": true, "for": true, "and": true, "finally": true, "*": true, "not": true, "return": true, "throw": true, "catch": true, "with": true, "=": true, "break": true, "false": true, "function": true};
 reserved63 = function (x) {
   return(reserved[x]);
 };
@@ -482,22 +481,22 @@ _x60.lua = "not";
 _x60.js = "!";
 __x59["not"] = _x60;
 var __x61 = [];
-__x61["*"] = true;
 __x61["/"] = true;
+__x61["*"] = true;
 __x61["%"] = true;
 var __x62 = [];
-__x62["-"] = true;
 __x62["+"] = true;
+__x62["-"] = true;
 var __x63 = [];
 var _x64 = [];
 _x64.lua = "..";
 _x64.js = "+";
 __x63.cat = _x64;
 var __x65 = [];
+__x65["<="] = true;
 __x65[">"] = true;
 __x65[">="] = true;
 __x65["<"] = true;
-__x65["<="] = true;
 var __x66 = [];
 var _x67 = [];
 _x67.lua = "==";
@@ -559,9 +558,8 @@ var compile_args = function (args) {
   var s = "(";
   var c = "";
   var _x73 = args;
-  var _n9 = _35(_x73);
   var _i9 = 0;
-  while (_i9 < _n9) {
+  while (_i9 < _35(_x73)) {
     var x = _x73[_i9];
     s = s + c + compile(x);
     c = ", ";
@@ -682,9 +680,9 @@ var compile_special = function (form, stmt63) {
   var x = _id5[0];
   var args = cut(_id5, 1);
   var _id6 = getenv(x);
-  var stmt = _id6.stmt;
-  var self_tr63 = _id6.tr;
   var special = _id6.special;
+  var self_tr63 = _id6.tr;
+  var stmt = _id6.stmt;
   var tr = terminator(stmt63 && ! self_tr63);
   return(apply(special, args) + tr);
 };
@@ -850,9 +848,8 @@ var standalone63 = function (form) {
 };
 var lower_do = function (args, hoist, stmt63, tail63) {
   var _x81 = almost(args);
-  var _n10 = _35(_x81);
   var _i10 = 0;
-  while (_i10 < _n10) {
+  while (_i10 < _35(_x81)) {
     var x = _x81[_i10];
     var _y = lower(x, hoist, stmt63);
     if (true63(_y)) {
@@ -1062,9 +1059,8 @@ setenv("do", {_stash: true, special: function () {
   var forms = unstash(Array.prototype.slice.call(arguments, 0));
   var s = "";
   var _x115 = forms;
-  var _n12 = _35(_x115);
   var _i12 = 0;
-  while (_i12 < _n12) {
+  while (_i12 < _35(_x115)) {
     var x = _x115[_i12];
     s = s + compile(x, {_stash: true, stmt: true});
     if (! atom63(x)) {

@@ -165,9 +165,8 @@ function join(...)
   local ls = unstash({...})
   local r = {}
   local _x2 = ls
-  local _n2 = _35(_x2)
   local _i2 = 0
-  while _i2 < _n2 do
+  while _i2 < _35(_x2) do
     local l = _x2[_i2 + 1]
     if l then
       local n = _35(r)
@@ -198,9 +197,8 @@ function find(f, t)
 end
 function first(f, l)
   local _x3 = l
-  local _n5 = _35(_x3)
   local _i5 = 0
-  while _i5 < _n5 do
+  while _i5 < _35(_x3) do
     local x = _x3[_i5 + 1]
     local y = f(x)
     if y then
@@ -231,9 +229,8 @@ end
 function map(f, x)
   local t = {}
   local _x5 = x
-  local _n6 = _35(_x5)
   local _i6 = 0
-  while _i6 < _n6 do
+  while _i6 < _35(_x5) do
     local v = _x5[_i6 + 1]
     local y = f(v)
     if is63(y) then
@@ -889,8 +886,8 @@ setenv("guard", {_stash = true, macro = function (expr)
     local msg = unique("msg")
     local trace = unique("trace")
     local _x279 = {"obj"}
-    _x279.stack = trace
     _x279.message = msg
+    _x279.stack = trace
     return({"let", {x, "nil", msg, "nil", trace, "nil"}, {"if", {"xpcall", {"fn", join(), {"set", x, expr}}, {"fn", {"m"}, {"set", msg, {"clip", "m", {"+", {"search", "m", "\": \""}, 2}}, trace, {{"get", "debug", {"quote", "traceback"}}}}}}, {"list", true, x}, {"list", false, _x279}}})
   end
 end})
@@ -1033,7 +1030,7 @@ local function eval_print(form)
   end) then
     _e = {true, _x}
   else
-    _e = {false, {stack = _trace, message = _msg}}
+    _e = {false, {message = _msg, stack = _trace}}
   end
   local _id = _e
   local ok = _id[1]
@@ -1137,9 +1134,8 @@ local function main()
     i = i + 1
   end
   local _x4 = pre
-  local _n = _35(_x4)
   local _i = 0
-  while _i < _n do
+  while _i < _35(_x4) do
     local file = _x4[_i + 1]
     run_file(file)
     _i = _i + 1
