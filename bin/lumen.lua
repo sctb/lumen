@@ -6,11 +6,11 @@ end
 function is63(x)
   return(not nil63(x))
 end
-function no(x)
+function false63(x)
   return(nil63(x) or x == false)
 end
-function yes(x)
-  return(not no(x))
+function true63(x)
+  return(not false63(x))
 end
 function _35(x)
   return(#x)
@@ -267,7 +267,7 @@ function map(f, x)
 end
 function keep(f, x)
   return(map(function (v)
-    if yes(f(v)) then
+    if true63(f(v)) then
       return(v)
     end
   end, x))
@@ -752,7 +752,7 @@ setenv("let-when", {_stash = true, macro = function (x, v, ...)
   local _id19 = _r27
   local body = cut(_id19, 0)
   local y = unique("y")
-  return({"let", y, _v3, {"when", {"yes", y}, join({"let", {_x110, y}}, body)}})
+  return({"let", y, _v3, {"when", {"true?", y}, join({"let", {_x110, y}}, body)}})
 end})
 setenv("define-macro", {_stash = true, macro = function (name, args, ...)
   local _r29 = unstash({...})
@@ -813,7 +813,7 @@ setenv("define-global", {_stash = true, macro = function (name, x, ...)
   local _x163 = destash33(x, _r39)
   local _id31 = _r39
   local body = cut(_id31, 0)
-  setenv(_name7, {_stash = true, toplevel = true, variable = true})
+  setenv(_name7, {_stash = true, variable = true, toplevel = true})
   if some63(body) then
     return(join({"%global-function", _name7}, bind42(_x163, body)))
   else

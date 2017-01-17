@@ -75,7 +75,7 @@
 (define-macro let-when (x v rest: body)
   (let-unique (y)
     `(let ,y ,v
-       (when (yes ,y)
+       (when (true? ,y)
          (let (,x ,y)
            ,@body)))))
 

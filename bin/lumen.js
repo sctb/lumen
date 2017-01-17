@@ -6,11 +6,11 @@ nil63 = function (x) {
 is63 = function (x) {
   return(! nil63(x));
 };
-no = function (x) {
+false63 = function (x) {
   return(nil63(x) || x === false);
 };
-yes = function (x) {
-  return(! no(x));
+true63 = function (x) {
+  return(! false63(x));
 };
 _35 = function (x) {
   return(x.length || 0);
@@ -318,7 +318,7 @@ map = function (f, x) {
 };
 keep = function (f, x) {
   return(map(function (v) {
-    if (yes(f(v))) {
+    if (true63(f(v))) {
       return(v);
     }
   }, x));
@@ -871,7 +871,7 @@ setenv("let-when", {_stash: true, macro: function (x, v) {
   var _id19 = _r27;
   var body = cut(_id19, 0);
   var y = unique("y");
-  return(["let", y, _v3, ["when", ["yes", y], join(["let", [_x100, y]], body)]]);
+  return(["let", y, _v3, ["when", ["true?", y], join(["let", [_x100, y]], body)]]);
 }});
 setenv("define-macro", {_stash: true, macro: function (name, args) {
   var _r29 = unstash(Array.prototype.slice.call(arguments, 2));
@@ -932,7 +932,7 @@ setenv("define-global", {_stash: true, macro: function (name, x) {
   var _x148 = destash33(x, _r39);
   var _id31 = _r39;
   var body = cut(_id31, 0);
-  setenv(_name7, {_stash: true, toplevel: true, variable: true});
+  setenv(_name7, {_stash: true, variable: true, toplevel: true});
   if (some63(body)) {
     return(join(["%global-function", _name7], bind42(_x148, body)));
   } else {
