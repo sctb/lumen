@@ -181,8 +181,7 @@ join = function () {
   var _x1 = ls;
   var _n2 = _35(_x1);
   var _i2 = 0;
-  var _j = _n2;
-  while (_i2 < _j) {
+  while (_i2 < _n2) {
     var l = _x1[_i2];
     if (l) {
       var n = _35(r);
@@ -229,8 +228,7 @@ first = function (f, l) {
   var _x2 = l;
   var _n5 = _35(_x2);
   var _i5 = 0;
-  var _j1 = _n5;
-  while (_i5 < _j1) {
+  while (_i5 < _n5) {
     var x = _x2[_i5];
     var y = f(x);
     if (y) {
@@ -247,8 +245,7 @@ in63 = function (x, t) {
 pair = function (l) {
   var l1 = [];
   var i = 0;
-  var _j2 = _35(l);
-  while (i < _j2) {
+  while (i < _35(l)) {
     add(l1, [l[i], l[i + 1]]);
     i = i + 1;
     i = i + 1;
@@ -273,8 +270,7 @@ map = function (f, x) {
   var _x4 = x;
   var _n6 = _35(_x4);
   var _i6 = 0;
-  var _j3 = _n6;
-  while (_i6 < _j3) {
+  while (_i6 < _n6) {
     var v = _x4[_i6];
     var y = f(v);
     if (is63(y)) {
@@ -503,8 +499,7 @@ number_code63 = function (n) {
 numeric63 = function (s) {
   var n = _35(s);
   var i = 0;
-  var _j4 = n;
-  while (i < _j4) {
+  while (i < n) {
     if (! number_code63(code(s, i))) {
       return(false);
     }
@@ -518,8 +513,7 @@ var tostring = function (x) {
 escape = function (s) {
   var s1 = "\"";
   var i = 0;
-  var _j5 = _35(s);
-  while (i < _j5) {
+  while (i < _35(s)) {
     var c = char(s, i);
     var _e13;
     if (c === "\n") {
@@ -1059,9 +1053,8 @@ setenv("step", {_stash: true, macro: function (v, t) {
   var _id55 = _r65;
   var body = cut(_id55, 0);
   var x = unique("x");
-  var n = unique("n");
   var i = unique("i");
-  return(["let", [x, _t3, n, ["#", x]], ["for", i, n, join(["let", [_v5, ["at", x, i]]], body)]]);
+  return(["let", [x, _t3], ["for", i, ["#", x], join(["let", [_v5, ["at", x, i]]], body)]]);
 }});
 setenv("set-of", {_stash: true, macro: function () {
   var xs = unstash(Array.prototype.slice.call(arguments, 0));
@@ -1224,8 +1217,7 @@ var main = function () {
   var argv = system.argv;
   var n = _35(argv);
   var i = 0;
-  var _j = n;
-  while (i < _j) {
+  while (i < n) {
     var a = argv[i];
     if (a === "-c" || a === "-o" || a === "-t" || a === "-e") {
       if (i === n - 1) {
@@ -1259,8 +1251,7 @@ var main = function () {
   var _x2 = pre;
   var _n = _35(_x2);
   var _i = 0;
-  var _j1 = _n;
-  while (_i < _j1) {
+  while (_i < _n) {
     var file = _x2[_i];
     run_file(file);
     _i = _i + 1;

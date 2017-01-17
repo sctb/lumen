@@ -167,8 +167,7 @@ function join(...)
   local _x2 = ls
   local _n2 = _35(_x2)
   local _i2 = 0
-  local _j = _n2
-  while _i2 < _j do
+  while _i2 < _n2 do
     local l = _x2[_i2 + 1]
     if l then
       local n = _35(r)
@@ -201,8 +200,7 @@ function first(f, l)
   local _x3 = l
   local _n5 = _35(_x3)
   local _i5 = 0
-  local _j1 = _n5
-  while _i5 < _j1 do
+  while _i5 < _n5 do
     local x = _x3[_i5 + 1]
     local y = f(x)
     if y then
@@ -219,8 +217,7 @@ end
 function pair(l)
   local l1 = {}
   local i = 0
-  local _j2 = _35(l)
-  while i < _j2 do
+  while i < _35(l) do
     add(l1, {l[i + 1], l[i + 1 + 1]})
     i = i + 1
     i = i + 1
@@ -236,8 +233,7 @@ function map(f, x)
   local _x5 = x
   local _n6 = _35(_x5)
   local _i6 = 0
-  local _j3 = _n6
-  while _i6 < _j3 do
+  while _i6 < _n6 do
     local v = _x5[_i6 + 1]
     local y = f(v)
     if is63(y) then
@@ -424,8 +420,7 @@ end
 function numeric63(s)
   local n = _35(s)
   local i = 0
-  local _j4 = n
-  while i < _j4 do
+  while i < n do
     if not number_code63(code(s, i)) then
       return(false)
     end
@@ -436,8 +431,7 @@ end
 function escape(s)
   local s1 = "\""
   local i = 0
-  local _j5 = _35(s)
-  while i < _j5 do
+  while i < _35(s) do
     local c = char(s, i)
     local _e4
     if c == "\n" then
@@ -806,7 +800,7 @@ setenv("define-global", {_stash = true, macro = function (name, x, ...)
   local _x163 = destash33(x, _r39)
   local _id31 = _r39
   local body = cut(_id31, 0)
-  setenv(_name7, {_stash = true, variable = true, toplevel = true})
+  setenv(_name7, {_stash = true, toplevel = true, variable = true})
   if some63(body) then
     return(join({"%global-function", _name7}, bind42(_x163, body)))
   else
@@ -895,8 +889,8 @@ setenv("guard", {_stash = true, macro = function (expr)
     local msg = unique("msg")
     local trace = unique("trace")
     local _x279 = {"obj"}
-    _x279.message = msg
     _x279.stack = trace
+    _x279.message = msg
     return({"let", {x, "nil", msg, "nil", trace, "nil"}, {"if", {"xpcall", {"fn", join(), {"set", x, expr}}, {"fn", {"m"}, {"set", msg, {"clip", "m", {"+", {"search", "m", "\": \""}, 2}}, trace, {{"get", "debug", {"quote", "traceback"}}}}}}, {"list", true, x}, {"list", false, _x279}}})
   end
 end})
@@ -947,9 +941,8 @@ setenv("step", {_stash = true, macro = function (v, t, ...)
   local _id55 = _r65
   local body = cut(_id55, 0)
   local x = unique("x")
-  local n = unique("n")
   local i = unique("i")
-  return({"let", {x, _t3, n, {"#", x}}, {"for", i, n, join({"let", {_v5, {"at", x, i}}}, body)}})
+  return({"let", {x, _t3}, {"for", i, {"#", x}, join({"let", {_v5, {"at", x, i}}}, body)}})
 end})
 setenv("set-of", {_stash = true, macro = function (...)
   local xs = unstash({...})
@@ -1040,7 +1033,7 @@ local function eval_print(form)
   end) then
     _e = {true, _x}
   else
-    _e = {false, {message = _msg, stack = _trace}}
+    _e = {false, {stack = _trace, message = _msg}}
   end
   local _id = _e
   local ok = _id[1]
@@ -1112,8 +1105,7 @@ local function main()
   local argv = system.argv
   local n = _35(argv)
   local i = 0
-  local _j = n
-  while i < _j do
+  while i < n do
     local a = argv[i + 1]
     if a == "-c" or a == "-o" or a == "-t" or a == "-e" then
       if i == n - 1 then
@@ -1147,8 +1139,7 @@ local function main()
   local _x4 = pre
   local _n = _35(_x4)
   local _i = 0
-  local _j1 = _n
-  while _i < _j1 do
+  while _i < _n do
     local file = _x4[_i + 1]
     run_file(file)
     _i = _i + 1

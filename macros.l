@@ -186,9 +186,9 @@
        (inc ,i))))
 
 (define-macro step (v t rest: body)
-  (let-unique (x n i)
-    `(let (,x ,t ,n (# ,x))
-       (for ,i ,n
+  (let-unique (x i)
+    `(let (,x ,t)
+       (for ,i (# ,x)
          (let (,v (at ,x ,i))
            ,@body)))))
 
