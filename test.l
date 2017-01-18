@@ -95,14 +95,16 @@
   (test= true (no null))
   (test= false (no true))
   (test= true (no false))
-  (test= false (no (obj))))
+  (test= false (no (obj)))
+  (test= false (no 0)))
 
 (define-test yes
   (test= false (yes nil))
   (test= false (yes null))
   (test= true (yes true))
   (test= false (yes false))
-  (test= true (yes (obj))))
+  (test= true (yes (obj)))
+  (test= true (yes 0)))
 
 (define-test boolean
   (test= true (or true false))
