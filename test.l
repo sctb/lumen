@@ -90,19 +90,19 @@
   (test= true (is? false))
   (test= true (is? (obj))))
 
-(define-test false?
-  (test= true (false? nil))
-  (test= true (false? null))
-  (test= false (false? true))
-  (test= true (false? false))
-  (test= false (false? (obj))))
+(define-test no
+  (test= true (no nil))
+  (test= true (no null))
+  (test= false (no true))
+  (test= true (no false))
+  (test= false (no (obj))))
 
-(define-test true?
-  (test= false (true? nil))
-  (test= false (true? null))
-  (test= true (true? true))
-  (test= false (true? false))
-  (test= true (true? (obj))))
+(define-test yes
+  (test= false (yes nil))
+  (test= false (yes null))
+  (test= true (yes true))
+  (test= false (yes false))
+  (test= true (yes (obj))))
 
 (define-test boolean
   (test= true (or true false))

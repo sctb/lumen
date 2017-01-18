@@ -6,11 +6,11 @@ end
 function is63(x)
   return(not nil63(x))
 end
-function false63(x)
+function no(x)
   return(nil63(x) or x == false)
 end
-function true63(x)
-  return(not false63(x))
+function yes(x)
+  return(not no(x))
 end
 function _35(x)
   return(#x)
@@ -253,7 +253,7 @@ function map(f, x)
 end
 function keep(f, x)
   return(map(function (v)
-    if true63(f(v)) then
+    if yes(f(v)) then
       return(v)
     end
   end, x))
@@ -736,7 +736,7 @@ setenv("let-when", {_stash = true, macro = function (x, v, ...)
   local _id19 = _r27
   local body = cut(_id19, 0)
   local y = unique("y")
-  return({"let", y, _v3, {"when", {"true?", y}, join({"let", {_x110, y}}, body)}})
+  return({"let", y, _v3, {"when", {"yes", y}, join({"let", {_x110, y}}, body)}})
 end})
 setenv("define-macro", {_stash = true, macro = function (name, args, ...)
   local _r29 = unstash({...})

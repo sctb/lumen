@@ -8,8 +8,8 @@
 
 (define-global is? (x) (not (nil? x)))
 
-(define-global false? (x) (or (nil? x) (= x false)))
-(define-global true? (x) (not (false? x)))
+(define-global no (x) (or (nil? x) (= x false)))
+(define-global yes (x) (not (no x)))
 
 (define-global # (x)
   (target js: (or (get x 'length) 0) lua: |#x|))
@@ -162,7 +162,7 @@
             (set (get t k) y)))))))
 
 (define-global keep (f x)
-  (map (fn (v) (when (true? (f v)) v)) x))
+  (map (fn (v) (when (yes (f v)) v)) x))
 
 (define-global keys? (t)
   (each (k v) t

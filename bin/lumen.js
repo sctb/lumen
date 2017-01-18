@@ -6,11 +6,11 @@ nil63 = function (x) {
 is63 = function (x) {
   return(! nil63(x));
 };
-false63 = function (x) {
+no = function (x) {
   return(nil63(x) || x === false);
 };
-true63 = function (x) {
-  return(! false63(x));
+yes = function (x) {
+  return(! no(x));
 };
 _35 = function (x) {
   return(x.length || 0);
@@ -297,7 +297,7 @@ map = function (f, x) {
 };
 keep = function (f, x) {
   return(map(function (v) {
-    if (true63(f(v))) {
+    if (yes(f(v))) {
       return(v);
     }
   }, x));
@@ -848,7 +848,7 @@ setenv("let-when", {_stash: true, macro: function (x, v) {
   var _id19 = _r27;
   var body = cut(_id19, 0);
   var y = unique("y");
-  return(["let", y, _v3, ["when", ["true?", y], join(["let", [_x100, y]], body)]]);
+  return(["let", y, _v3, ["when", ["yes", y], join(["let", [_x100, y]], body)]]);
 }});
 setenv("define-macro", {_stash: true, macro: function (name, args) {
   var _r29 = unstash(Array.prototype.slice.call(arguments, 2));
