@@ -31,9 +31,9 @@
   (skip-non-code s)
   (let c (peek-char s)
     (if (is? c)
-	((or (get read-table c)
-	     (get read-table ""))
-	 s)
+        ((or (get read-table c)
+             (get read-table ""))
+         s)
       eof)))
 
 (define read-all (s)
@@ -91,11 +91,11 @@
   (let (str "" dot? false)
     (while true
       (let c (peek-char s)
-	(if (and c (and (not (get whitespace c))
-			(not (get delimiters c))))
-	    (do (if (= c ".") (set dot? true))
+        (if (and c (and (not (get whitespace c))
+                        (not (get delimiters c))))
+            (do (if (= c ".") (set dot? true))
                 (cat! str (read-char s)))
-	  (break))))
+          (break))))
   (if (= str "true") true
       (= str "false") false
       (= str "nan") nan
@@ -162,7 +162,7 @@
   (read-char s)
   (if (= (peek-char s) "@")
       (do (read-char s)
-	  (wrap s 'unquote-splicing))
+          (wrap s 'unquote-splicing))
     (wrap s 'unquote)))
 
 (export stream

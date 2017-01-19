@@ -117,19 +117,13 @@
     (f (hd x) (reduce f (tl x)))))
 
 (define-global join ls
-  (if (two? ls)
-      (let ((a b) ls)
-        (if (and a b)
-            (let (c () o (# a))
-              (each (k v) a
-                (set (get c k) v))
-              (each (k v) b
-                (when (number? k)
-                  (inc k o))
-                (set (get c k) v))
-              c)
-          (or a b ())))
-    (or (reduce join ls) ())))
+  (with r ()
+    (step l ls
+      (when l
+        (let n (# r)
+          (each (k v) l
+            (if (number? k) (inc k n))
+            (set (get r k) v)))))))
 
 (define-global find (f t)
   (each x t
@@ -310,7 +304,7 @@
 (target lua:
   (define values (or unpack (get table 'unpack))))
 
-(define-global apply1 (f args)
+(define-global apply (f args)
   (let args (stash args)
     (target js: ((get f 'apply) f args)
             lua: (f (values args)))))

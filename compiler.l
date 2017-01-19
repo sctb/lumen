@@ -142,11 +142,11 @@
   (with-bindings (args)
     `(,x ,name ,args ,@(macroexpand body))))
 
+(define expand-macro (form)
+  (macroexpand (expand1 form)))
+
 (define-global expand1 ((name rest: body))
   (apply (macro-function name) body))
-
-(define-global expand-macro (form)
-  (macroexpand (expand1 form)))
 
 (define-global macroexpand (form)
   (if (symbol? form)
@@ -157,7 +157,7 @@
           (= x '%function) (expand-function form)
           (= x '%global-function) (expand-definition form)
           (= x '%local-function) (expand-definition form)
-	  (macro? x) (expand-macro form)
+          (macro? x) (expand-macro form)
         (map macroexpand form)))))
 
 (define quasiquote-list (form depth)
@@ -595,7 +595,7 @@
         body (with-indent (compile form :stmt))
         ind (indentation))
     (if (= target 'js)
-	(cat ind "while (" cond ") {\n" body ind "}\n")
+        (cat ind "while (" cond ") {\n" body ind "}\n")
       (cat ind "while " cond " do\n" body ind "end\n"))))
 
 (define-special %for (t k form) :stmt :tr
@@ -603,7 +603,7 @@
         ind (indentation)
         body (with-indent (compile form :stmt)))
     (if (= target 'lua)
-	(cat ind "for " k " in next, " t " do\n" body ind "end\n")
+        (cat ind "for " k " in next, " t " do\n" body ind "end\n")
       (cat ind "for (" k " in " t ") {\n" body ind "}\n"))))
 
 (define-special %try (form) :stmt :tr
@@ -658,7 +658,7 @@
   (let (id (compile name)
         value1 (compile value)
         rh (if (is? value) (cat " = " value1) "")
-	keyword (if (= target 'js) "var " "local ")
+        keyword (if (= target 'js) "var " "local ")
         ind (indentation))
     (cat ind keyword id rh)))
 
@@ -669,7 +669,7 @@
 
 (define-special get (t k)
   (let (t (compile t)
-	k1 (compile k))
+        k1 (compile k))
     (when (and (= target 'lua)
                (= (char t 0) "{"))
       (set t (cat "(" t ")")))
@@ -680,8 +680,8 @@
 
 (define-special %array forms
   (let (open (if (= target 'lua) "{" "[")
-	close (if (= target 'lua) "}" "]")
-	s "" c "")
+        close (if (= target 'lua) "}" "]")
+        s "" c "")
     (each (k v) forms
       (when (number? k)
         (cat! s c (compile v))

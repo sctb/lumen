@@ -8,7 +8,7 @@
 (define-macro test (x msg)
   `(if (not ,x)
        (do (set failed (+ failed 1))
-	   (return ,msg))
+           (return ,msg))
      (inc passed)))
 
 (define equal? (a b)
@@ -75,6 +75,36 @@
     (let ((ok e) (guard (read "(open")))
       (test= false ok)
       (test= "Expected ) at 5" (get e 'message)))))
+
+(define-test nil?
+  (test= true (nil? nil))
+  (test= true (nil? null))
+  (test= false (nil? true))
+  (test= false (nil? false))
+  (test= false (nil? (obj))))
+
+(define-test is?
+  (test= false (is? nil))
+  (test= false (is? null))
+  (test= true (is? true))
+  (test= true (is? false))
+  (test= true (is? (obj))))
+
+(define-test no
+  (test= true (no nil))
+  (test= true (no null))
+  (test= false (no true))
+  (test= true (no false))
+  (test= false (no (obj)))
+  (test= false (no 0)))
+
+(define-test yes
+  (test= false (yes nil))
+  (test= false (yes null))
+  (test= true (yes true))
+  (test= false (yes false))
+  (test= true (yes (obj)))
+  (test= true (yes 0)))
 
 (define-test boolean
   (test= true (or true false))
@@ -275,8 +305,8 @@ c"
 
 (define-test calls
   (let (f (fn () 42)
-	l (list f)
-	t (obj f: f))
+        l (list f)
+        t (obj f: f))
     (test= 42 (f))
     (test= 42 ((at l 0)))
     (test= 42 ((get t 'f)))
@@ -336,7 +366,7 @@ c"
 (define-test do
   (let a 17
     (do (set a 10)
-	(test= 10 a))
+        (test= 10 a))
     (test= 10 (do a))
     (let b (do (set a 2) (+ a 5))
       (test= a 2)
@@ -417,7 +447,7 @@ c"
     (for i (# l)
       (inc n i)
       (set l '(a b c)))
-    (test= 10 n)))
+    (test= 3 n)))
 
 (define-test table
   (test= 10 (get (obj a: 10) 'a))
@@ -483,7 +513,12 @@ c"
     (let l (list (obj a: 1 b: 2) (obj a: 2 b: 4))
       (step (:a :b) l
         (add xs (+ a b))))
-    (test= '(3 6) xs)))
+    (test= '(3 6) xs))
+  (let l '(a b)
+    (step x l
+      (if (= x 'a) (add l 'c)
+          (= x 'c) (add l 'd)))
+    (test= '(a b c d) l)))
 
 (define-test inc
   (let x 2 (inc x) (test= 3 x))
@@ -545,7 +580,7 @@ c"
   (let (a 10)
     (test= 10 a))
   (let (a 11
-	b 12)
+        b 12)
     (test= 11 a)
     (test= 12 b))
   (let (a 1)
@@ -871,10 +906,10 @@ c"
   (test= () (keep (fn (x) x) ()))
   (test= '(0 1 2) (keep (fn (x) x) '(0 1 2)))
   (test= '((1) (2 3)) (keep some? '(() (1) () (2 3))))
-  (let even (fn (x) (= (% x 2) 0))
-    (test= '(6) (keep even '(5 6 7)))
-    (test= '(2 4 6) (keep even '(1 2 3 4 5 6)))
-    (test= '(2 4 6 b: 8) (keep even '(1 2 3 4 5 6 a: 7 b: 8)))))
+  (let evens (fn (x) (= (% x 2) 0))
+    (test= '(6) (keep evens '(5 6 7)))
+    (test= '(2 4 6) (keep evens '(1 2 3 4 5 6)))
+    (test= '(2 4 6 b: 8) (keep evens '(1 2 3 4 5 6 a: 7 b: 8)))))
 
 (define-test in?
   (test= true (in? 'x '(x y z)))
