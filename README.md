@@ -447,4 +447,4 @@ hi
 ```
 
 ##### Acknowledgements
-Lumen was conceived and designed with [Daniel Gackle](https://github.com/gruseom), and many fixes and improvements have been contributed by [Laarc](https://github.com/laarc).
+Lumen was conceived and designed with [Daniel Gackle](https://github.com/gruseom), and many fixes and improvements have been contributed by [Shawn Presser](https://github.com/shawwn).
