@@ -56,8 +56,7 @@
   (print " -c <input>\tCompile input file")
   (print " -o <output>\tOutput file")
   (print " -t <target>\tTarget language (default: lua)")
-  (print " -e <expr>\tExpression to evaluate")
-  )
+  (print " -e <expr>\tExpression to evaluate"))
 
 (define main ()
   (let arg (hd (get system 'argv))
