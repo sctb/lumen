@@ -909,7 +909,7 @@ setenv("define-global", {_stash: true, macro: function (name, x) {
   var _x148 = destash33(x, _r39);
   var _id31 = _r39;
   var body = cut(_id31, 0);
-  setenv(_name7, {_stash: true, variable: true, toplevel: true});
+  setenv(_name7, {_stash: true, toplevel: true, variable: true});
   if (some63(body)) {
     return(join(["%global-function", _name7], bind42(_x148, body)));
   } else {
@@ -998,8 +998,8 @@ setenv("guard", {_stash: true, macro: function (expr) {
     var msg = unique("msg");
     var trace = unique("trace");
     var _x257 = ["obj"];
-    _x257.message = msg;
     _x257.stack = trace;
+    _x257.message = msg;
     return(["let", [x, "nil", msg, "nil", trace, "nil"], ["if", ["xpcall", ["fn", join(), ["set", x, expr]], ["fn", ["m"], ["set", msg, ["clip", "m", ["+", ["search", "m", "\": \""], 2]], trace, [["get", "debug", ["quote", "traceback"]]]]]], ["list", true, x], ["list", false, _x257]]]);
   }
 }});
@@ -1200,12 +1200,15 @@ var script_file63 = function (path) {
   return(".l" === clip(path, _35(path) - 2));
 };
 var usage = function () {
-  print("usage: lumen [options] <object files>");
+  print("usage: lumen [<file> <arguments> | options <object files>]");
+  print(" <file>\t\tProgram read from script file");
+  print(" <arguments>\tPassed to program in system.argv");
+  print(" <object files>\tLoaded before compiling <input>");
   print("options:");
-  print("  -c <input>\tCompile input file");
-  print("  -o <output>\tOutput file");
-  print("  -t <target>\tTarget language (default: lua)");
-  return(print("  -e <expr>\tExpression to evaluate"));
+  print(" -c <input>\tCompile input file");
+  print(" -o <output>\tOutput file");
+  print(" -t <target>\tTarget language (default: lua)");
+  return(print(" -e <expr>\tExpression to evaluate"));
 };
 var main = function () {
   var arg = hd(system.argv);
