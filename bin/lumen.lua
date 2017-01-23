@@ -797,7 +797,7 @@ setenv("define-global", {_stash = true, macro = function (name, x, ...)
   local _x163 = destash33(x, _r39)
   local _id31 = _r39
   local body = cut(_id31, 0)
-  setenv(_name7, {_stash = true, toplevel = true, variable = true})
+  setenv(_name7, {_stash = true, variable = true, toplevel = true})
   if some63(body) then
     return(join({"%global-function", _name7}, bind42(_x163, body)))
   else
@@ -886,8 +886,8 @@ setenv("guard", {_stash = true, macro = function (expr)
     local msg = unique("msg")
     local trace = unique("trace")
     local _x279 = {"obj"}
-    _x279.stack = trace
     _x279.message = msg
+    _x279.stack = trace
     return({"let", {x, "nil", msg, "nil", trace, "nil"}, {"if", {"xpcall", {"fn", join(), {"set", x, expr}}, {"fn", {"m"}, {"set", msg, {"clip", "m", {"+", {"search", "m", "\": \""}, 2}}, trace, {{"get", "debug", {"quote", "traceback"}}}}}}, {"list", true, x}, {"list", false, _x279}}})
   end
 end})
@@ -1034,7 +1034,7 @@ local function eval_print(form)
   end) then
     _e = {true, _x}
   else
-    _e = {false, {stack = _trace, message = _msg}}
+    _e = {false, {message = _msg, stack = _trace}}
   end
   local _id = _e
   local ok = _id[1]
@@ -1085,7 +1085,7 @@ local function run_file(path)
   return(compiler.run(system["read-file"](path)))
 end
 local function script_file63(path)
-  return(".l" == clip(path, _35(path) - 2))
+  return(not( "-" == char(path, 0) or ".js" == clip(path, _35(path) - 3) or ".lua" == clip(path, _35(path) - 4)))
 end
 local function usage()
   print("usage: lumen [<file> <arguments> | options <object files>]")

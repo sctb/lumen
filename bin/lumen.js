@@ -909,7 +909,7 @@ setenv("define-global", {_stash: true, macro: function (name, x) {
   var _x148 = destash33(x, _r39);
   var _id31 = _r39;
   var body = cut(_id31, 0);
-  setenv(_name7, {_stash: true, toplevel: true, variable: true});
+  setenv(_name7, {_stash: true, variable: true, toplevel: true});
   if (some63(body)) {
     return(join(["%global-function", _name7], bind42(_x148, body)));
   } else {
@@ -1197,7 +1197,7 @@ var run_file = function (path) {
   return(compiler.run(system["read-file"](path)));
 };
 var script_file63 = function (path) {
-  return(".l" === clip(path, _35(path) - 2));
+  return(!( "-" === char(path, 0) || ".js" === clip(path, _35(path) - 3) || ".lua" === clip(path, _35(path) - 4)));
 };
 var usage = function () {
   print("usage: lumen [<file> <arguments> | options <object files>]");
