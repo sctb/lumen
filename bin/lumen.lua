@@ -797,7 +797,7 @@ setenv("define-global", {_stash = true, macro = function (name, x, ...)
   local _x163 = destash33(x, _r39)
   local _id31 = _r39
   local body = cut(_id31, 0)
-  setenv(_name7, {_stash = true, toplevel = true, variable = true})
+  setenv(_name7, {_stash = true, variable = true, toplevel = true})
   if some63(body) then
     return(join({"%global-function", _name7}, bind42(_x163, body)))
   else
@@ -886,8 +886,8 @@ setenv("guard", {_stash = true, macro = function (expr)
     local msg = unique("msg")
     local trace = unique("trace")
     local _x279 = {"obj"}
-    _x279.message = msg
     _x279.stack = trace
+    _x279.message = msg
     return({"let", {x, "nil", msg, "nil", trace, "nil"}, {"if", {"xpcall", {"fn", join(), {"set", x, expr}}, {"fn", {"m"}, {"set", msg, {"clip", "m", {"+", {"search", "m", "\": \""}, 2}}, trace, {{"get", "debug", {"quote", "traceback"}}}}}}, {"list", true, x}, {"list", false, _x279}}})
   end
 end})
@@ -1030,7 +1030,7 @@ local function eval_print(form)
   end) then
     _e = {true, _x}
   else
-    _e = {false, {message = _msg, stack = _trace}}
+    _e = {false, {stack = _trace, message = _msg}}
   end
   local _id = _e
   local ok = _id[1]
@@ -1080,81 +1080,87 @@ end
 local function run_file(path)
   return(compiler.run(system["read-file"](path)))
 end
+local function script_file63(path)
+  return(".l" == clip(path, _35(path) - 2))
+end
 local function usage()
   print("usage: lumen [options] <object files>")
   print("options:")
   print("  -c <input>\tCompile input file")
   print("  -o <output>\tOutput file")
   print("  -t <target>\tTarget language (default: lua)")
-  print("  -e <expr>\tExpression to evaluate")
-  return(system.exit())
+  return(print("  -e <expr>\tExpression to evaluate"))
 end
 local function main()
   local arg = hd(system.argv)
-  if arg == "-h" or arg == "--help" then
-    usage()
-  end
-  local pre = {}
-  local input = nil
-  local output = nil
-  local target1 = nil
-  local expr = nil
-  local argv = system.argv
-  local n = _35(argv)
-  local i = 0
-  while i < n do
-    local a = argv[i + 1]
-    if a == "-c" or a == "-o" or a == "-t" or a == "-e" then
-      if i == n - 1 then
-        print("missing argument for " .. a)
-      else
-        i = i + 1
-        local val = argv[i + 1]
-        if a == "-c" then
-          input = val
-        else
-          if a == "-o" then
-            output = val
+  if arg and script_file63(arg) then
+    return(load(arg))
+  else
+    if arg == "-h" or arg == "--help" then
+      return(usage())
+    else
+      local pre = {}
+      local input = nil
+      local output = nil
+      local target1 = nil
+      local expr = nil
+      local argv = system.argv
+      local i = 0
+      while i < _35(argv) do
+        local a = argv[i + 1]
+        if a == "-c" or a == "-o" or a == "-t" or a == "-e" then
+          if i == edge(argv) then
+            print("missing argument for " .. a)
           else
-            if a == "-t" then
-              target1 = val
+            i = i + 1
+            local val = argv[i + 1]
+            if a == "-c" then
+              input = val
             else
-              if a == "-e" then
-                expr = val
+              if a == "-o" then
+                output = val
+              else
+                if a == "-t" then
+                  target1 = val
+                else
+                  if a == "-e" then
+                    expr = val
+                  end
+                end
               end
             end
           end
+        else
+          if not( "-" == char(a, 0)) then
+            add(pre, a)
+          end
+        end
+        i = i + 1
+      end
+      local _x4 = pre
+      local _i = 0
+      while _i < _35(_x4) do
+        local file = _x4[_i + 1]
+        run_file(file)
+        _i = _i + 1
+      end
+      if nil63(input) then
+        if expr then
+          return(rep(expr))
+        else
+          return(repl())
+        end
+      else
+        if target1 then
+          target = target1
+        end
+        local code = compile_file(input)
+        if nil63(output) or output == "-" then
+          return(print(code))
+        else
+          return(system["write-file"](output, code))
         end
       end
-    else
-      if not( "-" == char(a, 0)) then
-        add(pre, a)
-      end
-    end
-    i = i + 1
-  end
-  local _x4 = pre
-  local _i = 0
-  while _i < _35(_x4) do
-    local file = _x4[_i + 1]
-    run_file(file)
-    _i = _i + 1
-  end
-  if nil63(input) then
-    if expr then
-      return(rep(expr))
-    else
-      return(repl())
-    end
-  else
-    if target1 then
-      target = target1
-    end
-    local code = compile_file(input)
-    if nil63(output) or output == "-" then
-      return(print(code))
-    else
-      return(system["write-file"](output, code))
     end
   end
 end
