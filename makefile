@@ -48,8 +48,8 @@ bin/%.lua : %.l
 	@echo $@
 	@$(LUMEN) -c $< -o $@ -t lua
 
-test: all obj/test.js obj/test.lua
+test: all
 	@echo js:
-	@LUMEN_HOST=$(LUMEN_NODE) bin/lumen obj/test.js -e '(run)'
+	@LUMEN_HOST=$(LUMEN_NODE) ./test.l
 	@echo lua:
-	@LUMEN_HOST=$(LUMEN_LUA) bin/lumen obj/test.lua -e '(run)'
+	@LUMEN_HOST=$(LUMEN_LUA) ./test.l

@@ -1,3 +1,5 @@
+#!/usr/bin/env bin/lumen
+
 (define passed 0)
 (define failed 0)
 (define tests ())
@@ -769,10 +771,10 @@ c"
 
 (define-test let-unique
   (let-unique (ham chap)
-    (test= '_ham ham)
+    (test= '_ham1 ham)
     (test= '_chap chap)
     (let-unique (ham)
-      (test= '_ham1 ham))))
+      (test= '_ham2 ham))))
 
 (define-test literals
   (test= true true)
@@ -1032,3 +1034,5 @@ c"
     (define g () nil)
     (f 1 'x g)
     (test= (list 'x g) l)))
+
+(run)
