@@ -230,3 +230,6 @@
       (each k names
         (set (get x k) k))
       `(return (obj ,@x)))))
+
+(define-macro when-compiling body
+  (eval `(do ,@body)))

@@ -998,8 +998,8 @@ setenv("guard", {_stash: true, macro: function (expr) {
     var msg = unique("msg");
     var trace = unique("trace");
     var _x257 = ["obj"];
-    _x257.stack = trace;
     _x257.message = msg;
+    _x257.stack = trace;
     return(["let", [x, "nil", msg, "nil", trace, "nil"], ["if", ["xpcall", ["fn", join(), ["set", x, expr]], ["fn", ["m"], ["set", msg, ["clip", "m", ["+", ["search", "m", "\": \""], 2]], trace, [["get", "debug", ["quote", "traceback"]]]]]], ["list", true, x], ["list", false, _x257]]]);
   }
 }});
@@ -1137,6 +1137,10 @@ setenv("export", {_stash: true, macro: function () {
     }
     return(["return", join(["obj"], x)]);
   }
+}});
+setenv("when-compiling", {_stash: true, macro: function () {
+  var body = unstash(Array.prototype.slice.call(arguments, 0));
+  return(eval(join(["do"], body)));
 }});
 var reader = require("reader");
 var compiler = require("compiler");

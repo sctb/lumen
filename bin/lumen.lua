@@ -1012,6 +1012,10 @@ setenv("export", {_stash = true, macro = function (...)
     return({"return", join({"obj"}, x)})
   end
 end})
+setenv("when-compiling", {_stash = true, macro = function (...)
+  local body = unstash({...})
+  return(eval(join({"do"}, body)))
+end})
 local reader = require("reader")
 local compiler = require("compiler")
 local system = require("system")
@@ -1030,7 +1034,7 @@ local function eval_print(form)
   end) then
     _e = {true, _x}
   else
-    _e = {false, {stack = _trace, message = _msg}}
+    _e = {false, {message = _msg, stack = _trace}}
   end
   local _id = _e
   local ok = _id[1]
