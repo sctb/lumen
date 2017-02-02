@@ -1,7 +1,14 @@
 #!/bin/sh
 
 dir="$(pwd)"
-cd "$(dirname "$0")"
+bin="$0"
+while [ -L "${bin}" ]
+do
+    x="$(readlink "${bin}")"
+    cd "$(dirname "${bin}")"
+    bin="${x}"
+done
+cd "$(dirname "${bin}")"
 home="$(pwd)"
 cd "${dir}"
 
