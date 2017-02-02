@@ -34,6 +34,29 @@ var reload = function (module) {
 var run = function (command) {
   return(child_process.execSync(command).toString());
 };
+var tty63 = function (fd) {
+  var _e;
+  if (fd === "stdin") {
+    _e = 0;
+  } else {
+    var _e1;
+    if (fd === "stdout") {
+      _e1 = 1;
+    } else {
+      var _e2;
+      if (fd === "stderr") {
+        _e2 = 2;
+      } else {
+        _e2 = fd;
+      }
+      _e1 = _e2;
+    }
+    _e = _e1;
+  }
+  var _fd = _e;
+  var s = get_environment_variable("LUMEN_TTY") || "";
+  return(yes(search(s, " " + _fd)));
+};
 exports["read-file"] = read_file;
 exports["write-file"] = write_file;
 exports["file-exists?"] = file_exists63;
@@ -45,3 +68,4 @@ exports.exit = exit;
 exports.argv = argv;
 exports.reload = reload;
 exports.run = run;
+exports["tty?"] = tty63;

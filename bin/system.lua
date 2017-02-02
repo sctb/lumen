@@ -51,4 +51,27 @@ local function run(command)
   f.close(f)
   return(x)
 end
-return({["file-exists?"] = file_exists63, ["path-separator"] = path_separator, ["write-file"] = write_file, ["get-environment-variable"] = get_environment_variable, ["read-file"] = read_file, ["path-join"] = path_join, write = write, run = run, exit = exit, argv = argv, reload = reload})
+local function tty63(fd)
+  local _e
+  if fd == "stdin" then
+    _e = 0
+  else
+    local _e1
+    if fd == "stdout" then
+      _e1 = 1
+    else
+      local _e2
+      if fd == "stderr" then
+        _e2 = 2
+      else
+        _e2 = fd
+      end
+      _e1 = _e2
+    end
+    _e = _e1
+  end
+  local _fd = _e
+  local s = get_environment_variable("LUMEN_TTY") or ""
+  return(yes(search(s, " " .. _fd)))
+end
+return({["file-exists?"] = file_exists63, ["read-file"] = read_file, write = write, ["path-join"] = path_join, ["write-file"] = write_file, exit = exit, ["path-separator"] = path_separator, reload = reload, ["tty?"] = tty63, ["get-environment-variable"] = get_environment_variable, argv = argv, run = run})

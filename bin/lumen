@@ -37,4 +37,10 @@ case $host in
         export LUA_PATH="$LUA_PATH;${home}/?.lua;${dir}/lib/?.lua;;";;
 esac
 
+t=""
+[ -t 0 ] && t="${t} 0"
+[ -t 1 ] && t="${t} 1"
+[ -t 2 ] && t="${t} 2"
+export LUMEN_TTY="${t}"
+
 exec ${host} "${home}/${code}" "$@"

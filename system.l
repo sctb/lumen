@@ -68,6 +68,14 @@
            (with x ((get f 'read) f '*all)
              ((get f 'close) f)))))
 
+(define tty? (fd)
+  (let (fd (if (= fd 'stdin) 0
+               (= fd 'stdout) 1
+               (= fd 'stderr) 2
+             fd)
+        s (or (get-environment-variable "LUMEN_TTY") ""))
+    (yes (search s (cat " " fd)))))
+
 (export read-file
         write-file
         file-exists?
@@ -78,4 +86,5 @@
         exit
         argv
         reload
-        run)
+        run
+        tty?)
