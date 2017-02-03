@@ -93,7 +93,6 @@ local function tty63(fd)
     _e5 = _e6
   end
   local _fd = _e5
-  local s = get_environment_variable("LUMEN_TTY") or ""
-  return(yes(search(s, " " .. _fd)))
+  return("1" == run("[ -t " .. _fd .. " ] && printf 1 || exit 0"))
 end
-return({["path-join"] = path_join, ["read-file"] = read_file, exit = exit, reload = reload, run = run, ["path-separator"] = path_separator, ["file-exists?"] = file_exists63, ["tty?"] = tty63, ["write-file"] = write_file, ["get-environment-variable"] = get_environment_variable, write = write, argv = argv})
+return({["read-file"] = read_file, reload = reload, ["file-exists?"] = file_exists63, exit = exit, ["write-file"] = write_file, ["path-join"] = path_join, write = write, ["path-separator"] = path_separator, run = run, ["tty?"] = tty63, argv = argv, ["get-environment-variable"] = get_environment_variable})

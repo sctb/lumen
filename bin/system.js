@@ -68,8 +68,7 @@ var tty63 = function (fd) {
     _e2 = _e3;
   }
   var _fd = _e2;
-  var s = get_environment_variable("LUMEN_TTY") || "";
-  return(yes(search(s, " " + _fd)));
+  return("1" === run("[ -t " + _fd + " ] && printf 1 || exit 0"));
 };
 exports["read-file"] = read_file;
 exports["write-file"] = write_file;

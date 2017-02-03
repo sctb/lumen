@@ -72,12 +72,11 @@
              ((get f 'close) f)))))
 
 (define tty? (fd)
-  (let (fd (if (= fd 'stdin) 0
-               (= fd 'stdout) 1
-               (= fd 'stderr) 2
-             fd)
-        s (or (get-environment-variable "LUMEN_TTY") ""))
-    (yes (search s (cat " " fd)))))
+  (let fd (if (= fd 'stdin) 0
+              (= fd 'stdout) 1
+              (= fd 'stderr) 2
+            fd)
+    (= "1" (run (cat "[ -t " fd " ] && printf 1 || exit 0")))))
 
 (export read-file
         write-file
