@@ -61,7 +61,13 @@ var tty63 = function (fd) {
       if (fd === "stderr") {
         _e4 = 2;
       } else {
-        _e4 = fd;
+        var _e5;
+        if (number63(fd)) {
+          _e5 = fd;
+        } else {
+          return(false);
+        }
+        _e4 = _e5;
       }
       _e3 = _e4;
     }

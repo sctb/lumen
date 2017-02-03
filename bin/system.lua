@@ -86,7 +86,13 @@ local function tty63(fd)
       if fd == "stderr" then
         _e7 = 2
       else
-        _e7 = fd
+        local _e8
+        if number63(fd) then
+          _e8 = fd
+        else
+          return(false)
+        end
+        _e7 = _e8
       end
       _e6 = _e7
     end
@@ -95,4 +101,4 @@ local function tty63(fd)
   local _fd = _e5
   return("1" == run("[ -t " .. _fd .. " ] && printf 1 || exit 0"))
 end
-return({["read-file"] = read_file, reload = reload, ["file-exists?"] = file_exists63, exit = exit, ["write-file"] = write_file, ["path-join"] = path_join, write = write, ["path-separator"] = path_separator, run = run, ["tty?"] = tty63, argv = argv, ["get-environment-variable"] = get_environment_variable})
+return({["read-file"] = read_file, ["write-file"] = write_file, argv = argv, ["file-exists?"] = file_exists63, exit = exit, write = write, ["tty?"] = tty63, ["path-separator"] = path_separator, run = run, ["path-join"] = path_join, ["get-environment-variable"] = get_environment_variable, reload = reload})

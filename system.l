@@ -75,7 +75,8 @@
   (let fd (if (= fd 'stdin) 0
               (= fd 'stdout) 1
               (= fd 'stderr) 2
-            fd)
+              (number? fd) fd
+            (return false))
     (= "1" (run (cat "[ -t " fd " ] && printf 1 || exit 0")))))
 
 (export read-file
