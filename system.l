@@ -10,18 +10,20 @@
         ((get h 'close) h)))))
 
 (define read-file (path)
-  (target
-    js: ((get fs 'readFileSync) path 'utf8)
-    lua: (call-with-file
-          (fn (f) ((get f 'read) f '*a))
-          path)))
+  (let path (if (= path "-") "/dev/stdin" path)
+    (target
+      js: ((get fs 'readFileSync) path 'utf8)
+      lua: (call-with-file
+            (fn (f) ((get f 'read) f '*a))
+            path))))
 
 (define write-file (path data)
-  (target
-    js: ((get fs 'writeFileSync) path data 'utf8)
-    lua: (call-with-file
-          (fn (f) ((get f 'write) f data))
-          path 'w)))
+  (let path (if (= path "-") "/dev/stdout" path)
+    (target
+      js: ((get fs 'writeFileSync) path data 'utf8)
+      lua: (call-with-file
+            (fn (f) ((get f 'write) f data))
+            path 'w))))
 
 (define file-exists? (path)
   (target

@@ -1,10 +1,24 @@
 var fs = require("fs");
 var child_process = require("child_process");
 var read_file = function (path) {
-  return(fs.readFileSync(path, "utf8"));
+  var _e;
+  if (path === "-") {
+    _e = "/dev/stdin";
+  } else {
+    _e = path;
+  }
+  var _path = _e;
+  return(fs.readFileSync(_path, "utf8"));
 };
 var write_file = function (path, data) {
-  return(fs.writeFileSync(path, data, "utf8"));
+  var _e1;
+  if (path === "-") {
+    _e1 = "/dev/stdout";
+  } else {
+    _e1 = path;
+  }
+  var _path1 = _e1;
+  return(fs.writeFileSync(_path1, data, "utf8"));
 };
 var file_exists63 = function (path) {
   return(fs.existsSync(path, "utf8"));
@@ -35,25 +49,25 @@ var run = function (command) {
   return(child_process.execSync(command).toString());
 };
 var tty63 = function (fd) {
-  var _e;
+  var _e2;
   if (fd === "stdin") {
-    _e = 0;
+    _e2 = 0;
   } else {
-    var _e1;
+    var _e3;
     if (fd === "stdout") {
-      _e1 = 1;
+      _e3 = 1;
     } else {
-      var _e2;
+      var _e4;
       if (fd === "stderr") {
-        _e2 = 2;
+        _e4 = 2;
       } else {
-        _e2 = fd;
+        _e4 = fd;
       }
-      _e1 = _e2;
+      _e3 = _e4;
     }
-    _e = _e1;
+    _e2 = _e3;
   }
-  var _fd = _e;
+  var _fd = _e2;
   var s = get_environment_variable("LUMEN_TTY") || "";
   return(yes(search(s, " " + _fd)));
 };
