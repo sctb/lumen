@@ -45,9 +45,10 @@
   ((get compiler 'run) ((get system 'read-file) path)))
 
 (define script-file? (path)
-  (not (or (= "-" (char path 0))
-           (= ".js" (clip path (- (# path) 3)))
-           (= ".lua" (clip path (- (# path) 4))))))
+  (or (= path "-")
+      (not (or (= "-" (char path 0))
+               (= ".js" (clip path (- (# path) 3)))
+               (= ".lua" (clip path (- (# path) 4)))))))
 
 (define usage ()
   (print "usage: lumen [<file> <arguments> | options <object files>]")
