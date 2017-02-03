@@ -32,11 +32,19 @@ local function write_file(path, data)
   end, _path1, "w"))
 end
 local function file_exists63(path)
-  local f = io.open(path)
-  if f then
-    f.close(f)
+  local _id = path == "-"
+  local _e3
+  if _id then
+    _e3 = _id
+  else
+    local f = io.open(path)
+    local _e4
+    if f then
+      _e4 = f.close(f)
+    end
+    _e3 = is63(f)
   end
-  return(is63(f))
+  return(_e3)
 end
 local path_separator = char(_G.package.config, 0)
 local function path_join(...)
@@ -66,26 +74,26 @@ local function run(command)
   return(x)
 end
 local function tty63(fd)
-  local _e2
+  local _e5
   if fd == "stdin" then
-    _e2 = 0
+    _e5 = 0
   else
-    local _e3
+    local _e6
     if fd == "stdout" then
-      _e3 = 1
+      _e6 = 1
     else
-      local _e4
+      local _e7
       if fd == "stderr" then
-        _e4 = 2
+        _e7 = 2
       else
-        _e4 = fd
+        _e7 = fd
       end
-      _e3 = _e4
+      _e6 = _e7
     end
-    _e2 = _e3
+    _e5 = _e6
   end
-  local _fd = _e2
+  local _fd = _e5
   local s = get_environment_variable("LUMEN_TTY") or ""
   return(yes(search(s, " " .. _fd)))
 end
-return({write = write, ["write-file"] = write_file, exit = exit, ["tty?"] = tty63, ["path-separator"] = path_separator, reload = reload, ["get-environment-variable"] = get_environment_variable, argv = argv, ["file-exists?"] = file_exists63, ["read-file"] = read_file, run = run, ["path-join"] = path_join})
+return({["path-join"] = path_join, ["read-file"] = read_file, exit = exit, reload = reload, run = run, ["path-separator"] = path_separator, ["file-exists?"] = file_exists63, ["tty?"] = tty63, ["write-file"] = write_file, ["get-environment-variable"] = get_environment_variable, write = write, argv = argv})

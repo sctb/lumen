@@ -26,11 +26,12 @@
             path 'w))))
 
 (define file-exists? (path)
-  (target
-    js: ((get fs 'existsSync) path 'utf8)
-    lua: (let f ((get io 'open) path)
-           (if f ((get f 'close) f))
-           (is? f))))
+  (or (= path "-")
+      (target
+        js: ((get fs 'existsSync) path 'utf8)
+        lua: (let f ((get io 'open) path)
+               (if f ((get f 'close) f))
+               (is? f)))))
 
 (define path-separator
   (target
