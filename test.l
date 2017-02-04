@@ -399,6 +399,7 @@ c"
       true (test= true true)
       false (test= false true)
     (test= true true))
+  (test= false (if false true false))
   (test= 1 (if true 1 2))
   (test= 1 (if (let a 10 a) 1 2))
   (test= 1 (if true (with a 1) 2))

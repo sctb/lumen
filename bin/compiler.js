@@ -883,7 +883,7 @@ var lower_if = function (args, hoist, stmt63, tail63) {
   var _else = _id16[2];
   if (stmt63) {
     var _e34;
-    if (yes(_else)) {
+    if (is63(_else)) {
       _e34 = [lower_body([_else], tail63)];
     }
     return(add(hoist, join(["%if", lower(cond, hoist), lower_body([_then], tail63)], _e34)));
@@ -891,7 +891,7 @@ var lower_if = function (args, hoist, stmt63, tail63) {
     var e = unique("e");
     add(hoist, ["%local", e]);
     var _e33;
-    if (yes(_else)) {
+    if (is63(_else)) {
       _e33 = [lower(["%set", e, _else])];
     }
     add(hoist, join(["%if", lower(cond, hoist), lower(["%set", e, _then])], _e33));

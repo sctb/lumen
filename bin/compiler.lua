@@ -829,7 +829,7 @@ local function lower_if(args, hoist, stmt63, tail63)
   local _else = _id16[3]
   if stmt63 then
     local _e26
-    if yes(_else) then
+    if is63(_else) then
       _e26 = {lower_body({_else}, tail63)}
     end
     return(add(hoist, join({"%if", lower(cond, hoist), lower_body({_then}, tail63)}, _e26)))
@@ -837,7 +837,7 @@ local function lower_if(args, hoist, stmt63, tail63)
     local e = unique("e")
     add(hoist, {"%local", e})
     local _e25
-    if yes(_else) then
+    if is63(_else) then
       _e25 = {lower({"%set", e, _else})}
     end
     add(hoist, join({"%if", lower(cond, hoist), lower({"%set", e, _then})}, _e25))
