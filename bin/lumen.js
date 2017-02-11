@@ -997,15 +997,15 @@ setenv("guard", {_stash: true, macro: function (expr) {
     var x = unique("x");
     var msg = unique("msg");
     var trace = unique("trace");
-    var _x257 = ["obj"];
-    _x257.stack = trace;
-    _x257.message = msg;
-    return(["let", [x, "nil", msg, "nil", trace, "nil"], ["if", ["xpcall", ["fn", join(), ["set", x, expr]], ["fn", ["m"], ["set", msg, ["clip", "m", ["+", ["search", "m", "\": \""], 2]], trace, [["get", "debug", ["quote", "traceback"]]]]]], ["list", true, x], ["list", false, _x257]]]);
+    var _x265 = ["obj"];
+    _x265.stack = trace;
+    _x265.message = msg;
+    return(["let", [x, "nil", msg, "nil", trace, "nil"], ["if", ["xpcall", ["fn", join(), ["set", x, expr]], ["fn", ["m"], ["set", trace, [["get", "debug", ["quote", "traceback"]]], msg, ["if", ["string?", "m"], ["clip", "m", ["+", ["search", "m", "\": \""], 2]], ["nil?", "m"], "\"\"", ["str", "m"]]]]], ["list", true, x], ["list", false, _x265]]]);
   }
 }});
 setenv("each", {_stash: true, macro: function (x, t) {
   var _r61 = unstash(Array.prototype.slice.call(arguments, 2));
-  var _x273 = destash33(x, _r61);
+  var _x281 = destash33(x, _r61);
   var _t1 = destash33(t, _r61);
   var _id50 = _r61;
   var body = cut(_id50, 0);
@@ -1013,14 +1013,14 @@ setenv("each", {_stash: true, macro: function (x, t) {
   var n = unique("n");
   var i = unique("i");
   var _e6;
-  if (atom63(_x273)) {
-    _e6 = [i, _x273];
+  if (atom63(_x281)) {
+    _e6 = [i, _x281];
   } else {
     var _e7;
-    if (_35(_x273) > 1) {
-      _e7 = _x273;
+    if (_35(_x281) > 1) {
+      _e7 = _x281;
     } else {
-      _e7 = [i, hd(_x273)];
+      _e7 = [i, hd(_x281)];
     }
     _e6 = _e7;
   }

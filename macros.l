@@ -160,8 +160,10 @@
          (if (xpcall
               (fn () (set ,x ,expr))
               (fn (m)
-                (set ,msg (clip m (+ (search m ": ") 2))
-                     ,trace ((get debug 'traceback)))))
+                (set ,trace ((get debug 'traceback))
+                     ,msg (if (string? m) (clip m (+ (search m ": ") 2))
+                              (nil? m) ""
+                            (str m)))))
              (list true ,x)
            (list false (obj message: ,msg stack: ,trace)))))))
 

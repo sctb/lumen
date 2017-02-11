@@ -797,7 +797,7 @@ setenv("define-global", {_stash = true, macro = function (name, x, ...)
   local _x163 = destash33(x, _r39)
   local _id31 = _r39
   local body = cut(_id31, 0)
-  setenv(_name7, {_stash = true, variable = true, toplevel = true})
+  setenv(_name7, {_stash = true, toplevel = true, variable = true})
   if some63(body) then
     return(join({"%global-function", _name7}, bind42(_x163, body)))
   else
@@ -885,15 +885,15 @@ setenv("guard", {_stash = true, macro = function (expr)
     local x = unique("x")
     local msg = unique("msg")
     local trace = unique("trace")
-    local _x279 = {"obj"}
-    _x279.message = msg
-    _x279.stack = trace
-    return({"let", {x, "nil", msg, "nil", trace, "nil"}, {"if", {"xpcall", {"fn", join(), {"set", x, expr}}, {"fn", {"m"}, {"set", msg, {"clip", "m", {"+", {"search", "m", "\": \""}, 2}}, trace, {{"get", "debug", {"quote", "traceback"}}}}}}, {"list", true, x}, {"list", false, _x279}}})
+    local _x287 = {"obj"}
+    _x287.message = msg
+    _x287.stack = trace
+    return({"let", {x, "nil", msg, "nil", trace, "nil"}, {"if", {"xpcall", {"fn", join(), {"set", x, expr}}, {"fn", {"m"}, {"set", trace, {{"get", "debug", {"quote", "traceback"}}}, msg, {"if", {"string?", "m"}, {"clip", "m", {"+", {"search", "m", "\": \""}, 2}}, {"nil?", "m"}, "\"\"", {"str", "m"}}}}}, {"list", true, x}, {"list", false, _x287}}})
   end
 end})
 setenv("each", {_stash = true, macro = function (x, t, ...)
   local _r61 = unstash({...})
-  local _x296 = destash33(x, _r61)
+  local _x304 = destash33(x, _r61)
   local _t1 = destash33(t, _r61)
   local _id50 = _r61
   local body = cut(_id50, 0)
@@ -901,14 +901,14 @@ setenv("each", {_stash = true, macro = function (x, t, ...)
   local n = unique("n")
   local i = unique("i")
   local _e5
-  if atom63(_x296) then
-    _e5 = {i, _x296}
+  if atom63(_x304) then
+    _e5 = {i, _x304}
   else
     local _e6
-    if _35(_x296) > 1 then
-      _e6 = _x296
+    if _35(_x304) > 1 then
+      _e6 = _x304
     else
-      _e6 = {i, hd(_x296)}
+      _e6 = {i, hd(_x304)}
     end
     _e5 = _e6
   end
@@ -1028,9 +1028,21 @@ local function eval_print(form)
     _x = compiler.eval(form)
     return(_x)
   end, function (m)
-    _msg = clip(m, search(m, ": ") + 2)
     _trace = debug.traceback()
-    return(_trace)
+    local _e1
+    if string63(m) then
+      _e1 = clip(m, search(m, ": ") + 2)
+    else
+      local _e2
+      if nil63(m) then
+        _e2 = ""
+      else
+        _e2 = str(m)
+      end
+      _e1 = _e2
+    end
+    _msg = _e1
+    return(_msg)
   end) then
     _e = {true, _x}
   else

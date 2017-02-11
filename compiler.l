@@ -309,7 +309,7 @@
         (cat! s1 (if (= c "\n") "\\n" c))))))
 
 (define id (id)
-  (let id1 ""
+  (let id1 (if (number-code? (code id 0)) "_" "")
     (for i (# id)
       (let (c (char id i)
             n (code c)
@@ -451,13 +451,13 @@
         (add hoist
              `(%if ,(lower cond hoist)
                    ,(lower-body (list then) tail?)
-                   ,@(if (yes else) (list (lower-body (list else) tail?)))))
+                   ,@(if (is? else) (list (lower-body (list else) tail?)))))
       (let-unique (e)
         (add hoist `(%local ,e))
         (add hoist
              `(%if ,(lower cond hoist)
                    ,(lower `(%set ,e ,then))
-                   ,@(if (yes else)
+                   ,@(if (is? else)
                          (list (lower `(%set ,e ,else))))))
         e))))
 
