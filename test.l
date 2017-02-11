@@ -666,7 +666,10 @@ c"
     (test= '99 return))
   (define var (if end return)
     (return (+ if end return)))
-  (test= 6 (var 1 2 3)))
+  (test= 6 (var 1 2 3))
+  (define 1+ (x)
+    (+ x 1))
+  (test= 6 (1+ 5)))
 
 (define-test destructuring
   (let ((a b c) '(1 2 3))
