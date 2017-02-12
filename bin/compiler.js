@@ -274,11 +274,39 @@ var expand_definition = function (_x42) {
   drop(environment);
   return(_x44);
 };
-var expand_macro = function (form) {
-  return(macroexpand(expand1(form)));
+var expand_form = function (form) {
+  var x = macroexpand(hd(form));
+  if (macro63(x)) {
+    return(macroexpand(apply(macro_function(x), tl(form))));
+  } else {
+    var l = [x];
+    var i = 0;
+    while (i < _35(form)) {
+      if (!( i === 0)) {
+        add(l, macroexpand(form[i]));
+      }
+      i = i + 1;
+    }
+    var _o5 = form;
+    var k = undefined;
+    for (k in _o5) {
+      var v = _o5[k];
+      var _e18;
+      if (numeric63(k)) {
+        _e18 = parseInt(k);
+      } else {
+        _e18 = k;
+      }
+      var _k4 = _e18;
+      if (! number63(_k4)) {
+        l[_k4] = macroexpand(v);
+      }
+    }
+    return(l);
+  }
 };
-expand1 = function (_x46) {
-  var _id3 = _x46;
+expand1 = function (_x47) {
+  var _id3 = _x47;
   var name = _id3[0];
   var body = cut(_id3, 1);
   return(apply(macro_function(name), body));
@@ -290,23 +318,23 @@ macroexpand = function (form) {
     if (atom63(form)) {
       return(form);
     } else {
-      var x = hd(form);
-      if (x === "%local") {
-        return(expand_local(form));
+      if (none63(form)) {
+        return(form);
       } else {
-        if (x === "%function") {
-          return(expand_function(form));
+        var x = hd(form);
+        if (x === "%local") {
+          return(expand_local(form));
         } else {
-          if (x === "%global-function") {
-            return(expand_definition(form));
+          if (x === "%function") {
+            return(expand_function(form));
           } else {
-            if (x === "%local-function") {
+            if (x === "%global-function") {
               return(expand_definition(form));
             } else {
-              if (macro63(x)) {
-                return(expand_macro(form));
+              if (x === "%local-function") {
+                return(expand_definition(form));
               } else {
-                return(map(macroexpand, form));
+                return(expand_form(form));
               }
             }
           }

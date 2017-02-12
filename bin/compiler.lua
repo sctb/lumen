@@ -239,11 +239,32 @@ local function expand_definition(_x42)
   drop(environment)
   return(_x44)
 end
-local function expand_macro(form)
-  return(macroexpand(expand1(form)))
+local function expand_form(form)
+  local x = macroexpand(hd(form))
+  if macro63(x) then
+    return(macroexpand(apply(macro_function(x), tl(form))))
+  else
+    local l = {x}
+    local i = 0
+    while i < _35(form) do
+      if not( i == 0) then
+        add(l, macroexpand(form[i + 1]))
+      end
+      i = i + 1
+    end
+    local _o5 = form
+    local k = nil
+    for k in next, _o5 do
+      local v = _o5[k]
+      if not number63(k) then
+        l[k] = macroexpand(v)
+      end
+    end
+    return(l)
+  end
 end
-function expand1(_x46)
-  local _id3 = _x46
+function expand1(_x47)
+  local _id3 = _x47
   local name = _id3[1]
   local body = cut(_id3, 1)
   return(apply(macro_function(name), body))
@@ -255,23 +276,23 @@ function macroexpand(form)
     if atom63(form) then
       return(form)
     else
-      local x = hd(form)
-      if x == "%local" then
-        return(expand_local(form))
+      if none63(form) then
+        return(form)
       else
-        if x == "%function" then
-          return(expand_function(form))
+        local x = hd(form)
+        if x == "%local" then
+          return(expand_local(form))
         else
-          if x == "%global-function" then
-            return(expand_definition(form))
+          if x == "%function" then
+            return(expand_function(form))
           else
-            if x == "%local-function" then
+            if x == "%global-function" then
               return(expand_definition(form))
             else
-              if macro63(x) then
-                return(expand_macro(form))
+              if x == "%local-function" then
+                return(expand_definition(form))
               else
-                return(map(macroexpand, form))
+                return(expand_form(form))
               end
             end
           end

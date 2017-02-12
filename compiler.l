@@ -142,8 +142,17 @@
   (with-bindings (args)
     `(,x ,name ,args ,@(macroexpand body))))
 
-(define expand-macro (form)
-  (macroexpand (expand1 form)))
+(define expand-form (form)
+  (let x (macroexpand (hd form))
+    (if (macro? x)
+        (macroexpand (apply (macro-function x) (tl form)))
+      (with l (list x)
+        (for i (# form)
+          (unless (= i 0)
+            (add l (macroexpand (at form i)))))
+        (each (k v) form
+          (unless (number? k)
+            (set (get l k) (macroexpand v))))))))
 
 (define-global expand1 ((name rest: body))
   (apply (macro-function name) body))
@@ -152,13 +161,13 @@
   (if (symbol? form)
       (macroexpand (symbol-expansion form))
       (atom? form) form
+      (none? form) form
     (let x (hd form)
       (if (= x '%local) (expand-local form)
           (= x '%function) (expand-function form)
           (= x '%global-function) (expand-definition form)
           (= x '%local-function) (expand-definition form)
-          (macro? x) (expand-macro form)
-        (map macroexpand form)))))
+        (expand-form form)))))
 
 (define quasiquote-list (form depth)
   (let xs (list '(list))
