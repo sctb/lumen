@@ -293,7 +293,10 @@
       (each (k v) x
         (if (number? k)
             (set (get xs k) (str v l))
-          (do (add ks (cat k ":"))
+          (do (target lua:
+                (unless (string? k)
+                  (set k (str k l))))
+              (add ks (cat k ":"))
               (add ks (str v l)))))
       (drop l)
       (each v (join xs ks)

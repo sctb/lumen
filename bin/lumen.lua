@@ -502,6 +502,9 @@ function str(x, stack)
                         if number63(k) then
                           xs[k] = str(v, l)
                         else
+                          if not string63(k) then
+                            k = str(k, l)
+                          end
                           add(ks, k .. ":")
                           add(ks, str(v, l))
                         end
