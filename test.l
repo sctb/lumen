@@ -976,6 +976,15 @@ c"
   (test= false (obj? 'zz))
   (test= false (obj? (fn ()))))
 
+(define-test str
+  (define f (x) x)
+  (let (l () l2 ())
+    (set (get l f) true)
+    (set (get l2 (target js: (str l) lua: l)) true)
+    (let k (target js: f lua: 'function)
+      (test= (cat "(" k ": true)") (str l))
+      (test= (cat "((" k ": true): true)") (str l2)))))
+
 (define-test apply
   (test= 4 (apply (fn (a b) (+ a b)) '(2 2)))
   (test= '(2 2) (apply (fn a a) '(2 2)))
