@@ -740,13 +740,21 @@ c"
   (let-symbol (a 18)
     (let (b 20)
       (test= 18 a)
-      (test= 20 b))))
+      (test= 20 b)))
+  (let-symbol (def define)
+    (def f (x) (+ x 10))
+    (test= 20 (f 10))))
 
 (define-test define-symbol
   (define-symbol zzz 42)
   (test= zzz 42))
 
 (define-test macros-and-symbols
+  (define-symbol zzz1 define)
+  (define-macro zzz2 () 'zzz1)
+  (define-symbol zzz3 zzz2)
+  ((zzz3) f (x) (+ x 10))
+  (test= 20 (f 10))
   (let-symbol (a 1)
     (let-macro ((a () 2))
       (test= 2 (a)))
