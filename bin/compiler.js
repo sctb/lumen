@@ -421,7 +421,7 @@ indentation = function () {
   }
   return(s);
 };
-var reserved = {"try": true, "delete": true, "false": true, "function": true, "break": true, "repeat": true, "var": true, "throw": true, "%": true, "else": true, "with": true, "nil": true, "or": true, "do": true, "+": true, "/": true, "debugger": true, "until": true, "new": true, ">": true, "then": true, "-": true, "typeof": true, "=": true, "==": true, "local": true, "void": true, "continue": true, "<=": true, "catch": true, "while": true, "not": true, "default": true, ">=": true, "and": true, "elseif": true, "true": true, "<": true, "instanceof": true, "this": true, "case": true, "in": true, "finally": true, "*": true, "end": true, "switch": true, "for": true, "if": true, "return": true};
+var reserved = {"try": true, "delete": true, "false": true, "function": true, "break": true, "repeat": true, "var": true, "throw": true, "%": true, "else": true, "with": true, "nil": true, "or": true, "do": true, "+": true, "/": true, "debugger": true, "until": true, "new": true, ">": true, "then": true, "-": true, "typeof": true, "=": true, "==": true, "local": true, "void": true, "continue": true, "<=": true, "catch": true, "while": true, "not": true, "default": true, ">=": true, "and": true, "elseif": true, "true": true, "<": true, "instanceof": true, "case": true, "in": true, "finally": true, "*": true, "end": true, "switch": true, "for": true, "if": true, "return": true};
 reserved63 = function (x) {
   return(reserved[x]);
 };
