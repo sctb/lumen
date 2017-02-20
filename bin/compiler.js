@@ -423,7 +423,7 @@ indentation = function () {
 };
 var reserved = {"in": true, "new": true, "then": true, "catch": true, "if": true, "true": true, "instanceof": true, "do": true, "default": true, "<": true, "finally": true, ">": true, "*": true, "repeat": true, "or": true, "return": true, "for": true, "var": true, "else": true, "==": true, "import": true, "delete": true, "switch": true, "void": true, "function": true, "debugger": true, "throw": true, "nil": true, "end": true, "class": true, "continue": true, "<=": true, ">=": true, "%": true, "with": true, "=": true, "-": true, "break": true, "/": true, "false": true, "elseif": true, "+": true, "until": true, "local": true, "typeof": true, "try": true, "and": true, "case": true, "not": true, "while": true, "const": true};
 reserved63 = function (x) {
-  return(reserved[x]);
+  return(reserved.hasOwnProperty(x));
 };
 var valid_code63 = function (n) {
   return(number_code63(n) || n > 64 && n < 91 || n > 96 && n < 123 || n === 95);
