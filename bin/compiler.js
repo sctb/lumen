@@ -421,7 +421,7 @@ indentation = function () {
   }
   return(s);
 };
-var reserved = {"try": true, "delete": true, "false": true, "function": true, "break": true, "repeat": true, "var": true, "throw": true, "%": true, "else": true, "with": true, "nil": true, "or": true, "do": true, "+": true, "/": true, "debugger": true, "until": true, "new": true, ">": true, "then": true, "-": true, "typeof": true, "=": true, "==": true, "local": true, "void": true, "continue": true, "<=": true, "catch": true, "while": true, "not": true, "default": true, ">=": true, "and": true, "elseif": true, "true": true, "<": true, "instanceof": true, "case": true, "in": true, "finally": true, "*": true, "end": true, "switch": true, "for": true, "if": true, "return": true};
+var reserved = {"%": true, "==": true, "return": true, "/": true, "nil": true, "break": true, "-": true, "local": true, "finally": true, "until": true, "throw": true, "delete": true, "=": true, "debugger": true, ">": true, "not": true, "case": true, "false": true, "and": true, "void": true, "catch": true, "const": true, "elseif": true, ">=": true, "or": true, "instanceof": true, "+": true, "for": true, "while": true, "in": true, "import": true, "class": true, "if": true, "else": true, "with": true, "switch": true, "repeat": true, "var": true, "true": true, "continue": true, "function": true, "*": true, "do": true, "<": true, "try": true, "new": true, "end": true, "default": true, "<=": true, "typeof": true, "then": true};
 reserved63 = function (x) {
   return(reserved[x]);
 };
