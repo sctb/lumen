@@ -1009,7 +1009,9 @@ setenv("export", {_stash = true, macro = function (...)
       local k = _o5[_i7]
       x[k] = k
     end
-    return({"return", join({"obj"}, x)})
+    return({"return", join({"%object"}, mapo(function (x)
+      return(x)
+    end, x))})
   end
 end})
 setenv("when-compiling", {_stash = true, macro = function (...)

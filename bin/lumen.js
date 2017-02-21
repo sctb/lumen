@@ -1135,7 +1135,9 @@ setenv("export", {_stash: true, macro: function () {
       var __i7 = _e12;
       x[k] = k;
     }
-    return(["return", join(["obj"], x)]);
+    return(["return", join(["%object"], mapo(function (x) {
+      return(x);
+    }, x))]);
   }
 }});
 setenv("when-compiling", {_stash: true, macro: function () {
