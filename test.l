@@ -39,6 +39,7 @@
     (test= "nil" (read "nil"))
     (test= 17 (read "17"))
     (test= 0.015 (read "1.5e-2"))
+    (test= 65535 (read "0xffff"))
     (test= true (read "true"))
     (test= (not true) (read "false"))
     (test= 'hi (read "hi"))
@@ -59,8 +60,7 @@
     (test= true (inf? (read "inf")))
     (test= true (inf? (read "-inf")))
     (test= "0?" (read "0?"))
-    (test= "0!" (read "0!"))
-    (test= "0." (read "0."))))
+    (test= "0!" (read "0!"))))
 
 (define-test read-more
   (let read (get reader 'read-string)

@@ -484,10 +484,19 @@ _6261 = function (a, b) {
 _6061 = function (a, b) {
   return(a <= b);
 };
-number = function (s) {
-  var n = parseFloat(s);
-  if (! isNaN(n)) {
-    return(n);
+var _num63 = new RegExp("^[+-]?(([0-9]+)|([0-9]*[.][0-9]+))([eE][+-]?[0-9]+)?$");
+var hex63 = new RegExp("^0[xX][0-9a-fA-F]+$");
+number = function (str, base) {
+  if (base) {
+    return(parseInt(str, base));
+  } else {
+    if (_num63.test(str)) {
+      return(parseFloat(str));
+    } else {
+      if (hex63.test(str)) {
+        return(parseInt(str));
+      }
+    }
   }
 };
 number_code63 = function (n) {

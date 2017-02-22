@@ -66,10 +66,6 @@
     (if (= y (get s 'more)) y
       (list x y))))
 
-(define maybe-number (str)
-  (when (number-code? (code str (edge str)))
-    (number str)))
-
 (define real? (x)
   (and (number? x) (not (nan? x)) (not (inf? x))))
 
@@ -102,7 +98,7 @@
       (= str "-nan") nan
       (= str "inf") inf
       (= str "-inf") -inf
-    (let n (maybe-number str)
+    (let n (number str)
       (if (real? n) n
           (and dot? (valid-access? str))
           (parse-access str)

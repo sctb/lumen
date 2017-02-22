@@ -408,9 +408,7 @@ end
 function _6061(a, b)
   return(a <= b)
 end
-function number(s)
-  return(tonumber(s))
-end
+number = tonumber
 function number_code63(n)
   return(n > 47 and n < 58)
 end
