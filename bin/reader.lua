@@ -221,20 +221,29 @@ read_table["\""] = function (s)
   end
   return(r)
 end
+local function string_ends63(str, x)
+  if _35(x) > _35(str) then
+    return(false)
+  else
+    return(x == clip(str, _35(str) - _35(x)))
+  end
+end
 read_table["|"] = function (s)
-  read_char(s)
-  local r = nil
   local str = "|"
+  local _end = ""
+  while peek_char(s) == "|" do
+    _end = _end .. read_char(s)
+  end
+  local r = nil
   while nil63(r) do
     local c = peek_char(s)
-    if c == "|" then
-      r = str .. read_char(s)
+    if nil63(c) then
+      r = expected(s, _end)
     else
-      if nil63(c) then
-        r = expected(s, "|")
-      else
-        str = str .. read_char(s)
-      end
+      str = str .. read_char(s)
+    end
+    if string_ends63(str, _end) then
+      r = clip(str, 0, _35(str) - edge(_end))
     end
   end
   return(r)
