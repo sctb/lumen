@@ -25,10 +25,23 @@
 
 (define file-exists? (path)
   (target
-    js: ((get fs 'existsSync) path 'utf8)
+    js: (and ((get fs 'existsSync) path 'utf8)
+             ((get ((get fs 'statSync) path) 'isFile)))
     lua: (let f ((get io 'open) path)
-           (if f ((get f 'close) f))
-           (is? f))))
+           (and (is? f)
+                (with r (or (is? ((get f 'read) f 0))
+                            (= 0 ((get f 'seek) f 'end)))
+                  ((get f 'close) f))))))
+
+(define directory-exists? (path)
+  (target
+    js: (and ((get fs 'existsSync) path 'utf8)
+             ((get ((get fs 'statSync) path) 'isDirectory)))
+    lua: (let f ((get io 'open) path)
+           (and (is? f)
+                (with r (and (not ((get f 'read) f 0))
+                             (not (= 0 ((get f 'seek) f 'end))))
+                  ((get f 'close) f))))))
 
 (define path-separator
   (target
@@ -71,6 +84,7 @@
 (export read-file
         write-file
         file-exists?
+        directory-exists?
         path-separator
         path-join
         get-environment-variable
