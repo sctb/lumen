@@ -19,10 +19,16 @@ local function write_file(path, data)
 end
 local function file_exists63(path)
   local f = io.open(path)
-  if f then
+  local _id = is63(f)
+  local _e
+  if _id then
+    local r = is63(f.read(f, 0)) or 0 == f.seek(f, "end")
     f.close(f)
+    _e = r
+  else
+    _e = _id
   end
-  return(is63(f))
+  return(_e)
 end
 local path_separator = char(_G.package.config, 0)
 local function path_join(...)

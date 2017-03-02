@@ -7,7 +7,7 @@ var write_file = function (path, data) {
   return(fs.writeFileSync(path, data, "utf8"));
 };
 var file_exists63 = function (path) {
-  return(fs.existsSync(path, "utf8"));
+  return(fs.existsSync(path, "utf8") && fs.statSync(path).isFile());
 };
 var path_separator = require("path").sep;
 var path_join = function () {
