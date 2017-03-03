@@ -1185,13 +1185,24 @@ var repl = function () {
   return(_in.on("data", rep1));
 };
 compile_file = function (path) {
-  var s = reader.stream(system["read-file"](path));
+  var _r5 = unstash(Array.prototype.slice.call(arguments, 1));
+  var _path = destash33(path, _r5);
+  var _id1 = _r5;
+  var options = cut(_id1, 0);
+  var target1 = target;
+  var environment1 = environment;
+  target = options.target || target;
+  environment = options.environment || environment;
+  var s = reader.stream(system["read-file"](_path));
   var body = reader["read-all"](s);
   var form = compiler.expand(join(["do"], body));
-  return(compiler.compile(form, {_stash: true, stmt: true}));
+  var code = compiler.compile(form, {_stash: true, stmt: true});
+  target = target1;
+  environment = environment1;
+  return(code);
 };
 load = function (path) {
-  return(compiler.run(compile_file(path)));
+  return(compiler.run(compile_file(path, {_stash: true, target: "js"})));
 };
 var run_file = function (path) {
   return(compiler.run(system["read-file"](path)));
@@ -1221,7 +1232,7 @@ var main = function () {
       var pre = [];
       var input = undefined;
       var output = undefined;
-      var target1 = undefined;
+      var _target = undefined;
       var expr = undefined;
       var argv = system.argv;
       var i = 0;
@@ -1240,7 +1251,7 @@ var main = function () {
                 output = val;
               } else {
                 if (a === "-t") {
-                  target1 = val;
+                  _target = val;
                 } else {
                   if (a === "-e") {
                     expr = val;
@@ -1270,10 +1281,7 @@ var main = function () {
           return(repl());
         }
       } else {
-        if (target1) {
-          target = target1;
-        }
-        var code = compile_file(input);
+        var code = compile_file(input, {_stash: true, target: _target});
         if (nil63(output) || output === "-") {
           return(print(code));
         } else {

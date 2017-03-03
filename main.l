@@ -32,14 +32,19 @@
            (let s ((get io 'read))
              (if s (rep1 (cat s "\n")) (break))))))
 
-(define-global compile-file (path)
-  (let (s ((get reader 'stream) ((get system 'read-file) path))
-        body ((get reader 'read-all) s)
-        form ((get compiler 'expand) `(do ,@body)))
-    ((get compiler 'compile) form :stmt)))
+(define-global compile-file (path rest: options)
+  (let (target1 target environment1 environment)
+    (set target (or (get options 'target) target))
+    (set environment (or (get options 'environment) environment))
+    (let (s ((get reader 'stream) ((get system 'read-file) path))
+          body ((get reader 'read-all) s)
+          form ((get compiler 'expand) `(do ,@body)))
+      (with code ((get compiler 'compile) form :stmt)
+        (set target target1)
+        (set environment environment1)))))
 
 (define-global load (path)
-  ((get compiler 'run) (compile-file path)))
+  ((get compiler 'run) (compile-file path target: (language))))
 
 (define run-file (path)
   ((get compiler 'run) ((get system 'read-file) path)))
@@ -70,7 +75,7 @@
       (let (pre ()
             input nil
             output nil
-            target1 nil
+            target nil
             expr nil
             argv (get system 'argv))
         (for i (# argv)
@@ -82,16 +87,15 @@
                       (let val (at argv i)
                         (if (= a "-c") (set input val)
                             (= a "-o") (set output val)
-                            (= a "-t") (set target1 val)
+                            (= a "-t") (set target val)
                             (= a "-e") (set expr val)))))
                 (not (= "-" (char a 0))) (add pre a))))
         (step file pre
           (run-file file))
         (if (nil? input) (if expr (rep expr) (repl))
-          (do (if target1 (set target target1))
-              (let code (compile-file input)
-                (if (or (nil? output) (= output "-"))
-                    (print code)
-                  ((get system 'write-file) output code)))))))))
+          (let code (compile-file input target: target)
+            (if (or (nil? output) (= output "-"))
+              (print code)
+              ((get system 'write-file) output code))))))))
 
 (main)
