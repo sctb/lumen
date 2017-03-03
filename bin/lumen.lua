@@ -1084,14 +1084,25 @@ local function repl()
     end
   end
 end
-function compile_file(path)
-  local s = reader.stream(system["read-file"](path))
+function compile_file(path, ...)
+  local _r6 = unstash({...})
+  local _path = destash33(path, _r6)
+  local _id1 = _r6
+  local options = cut(_id1, 0)
+  local target1 = target
+  local environment1 = environment
+  target = options.target or target
+  environment = options.environment or environment
+  local s = reader.stream(system["read-file"](_path))
   local body = reader["read-all"](s)
   local form = compiler.expand(join({"do"}, body))
-  return(compiler.compile(form, {_stash = true, stmt = true}))
+  local code = compiler.compile(form, {_stash = true, stmt = true})
+  target = target1
+  environment = environment1
+  return(code)
 end
 function load(path)
-  return(compiler.run(compile_file(path)))
+  return(compiler.run(compile_file(path, {_stash = true, target = "lua"})))
 end
 local function run_file(path)
   return(compiler.run(system["read-file"](path)))
@@ -1121,7 +1132,7 @@ local function main()
       local pre = {}
       local input = nil
       local output = nil
-      local target1 = nil
+      local _target = nil
       local expr = nil
       local argv = system.argv
       local i = 0
@@ -1140,7 +1151,7 @@ local function main()
                 output = val
               else
                 if a == "-t" then
-                  target1 = val
+                  _target = val
                 else
                   if a == "-e" then
                     expr = val
@@ -1170,10 +1181,7 @@ local function main()
           return(repl())
         end
       else
-        if target1 then
-          target = target1
-        end
-        local code = compile_file(input)
+        local code = compile_file(input, {_stash = true, target = _target})
         if nil63(output) or output == "-" then
           return(print(code))
         else
