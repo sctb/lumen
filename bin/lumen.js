@@ -1191,7 +1191,11 @@ compile_file = function (path) {
   return(compiler.compile(form, {_stash: true, stmt: true}));
 };
 load = function (path) {
-  return(compiler.run(compile_file(path)));
+  var previous = target;
+  target = "js";
+  var code = compile_file(path);
+  target = previous;
+  return(compiler.run(code));
 };
 var run_file = function (path) {
   return(compiler.run(system["read-file"](path)));

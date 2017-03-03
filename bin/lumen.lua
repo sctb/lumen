@@ -1091,7 +1091,11 @@ function compile_file(path)
   return(compiler.compile(form, {_stash = true, stmt = true}))
 end
 function load(path)
-  return(compiler.run(compile_file(path)))
+  local previous = target
+  target = "lua"
+  local code = compile_file(path)
+  target = previous
+  return(compiler.run(code))
 end
 local function run_file(path)
   return(compiler.run(system["read-file"](path)))

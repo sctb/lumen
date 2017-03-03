@@ -39,7 +39,11 @@
     ((get compiler 'compile) form :stmt)))
 
 (define-global load (path)
-  ((get compiler 'run) (compile-file path)))
+  (let previous target
+    (set target (language))
+    (let code (compile-file path)
+      (set target previous)
+      ((get compiler 'run) code))))
 
 (define run-file (path)
   ((get compiler 'run) ((get system 'read-file) path)))
