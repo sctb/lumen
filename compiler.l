@@ -574,18 +574,26 @@
             (break))))))
 
 (define-special %if (cond cons alt) :stmt :tr
-  (let (cond (compile cond)
+  (let (ind (indentation)
+        cond (compile cond)
         cons (with-indent (compile cons :stmt))
-        alt (if alt (with-indent (compile alt :stmt)))
-        ind (indentation)
+        elif (and (obj? alt) (= (hd alt) '%if))
+        alt (if elif (clip (compile alt :stmt) (# ind))
+                alt (with-indent (compile alt :stmt)))
         s "")
     (if (= target 'js)
         (cat! s ind "if (" cond ") {\n" cons ind "}")
       (cat! s ind "if " cond " then\n" cons))
-    (if (and alt (= target 'js))
-        (cat! s " else {\n" alt ind "}")
-        alt (cat! s ind "else\n" alt))
-    (if (= target 'lua)
+    (if elif
+        (if (= target 'js)
+            (cat! s " else " alt)
+          (cat! s ind "else" alt))
+        alt
+        (if (= target 'js)
+            (cat! s " else {\n" alt ind "}")
+          (cat! s ind "else\n" alt)))
+    (if elif s
+        (= target 'lua)
         (cat s ind "end\n")
       (cat s "\n"))))
 
