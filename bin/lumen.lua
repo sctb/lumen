@@ -369,7 +369,7 @@ function _43(...)
     return(a + b)
   end, xs) or 0)
 end
-function _(...)
+function _45(...)
   local xs = unstash({...})
   return(reduce(function (b, a)
     return(a - b)

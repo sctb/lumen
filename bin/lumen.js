@@ -445,7 +445,7 @@ _43 = function () {
     return(a + b);
   }, xs) || 0);
 };
-_ = function () {
+_45 = function () {
   var xs = unstash(Array.prototype.slice.call(arguments, 0));
   return(reduce(function (b, a) {
     return(a - b);
