@@ -596,7 +596,7 @@ var id = function (id) {
     var c = char(id, i);
     var n = code(c);
     var _e24;
-    if (c === "-") {
+    if (c === "-" && !( id === "-")) {
       _e24 = "_";
     } else {
       var _e25;
