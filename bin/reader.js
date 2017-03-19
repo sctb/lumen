@@ -1,12 +1,12 @@
-var delimiters = {"\n": true, "(": true, ";": true, ")": true};
-var whitespace = {"\t": true, " ": true, "\n": true};
+var delimiters = {")": true, "\n": true, ";": true, "(": true};
+var whitespace = {"\t": true, "\n": true, " ": true};
 var stream = function (str, more) {
-  return({more: more, len: _35(str), pos: 0, string: str});
+  return({len: _35(str), string: str, more: more, pos: 0});
 };
 var peek_char = function (s) {
   var _id = s;
-  var pos = _id.pos;
   var len = _id.len;
+  var pos = _id.pos;
   var string = _id.string;
   if (pos < len) {
     return(char(string, pos));
@@ -24,19 +24,15 @@ var skip_non_code = function (s) {
     var c = peek_char(s);
     if (nil63(c)) {
       break;
-    } else {
-      if (whitespace[c]) {
-        read_char(s);
-      } else {
-        if (c === ";") {
-          while (c && !( c === "\n")) {
-            c = read_char(s);
-          }
-          skip_non_code(s);
-        } else {
-          break;
-        }
+    } else if (whitespace[c]) {
+      read_char(s);
+    } else if (c === ";") {
+      while (c && !( c === "\n")) {
+        c = read_char(s);
       }
+      skip_non_code(s);
+    } else {
+      break;
     }
   }
 };
@@ -76,8 +72,8 @@ var flag63 = function (atom) {
 };
 var expected = function (s, c) {
   var _id1 = s;
-  var more = _id1.more;
   var pos = _id1.pos;
+  var more = _id1.more;
   var _id2 = more;
   var _e;
   if (_id2) {
@@ -133,36 +129,24 @@ read_table[""] = function (s) {
   }
   if (str === "true") {
     return(true);
+  } else if (str === "false") {
+    return(false);
+  } else if (str === "nan") {
+    return(nan);
+  } else if (str === "-nan") {
+    return(nan);
+  } else if (str === "inf") {
+    return(inf);
+  } else if (str === "-inf") {
+    return(-inf);
   } else {
-    if (str === "false") {
-      return(false);
+    var n = maybe_number(str);
+    if (real63(n)) {
+      return(n);
+    } else if (dot63 && valid_access63(str)) {
+      return(parse_access(str));
     } else {
-      if (str === "nan") {
-        return(nan);
-      } else {
-        if (str === "-nan") {
-          return(nan);
-        } else {
-          if (str === "inf") {
-            return(inf);
-          } else {
-            if (str === "-inf") {
-              return(-inf);
-            } else {
-              var n = maybe_number(str);
-              if (real63(n)) {
-                return(n);
-              } else {
-                if (dot63 && valid_access63(str)) {
-                  return(parse_access(str));
-                } else {
-                  return(str);
-                }
-              }
-            }
-          }
-        }
-      }
+      return(str);
     }
   }
 };
@@ -176,22 +160,18 @@ read_table["("] = function (s) {
     if (c === ")") {
       read_char(s);
       r = l;
+    } else if (nil63(c)) {
+      r = expected(s, ")");
     } else {
-      if (nil63(c)) {
-        r = expected(s, ")");
+      var x = read(s);
+      if (key63(x)) {
+        var k = clip(x, 0, edge(x));
+        var v = read(s);
+        l[k] = v;
+      } else if (flag63(x)) {
+        l[clip(x, 1)] = true;
       } else {
-        var x = read(s);
-        if (key63(x)) {
-          var k = clip(x, 0, edge(x));
-          var v = read(s);
-          l[k] = v;
-        } else {
-          if (flag63(x)) {
-            l[clip(x, 1)] = true;
-          } else {
-            add(l, x);
-          }
-        }
+        add(l, x);
       }
     }
   }
@@ -208,15 +188,13 @@ read_table["\""] = function (s) {
     var c = peek_char(s);
     if (c === "\"") {
       r = str + read_char(s);
+    } else if (nil63(c)) {
+      r = expected(s, "\"");
     } else {
-      if (nil63(c)) {
-        r = expected(s, "\"");
-      } else {
-        if (c === "\\") {
-          str = str + read_char(s);
-        }
+      if (c === "\\") {
         str = str + read_char(s);
       }
+      str = str + read_char(s);
     }
   }
   return(r);
@@ -229,12 +207,10 @@ read_table["|"] = function (s) {
     var c = peek_char(s);
     if (c === "|") {
       r = str + read_char(s);
+    } else if (nil63(c)) {
+      r = expected(s, "|");
     } else {
-      if (nil63(c)) {
-        r = expected(s, "|");
-      } else {
-        str = str + read_char(s);
-      }
+      str = str + read_char(s);
     }
   }
   return(r);
