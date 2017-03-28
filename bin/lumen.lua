@@ -531,8 +531,12 @@ function apply(f, args)
   local _args = stash(args)
   return(f(values(_args)))
 end
-function call(f)
-  return(f())
+function call(f, ...)
+  local _r67 = unstash({...})
+  local _f = destash33(f, _r67)
+  local _id = _r67
+  local args = cut(_id, 0)
+  return(apply(_f, args))
 end
 function toplevel63()
   return(one63(environment))

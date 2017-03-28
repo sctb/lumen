@@ -627,7 +627,11 @@ apply = function (f, args) {
   return(f.apply(f, _args));
 };
 call = function (f) {
-  return(f());
+  var _r70 = unstash(Array.prototype.slice.call(arguments, 1));
+  var _f = destash33(f, _r70);
+  var _id = _r70;
+  var args = cut(_id, 0);
+  return(apply(_f, args));
 };
 toplevel63 = function () {
   return(one63(environment));

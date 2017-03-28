@@ -997,7 +997,9 @@ c"
   (let f (fn () 42)
     (test= 42 (call f)))
   (let fs (list (fn () 1) (fn () 10))
-    (test= '(1 10) (map call fs))))
+    (test= '(1 10) (map call fs)))
+  (let f (fn (x y) (+ x y 1))
+    (test= 42 (call f 40 1))))
 
 (define-test parameters
   (test= 42 ((fn ((a)) a) '(42)))
