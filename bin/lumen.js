@@ -1291,4 +1291,6 @@ var main = function () {
     }
   }
 };
-main();
+if (global.require.main === module) {
+  main();
+}

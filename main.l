@@ -98,4 +98,6 @@
                     (print code)
                   ((get system 'write-file) output code)))))))))
 
-(main)
+(if (target js: (= (get (get global 'require) 'main) module)
+            lua: (= ((get (get _G 'debug) 'getinfo) 3) nil))
+  (main))
