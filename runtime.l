@@ -309,7 +309,8 @@
     (target js: ((get f 'apply) f args)
             lua: (f (values args)))))
 
-(define-global call (f) (f))
+(define-global call (f rest: args)
+  (apply f args))
 
 (define-global toplevel? ()
   (one? environment))
