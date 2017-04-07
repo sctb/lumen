@@ -164,9 +164,9 @@ reverse = function (l) {
   }
   return(l1);
 };
-reduce = function (f, x) {
+reduce = function (f, x, none) {
   if (none63(x)) {
-    return(undefined);
+    return(none);
   } else {
     if (one63(x)) {
       return(hd(x));
@@ -437,37 +437,37 @@ cat = function () {
   var xs = unstash(Array.prototype.slice.call(arguments, 0));
   return(reduce(function (a, b) {
     return(a + b);
-  }, xs) || "");
+  }, xs, ""));
 };
 _43 = function () {
   var xs = unstash(Array.prototype.slice.call(arguments, 0));
   return(reduce(function (a, b) {
     return(a + b);
-  }, xs) || 0);
+  }, xs, 0));
 };
 _45 = function () {
   var xs = unstash(Array.prototype.slice.call(arguments, 0));
   return(reduce(function (b, a) {
     return(a - b);
-  }, reverse(xs)) || 0);
+  }, reverse(xs), 0));
 };
 _42 = function () {
   var xs = unstash(Array.prototype.slice.call(arguments, 0));
   return(reduce(function (a, b) {
     return(a * b);
-  }, xs) || 1);
+  }, xs, 1));
 };
 _47 = function () {
   var xs = unstash(Array.prototype.slice.call(arguments, 0));
   return(reduce(function (b, a) {
     return(a / b);
-  }, reverse(xs)) || 1);
+  }, reverse(xs), 1));
 };
 _37 = function () {
   var xs = unstash(Array.prototype.slice.call(arguments, 0));
   return(reduce(function (b, a) {
     return(a % b);
-  }, reverse(xs)) || 0);
+  }, reverse(xs), 0));
 };
 _62 = function (a, b) {
   return(a > b);

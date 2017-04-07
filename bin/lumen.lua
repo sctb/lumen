@@ -150,9 +150,9 @@ function reverse(l)
   end
   return(l1)
 end
-function reduce(f, x)
+function reduce(f, x, none)
   if none63(x) then
-    return(nil)
+    return(none)
   else
     if one63(x) then
       return(hd(x))
@@ -361,37 +361,37 @@ function cat(...)
   local xs = unstash({...})
   return(reduce(function (a, b)
     return(a .. b)
-  end, xs) or "")
+  end, xs, ""))
 end
 function _43(...)
   local xs = unstash({...})
   return(reduce(function (a, b)
     return(a + b)
-  end, xs) or 0)
+  end, xs, 0))
 end
 function _45(...)
   local xs = unstash({...})
   return(reduce(function (b, a)
     return(a - b)
-  end, reverse(xs)) or 0)
+  end, reverse(xs), 0))
 end
 function _42(...)
   local xs = unstash({...})
   return(reduce(function (a, b)
     return(a * b)
-  end, xs) or 1)
+  end, xs, 1))
 end
 function _47(...)
   local xs = unstash({...})
   return(reduce(function (b, a)
     return(a / b)
-  end, reverse(xs)) or 1)
+  end, reverse(xs), 1))
 end
 function _37(...)
   local xs = unstash({...})
   return(reduce(function (b, a)
     return(a % b)
-  end, reverse(xs)) or 0)
+  end, reverse(xs), 0))
 end
 function _62(a, b)
   return(a > b)

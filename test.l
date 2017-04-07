@@ -139,6 +139,7 @@
 
 (define-test numeric
   (test= 4 (+ 2 2))
+  (test= 0 (apply * '(0 0)))
   (test= 4 (apply + '(2 2)))
   (test= 0 (apply + ()))
   (test= 18 18.00)
@@ -902,6 +903,7 @@ c"
   (test= (list "a" "b" "") (split "azzbzz" "zz")))
 
 (define-test reduce
+  (test= 'a (reduce (fn (a b) (+ a b)) '() 'a))
   (test= 'a (reduce (fn (a b) (+ a b)) '(a)))
   (test= 6 (reduce (fn (a b) (+ a b)) '(1 2 3)))
   (test= '(1 (2 3))
