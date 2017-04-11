@@ -222,17 +222,20 @@
 (define reserved
   (set-of "=" "==" "+" "-" "%" "*" "/" "<" ">" "<=" ">="
           ;; js
-          "break" "case" "catch" "continue" "debugger"
-          "default" "delete" "do" "else" "finally" "for"
-          "function" "if" "in" "instanceof" "new" "return"
-          "switch" "throw" "try" "typeof" "var" "void" "with"
+          "break" "case" "catch" "class" "const" "continue"
+          "debugger" "default" "delete" "do" "else" "finally"
+          "for" "function" "if" "import" "in" "instanceof"
+          "new" "return" "switch" "throw" "try" "typeof"
+          "var" "void" "with"
           ;; lua
           "and" "end" "in" "repeat" "while" "break" "false"
           "local" "return" "do" "for" "nil" "then" "else"
           "function" "not" "true" "elseif" "if" "or" "until"))
 
 (define-global reserved? (x)
-  (get reserved x))
+  (target
+    lua: (get reserved x)
+    js: ((get reserved 'hasOwnProperty) x)))
 
 (define valid-code? (n)
   (or (number-code? n)         ; 0-9
