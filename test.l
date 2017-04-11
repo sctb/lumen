@@ -180,7 +180,7 @@
   (test= 12 (do (get but zz) 12))
   (let y nil
     (let ignore (do |y = 10;| 42)
-      (test= 10 x))))
+      (test= 10 y))))
 
 (define-test string
   (test= 3 (# "foo"))
