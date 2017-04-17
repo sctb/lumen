@@ -80,14 +80,12 @@
            ,@body)))))
 
 (define-macro define-macro (name args rest: body)
-  (let form `(setenv ',name macro: (fn ,args ,@body))
-    (eval form)
-    form))
+  `(with-compilation
+     (setenv ',name macro: (fn ,args ,@body))))
 
 (define-macro define-special (name args rest: body)
-  (let form `(setenv ',name special: (fn ,args ,@body) ,@(keys body))
-    (eval form)
-    form))
+  `(with-compilation
+     (setenv ',name special: (fn ,args ,@body) ,@(keys body))))
 
 (define-macro define-symbol (name expansion)
   (setenv name symbol: expansion)
@@ -235,3 +233,12 @@
 
 (define-macro when-compiling body
   (eval `(do ,@body)))
+
+(define-macro with-compilation body
+  (with form `(do ,@body)
+    (let entry (setenv 'with-compilation :toplevel)
+      (unless (get entry 'skip)
+        (set (get entry 'skip) true)
+        (eval form)
+        (set form (expand form))
+        (wipe (get entry 'skip))))))
