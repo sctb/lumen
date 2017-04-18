@@ -140,15 +140,22 @@
                   (cat! str (read-char s)))
                 (cat! str (read-char s)))))))))
 
+(define string-ends? (str x)
+  (if (> (# x) (# str))
+      false
+    (= x (clip str (- (# str) (# x))))))
+
 (define-reader ("|" s)
-  (read-char s)
-  (with r nil
-    (let str "|"
+  (let (str "|" end "")
+    (while (= (peek-char s) "|")
+      (cat! end (read-char s)))
+    (with r nil
       (while (nil? r)
         (let c (peek-char s)
-          (if (= c "|") (set r (cat str (read-char s)))
-              (nil? c) (set r (expected s "|"))
-            (cat! str (read-char s))))))))
+          (if (nil? c) (set r (expected s end))
+            (cat! str (read-char s))))
+        (when (string-ends? str end)
+          (set r (clip str 0 (- (# str) (edge end)))))))))
 
 (define-reader ("'" s)
   (read-char s)

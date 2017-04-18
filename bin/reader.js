@@ -221,20 +221,29 @@ read_table["\""] = function (s) {
   }
   return(r);
 };
+var string_ends63 = function (str, x) {
+  if (_35(x) > _35(str)) {
+    return(false);
+  } else {
+    return(x === clip(str, _35(str) - _35(x)));
+  }
+};
 read_table["|"] = function (s) {
-  read_char(s);
-  var r = undefined;
   var str = "|";
+  var _end = "";
+  while (peek_char(s) === "|") {
+    _end = _end + read_char(s);
+  }
+  var r = undefined;
   while (nil63(r)) {
     var c = peek_char(s);
-    if (c === "|") {
-      r = str + read_char(s);
+    if (nil63(c)) {
+      r = expected(s, _end);
     } else {
-      if (nil63(c)) {
-        r = expected(s, "|");
-      } else {
-        str = str + read_char(s);
-      }
+      str = str + read_char(s);
+    }
+    if (string_ends63(str, _end)) {
+      r = clip(str, 0, _35(str) - edge(_end));
     }
   }
   return(r);
