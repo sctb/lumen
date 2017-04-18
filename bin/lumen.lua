@@ -775,11 +775,9 @@ setenv("define-macro", {_stash = true, macro = function (name, args, ...)
   local _args1 = destash33(args, _r29)
   local _id21 = _r29
   local body = cut(_id21, 0)
-  local _x121 = {"setenv", {"quote", _name1}}
-  _x121.macro = join({"fn", _args1}, body)
-  local form = _x121
-  eval(form)
-  return(form)
+  local _x123 = {"setenv", {"quote", _name1}}
+  _x123.macro = join({"fn", _args1}, body)
+  return({"with-compilation", _x123})
 end})
 setenv("define-special", {_stash = true, macro = function (name, args, ...)
   local _r31 = unstash({...})
@@ -787,11 +785,9 @@ setenv("define-special", {_stash = true, macro = function (name, args, ...)
   local _args3 = destash33(args, _r31)
   local _id23 = _r31
   local body = cut(_id23, 0)
-  local _x129 = {"setenv", {"quote", _name3}}
-  _x129.special = join({"fn", _args3}, body)
-  local form = join(_x129, keys(body))
-  eval(form)
-  return(form)
+  local _x133 = {"setenv", {"quote", _name3}}
+  _x133.special = join({"fn", _args3}, body)
+  return({"with-compilation", join(_x133, keys(body))})
 end})
 setenv("define-symbol", {_stash = true, macro = function (name, expansion)
   setenv(name, {_stash = true, symbol = expansion})
@@ -1048,6 +1044,18 @@ end})
 setenv("when-compiling", {_stash = true, macro = function (...)
   local body = unstash({...})
   return(eval(join({"do"}, body)))
+end})
+setenv("with-compilation", {_stash = true, macro = function (...)
+  local body = unstash({...})
+  local form = join({"do"}, body)
+  local entry = setenv("with-compilation", {_stash = true, toplevel = true})
+  if not entry.skip then
+    entry.skip = true
+    eval(form)
+    form = expand(form)
+    entry.skip = nil
+  end
+  return(form)
 end})
 local reader = require("reader")
 local compiler = require("compiler")

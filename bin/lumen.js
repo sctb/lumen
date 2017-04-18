@@ -887,11 +887,9 @@ setenv("define-macro", {_stash: true, macro: function (name, args) {
   var _args1 = destash33(args, _r29);
   var _id21 = _r29;
   var body = cut(_id21, 0);
-  var _x110 = ["setenv", ["quote", _name1]];
-  _x110.macro = join(["fn", _args1], body);
-  var form = _x110;
-  eval(form);
-  return(form);
+  var _x112 = ["setenv", ["quote", _name1]];
+  _x112.macro = join(["fn", _args1], body);
+  return(["with-compilation", _x112]);
 }});
 setenv("define-special", {_stash: true, macro: function (name, args) {
   var _r31 = unstash(Array.prototype.slice.call(arguments, 2));
@@ -899,11 +897,9 @@ setenv("define-special", {_stash: true, macro: function (name, args) {
   var _args3 = destash33(args, _r31);
   var _id23 = _r31;
   var body = cut(_id23, 0);
-  var _x117 = ["setenv", ["quote", _name3]];
-  _x117.special = join(["fn", _args3], body);
-  var form = join(_x117, keys(body));
-  eval(form);
-  return(form);
+  var _x121 = ["setenv", ["quote", _name3]];
+  _x121.special = join(["fn", _args3], body);
+  return(["with-compilation", join(_x121, keys(body))]);
 }});
 setenv("define-symbol", {_stash: true, macro: function (name, expansion) {
   setenv(name, {_stash: true, symbol: expansion});
@@ -1174,6 +1170,18 @@ setenv("export", {_stash: true, macro: function () {
 setenv("when-compiling", {_stash: true, macro: function () {
   var body = unstash(Array.prototype.slice.call(arguments, 0));
   return(eval(join(["do"], body)));
+}});
+setenv("with-compilation", {_stash: true, macro: function () {
+  var body = unstash(Array.prototype.slice.call(arguments, 0));
+  var form = join(["do"], body);
+  var entry = setenv("with-compilation", {_stash: true, toplevel: true});
+  if (! entry.skip) {
+    entry.skip = true;
+    eval(form);
+    form = expand(form);
+    delete entry.skip;
+  }
+  return(form);
 }});
 var reader = require("reader");
 var compiler = require("compiler");
