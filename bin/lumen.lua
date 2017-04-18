@@ -423,7 +423,7 @@ function numeric63(s)
     end
     i = i + 1
   end
-  return(true)
+  return(some63(s))
 end
 function escape(s)
   local s1 = "\""

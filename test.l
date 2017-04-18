@@ -157,7 +157,8 @@
   (test= true (< 2e-3 0.0021))
   (test= false (< 2 2))
   (test= true (<= 2 2))
-  (test= -7 (- 7)))
+  (test= -7 (- 7))
+  (test= false (numeric? "")))
 
 (define-test math
   (test= 3 (max 1 3))
