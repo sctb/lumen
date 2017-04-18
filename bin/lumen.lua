@@ -435,9 +435,7 @@ function _6261(...)
     return(a >= b)
   end, xs))
 end
-function number(s)
-  return(tonumber(s))
-end
+number = tonumber
 function number_code63(n)
   return(n > 47 and n < 58)
 end

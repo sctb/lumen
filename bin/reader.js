@@ -96,11 +96,6 @@ var wrap = function (s, x) {
     return([x, y]);
   }
 };
-var maybe_number = function (str) {
-  if (number_code63(code(str, edge(str)))) {
-    return(number(str));
-  }
-};
 var real63 = function (x) {
   return(number63(x) && ! nan63(x) && ! inf63(x));
 };
@@ -149,7 +144,7 @@ read_table[""] = function (s) {
             if (str === "-inf") {
               return(-inf);
             } else {
-              var n = maybe_number(str);
+              var n = number(str);
               if (real63(n)) {
                 return(n);
               } else {

@@ -253,11 +253,15 @@
 (define-global <= xs (pairwise (fn (a b) (<= a b)) xs))
 (define-global >= xs (pairwise (fn (a b) (>= a b)) xs))
 
-(define-global number (s)
-  (target
-    js: (let n (parseFloat s)
-          (unless (isNaN n) n))
-    lua: (tonumber s)))
+(target lua: (define-global number tonumber))
+
+(target js:
+  (let (num? (new (RegExp "^[+-]?(([0-9]+)|([0-9]*[.][0-9]+))([eE][+-]?[0-9]+)?$"))
+        hex? (new (RegExp "^0[xX][0-9a-fA-F]+$")))
+    (define-global number (str base)
+      (if base (parseInt str base)
+          ((get num? 'test) str) (parseFloat str)
+          ((get hex? 'test) str) (parseInt str)))))
 
 (define-global number-code? (n)
   (and (> n 47) (< n 58)))

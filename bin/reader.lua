@@ -96,11 +96,6 @@ local function wrap(s, x)
     return({x, y})
   end
 end
-local function maybe_number(str)
-  if number_code63(code(str, edge(str))) then
-    return(number(str))
-  end
-end
 local function real63(x)
   return(number63(x) and not nan63(x) and not inf63(x))
 end
@@ -149,7 +144,7 @@ read_table[""] = function (s)
             if str == "-inf" then
               return(-inf)
             else
-              local n = maybe_number(str)
+              local n = number(str)
               if real63(n) then
                 return(n)
               else
