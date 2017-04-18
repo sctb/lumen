@@ -259,7 +259,7 @@
     (for i n
       (unless (number-code? (code s i))
         (return false))))
-  true)
+  (some? s))
 
 (target js: (define tostring (x) ((get x 'toString))))
 

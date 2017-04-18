@@ -502,7 +502,7 @@ numeric63 = function (s) {
     }
     i = i + 1;
   }
-  return(true);
+  return(some63(s));
 };
 var tostring = function (x) {
   return(x.toString());
