@@ -241,11 +241,11 @@ function map(f, x)
   local _o4 = x
   local k = nil
   for k in next, _o4 do
-    local v = _o4[k]
+    local _v = _o4[k]
     if not number63(k) then
-      local y = f(v)
-      if is63(y) then
-        t[k] = y
+      local _y = f(_v)
+      if is63(_y) then
+        t[k] = _y
       end
     end
   end
@@ -510,8 +510,8 @@ function str(x, stack)
                       local _o11 = join(xs, ks)
                       local _i14 = nil
                       for _i14 in next, _o11 do
-                        local v = _o11[_i14]
-                        s = s .. sp .. v
+                        local _v1 = _o11[_i14]
+                        s = s .. sp .. _v1
                         sp = " "
                       end
                       return(s .. ")")
@@ -544,8 +544,8 @@ end
 function setenv(k, ...)
   local _r69 = unstash({...})
   local _k = destash33(k, _r69)
-  local _id = _r69
-  local _keys = cut(_id, 0)
+  local _id1 = _r69
+  local _keys = cut(_id1, 0)
   if string63(_k) then
     local _e7
     if _keys.toplevel then
@@ -1050,7 +1050,7 @@ local function eval_print(form)
   end) then
     _e = {true, _x}
   else
-    _e = {false, {message = _msg, stack = _trace}}
+    _e = {false, {stack = _trace, message = _msg}}
   end
   local _id = _e
   local ok = _id[1]

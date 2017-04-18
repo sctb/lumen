@@ -278,7 +278,7 @@ map = function (f, x) {
   var _o4 = x;
   var k = undefined;
   for (k in _o4) {
-    var v = _o4[k];
+    var _v = _o4[k];
     var _e7;
     if (numeric63(k)) {
       _e7 = parseInt(k);
@@ -287,9 +287,9 @@ map = function (f, x) {
     }
     var _k3 = _e7;
     if (! number63(_k3)) {
-      var y = f(v);
-      if (is63(y)) {
-        t[_k3] = y;
+      var _y = f(_v);
+      if (is63(_y)) {
+        t[_k3] = _y;
       }
     }
   }
@@ -599,7 +599,7 @@ str = function (x, stack) {
                       var _o11 = join(xs, ks);
                       var _i14 = undefined;
                       for (_i14 in _o11) {
-                        var v = _o11[_i14];
+                        var _v1 = _o11[_i14];
                         var _e17;
                         if (numeric63(_i14)) {
                           _e17 = parseInt(_i14);
@@ -607,7 +607,7 @@ str = function (x, stack) {
                           _e17 = _i14;
                         }
                         var __i14 = _e17;
-                        s = s + sp + v;
+                        s = s + sp + _v1;
                         sp = " ";
                       }
                       return(s + ")");
@@ -639,8 +639,8 @@ toplevel63 = function () {
 setenv = function (k) {
   var _r72 = unstash(Array.prototype.slice.call(arguments, 1));
   var _k9 = destash33(k, _r72);
-  var _id = _r72;
-  var _keys = cut(_id, 0);
+  var _id1 = _r72;
+  var _keys = cut(_id1, 0);
   if (string63(_k9)) {
     var _e18;
     if (_keys.toplevel) {
@@ -1002,8 +1002,8 @@ setenv("guard", {_stash: true, macro: function (expr) {
     var msg = unique("msg");
     var trace = unique("trace");
     var _x265 = ["obj"];
-    _x265.stack = trace;
     _x265.message = msg;
+    _x265.stack = trace;
     return(["let", [x, "nil", msg, "nil", trace, "nil"], ["if", ["xpcall", ["fn", join(), ["set", x, expr]], ["fn", ["m"], ["set", trace, [["get", "debug", ["quote", "traceback"]]], msg, ["if", ["string?", "m"], ["clip", "m", ["+", ["search", "m", "\": \""], 2]], ["nil?", "m"], "\"\"", ["str", "m"]]]]], ["list", true, x], ["list", false, _x265]]]);
   }
 }});
