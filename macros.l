@@ -231,7 +231,7 @@
     (let x (obj)
       (each k names
         (set (get x k) k))
-      `(return (obj ,@x)))))
+      `(return (%object ,@(mapo (fn (x) x) x))))))
 
 (define-macro when-compiling body
   (eval `(do ,@body)))
