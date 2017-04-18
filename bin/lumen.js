@@ -661,7 +661,7 @@ call = function (f) {
   return(apply(_f, args));
 };
 toplevel63 = function () {
-  return(one63(environment));
+  return(! bound63("%bindings"));
 };
 setenv = function (k) {
   var _r72 = unstash(Array.prototype.slice.call(arguments, 1));
@@ -960,6 +960,8 @@ setenv("with-bindings", {_stash: true, macro: function (_x169) {
   var _id35 = _r41;
   var body = cut(_id35, 0);
   var x = unique("x");
+  var _x171 = ["setenv", ["quote", "%bindings"]]
+  _x171.variable = true
   var _x172 = ["setenv", x];
   _x172.variable = true;
   return(join(["with-frame", ["each", x, names, _x172]], body));

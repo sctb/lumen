@@ -234,6 +234,7 @@ var expand_function = function (_x38) {
   var args = _id1[1];
   var body = cut(_id1, 2);
   add(environment, {});
+  setenv("%bindings", {_stash: true, variable: true});
   var _o3 = args;
   var _i3 = undefined;
   for (_i3 in _o3) {
@@ -258,6 +259,7 @@ var expand_definition = function (_x42) {
   var args = _id2[2];
   var body = cut(_id2, 3);
   add(environment, {});
+  setenv("%bindings", {_stash: true, variable: true});
   var _o4 = args;
   var _i4 = undefined;
   for (_i4 in _o4) {

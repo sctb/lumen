@@ -213,6 +213,7 @@ local function expand_function(_x38)
   local args = _id1[2]
   local body = cut(_id1, 2)
   add(environment, {})
+  setenv("%bindings", {_stash = true, variable = true})
   local _o3 = args
   local _i3 = nil
   for _i3 in next, _o3 do
@@ -230,6 +231,7 @@ local function expand_definition(_x42)
   local args = _id2[3]
   local body = cut(_id2, 3)
   add(environment, {})
+  setenv("%bindings", {_stash = true, variable = true})
   local _o4 = args
   local _i4 = nil
   for _i4 in next, _o4 do
