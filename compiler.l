@@ -510,11 +510,24 @@
   (let form (map (fn (x) (lower x hoist)) form)
     (if (some? form) form)))
 
+(define pairwise? (form)
+  (in? (hd form) '(< <= = >= >)))
+
+(define lower-pairwise (form)
+  (if (pairwise? form)
+      (let (e () (x rest: args) form)
+        (reduce (fn (a b)
+                  (add e `(,x ,a ,b)) a)
+                args)
+        `(and ,@(reverse e)))
+    form))
+
 (define lower-infix? (form)
   (and (infix? (hd form)) (> (# form) 3)))
 
 (define lower-infix (form hoist)
-  (let ((x rest: args) form)
+  (let (form (lower-pairwise form)
+        (x rest: args) form)
     (lower (reduce (fn (a b)
                      (list x b a))
                    (reverse args))

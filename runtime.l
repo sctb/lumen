@@ -239,11 +239,19 @@
 (define-global % xs
   (reduce (fn (b a) (% a b)) (reverse xs) 0))
 
-(define-global > (a b) (> a b))
-(define-global < (a b) (< a b))
-(define-global = (a b) (= a b))
-(define-global >= (a b) (>= a b))
-(define-global <= (a b) (<= a b))
+(define pairwise (f xs)
+  (for i (edge xs)
+    (let (a (at xs i)
+          b (at xs (+ i 1)))
+      (unless (f a b)
+        (return false))))
+  (return true))
+
+(define-global < xs (pairwise (fn (a b) (< a b)) xs))
+(define-global > xs (pairwise (fn (a b) (> a b)) xs))
+(define-global = xs (pairwise (fn (a b) (= a b)) xs))
+(define-global <= xs (pairwise (fn (a b) (<= a b)) xs))
+(define-global >= xs (pairwise (fn (a b) (>= a b)) xs))
 
 (define-global number (s)
   (target

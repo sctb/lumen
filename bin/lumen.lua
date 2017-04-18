@@ -393,20 +393,47 @@ function _37(...)
     return(a % b)
   end, reverse(xs), 0))
 end
-function _62(a, b)
-  return(a > b)
+local function pairwise(f, xs)
+  local i = 0
+  while i < edge(xs) do
+    local a = xs[i + 1]
+    local b = xs[i + 1 + 1]
+    if not f(a, b) then
+      return(false)
+    end
+    i = i + 1
+  end
+  return(true)
 end
-function _60(a, b)
-  return(a < b)
+function _60(...)
+  local xs = unstash({...})
+  return(pairwise(function (a, b)
+    return(a < b)
+  end, xs))
 end
-function _61(a, b)
-  return(a == b)
+function _62(...)
+  local xs = unstash({...})
+  return(pairwise(function (a, b)
+    return(a > b)
+  end, xs))
 end
-function _6261(a, b)
-  return(a >= b)
+function _61(...)
+  local xs = unstash({...})
+  return(pairwise(function (a, b)
+    return(a == b)
+  end, xs))
 end
-function _6061(a, b)
-  return(a <= b)
+function _6061(...)
+  local xs = unstash({...})
+  return(pairwise(function (a, b)
+    return(a <= b)
+  end, xs))
+end
+function _6261(...)
+  local xs = unstash({...})
+  return(pairwise(function (a, b)
+    return(a >= b)
+  end, xs))
 end
 function number(s)
   return(tonumber(s))

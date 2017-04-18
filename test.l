@@ -174,6 +174,23 @@
   (test= 11 (- 12 (* 1 1)))
   (test= 10 (+ (/ 4 2) 8)))
 
+(define-test infix
+  (let (l '(1 1 2 3)
+        (a b c d) l)
+    (test= true (apply <= l))
+    (test= false (apply < l))
+    (test= false (apply = l))
+    (test= true (call = 1 a b))
+    (test= false (apply > (reverse l)))
+    (test= true (apply >= (reverse l)))
+    (test= true (<= a b c d))
+    (test= true (<= a b c d))
+    (test= false (< a b c d))
+    (test= false (= a b c d))
+    (test= true (= 1 a b))
+    (test= false (> d c b a))
+    (test= true (>= d c b a))))
+
 (define-test standalone
   (test= 10 (do (+ illegal) 10))
   (let x nil
