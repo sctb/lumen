@@ -915,13 +915,32 @@ local function lower_call(form, hoist)
     return(_form2)
   end
 end
+local function pairwise63(form)
+  return(in63(hd(form), {"<", "<=", "=", ">=", ">"}))
+end
+local function lower_pairwise(form)
+  if pairwise63(form) then
+    local e = {}
+    local _id23 = form
+    local x = _id23[1]
+    local args = cut(_id23, 1)
+    reduce(function (a, b)
+      add(e, {x, a, b})
+      return(a)
+    end, args)
+    return(join({"and"}, reverse(e)))
+  else
+    return(form)
+  end
+end
 local function lower_infix63(form)
   return(infix63(hd(form)) and _35(form) > 3)
 end
 local function lower_infix(form, hoist)
-  local _id23 = form
-  local x = _id23[1]
-  local args = cut(_id23, 1)
+  local _form3 = lower_pairwise(form)
+  local _id24 = _form3
+  local x = _id24[1]
+  local args = cut(_id24, 1)
   return(lower(reduce(function (a, b)
     return({x, b, a})
   end, reverse(args)), hoist))

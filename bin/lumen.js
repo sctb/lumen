@@ -469,20 +469,47 @@ _37 = function () {
     return(a % b);
   }, reverse(xs), 0));
 };
-_62 = function (a, b) {
-  return(a > b);
+var pairwise = function (f, xs) {
+  var i = 0;
+  while (i < edge(xs)) {
+    var a = xs[i];
+    var b = xs[i + 1];
+    if (! f(a, b)) {
+      return(false);
+    }
+    i = i + 1;
+  }
+  return(true);
 };
-_60 = function (a, b) {
-  return(a < b);
+_60 = function () {
+  var xs = unstash(Array.prototype.slice.call(arguments, 0));
+  return(pairwise(function (a, b) {
+    return(a < b);
+  }, xs));
 };
-_61 = function (a, b) {
-  return(a === b);
+_62 = function () {
+  var xs = unstash(Array.prototype.slice.call(arguments, 0));
+  return(pairwise(function (a, b) {
+    return(a > b);
+  }, xs));
 };
-_6261 = function (a, b) {
-  return(a >= b);
+_61 = function () {
+  var xs = unstash(Array.prototype.slice.call(arguments, 0));
+  return(pairwise(function (a, b) {
+    return(a === b);
+  }, xs));
 };
-_6061 = function (a, b) {
-  return(a <= b);
+_6061 = function () {
+  var xs = unstash(Array.prototype.slice.call(arguments, 0));
+  return(pairwise(function (a, b) {
+    return(a <= b);
+  }, xs));
+};
+_6261 = function () {
+  var xs = unstash(Array.prototype.slice.call(arguments, 0));
+  return(pairwise(function (a, b) {
+    return(a >= b);
+  }, xs));
 };
 number = function (s) {
   var n = parseFloat(s);

@@ -969,13 +969,32 @@ var lower_call = function (form, hoist) {
     return(_form2);
   }
 };
+var pairwise63 = function (form) {
+  return(in63(hd(form), ["<", "<=", "=", ">=", ">"]));
+};
+var lower_pairwise = function (form) {
+  if (pairwise63(form)) {
+    var e = [];
+    var _id23 = form;
+    var x = _id23[0];
+    var args = cut(_id23, 1);
+    reduce(function (a, b) {
+      add(e, [x, a, b]);
+      return(a);
+    }, args);
+    return(join(["and"], reverse(e)));
+  } else {
+    return(form);
+  }
+};
 var lower_infix63 = function (form) {
   return(infix63(hd(form)) && _35(form) > 3);
 };
 var lower_infix = function (form, hoist) {
-  var _id23 = form;
-  var x = _id23[0];
-  var args = cut(_id23, 1);
+  var _form3 = lower_pairwise(form);
+  var _id24 = _form3;
+  var x = _id24[0];
+  var args = cut(_id24, 1);
   return(lower(reduce(function (a, b) {
     return([x, b, a]);
   }, reverse(args)), hoist));
