@@ -539,7 +539,7 @@ function call(f, ...)
   return(apply(_f, args))
 end
 function toplevel63()
-  return(one63(environment))
+  return(not(bound63("%bindings")))
 end
 function setenv(k, ...)
   local _r69 = unstash({...})
@@ -821,6 +821,8 @@ setenv("with-bindings", {_stash = true, macro = function (_x185, ...)
   local _id35 = _r41
   local body = cut(_id35, 0)
   local x = unique("x")
+  local _x190 = {"setenv", {"quote", "%bindings"}}
+  _x190.variable = true
   local _x189 = {"setenv", x}
   _x189.variable = true
   return(join({"with-frame", {"each", x, names, _x189}}, body))

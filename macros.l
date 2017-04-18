@@ -117,6 +117,7 @@
 (define-macro with-bindings ((names) rest: body)
   (let-unique (x)
    `(with-frame
+      (setenv '%bindings :variable)
       (each ,x ,names
         (setenv ,x :variable))
       ,@body)))

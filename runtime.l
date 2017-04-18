@@ -313,7 +313,7 @@
   (apply f args))
 
 (define-global toplevel? ()
-  (one? environment))
+  (not (bound? '%bindings)))
 
 (define-global setenv (k rest: keys)
   (when (string? k)
