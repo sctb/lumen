@@ -456,7 +456,7 @@ c"
           (if (= i 19)
               (break)
             (inc i)))
-      (test= nil a)
+      (test= nil b)
       (test= 19 i))))
 
 (define-test for
