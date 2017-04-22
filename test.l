@@ -198,7 +198,7 @@
     (test= 10 x))
   (test= 12 (do (get but zz) 12))
   (let y nil
-    (let ignore (do |y = 10;| 42)
+    (let ignore (do (%literal y | = 10;|) 42)
       (test= 10 y))))
 
 (define-test string
@@ -339,9 +339,9 @@ c"
         b (obj x: 20)
         f (fn () 30))
     (test= 10 a)
-    (test= 10 |a|)
-    (test= 20 |b.x|)
-    (test= 30 |f()|)))
+    (test= 10 (%literal a))
+    (test= 20 (%literal b |.| x))
+    (test= 30 (%literal f |()|))))
 
 (define-test names
   (let (a! 0
