@@ -799,10 +799,10 @@ c"
 
 (define-test let-unique
   (let-unique (ham chap)
-    (test= '_ham1 ham)
-    (test= '_chap chap)
+    (test= '_ham2 ham)
+    (test= '_chap1 chap)
     (let-unique (ham)
-      (test= '_ham2 ham))))
+      (test= '_ham3 ham))))
 
 (define-test literals
   (test= true true)
