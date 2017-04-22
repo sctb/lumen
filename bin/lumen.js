@@ -660,13 +660,10 @@ call = function (f) {
   var _args11 = cut(__id, 0);
   return(apply(_f, _args11));
 };
-toplevel63 = function () {
-  return(one63(environment));
-};
 setenv = function (k) {
-  var __r74 = unstash(Array.prototype.slice.call(arguments, 1));
-  var _k18 = destash33(k, __r74);
-  var __id1 = __r74;
+  var __r73 = unstash(Array.prototype.slice.call(arguments, 1));
+  var _k18 = destash33(k, __r73);
+  var __id1 = __r73;
   var _keys = cut(__id1, 0);
   if (string63(_k18)) {
     var _e18;

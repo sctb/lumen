@@ -565,13 +565,10 @@ function call(f, ...)
   local _args11 = cut(__id, 0)
   return(apply(_f, _args11))
 end
-function toplevel63()
-  return(one63(environment))
-end
 function setenv(k, ...)
-  local __r71 = unstash({...})
-  local _k9 = destash33(k, __r71)
-  local __id1 = __r71
+  local __r70 = unstash({...})
+  local _k9 = destash33(k, __r70)
+  local __id1 = __r70
   local _keys = cut(__id1, 0)
   if string63(_k9) then
     local _e7
