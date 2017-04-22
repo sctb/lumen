@@ -1071,7 +1071,7 @@ expand = function (form) {
   return(lower(macroexpand(form)));
 };
 global.require = require;
-var run = eval;
+var run = host.eval;
 _37result = undefined;
 eval = function (form) {
   var previous = target;
