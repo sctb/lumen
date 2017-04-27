@@ -340,7 +340,7 @@ c"
         f (fn () 30))
     (test= 10 a)
     (test= 10 (%literal a))
-    (test= 20 (%literal b |.| x))
+    (test= 20 (%literal b |.x|))
     (test= 30 (%literal f |()|))))
 
 (define-test names
