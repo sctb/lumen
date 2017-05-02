@@ -3,9 +3,9 @@ local function call_with_file(f, path, mode)
   if not h then
     error(e)
   end
-  local x = f(h)
+  local _x = f(h)
   h.close(h)
-  return(x)
+  return(_x)
 end
 local function read_file(path)
   return(call_with_file(function (f)
@@ -18,26 +18,26 @@ local function write_file(path, data)
   end, path, "w"))
 end
 local function file_exists63(path)
-  local f = io.open(path)
-  local _id = is63(f)
+  local _f = io.open(path)
+  local _id = is63(_f)
   local _e
   if _id then
-    local r = is63(f.read(f, 0)) or 0 == f.seek(f, "end")
-    f.close(f)
-    _e = r
+    local _r6 = is63(_f.read(_f, 0)) or 0 == _f.seek(_f, "end")
+    _f.close(_f)
+    _e = _r6
   else
     _e = _id
   end
   return(_e)
 end
 local function directory_exists63(path)
-  local f = io.open(path)
-  local _id1 = is63(f)
+  local _f1 = io.open(path)
+  local _id1 = is63(_f1)
   local _e1
   if _id1 then
-    local r = not f.read(f, 0) and not( 0 == f.seek(f, "end"))
-    f.close(f)
-    _e1 = r
+    local _r8 = not _f1.read(_f1, 0) and not( 0 == _f1.seek(_f1, "end"))
+    _f1.close(_f1)
+    _e1 = _r8
   else
     _e1 = _id1
   end
@@ -45,10 +45,10 @@ local function directory_exists63(path)
 end
 local path_separator = char(_G.package.config, 0)
 local function path_join(...)
-  local parts = unstash({...})
+  local _parts = unstash({...})
   return(reduce(function (x, y)
     return(x .. path_separator .. y)
-  end, parts) or "")
+  end, _parts) or "")
 end
 local function get_environment_variable(name)
   return(os.getenv(name))
@@ -65,9 +65,9 @@ local function reload(module)
   return(require(module))
 end
 local function run(command)
-  local f = io.popen(command)
-  local x = f.read(f, "*all")
-  f.close(f)
-  return(x)
+  local _f2 = io.popen(command)
+  local _x2 = _f2.read(_f2, "*all")
+  _f2.close(_f2)
+  return(_x2)
 end
-return({exit = exit, ["get-environment-variable"] = get_environment_variable, ["write-file"] = write_file, ["file-exists?"] = file_exists63, ["read-file"] = read_file, reload = reload, run = run, argv = argv, ["directory-exists?"] = directory_exists63, write = write, ["path-join"] = path_join, ["path-separator"] = path_separator})
+return({["read-file"] = read_file, ["write-file"] = write_file, ["file-exists?"] = file_exists63, ["directory-exists?"] = directory_exists63, ["path-separator"] = path_separator, ["path-join"] = path_join, ["get-environment-variable"] = get_environment_variable, write = write, exit = exit, argv = argv, reload = reload, run = run})

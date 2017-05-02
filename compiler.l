@@ -715,6 +715,9 @@
           (set c ", "))))
     (cat s "}")))
 
+(define-special %literal args
+  (apply cat (map compile args)))
+
 (export run
         eval
         expand

@@ -14,17 +14,17 @@ var directory_exists63 = function (path) {
 };
 var path_separator = require("path").sep;
 var path_join = function () {
-  var parts = unstash(Array.prototype.slice.call(arguments, 0));
+  var _parts = unstash(Array.prototype.slice.call(arguments, 0));
   return(reduce(function (x, y) {
     return(x + path_separator + y);
-  }, parts) || "");
+  }, _parts) || "");
 };
 var get_environment_variable = function (name) {
   return(process.env[name]);
 };
 var write = function (x) {
-  var out = process.stdout;
-  return(out.write(x));
+  var _out = process.stdout;
+  return(_out.write(x));
 };
 var exit = function (code) {
   return(process.exit(code));
@@ -35,7 +35,7 @@ var reload = function (module) {
   return(require(module));
 };
 var run = function (command) {
-  return(child_process.execSync(command).toString());
+  return(child_process.execSync(command)["toString"]());
 };
 exports["read-file"] = read_file;
 exports["write-file"] = write_file;

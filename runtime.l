@@ -320,9 +320,6 @@
 (define-global call (f rest: args)
   (apply f args))
 
-(define-global toplevel? ()
-  (one? environment))
-
 (define-global setenv (k rest: keys)
   (when (string? k)
     (let (frame (if (get keys 'toplevel)

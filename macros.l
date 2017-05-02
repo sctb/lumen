@@ -60,11 +60,10 @@
     (let ((lh rh rest: bs2) bs
           (id val rest: bs1) (bind lh rh))
       (let renames ()
-        (if (or (bound? id) (toplevel?))
-            (let id1 (unique id)
-              (set renames (list id id1)
-                   id id1))
-          (setenv id :variable))
+        (unless (id-literal? id)
+          (let id1 (unique id)
+            (set renames (list id id1)
+                 id id1)))
         `(do (%local ,id ,val)
              (let-symbol ,renames
                (let ,(join bs1 bs2) ,@body)))))))

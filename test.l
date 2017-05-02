@@ -198,7 +198,7 @@
     (test= 10 x))
   (test= 12 (do (get but zz) 12))
   (let y nil
-    (let ignore (do |y = 10;| 42)
+    (let ignore (do (%literal y | = 10;|) 42)
       (test= 10 y))))
 
 (define-test string
@@ -339,9 +339,9 @@ c"
         b (obj x: 20)
         f (fn () 30))
     (test= 10 a)
-    (test= 10 |a|)
-    (test= 20 |b.x|)
-    (test= 30 |f()|)))
+    (test= 10 (%literal a))
+    (test= 20 (%literal b |.x|))
+    (test= 30 (%literal f |()|))))
 
 (define-test names
   (let (a! 0
@@ -456,7 +456,7 @@ c"
           (if (= i 19)
               (break)
             (inc i)))
-      (test= nil a)
+      (test= nil b)
       (test= 19 i))))
 
 (define-test for
@@ -799,10 +799,10 @@ c"
 
 (define-test let-unique
   (let-unique (ham chap)
-    (test= '_ham1 ham)
-    (test= '_chap chap)
+    (test= '_ham2 ham)
+    (test= '_chap1 chap)
     (let-unique (ham)
-      (test= '_ham2 ham))))
+      (test= '_ham3 ham))))
 
 (define-test literals
   (test= true true)
