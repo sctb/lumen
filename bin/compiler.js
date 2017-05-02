@@ -555,6 +555,9 @@ var getop = function (op) {
 var infix63 = function (x) {
   return(is63(getop(x)));
 };
+infix_operator63 = function (x) {
+  return(obj63(x) && infix63(hd(x)));
+};
 var compile_args = function (args) {
   var _s1 = "(";
   var _c1 = "";
@@ -1255,15 +1258,15 @@ setenv("%set", {_stash: true, special: function (lh, rh) {
   return(indentation() + _lh2 + " = " + _rh4);
 }, stmt: true});
 setenv("get", {_stash: true, special: function (t, k) {
-  var _t4 = compile(t);
+  var _t12 = compile(t);
   var _k121 = compile(k);
-  if (target === "lua" && char(_t4, 0) === "{") {
-    _t4 = "(" + _t4 + ")";
+  if (target === "lua" && char(_t12, 0) === "{" || infix_operator63(t)) {
+    _t12 = "(" + _t12 + ")";
   }
   if (string_literal63(k) && valid_id63(inner(k))) {
-    return(_t4 + "." + inner(k));
+    return(_t12 + "." + inner(k));
   } else {
-    return(_t4 + "[" + _k121 + "]");
+    return(_t12 + "[" + _k121 + "]");
   }
 }});
 setenv("%array", {_stash: true, special: function () {
