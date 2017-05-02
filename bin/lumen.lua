@@ -529,6 +529,9 @@ function str(x, stack)
                         if number63(_k8) then
                           _xs11[_k8] = str(_v9, _l4)
                         else
+                          if not string63(_k8) then
+                            _k8 = str(_k8, _l4)
+                          end
                           add(_ks, _k8 .. ":")
                           add(_ks, str(_v9, _l4))
                         end
