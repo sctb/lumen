@@ -1070,6 +1070,8 @@ lower = function (form, hoist, stmt63, tail63) {
 expand = function (form) {
   return(lower(macroexpand(form)));
 };
+module.filename = require("path").resolve("repl");
+module.paths = require("module")._nodeModulePaths(module.filename);
 global.require = require;
 var run = eval;
 _37result = undefined;
