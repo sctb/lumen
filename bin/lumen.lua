@@ -12,6 +12,13 @@ end
 function yes(x)
   return(not no(x))
 end
+function either(x, y)
+  if is63(x) then
+    return(x)
+  else
+    return(y)
+  end
+end
 function _35(x)
   return(#x)
 end
@@ -150,9 +157,9 @@ function reverse(l)
   end
   return(_l1)
 end
-function reduce(f, x, none)
+function reduce(f, x)
   if none63(x) then
-    return(none)
+    return(nil)
   else
     if one63(x) then
       return(hd(x))
@@ -359,39 +366,39 @@ function split(s, sep)
 end
 function cat(...)
   local _xs = unstash({...})
-  return(reduce(function (a, b)
+  return(either(reduce(function (a, b)
     return(a .. b)
-  end, _xs, ""))
+  end, _xs), ""))
 end
 function _43(...)
   local _xs1 = unstash({...})
-  return(reduce(function (a, b)
+  return(either(reduce(function (a, b)
     return(a + b)
-  end, _xs1, 0))
+  end, _xs1), 0))
 end
 function _45(...)
   local _xs2 = unstash({...})
-  return(reduce(function (b, a)
+  return(either(reduce(function (b, a)
     return(a - b)
-  end, reverse(_xs2), 0))
+  end, reverse(_xs2)), 0))
 end
 function _42(...)
   local _xs3 = unstash({...})
-  return(reduce(function (a, b)
+  return(either(reduce(function (a, b)
     return(a * b)
-  end, _xs3, 1))
+  end, _xs3), 1))
 end
 function _47(...)
   local _xs4 = unstash({...})
-  return(reduce(function (b, a)
+  return(either(reduce(function (b, a)
     return(a / b)
-  end, reverse(_xs4), 1))
+  end, reverse(_xs4)), 1))
 end
 function _37(...)
   local _xs5 = unstash({...})
-  return(reduce(function (b, a)
+  return(either(reduce(function (b, a)
     return(a % b)
-  end, reverse(_xs5), 0))
+  end, reverse(_xs5)), 0))
 end
 local function pairwise(f, xs)
   local _i18 = 0
