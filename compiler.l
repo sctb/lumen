@@ -233,9 +233,7 @@
           "function" "not" "true" "elseif" "if" "or" "until"))
 
 (define-global reserved? (x)
-  (target
-    lua: (get reserved x)
-    js: ((get reserved 'hasOwnProperty) x)))
+  (has? reserved x))
 
 (define valid-code? (n)
   (or (number-code? n)         ; 0-9

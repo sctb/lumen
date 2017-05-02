@@ -6,6 +6,9 @@ end
 function is63(x)
   return(not nil63(x))
 end
+function has63(x, k)
+  return(is63(x[k]))
+end
 function no(x)
   return(nil63(x) or x == false)
 end
@@ -163,13 +166,13 @@ function reduce(f, x, none)
 end
 function join(...)
   local _ls = unstash({...})
-  local _r34 = {}
+  local _r35 = {}
   local __x2 = _ls
   local __i4 = 0
   while __i4 < _35(__x2) do
     local _l11 = __x2[__i4 + 1]
     if _l11 then
-      local _n3 = _35(_r34)
+      local _n3 = _35(_r35)
       local __o2 = _l11
       local _k2 = nil
       for _k2 in next, __o2 do
@@ -177,12 +180,12 @@ function join(...)
         if number63(_k2) then
           _k2 = _k2 + _n3
         end
-        _r34[_k2] = _v2
+        _r35[_k2] = _v2
       end
     end
     __i4 = __i4 + 1
   end
-  return(_r34)
+  return(_r35)
 end
 function find(f, t)
   local __o3 = t
@@ -559,16 +562,16 @@ function apply(f, args)
   return(f(values(_args)))
 end
 function call(f, ...)
-  local __r69 = unstash({...})
-  local _f = destash33(f, __r69)
-  local __id = __r69
+  local __r70 = unstash({...})
+  local _f = destash33(f, __r70)
+  local __id = __r70
   local _args11 = cut(__id, 0)
   return(apply(_f, _args11))
 end
 function setenv(k, ...)
-  local __r70 = unstash({...})
-  local _k9 = destash33(k, __r70)
-  local __id1 = __r70
+  local __r71 = unstash({...})
+  local _k9 = destash33(k, __r71)
+  local __id1 = __r71
   local _keys = cut(__id1, 0)
   if string63(_k9) then
     local _e7
