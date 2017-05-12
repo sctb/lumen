@@ -805,7 +805,16 @@ c"
     (test= '_ham2 ham)
     (test= '_chap1 chap)
     (let-unique (ham)
-      (test= '_ham3 ham))))
+      (test= '_ham3 ham)))
+  (let-unique (an in %x 37x)
+    (test= true (valid-id? 'an))
+    (test= false (valid-id? 'in))
+    (test= false (valid-id? '%x))
+    (test= false (valid-id? '37x))
+    (test= '_an1 an)
+    (test= '__in1 in)
+    (test= '__37x2 %x)
+    (test= '__37x3 37x)))
 
 (define-test literals
   (test= true true)
