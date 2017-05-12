@@ -532,7 +532,7 @@ numeric63 = function (s) {
   return(some63(s));
 };
 var tostring = function (x) {
-  return(x["toString"]());
+  return(x.toString());
 };
 escape = function (s) {
   var _s1 = "\"";
@@ -1208,9 +1208,9 @@ var repl = function () {
     }
   };
   system.write("> ");
-  var _in = process.stdin;
-  _in.setEncoding("utf8");
-  return(_in.on("data", rep1));
+  var __in = process.stdin;
+  __in.setEncoding("utf8");
+  return(__in.on("data", rep1));
 };
 compile_file = function (path) {
   var _s = reader.stream(system["read-file"](path));

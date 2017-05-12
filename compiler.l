@@ -52,12 +52,13 @@
 
 (let (names (obj))
   (define-global unique (x)
-    (if (get names x)
-        (let i (get names x)
-          (inc (get names x))
-          (unique (cat x i)))
-      (do (set (get names x) 1)
-          (cat "_" x)))))
+    (let x (id x)
+      (if (get names x)
+          (let i (get names x)
+            (inc (get names x))
+            (unique (cat x i)))
+        (do (set (get names x) 1)
+            (cat "_" x))))))
 
 (define stash* (args)
   (if (keys? args)
@@ -244,7 +245,9 @@
       (= n 95)))               ; _
 
 (define-global valid-id? (id)
-  (if (or (none? id) (reserved? id))
+  (if (or (none? id)
+          (reserved? id)
+          (number-code? (code id 0)))
       false
     (do (for i (# id)
           (unless (valid-code? (code id i))
@@ -310,7 +313,7 @@
       (let c (char s i)
         (cat! s1 (if (= c "\n") "\\n" c))))))
 
-(define id (id)
+(define-global id (id)
   (let id1 (if (number-code? (code id 0)) "_" "")
     (for i (# id)
       (let (c (char id i)
