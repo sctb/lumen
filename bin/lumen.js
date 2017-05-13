@@ -532,7 +532,7 @@ numeric63 = function (s) {
   return(some63(s));
 };
 var tostring = function (x) {
-  return(x["toString"]());
+  return(x.toString());
 };
 escape = function (s) {
   var _s1 = "\"";
@@ -851,7 +851,7 @@ setenv("let", {_stash: true, macro: function (bs) {
       var _bs12 = cut(__id16, 2);
       var _renames1 = [];
       if (! id_literal63(_id17)) {
-        var _id121 = unique(_id17);
+        var _id121 = unique(compile(_id17));
         _renames1 = [_id17, _id121];
         _id17 = _id121;
       }
@@ -1208,9 +1208,9 @@ var repl = function () {
     }
   };
   system.write("> ");
-  var _in = process.stdin;
-  _in.setEncoding("utf8");
-  return(_in.on("data", rep1));
+  var __in = process.stdin;
+  __in.setEncoding("utf8");
+  return(__in.on("data", rep1));
 };
 compile_file = function (path) {
   var _s = reader.stream(system["read-file"](path));

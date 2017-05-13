@@ -739,7 +739,7 @@ setenv("let", {_stash = true, macro = function (bs, ...)
       local _bs12 = cut(__id16, 2)
       local _renames1 = {}
       if not id_literal63(_id17) then
-        local _id121 = unique(_id17)
+        local _id121 = unique(compile(_id17))
         _renames1 = {_id17, _id121}
         _id17 = _id121
       end
