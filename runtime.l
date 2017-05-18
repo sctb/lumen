@@ -11,6 +11,10 @@
 (define-global no (x) (or (nil? x) (= x false)))
 (define-global yes (x) (not (no x)))
 
+(define-global has? (l k)
+  (target js: ((get l 'hasOwnProperty) k)
+          lua: (is? (get l k))))
+
 (define-global # (x)
   (target js: (or (get x 'length) 0) lua: |#x|))
 
