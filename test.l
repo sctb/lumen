@@ -486,7 +486,6 @@ c"
 (define-test at
   (let l '(a b c d)
     (test= 'a (at l 0))
-    (test= 'a l.0)
     (test= 'b (at l 1))
     (set (at l 0) 9)
     (test= 9 (at l 0))
@@ -498,10 +497,13 @@ c"
     (set (get t 'foo) 'bar)
     (test= 'bar (get t 'foo))
     (test= 'bar (get t "foo"))
-    (test= 'bar t.foo)
     (let k 'foo
       (test= 'bar (get t k)))
-    (test= 'bar (get t (cat "f" "oo")))))
+    (test= 'bar (get t (cat "f" "oo"))))
+  (let (t1 (obj) t2 (obj))
+    (set (get (or nil t1 t2) 'foo) 'bar)
+    (test= 'bar (get t1 'foo))
+    (test= nil (get t2 'foo))))
 
 (define-test each
   (let t '(1 2 3 :a b: false)
@@ -648,7 +650,10 @@ c"
     ((fn ()
        (let q 10
          (test= 10 q))
-       (test= 9 q)))))
+       (test= 9 q))))
+  (test= 0 (+ (abs -1)
+              (let abs (fn (x) x)
+                (abs -1)))))
 
 (define-test with
   (test= 10 (with x 9 (inc x))))

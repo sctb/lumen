@@ -35,7 +35,7 @@ var reload = function (module) {
   return(require(module));
 };
 var run = function (command) {
-  return(child_process.execSync(command)["toString"]());
+  return(child_process.execSync(command).toString());
 };
 exports["read-file"] = read_file;
 exports["write-file"] = write_file;

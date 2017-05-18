@@ -95,9 +95,10 @@
 (define-global bind* (args body)
   (let args1 ()
     (define rest ()
+      (set (get args1 'rest) true)
       (if (= target 'js)
           `(unstash (arguments% ,(# args1)))
-        (do (add args1 '|...|) '(unstash (list |...|)))))
+        '(unstash (list |...|))))
     (if (atom? args)
         (list args1 `(let ,(list args (rest)) ,@body))
       (let bs ()
@@ -110,7 +111,7 @@
                   (join! bs (list v x))))))
           (when (keys? args)
             (join! bs (list r (rest)))
-            (let n (if (= target 'lua) (edge args1) (# args1))
+            (let n (# args1)
               (for i n
                 (let v (at args1 i)
                   (join! bs (list v `(destash! ,v ,r))))))
@@ -233,9 +234,7 @@
           "function" "not" "true" "elseif" "if" "or" "until"))
 
 (define-global reserved? (x)
-  (target
-    lua: (get reserved x)
-    js: ((get reserved 'hasOwnProperty) x)))
+  (has? reserved x))
 
 (define valid-code? (n)
   (or (number-code? n)         ; 0-9
@@ -296,6 +295,9 @@
 
 (define infix? (x)
   (is? (getop x)))
+
+(define-global infix-operator? (x)
+  (and (obj? x) (infix? (hd x))))
 
 (define compile-args (args)
   (let (s "(" c "")
@@ -383,7 +385,11 @@
 
 (define-global compile-function (args body :name :prefix)
   (let (id (if name (compile name) "")
-        args (compile-args args)
+        args1 (if (and (= target 'lua)
+                       (get args 'rest))
+                  `(,@args |...|)
+                args)
+        args (compile-args args1)
         body (with-indent (compile body :stmt))
         ind (indentation)
         p (if prefix (cat prefix " ") "")
@@ -685,15 +691,16 @@
     (cat (indentation) lh " = " rh)))
 
 (define-special get (t k)
-  (let (t (compile t)
+  (let (t1 (compile t)
         k1 (compile k))
-    (when (and (= target 'lua)
-               (= (char t 0) "{"))
-      (set t (cat "(" t ")")))
+    (when (or (and (= target 'lua)
+                   (= (char t1 0) "{"))
+              (infix-operator? t))
+      (set t1 (cat "(" t1 ")")))
     (if (and (string-literal? k)
              (valid-id? (inner k)))
-        (cat t "." (inner k))
-      (cat t "[" k1 "]"))))
+        (cat t1 "." (inner k))
+      (cat t1 "[" k1 "]"))))
 
 (define-special %array forms
   (let (open (if (= target 'lua) "{" "[")
