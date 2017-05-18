@@ -12,6 +12,12 @@ no = function (x) {
 yes = function (x) {
   return(! no(x));
 };
+either = function (x, y) {
+  if (is63(x)) {
+    return(x);
+  } else {
+    return(y);
+  }
 has63 = function (l, k) {
   return(l.hasOwnProperty(k));
 };
@@ -167,9 +173,9 @@ reverse = function (l) {
   }
   return(_l1);
 };
-reduce = function (f, x, none) {
+reduce = function (f, x) {
   if (none63(x)) {
-    return(none);
+    return(undefined);
   } else {
     if (one63(x)) {
       return(hd(x));
@@ -438,39 +444,39 @@ split = function (s, sep) {
 };
 cat = function () {
   var _xs = unstash(Array.prototype.slice.call(arguments, 0));
-  return(reduce(function (a, b) {
+  return(either(reduce(function (a, b) {
     return(a + b);
-  }, _xs, ""));
+  }, _xs), ""));
 };
 _43 = function () {
   var _xs1 = unstash(Array.prototype.slice.call(arguments, 0));
-  return(reduce(function (a, b) {
+  return(either(reduce(function (a, b) {
     return(a + b);
-  }, _xs1, 0));
+  }, _xs1), 0));
 };
 _45 = function () {
   var _xs2 = unstash(Array.prototype.slice.call(arguments, 0));
-  return(reduce(function (b, a) {
+  return(either(reduce(function (b, a) {
     return(a - b);
-  }, reverse(_xs2), 0));
+  }, reverse(_xs2)), 0));
 };
 _42 = function () {
   var _xs3 = unstash(Array.prototype.slice.call(arguments, 0));
-  return(reduce(function (a, b) {
+  return(either(reduce(function (a, b) {
     return(a * b);
-  }, _xs3, 1));
+  }, _xs3), 1));
 };
 _47 = function () {
   var _xs4 = unstash(Array.prototype.slice.call(arguments, 0));
-  return(reduce(function (b, a) {
+  return(either(reduce(function (b, a) {
     return(a / b);
-  }, reverse(_xs4), 1));
+  }, reverse(_xs4)), 1));
 };
 _37 = function () {
   var _xs5 = unstash(Array.prototype.slice.call(arguments, 0));
-  return(reduce(function (b, a) {
+  return(either(reduce(function (b, a) {
     return(a % b);
-  }, reverse(_xs5), 0));
+  }, reverse(_xs5)), 0));
 };
 var pairwise = function (f, xs) {
   var _i18 = 0;

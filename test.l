@@ -926,8 +926,8 @@ c"
   (test= (list "a" "b" "") (split "azzbzz" "zz")))
 
 (define-test reduce
-  (test= 'a (reduce (fn (a b) (+ a b)) '() 'a))
-  (test= 'a (reduce (fn (a b) (+ a b)) '(a)))
+  (test= 'a (either (reduce (fn (a b) (+ a b)) '()) 'a))
+  (test= 'a (either (reduce (fn (a b) (+ a b)) '(a)) 'a))
   (test= 6 (reduce (fn (a b) (+ a b)) '(1 2 3)))
   (test= '(1 (2 3))
          (reduce
