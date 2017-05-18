@@ -759,8 +759,8 @@ compile_function = function (args, body) {
   } else {
     _e40 = _args4;
   }
-  var _args5 = _e40;
-  var _args6 = compile_args(_args5);
+  var _args12 = _e40;
+  var _args5 = compile_args(_args12);
   indent_level = indent_level + 1;
   var __x88 = compile(_body3, {_stash: true, stmt: true});
   indent_level = indent_level - 1;
@@ -784,9 +784,9 @@ compile_function = function (args, body) {
     _tr1 = _tr1 + "\n";
   }
   if (target === "js") {
-    return("function " + _id14 + _args6 + " {\n" + _body4 + _ind + "}" + _tr1);
+    return("function " + _id14 + _args5 + " {\n" + _body4 + _ind + "}" + _tr1);
   } else {
-    return(_p + "function " + _id14 + _args6 + "\n" + _body4 + _ind + _tr1);
+    return(_p + "function " + _id14 + _args5 + "\n" + _body4 + _ind + _tr1);
   }
 };
 var can_return63 = function (form) {
@@ -958,9 +958,9 @@ var lower_function = function (args) {
 var lower_definition = function (kind, args, hoist) {
   var __id23 = args;
   var _name4 = __id23[0];
-  var _args7 = __id23[1];
+  var _args6 = __id23[1];
   var _body8 = cut(__id23, 2);
-  return(add(hoist, [kind, _name4, _args7, lower_body(_body8, true)]));
+  return(add(hoist, [kind, _name4, _args6, lower_body(_body8, true)]));
 };
 var lower_call = function (form, hoist) {
   var _form2 = map(function (x) {
@@ -978,11 +978,11 @@ var lower_pairwise = function (form) {
     var _e4 = [];
     var __id24 = form;
     var _x123 = __id24[0];
-    var _args8 = cut(__id24, 1);
+    var _args7 = cut(__id24, 1);
     reduce(function (a, b) {
       add(_e4, [_x123, a, b]);
       return(a);
-    }, _args8);
+    }, _args7);
     return(join(["and"], reverse(_e4)));
   } else {
     return(form);
@@ -995,10 +995,10 @@ var lower_infix = function (form, hoist) {
   var _form3 = lower_pairwise(form);
   var __id25 = _form3;
   var _x126 = __id25[0];
-  var _args9 = cut(__id25, 1);
+  var _args8 = cut(__id25, 1);
   return(lower(reduce(function (a, b) {
     return([_x126, b, a]);
-  }, reverse(_args9)), hoist));
+  }, reverse(_args8)), hoist));
 };
 var lower_special = function (form, hoist) {
   var _e5 = lower_call(form, hoist);
@@ -1021,33 +1021,33 @@ lower = function (form, hoist, stmt63, tail63) {
         } else {
           var __id26 = form;
           var _x129 = __id26[0];
-          var _args10 = cut(__id26, 1);
+          var _args9 = cut(__id26, 1);
           if (_x129 === "do") {
-            return(lower_do(_args10, hoist, stmt63, tail63));
+            return(lower_do(_args9, hoist, stmt63, tail63));
           } else {
             if (_x129 === "%set") {
-              return(lower_set(_args10, hoist, stmt63, tail63));
+              return(lower_set(_args9, hoist, stmt63, tail63));
             } else {
               if (_x129 === "%if") {
-                return(lower_if(_args10, hoist, stmt63, tail63));
+                return(lower_if(_args9, hoist, stmt63, tail63));
               } else {
                 if (_x129 === "%try") {
-                  return(lower_try(_args10, hoist, tail63));
+                  return(lower_try(_args9, hoist, tail63));
                 } else {
                   if (_x129 === "while") {
-                    return(lower_while(_args10, hoist));
+                    return(lower_while(_args9, hoist));
                   } else {
                     if (_x129 === "%for") {
-                      return(lower_for(_args10, hoist));
+                      return(lower_for(_args9, hoist));
                     } else {
                       if (_x129 === "%function") {
-                        return(lower_function(_args10));
+                        return(lower_function(_args9));
                       } else {
                         if (_x129 === "%local-function" || _x129 === "%global-function") {
-                          return(lower_definition(_x129, _args10, hoist));
+                          return(lower_definition(_x129, _args9, hoist));
                         } else {
                           if (in63(_x129, ["and", "or"])) {
-                            return(lower_short(_x129, _args10, hoist));
+                            return(lower_short(_x129, _args9, hoist));
                           } else {
                             if (statement63(_x129)) {
                               return(lower_special(form, hoist));
@@ -1339,8 +1339,8 @@ setenv("%object", {_stash: true, special: function () {
   return(_s9 + "}");
 }});
 setenv("%literal", {_stash: true, special: function () {
-  var _args12 = unstash(Array.prototype.slice.call(arguments, 0));
-  return(apply(cat, map(compile, _args12)));
+  var _args111 = unstash(Array.prototype.slice.call(arguments, 0));
+  return(apply(cat, map(compile, _args111)));
 }});
 exports.run = run;
 exports.eval = eval;
