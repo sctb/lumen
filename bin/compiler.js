@@ -704,10 +704,10 @@ var compile_call = function (form) {
   }
 };
 var op_delims = function (parent, child) {
-  var __r57 = unstash(Array.prototype.slice.call(arguments, 2));
-  var _parent = destash33(parent, __r57);
-  var _child = destash33(child, __r57);
-  var __id8 = __r57;
+  var __r58 = unstash(Array.prototype.slice.call(arguments, 2));
+  var _parent = destash33(parent, __r58);
+  var _child = destash33(child, __r58);
+  var __id8 = __r58;
   var _right = __id8.right;
   var _e38;
   if (_right) {
@@ -743,10 +743,10 @@ var compile_infix = function (form) {
   }
 };
 compile_function = function (args, body) {
-  var __r59 = unstash(Array.prototype.slice.call(arguments, 2));
-  var _args4 = destash33(args, __r59);
-  var _body3 = destash33(body, __r59);
-  var __id13 = __r59;
+  var __r60 = unstash(Array.prototype.slice.call(arguments, 2));
+  var _args4 = destash33(args, __r60);
+  var _body3 = destash33(body, __r60);
+  var __id13 = __r60;
   var _name3 = __id13.name;
   var _prefix = __id13.prefix;
   var _e39;
@@ -796,9 +796,9 @@ var can_return63 = function (form) {
   return(is63(form) && (atom63(form) || !( hd(form) === "return") && ! statement63(hd(form))));
 };
 compile = function (form) {
-  var __r61 = unstash(Array.prototype.slice.call(arguments, 1));
-  var _form = destash33(form, __r61);
-  var __id15 = __r61;
+  var __r62 = unstash(Array.prototype.slice.call(arguments, 1));
+  var _form = destash33(form, __r62);
+  var __id15 = __r62;
   var _stmt1 = __id15.stmt;
   if (nil63(_form)) {
     return("");
