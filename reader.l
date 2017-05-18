@@ -73,28 +73,13 @@
 (define real? (x)
   (and (number? x) (not (nan? x)) (not (inf? x))))
 
-(define valid-access? (str)
-  (and (> (# str) 2)
-       (not (= "." (char str 0)))
-       (not (= "." (char str (edge str))))
-       (not (search str ".."))))
-
-(define parse-access (str)
-  (reduce (fn (a b)
-            (let n (number a)
-              (if (is? n)
-                  `(at ,b ,n)
-                `(get ,b (quote ,a)))))
-          (reverse (split str "."))))
-
 (define-reader ("" s) ; atom
-  (let (str "" dot? false)
+  (let (str "")
     (while true
       (let c (peek-char s)
         (if (and c (and (not (get whitespace c))
                         (not (get delimiters c))))
-            (do (if (= c ".") (set dot? true))
-                (cat! str (read-char s)))
+            (cat! str (read-char s))
           (break))))
   (if (= str "true") true
       (= str "false") false
@@ -103,10 +88,7 @@
       (= str "inf") inf
       (= str "-inf") -inf
     (let n (maybe-number str)
-      (if (real? n) n
-          (and dot? (valid-access? str))
-          (parse-access str)
-        str)))))
+      (if (real? n) n str)))))
 
 (define-reader ("(" s)
   (read-char s)

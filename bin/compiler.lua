@@ -705,8 +705,8 @@ function compile_function(args, body, ...)
   else
     _e32 = _args4
   end
-  local _args5 = _e32
-  local _args6 = compile_args(_args5)
+  local _args12 = _e32
+  local _args5 = compile_args(_args12)
   indent_level = indent_level + 1
   local __x90 = compile(_body3, {_stash = true, stmt = true})
   indent_level = indent_level - 1
@@ -730,9 +730,9 @@ function compile_function(args, body, ...)
     _tr1 = _tr1 .. "\n"
   end
   if target == "js" then
-    return("function " .. _id14 .. _args6 .. " {\n" .. _body4 .. _ind .. "}" .. _tr1)
+    return("function " .. _id14 .. _args5 .. " {\n" .. _body4 .. _ind .. "}" .. _tr1)
   else
-    return(_p .. "function " .. _id14 .. _args6 .. "\n" .. _body4 .. _ind .. _tr1)
+    return(_p .. "function " .. _id14 .. _args5 .. "\n" .. _body4 .. _ind .. _tr1)
   end
 end
 local function can_return63(form)
@@ -904,9 +904,9 @@ end
 local function lower_definition(kind, args, hoist)
   local __id23 = args
   local _name4 = __id23[1]
-  local _args7 = __id23[2]
+  local _args6 = __id23[2]
   local _body8 = cut(__id23, 2)
-  return(add(hoist, {kind, _name4, _args7, lower_body(_body8, true)}))
+  return(add(hoist, {kind, _name4, _args6, lower_body(_body8, true)}))
 end
 local function lower_call(form, hoist)
   local _form2 = map(function (x)
@@ -924,11 +924,11 @@ local function lower_pairwise(form)
     local _e4 = {}
     local __id24 = form
     local _x126 = __id24[1]
-    local _args8 = cut(__id24, 1)
+    local _args7 = cut(__id24, 1)
     reduce(function (a, b)
       add(_e4, {_x126, a, b})
       return(a)
-    end, _args8)
+    end, _args7)
     return(join({"and"}, reverse(_e4)))
   else
     return(form)
@@ -941,10 +941,10 @@ local function lower_infix(form, hoist)
   local _form3 = lower_pairwise(form)
   local __id25 = _form3
   local _x129 = __id25[1]
-  local _args9 = cut(__id25, 1)
+  local _args8 = cut(__id25, 1)
   return(lower(reduce(function (a, b)
     return({_x129, b, a})
-  end, reverse(_args9)), hoist))
+  end, reverse(_args8)), hoist))
 end
 local function lower_special(form, hoist)
   local _e5 = lower_call(form, hoist)
@@ -967,33 +967,33 @@ function lower(form, hoist, stmt63, tail63)
         else
           local __id26 = form
           local _x132 = __id26[1]
-          local _args10 = cut(__id26, 1)
+          local _args9 = cut(__id26, 1)
           if _x132 == "do" then
-            return(lower_do(_args10, hoist, stmt63, tail63))
+            return(lower_do(_args9, hoist, stmt63, tail63))
           else
             if _x132 == "%set" then
-              return(lower_set(_args10, hoist, stmt63, tail63))
+              return(lower_set(_args9, hoist, stmt63, tail63))
             else
               if _x132 == "%if" then
-                return(lower_if(_args10, hoist, stmt63, tail63))
+                return(lower_if(_args9, hoist, stmt63, tail63))
               else
                 if _x132 == "%try" then
-                  return(lower_try(_args10, hoist, tail63))
+                  return(lower_try(_args9, hoist, tail63))
                 else
                   if _x132 == "while" then
-                    return(lower_while(_args10, hoist))
+                    return(lower_while(_args9, hoist))
                   else
                     if _x132 == "%for" then
-                      return(lower_for(_args10, hoist))
+                      return(lower_for(_args9, hoist))
                     else
                       if _x132 == "%function" then
-                        return(lower_function(_args10))
+                        return(lower_function(_args9))
                       else
                         if _x132 == "%local-function" or _x132 == "%global-function" then
-                          return(lower_definition(_x132, _args10, hoist))
+                          return(lower_definition(_x132, _args9, hoist))
                         else
                           if in63(_x132, {"and", "or"}) then
-                            return(lower_short(_x132, _args10, hoist))
+                            return(lower_short(_x132, _args9, hoist))
                           else
                             if statement63(_x132) then
                               return(lower_special(form, hoist))
@@ -1278,7 +1278,7 @@ setenv("%object", {_stash = true, special = function (...)
   return(_s9 .. "}")
 end})
 setenv("%literal", {_stash = true, special = function (...)
-  local _args12 = unstash({...})
-  return(apply(cat, map(compile, _args12)))
+  local _args111 = unstash({...})
+  return(apply(cat, map(compile, _args111)))
 end})
 return({run = run, eval = eval, expand = expand, compile = compile})
