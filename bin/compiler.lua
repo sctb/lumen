@@ -650,10 +650,10 @@ local function compile_call(form)
   end
 end
 local function op_delims(parent, child, ...)
-  local __r57 = unstash({...})
-  local _parent = destash33(parent, __r57)
-  local _child = destash33(child, __r57)
-  local __id8 = __r57
+  local __r58 = unstash({...})
+  local _parent = destash33(parent, __r58)
+  local _child = destash33(child, __r58)
+  local __id8 = __r58
   local _right = __id8.right
   local _e30
   if _right then
@@ -689,10 +689,10 @@ local function compile_infix(form)
   end
 end
 function compile_function(args, body, ...)
-  local __r59 = unstash({...})
-  local _args4 = destash33(args, __r59)
-  local _body3 = destash33(body, __r59)
-  local __id13 = __r59
+  local __r60 = unstash({...})
+  local _args4 = destash33(args, __r60)
+  local _body3 = destash33(body, __r60)
+  local __id13 = __r60
   local _name3 = __id13.name
   local _prefix = __id13.prefix
   local _e31
@@ -742,9 +742,9 @@ local function can_return63(form)
   return(is63(form) and (atom63(form) or not( hd(form) == "return") and not statement63(hd(form))))
 end
 function compile(form, ...)
-  local __r61 = unstash({...})
-  local _form = destash33(form, __r61)
-  local __id15 = __r61
+  local __r62 = unstash({...})
+  local _form = destash33(form, __r62)
+  local __id15 = __r62
   local _stmt1 = __id15.stmt
   if nil63(_form) then
     return("")
