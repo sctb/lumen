@@ -296,6 +296,9 @@
 (define infix? (x)
   (is? (getop x)))
 
+(define-global infix-operator? (x)
+  (and (obj? x) (infix? (hd x))))
+
 (define compile-args (args)
   (let (s "(" c "")
     (step x args
@@ -688,15 +691,16 @@
     (cat (indentation) lh " = " rh)))
 
 (define-special get (t k)
-  (let (t (compile t)
+  (let (t1 (compile t)
         k1 (compile k))
-    (when (and (= target 'lua)
-               (= (char t 0) "{"))
-      (set t (cat "(" t ")")))
+    (when (or (and (= target 'lua)
+                   (= (char t1 0) "{"))
+              (infix-operator? t))
+      (set t1 (cat "(" t1 ")")))
     (if (and (string-literal? k)
              (valid-id? (inner k)))
-        (cat t "." (inner k))
-      (cat t "[" k1 "]"))))
+        (cat t1 "." (inner k))
+      (cat t1 "[" k1 "]"))))
 
 (define-special %array forms
   (let (open (if (= target 'lua) "{" "[")

@@ -495,6 +495,9 @@ end
 local function infix63(x)
   return(is63(getop(x)))
 end
+function infix_operator63(x)
+  return(obj63(x) and infix63(hd(x)))
+end
 local function compile_args(args)
   local _s1 = "("
   local _c1 = ""
@@ -1209,15 +1212,15 @@ setenv("%set", {_stash = true, special = function (lh, rh)
   return(indentation() .. _lh2 .. " = " .. _rh4)
 end, stmt = true})
 setenv("get", {_stash = true, special = function (t, k)
-  local _t4 = compile(t)
+  local _t12 = compile(t)
   local _k12 = compile(k)
-  if target == "lua" and char(_t4, 0) == "{" then
-    _t4 = "(" .. _t4 .. ")"
+  if target == "lua" and char(_t12, 0) == "{" or infix_operator63(t) then
+    _t12 = "(" .. _t12 .. ")"
   end
   if string_literal63(k) and valid_id63(inner(k)) then
-    return(_t4 .. "." .. inner(k))
+    return(_t12 .. "." .. inner(k))
   else
-    return(_t4 .. "[" .. _k12 .. "]")
+    return(_t12 .. "[" .. _k12 .. "]")
   end
 end})
 setenv("%array", {_stash = true, special = function (...)

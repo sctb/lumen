@@ -499,7 +499,11 @@ c"
     (test= 'bar (get t "foo"))
     (let k 'foo
       (test= 'bar (get t k)))
-    (test= 'bar (get t (cat "f" "oo")))))
+    (test= 'bar (get t (cat "f" "oo"))))
+  (let (t1 (obj) t2 (obj))
+    (set (get (or nil t1 t2) 'foo) 'bar)
+    (test= 'bar (get t1 'foo))
+    (test= nil (get t2 'foo))))
 
 (define-test each
   (let t '(1 2 3 :a b: false)
