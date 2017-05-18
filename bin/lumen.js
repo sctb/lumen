@@ -12,6 +12,9 @@ no = function (x) {
 yes = function (x) {
   return(! no(x));
 };
+has63 = function (l, k) {
+  return(l.hasOwnProperty(k));
+};
 _35 = function (x) {
   return(x.length || 0);
 };
@@ -177,13 +180,13 @@ reduce = function (f, x, none) {
 };
 join = function () {
   var _ls = unstash(Array.prototype.slice.call(arguments, 0));
-  var _r35 = [];
+  var _r36 = [];
   var __x1 = _ls;
   var __i4 = 0;
   while (__i4 < _35(__x1)) {
     var _l11 = __x1[__i4];
     if (_l11) {
-      var _n3 = _35(_r35);
+      var _n3 = _35(_r36);
       var __o2 = _l11;
       var _k4 = undefined;
       for (_k4 in __o2) {
@@ -198,12 +201,12 @@ join = function () {
         if (number63(_k5)) {
           _k5 = _k5 + _n3;
         }
-        _r35[_k5] = _v2;
+        _r36[_k5] = _v2;
       }
     }
     __i4 = __i4 + 1;
   }
-  return(_r35);
+  return(_r36);
 };
 find = function (f, t) {
   var __o3 = t;
@@ -654,16 +657,16 @@ apply = function (f, args) {
   return(f.apply(f, _args));
 };
 call = function (f) {
-  var __r72 = unstash(Array.prototype.slice.call(arguments, 1));
-  var _f = destash33(f, __r72);
-  var __id = __r72;
+  var __r73 = unstash(Array.prototype.slice.call(arguments, 1));
+  var _f = destash33(f, __r73);
+  var __id = __r73;
   var _args11 = cut(__id, 0);
   return(apply(_f, _args11));
 };
 setenv = function (k) {
-  var __r73 = unstash(Array.prototype.slice.call(arguments, 1));
-  var _k18 = destash33(k, __r73);
-  var __id1 = __r73;
+  var __r74 = unstash(Array.prototype.slice.call(arguments, 1));
+  var _k18 = destash33(k, __r74);
+  var __id1 = __r74;
   var _keys = cut(__id1, 0);
   if (string63(_k18)) {
     var _e18;
