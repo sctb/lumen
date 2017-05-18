@@ -532,7 +532,7 @@ numeric63 = function (s) {
   return(some63(s));
 };
 var tostring = function (x) {
-  return(x["toString"]());
+  return(x.toString());
 };
 escape = function (s) {
   var _s1 = "\"";
