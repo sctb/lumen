@@ -6,6 +6,9 @@ nil63 = function (x) {
 is63 = function (x) {
   return(! nil63(x));
 };
+has63 = function (x, k) {
+  return(x.hasOwnProperty(k));
+};
 no = function (x) {
   return(nil63(x) || x === false);
 };

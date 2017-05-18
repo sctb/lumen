@@ -6,6 +6,9 @@ end
 function is63(x)
   return(not nil63(x))
 end
+function has63(x, k)
+  return(is63(x[k]))
+end
 function no(x)
   return(nil63(x) or x == false)
 end
