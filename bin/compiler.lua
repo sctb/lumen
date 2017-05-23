@@ -780,22 +780,28 @@ end
 local function lower_statement(form, tail63)
   local _hoist = {}
   local _e = lower(form, _hoist, true, tail63)
+  local _e38
   if some63(_hoist) and is63(_e) then
-    return(join({"do"}, _hoist, {_e}))
+    _e38 = join({"do"}, _hoist, {_e})
   else
+    local _e39
     if is63(_e) then
-      return(_e)
+      _e39 = _e
     else
+      local _e40
       if _35(_hoist) > 1 then
-        return(join({"do"}, _hoist))
+        _e40 = join({"do"}, _hoist)
       else
-        return(hd(_hoist))
+        _e40 = hd(_hoist)
       end
+      _e39 = _e40
     end
+    _e38 = _e39
   end
+  return(either(_e38, {"do"}))
 end
 local function lower_body(body, tail63)
-  return(either(lower_statement(join({"do"}, body), tail63), {"do"}))
+  return(lower_statement(join({"do"}, body), tail63))
 end
 local function literal63(form)
   return(atom63(form) or hd(form) == "%array" or hd(form) == "%object")

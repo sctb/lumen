@@ -396,7 +396,8 @@ c"
         (do (set a 20)
             (test= 20 a)))
     (test= 20 (do (set a 10)
-                  (do (set a 20) a)))))
+                  (do (set a 20) a))))
+  (test= '(do) (expand '(do))))
 
 (define-test if
   (test= 'a (macroexpand '(if a)))
