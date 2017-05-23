@@ -834,19 +834,25 @@ compile = function (form) {
 var lower_statement = function (form, tail63) {
   var _hoist = [];
   var _e = lower(form, _hoist, true, tail63);
+  var _e46;
   if (some63(_hoist) && is63(_e)) {
-    return(join(["do"], _hoist, [_e]));
+    _e46 = join(["do"], _hoist, [_e]);
   } else {
+    var _e47;
     if (is63(_e)) {
-      return(_e);
+      _e47 = _e;
     } else {
+      var _e48;
       if (_35(_hoist) > 1) {
-        return(join(["do"], _hoist));
+        _e48 = join(["do"], _hoist);
       } else {
-        return(hd(_hoist));
+        _e48 = hd(_hoist);
       }
+      _e47 = _e48;
     }
+    _e46 = _e47;
   }
+  return(either(_e46, ["do"]));
 };
 var lower_body = function (body, tail63) {
   return(lower_statement(join(["do"], body), tail63));

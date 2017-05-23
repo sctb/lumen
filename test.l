@@ -396,7 +396,8 @@ c"
         (do (set a 20)
             (test= 20 a)))
     (test= 20 (do (set a 10)
-                  (do (set a 20) a)))))
+                  (do (set a 20) a))))
+  (test= '(do) (expand '(do))))
 
 (define-test if
   (test= 'a (macroexpand '(if a)))
@@ -438,7 +439,8 @@ c"
     (test= 2 (case x a 1 (z) 2 7))
     (test= 2 (case x a 1 (b z) 2 7)))
   (let (n 0 f (fn () (inc n))) ; no multiple eval
-    (test= 'b (case (f) 0 'a 1 'b 'c))))
+    (test= 'b (case (f) 0 'a 1 'b 'c)))
+  (test= 'b ((fn () (case 2 0 (do) 1 'a 2 'b)))))
 
 (define-test while
   (let i 0
