@@ -425,7 +425,8 @@
       (hd hoist))))
 
 (define lower-body (body tail?)
-  (lower-statement `(do ,@body) tail?))
+  (either (lower-statement `(do ,@body) tail?)
+          '(do)))
 
 (define literal? (form)
   (or (atom? form)

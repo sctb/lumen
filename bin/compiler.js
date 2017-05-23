@@ -849,7 +849,7 @@ var lower_statement = function (form, tail63) {
   }
 };
 var lower_body = function (body, tail63) {
-  return(lower_statement(join(["do"], body), tail63));
+  return(either(lower_statement(join(["do"], body), tail63), ["do"]));
 };
 var literal63 = function (form) {
   return(atom63(form) || hd(form) === "%array" || hd(form) === "%object");

@@ -795,7 +795,7 @@ local function lower_statement(form, tail63)
   end
 end
 local function lower_body(body, tail63)
-  return(lower_statement(join({"do"}, body), tail63))
+  return(either(lower_statement(join({"do"}, body), tail63), {"do"}))
 end
 local function literal63(form)
   return(atom63(form) or hd(form) == "%array" or hd(form) == "%object")
