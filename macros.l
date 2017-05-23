@@ -79,17 +79,12 @@
            ,@body)))))
 
 (define-macro define-macro (name args rest: body)
-  (let form `(setenv ',name macro: (fn ,args ,@body))
-    (eval form)
-    form))
+  `(setenv ',name macro: (fn ,args ,@body)))
 
 (define-macro define-special (name args rest: body)
-  (let form `(setenv ',name special: (fn ,args ,@body) ,@(keys body))
-    (eval form)
-    form))
+  `(setenv ',name special: (fn ,args ,@body) ,@(keys body)))
 
 (define-macro define-symbol (name expansion)
-  (setenv name symbol: expansion)
   `(setenv ',name symbol: ',expansion))
 
 (define-macro define-reader ((char s) rest: body)
@@ -123,14 +118,14 @@
 (define-macro let-macro (definitions rest: body)
   (with-frame
     (map (fn (m)
-           (macroexpand `(define-macro ,@m)))
+           (eval `(define-macro ,@m)))
          definitions)
     `(do ,@(macroexpand body))))
 
 (define-macro let-symbol (expansions rest: body)
   (with-frame
     (map (fn ((name exp))
-           (macroexpand `(define-symbol ,name ,exp)))
+           (setenv name symbol: exp))
          (pair expansions))
     `(do ,@(macroexpand body))))
 
