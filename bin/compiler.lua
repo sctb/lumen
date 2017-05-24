@@ -40,10 +40,7 @@ local function symbol63(k)
   return(is63(symbol_expansion(k)))
 end
 local function variable63(k)
-  local _b1 = first(function (frame)
-    return(frame[k])
-  end, reverse(environment))
-  return(not atom63(_b1) and is63(_b1.variable))
+  return(is63(getenv(k, "variable")))
 end
 function bound63(x)
   return(macro63(x) or special63(x) or symbol63(x) or variable63(x))
@@ -152,7 +149,7 @@ function bind42(args, body)
     return({_args1, join({"let", {args, rest()}}, body)})
   else
     local _bs1 = {}
-    local _r21 = unique("r")
+    local _r20 = unique("r")
     local __o2 = args
     local _k3 = nil
     for _k3 in next, __o2 do
@@ -168,15 +165,15 @@ function bind42(args, body)
       end
     end
     if keys63(args) then
-      _bs1 = join(_bs1, {_r21, rest()})
+      _bs1 = join(_bs1, {_r20, rest()})
       local _n3 = _35(_args1)
       local _i5 = 0
       while _i5 < _n3 do
         local _v3 = _args1[_i5 + 1]
-        _bs1 = join(_bs1, {_v3, {"destash!", _v3, _r21}})
+        _bs1 = join(_bs1, {_v3, {"destash!", _v3, _r20}})
         _i5 = _i5 + 1
       end
-      _bs1 = join(_bs1, {keys(args), _r21})
+      _bs1 = join(_bs1, {keys(args), _r20})
     end
     return({_args1, join({"let", _bs1}, body)})
   end
@@ -354,10 +351,10 @@ end
 function expand_if(_x61)
   local __id5 = _x61
   local _a = __id5[1]
-  local _b2 = __id5[2]
+  local _b1 = __id5[2]
   local _c = cut(__id5, 2)
-  if is63(_b2) then
-    return({join({"%if", _a, _b2}, expand_if(_c))})
+  if is63(_b1) then
+    return({join({"%if", _a, _b1}, expand_if(_c))})
   else
     if is63(_a) then
       return({_a})
@@ -650,10 +647,10 @@ local function compile_call(form)
   end
 end
 local function op_delims(parent, child, ...)
-  local __r58 = unstash({...})
-  local _parent = destash33(parent, __r58)
-  local _child = destash33(child, __r58)
-  local __id8 = __r58
+  local __r57 = unstash({...})
+  local _parent = destash33(parent, __r57)
+  local _child = destash33(child, __r57)
+  local __id8 = __r57
   local _right = __id8.right
   local _e30
   if _right then
@@ -672,27 +669,27 @@ local function compile_infix(form)
   local _op = __id9[1]
   local __id10 = cut(__id9, 1)
   local _a1 = __id10[1]
-  local _b3 = __id10[2]
+  local _b2 = __id10[2]
   local __id111 = op_delims(form, _a1)
   local _ao = __id111[1]
   local _ac = __id111[2]
-  local __id12 = op_delims(form, _b3, {_stash = true, right = true})
+  local __id12 = op_delims(form, _b2, {_stash = true, right = true})
   local _bo = __id12[1]
   local _bc = __id12[2]
   local _a2 = compile(_a1)
-  local _b4 = compile(_b3)
+  local _b3 = compile(_b2)
   local _op1 = getop(_op)
   if unary63(form) then
     return(_op1 .. _ao .. " " .. _a2 .. _ac)
   else
-    return(_ao .. _a2 .. _ac .. " " .. _op1 .. " " .. _bo .. _b4 .. _bc)
+    return(_ao .. _a2 .. _ac .. " " .. _op1 .. " " .. _bo .. _b3 .. _bc)
   end
 end
 function compile_function(args, body, ...)
-  local __r60 = unstash({...})
-  local _args4 = destash33(args, __r60)
-  local _body3 = destash33(body, __r60)
-  local __id13 = __r60
+  local __r59 = unstash({...})
+  local _args4 = destash33(args, __r59)
+  local _body3 = destash33(body, __r59)
+  local __id13 = __r59
   local _name3 = __id13.name
   local _prefix = __id13.prefix
   local _e31
@@ -742,9 +739,9 @@ local function can_return63(form)
   return(is63(form) and (atom63(form) or not( hd(form) == "return") and not statement63(hd(form))))
 end
 function compile(form, ...)
-  local __r62 = unstash({...})
-  local _form = destash33(form, __r62)
-  local __id15 = __r62
+  local __r61 = unstash({...})
+  local _form = destash33(form, __r61)
+  local __id15 = __r61
   local _stmt1 = __id15.stmt
   if nil63(_form) then
     return("")
@@ -864,16 +861,16 @@ end
 local function lower_short(x, args, hoist)
   local __id18 = args
   local _a3 = __id18[1]
-  local _b5 = __id18[2]
+  local _b4 = __id18[2]
   local _hoist1 = {}
-  local _b11 = lower(_b5, _hoist1)
+  local _b11 = lower(_b4, _hoist1)
   if some63(_hoist1) then
     local _id19 = unique("id")
     local _e43
     if x == "and" then
-      _e43 = {"%if", _id19, _b5, _id19}
+      _e43 = {"%if", _id19, _b4, _id19}
     else
-      _e43 = {"%if", _id19, _id19, _b5}
+      _e43 = {"%if", _id19, _id19, _b4}
     end
     return(lower({"do", {"%local", _id19, _a3}, _e43}, hoist))
   else
