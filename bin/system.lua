@@ -17,12 +17,12 @@ local function write_file(path, data)
     return(f.write(f, data))
   end, path, "w"))
 end
-local function file_exists63(path)
+local function file_exists__QUESTION__(path)
   local _f = io.open(path)
-  local _id = is63(_f)
+  local _id = is__QUESTION__(_f)
   local _e
   if _id then
-    local _r6 = is63(_f.read(_f, 0)) or 0 == _f.seek(_f, "end")
+    local _r6 = is__QUESTION__(_f.read(_f, 0)) or 0 == _f.seek(_f, "end")
     _f.close(_f)
     _e = _r6
   else
@@ -30,9 +30,9 @@ local function file_exists63(path)
   end
   return(_e)
 end
-local function directory_exists63(path)
+local function directory_exists__QUESTION__(path)
   local _f1 = io.open(path)
-  local _id1 = is63(_f1)
+  local _id1 = is__QUESTION__(_f1)
   local _e1
   if _id1 then
     local _r8 = not _f1.read(_f1, 0) and not( 0 == _f1.seek(_f1, "end"))
@@ -70,4 +70,4 @@ local function run(command)
   _f2.close(_f2)
   return(_x2)
 end
-return({["read-file"] = read_file, ["write-file"] = write_file, ["file-exists?"] = file_exists63, ["directory-exists?"] = directory_exists63, ["path-separator"] = path_separator, ["path-join"] = path_join, ["get-environment-variable"] = get_environment_variable, write = write, exit = exit, argv = argv, reload = reload, run = run})
+return({["read-file"] = read_file, ["write-file"] = write_file, ["file-exists?"] = file_exists__QUESTION__, ["directory-exists?"] = directory_exists__QUESTION__, ["path-separator"] = path_separator, ["path-join"] = path_join, ["get-environment-variable"] = get_environment_variable, write = write, exit = exit, argv = argv, reload = reload, run = run})

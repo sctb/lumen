@@ -1,7 +1,7 @@
 var delimiters = {"(": true, ")": true, ";": true, "\n": true};
 var whitespace = {" ": true, "\t": true, "\n": true};
 var stream = function (str, more) {
-  return({pos: 0, string: str, len: _35(str), more: more});
+  return({pos: 0, string: str, len: __POUND__(str), more: more});
 };
 var peek_char = function (s) {
   var __id = s;
@@ -22,7 +22,7 @@ var read_char = function (s) {
 var skip_non_code = function (s) {
   while (true) {
     var _c1 = peek_char(s);
-    if (nil63(_c1)) {
+    if (nil__QUESTION__(_c1)) {
       break;
     } else {
       if (whitespace[_c1]) {
@@ -45,7 +45,7 @@ var eof = {};
 var read = function (s) {
   skip_non_code(s);
   var _c2 = peek_char(s);
-  if (is63(_c2)) {
+  if (is__QUESTION__(_c2)) {
     return((read_table[_c2] || read_table[""])(s));
   } else {
     return(eof);
@@ -68,11 +68,11 @@ read_string = function (str, more) {
     return(_x);
   }
 };
-var key63 = function (atom) {
-  return(string63(atom) && _35(atom) > 1 && char(atom, edge(atom)) === ":");
+var key__QUESTION__ = function (atom) {
+  return(string__QUESTION__(atom) && __POUND__(atom) > 1 && char(atom, edge(atom)) === ":");
 };
-var flag63 = function (atom) {
-  return(string63(atom) && _35(atom) > 1 && char(atom, 0) === ":");
+var flag__QUESTION__ = function (atom) {
+  return(string__QUESTION__(atom) && __POUND__(atom) > 1 && char(atom, 0) === ":");
 };
 var expected = function (s, c) {
   var __id1 = s;
@@ -97,12 +97,12 @@ var wrap = function (s, x) {
   }
 };
 var maybe_number = function (str) {
-  if (number_code63(code(str, edge(str)))) {
+  if (number_code__QUESTION__(code(str, edge(str)))) {
     return(number(str));
   }
 };
-var real63 = function (x) {
-  return(number63(x) && ! nan63(x) && ! inf63(x));
+var real__QUESTION__ = function (x) {
+  return(number__QUESTION__(x) && ! nan__QUESTION__(x) && ! inf__QUESTION__(x));
 };
 read_table[""] = function (s) {
   var _str = "";
@@ -133,7 +133,7 @@ read_table[""] = function (s) {
               return(-inf);
             } else {
               var _n = maybe_number(_str);
-              if (real63(_n)) {
+              if (real__QUESTION__(_n)) {
                 return(_n);
               } else {
                 return(_str);
@@ -149,23 +149,23 @@ read_table["("] = function (s) {
   read_char(s);
   var _r15 = undefined;
   var _l1 = [];
-  while (nil63(_r15)) {
+  while (nil__QUESTION__(_r15)) {
     skip_non_code(s);
     var _c4 = peek_char(s);
     if (_c4 === ")") {
       read_char(s);
       _r15 = _l1;
     } else {
-      if (nil63(_c4)) {
+      if (nil__QUESTION__(_c4)) {
         _r15 = expected(s, ")");
       } else {
         var _x2 = read(s);
-        if (key63(_x2)) {
+        if (key__QUESTION__(_x2)) {
           var _k = clip(_x2, 0, edge(_x2));
           var _v = read(s);
           _l1[_k] = _v;
         } else {
-          if (flag63(_x2)) {
+          if (flag__QUESTION__(_x2)) {
             _l1[clip(_x2, 1)] = true;
           } else {
             add(_l1, _x2);
@@ -183,12 +183,12 @@ read_table["\""] = function (s) {
   read_char(s);
   var _r18 = undefined;
   var _str1 = "\"";
-  while (nil63(_r18)) {
+  while (nil__QUESTION__(_r18)) {
     var _c5 = peek_char(s);
     if (_c5 === "\"") {
       _r18 = _str1 + read_char(s);
     } else {
-      if (nil63(_c5)) {
+      if (nil__QUESTION__(_c5)) {
         _r18 = expected(s, "\"");
       } else {
         if (_c5 === "\\") {
@@ -204,12 +204,12 @@ read_table["|"] = function (s) {
   read_char(s);
   var _r20 = undefined;
   var _str2 = "|";
-  while (nil63(_r20)) {
+  while (nil__QUESTION__(_r20)) {
     var _c6 = peek_char(s);
     if (_c6 === "|") {
       _r20 = _str2 + read_char(s);
     } else {
-      if (nil63(_c6)) {
+      if (nil__QUESTION__(_c6)) {
         _r20 = expected(s, "|");
       } else {
         _str2 = _str2 + read_char(s);

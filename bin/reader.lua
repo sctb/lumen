@@ -1,7 +1,7 @@
 local delimiters = {["("] = true, [")"] = true, [";"] = true, ["\n"] = true}
 local whitespace = {[" "] = true, ["\t"] = true, ["\n"] = true}
 local function stream(str, more)
-  return({pos = 0, string = str, len = _35(str), more = more})
+  return({pos = 0, string = str, len = __POUND__(str), more = more})
 end
 local function peek_char(s)
   local __id = s
@@ -22,7 +22,7 @@ end
 local function skip_non_code(s)
   while true do
     local _c1 = peek_char(s)
-    if nil63(_c1) then
+    if nil__QUESTION__(_c1) then
       break
     else
       if whitespace[_c1] then
@@ -45,7 +45,7 @@ local eof = {}
 local function read(s)
   skip_non_code(s)
   local _c2 = peek_char(s)
-  if is63(_c2) then
+  if is__QUESTION__(_c2) then
     return((read_table[_c2] or read_table[""])(s))
   else
     return(eof)
@@ -68,11 +68,11 @@ function read_string(str, more)
     return(_x)
   end
 end
-local function key63(atom)
-  return(string63(atom) and _35(atom) > 1 and char(atom, edge(atom)) == ":")
+local function key__QUESTION__(atom)
+  return(string__QUESTION__(atom) and __POUND__(atom) > 1 and char(atom, edge(atom)) == ":")
 end
-local function flag63(atom)
-  return(string63(atom) and _35(atom) > 1 and char(atom, 0) == ":")
+local function flag__QUESTION__(atom)
+  return(string__QUESTION__(atom) and __POUND__(atom) > 1 and char(atom, 0) == ":")
 end
 local function expected(s, c)
   local __id1 = s
@@ -97,12 +97,12 @@ local function wrap(s, x)
   end
 end
 local function maybe_number(str)
-  if number_code63(code(str, edge(str))) then
+  if number_code__QUESTION__(code(str, edge(str))) then
     return(number(str))
   end
 end
-local function real63(x)
-  return(number63(x) and not nan63(x) and not inf63(x))
+local function real__QUESTION__(x)
+  return(number__QUESTION__(x) and not nan__QUESTION__(x) and not inf__QUESTION__(x))
 end
 read_table[""] = function (s)
   local _str = ""
@@ -133,7 +133,7 @@ read_table[""] = function (s)
               return(-inf)
             else
               local _n = maybe_number(_str)
-              if real63(_n) then
+              if real__QUESTION__(_n) then
                 return(_n)
               else
                 return(_str)
@@ -149,23 +149,23 @@ read_table["("] = function (s)
   read_char(s)
   local _r15 = nil
   local _l1 = {}
-  while nil63(_r15) do
+  while nil__QUESTION__(_r15) do
     skip_non_code(s)
     local _c4 = peek_char(s)
     if _c4 == ")" then
       read_char(s)
       _r15 = _l1
     else
-      if nil63(_c4) then
+      if nil__QUESTION__(_c4) then
         _r15 = expected(s, ")")
       else
         local _x2 = read(s)
-        if key63(_x2) then
+        if key__QUESTION__(_x2) then
           local _k = clip(_x2, 0, edge(_x2))
           local _v = read(s)
           _l1[_k] = _v
         else
-          if flag63(_x2) then
+          if flag__QUESTION__(_x2) then
             _l1[clip(_x2, 1)] = true
           else
             add(_l1, _x2)
@@ -183,12 +183,12 @@ read_table["\""] = function (s)
   read_char(s)
   local _r18 = nil
   local _str1 = "\""
-  while nil63(_r18) do
+  while nil__QUESTION__(_r18) do
     local _c5 = peek_char(s)
     if _c5 == "\"" then
       _r18 = _str1 .. read_char(s)
     else
-      if nil63(_c5) then
+      if nil__QUESTION__(_c5) then
         _r18 = expected(s, "\"")
       else
         if _c5 == "\\" then
@@ -204,12 +204,12 @@ read_table["|"] = function (s)
   read_char(s)
   local _r20 = nil
   local _str2 = "|"
-  while nil63(_r20) do
+  while nil__QUESTION__(_r20) do
     local _c6 = peek_char(s)
     if _c6 == "|" then
       _r20 = _str2 .. read_char(s)
     else
-      if nil63(_c6) then
+      if nil__QUESTION__(_c6) then
         _r20 = expected(s, "|")
       else
         _str2 = _str2 .. read_char(s)

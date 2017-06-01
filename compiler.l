@@ -240,10 +240,12 @@
   (or (number-code? n)         ; 0-9
       (and (> n 64) (< n 91))  ; A-Z
       (and (> n 96) (< n 123)) ; a-z
-      (= n 95)))               ; _
+      (= n 95)                 ; _
+      (and (= n 36)            ; $
+           (= target 'js))))
 
 (define-global valid-id? (id)
-  (if (or (none? id) (reserved? id))
+  (if (or (none? id) (reserved? id) (number-code? (code id 0)))
       false
     (do (for i (# id)
           (unless (valid-code? (code id i))
@@ -312,21 +314,70 @@
       (let c (char s i)
         (cat! s1 (if (= c "\n") "\\n" c))))))
 
-(define id (id)
-  (let id1 (if (number-code? (code id 0)) "_" "")
-    (for i (# id)
-      (let (c (char id i)
-            n (code c)
-            c1 (if (and (= c "-")
-                        (not (= id "-")))
-                   "_"
-                   (valid-code? n) c
-                   (= i 0) (cat "_" n)
-                 n))
-        (cat! id1 c1)))
-    (if (reserved? id1)
-        (cat "_" id1)
-        id1)))
+(define id-codes (obj))
+(when-compiling
+  (with body `(do)
+    (let remap (list
+                 "(" "__OPEN_PAREN__"
+                 ")" "__CLOSE_PAREN__"
+                 "[" "__OPEN_SQUARE__"
+                 "]" "__CLOSE_SQUARE__"
+                 "{" "__OPEN_CURLY__"
+                 "}" "__CLOSE_CURLY__"
+                 "<" "__OPEN_ANGLE__"
+                 ">" "__CLOSE_ANGLE__"
+                 "#" "__POUND__"
+                 "+" "__PLUS__"
+                 "-" "__MINUS__"
+                 "*" "__STAR__"
+                 "%" "__PERCENT__"
+                 "&" "__AMPERSAND__"
+                 "|" "__BAR__"
+                 "^" "__CARET__"
+                 "~" "__TILDE__"
+                 "!" "__BANG__"
+                 "$" "__DOLLAR__"
+                 "@" "__AT__"
+                 "=" "__EQUAL__"
+                 "," "__COMMA__"
+                 "." "__PERIOD__"
+                 "?" "__QUESTION__"
+                 ":" "__COLON__"
+                 ";" "__SEMI_COLON__"
+                 "/" "__SLASH__"
+                 "\\" "__BACK_SLASH__"
+                 "'" "__QUOTE__"
+                 "`" "__BACK_QUOTE__"
+                 "\"" "__DOUBLE_QUOTE__"
+                 " " "__SPACE__"
+                 "\t" "__TAB__"
+                 "\r" "__RETURN__"
+                 "\n" "__NEWLINE__")
+      (for i (# remap)
+        (let (c (at remap i)
+              name (at remap (inc i))
+              n (code c))
+          (add body `(set (get id-codes ',n) ',name)))))))
+
+(define id (str)
+  (let (id1 "" len (# str))
+    (when (> len 0)
+      (for i len
+        (let (c (char str i)
+              n (code c)
+              c1 (or (and (= n 45) ; -
+                          (< i (- len 1))
+                          "_")
+                     (if (valid-code? n)
+                         c
+                         (or (get id-codes n)
+                             (cat "__CHAR_" n "__")))))
+          (cat! id1 c1)))
+      (when (number-code? (code str 0))
+        (set id1 (cat "_" id1 "_")))
+      (when (reserved? id1)
+        (set id1 (cat "_" id1 "_")))
+      id1)))
 
 (define compile-atom (x)
   (if (and (= x "nil") (= target 'lua)) x
