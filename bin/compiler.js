@@ -926,22 +926,22 @@ var lower_set = function (args, hoist, stmt__QUESTION__, tail__QUESTION__) {
 var lower_if = function (args, hoist, stmt__QUESTION__, tail__QUESTION__) {
   var __id17 = args;
   var _cond = __id17[0];
-  var _then = __id17[1];
-  var _else = __id17[2];
+  var __then_ = __id17[1];
+  var __else_ = __id17[2];
   if (stmt__QUESTION__) {
     var _e49;
-    if (is__QUESTION__(_else)) {
-      _e49 = [lower_body([_else], tail__QUESTION__)];
+    if (is__QUESTION__(__else_)) {
+      _e49 = [lower_body([__else_], tail__QUESTION__)];
     }
-    return(add(hoist, join(["%if", lower(_cond, hoist), lower_body([_then], tail__QUESTION__)], _e49)));
+    return(add(hoist, join(["%if", lower(_cond, hoist), lower_body([__then_], tail__QUESTION__)], _e49)));
   } else {
     var _e3 = unique("e");
     add(hoist, ["%local", _e3]);
     var _e48;
-    if (is__QUESTION__(_else)) {
-      _e48 = [lower(["%set", _e3, _else])];
+    if (is__QUESTION__(__else_)) {
+      _e48 = [lower(["%set", _e3, __else_])];
     }
-    add(hoist, join(["%if", lower(_cond, hoist), lower(["%set", _e3, _then])], _e48));
+    add(hoist, join(["%if", lower(_cond, hoist), lower(["%set", _e3, __then_])], _e48));
     return(_e3);
   }
 };
