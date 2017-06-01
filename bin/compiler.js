@@ -888,7 +888,7 @@ var lower_set = function (args, hoist, stmt63, tail63) {
   var __id16 = args;
   var _lh = __id16[0];
   var _rh = __id16[1];
-  add(hoist, ["%set", _lh, lower(_rh, hoist)]);
+  add(hoist, ["%set", lower(_lh, hoist), lower(_rh, hoist)]);
   if (!( stmt63 && ! tail63)) {
     return(_lh);
   }

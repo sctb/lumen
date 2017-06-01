@@ -834,7 +834,7 @@ local function lower_set(args, hoist, stmt63, tail63)
   local __id16 = args
   local _lh = __id16[1]
   local _rh = __id16[2]
-  add(hoist, {"%set", _lh, lower(_rh, hoist)})
+  add(hoist, {"%set", lower(_lh, hoist), lower(_rh, hoist)})
   if not( stmt63 and not tail63) then
     return(_lh)
   end
