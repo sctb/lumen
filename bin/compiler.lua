@@ -594,8 +594,8 @@ local function id(str)
     if reserved__QUESTION__(_id11) then
       _id11 = "_" .. _id11 .. "_"
     end
-    return(_id11)
   end
+  return(_id11)
 end
 local function compile_atom(x)
   if x == "nil" and target == "lua" then

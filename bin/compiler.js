@@ -648,8 +648,8 @@ var id = function (str) {
     if (reserved__QUESTION__(_id11)) {
       _id11 = "_" + _id11 + "_";
     }
-    return(_id11);
   }
+  return(_id11);
 };
 var compile_atom = function (x) {
   if (x === "nil" && target === "lua") {

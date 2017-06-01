@@ -376,8 +376,8 @@
       (when (number-code? (code str 0))
         (set id1 (cat "_" id1 "_")))
       (when (reserved? id1)
-        (set id1 (cat "_" id1 "_")))
-      id1)))
+        (set id1 (cat "_" id1 "_"))))
+    id1))
 
 (define compile-atom (x)
   (if (and (= x "nil") (= target 'lua)) x
