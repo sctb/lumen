@@ -61,7 +61,7 @@
           (id val rest: bs1) (bind lh rh))
       (let renames ()
         (unless (id-literal? id)
-          (let id1 (unique id)
+          (let id1 (unique (compile id))
             (set renames (list id id1)
                  id id1)))
         `(do (%local ,id ,val)
