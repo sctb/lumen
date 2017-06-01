@@ -453,7 +453,7 @@
 
 (define lower-set (args hoist stmt? tail?)
   (let ((lh rh) args)
-    (add hoist `(%set ,lh ,(lower rh hoist)))
+    (add hoist `(%set ,(lower lh hoist) ,(lower rh hoist)))
     (unless (and stmt? (not tail?))
       lh)))
 
