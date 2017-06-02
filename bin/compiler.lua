@@ -431,13 +431,13 @@ __x69["*"] = true
 __x69["/"] = true
 __x69["%"] = true
 local __x70 = {}
-__x70["+"] = true
-__x70["-"] = true
 local __x71 = {}
+__x71.js = "+"
+__x71.lua = ".."
+__x70.cat = __x71
 local __x72 = {}
-__x72.js = "+"
-__x72.lua = ".."
-__x71.cat = __x72
+__x72["+"] = true
+__x72["-"] = true
 local __x73 = {}
 __x73["<"] = true
 __x73[">"] = true
@@ -458,7 +458,7 @@ local __x79 = {}
 __x79.js = "||"
 __x79.lua = "or"
 __x78["or"] = __x79
-local infix = {__x67, __x69, __x70, __x71, __x73, __x74, __x76, __x78}
+local infix = {__x67, __x69, __x70, __x72, __x73, __x74, __x76, __x78}
 local function unary63(form)
   return(two63(form) and in63(hd(form), {"not", "-"}))
 end
