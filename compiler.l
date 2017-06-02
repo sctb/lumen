@@ -277,6 +277,13 @@
 (define unary? (form)
   (and (two? form) (in? (hd form) '(not -))))
 
+(define priority (child parent)
+  (and (obj? parent)
+       (= (hd parent) 'cat)
+       (in? (hd child) '(+ -))
+       (return 1))
+  0)
+
 (define index (k)
   (target js: k lua: (when (number? k) (- k 1))))
 
@@ -367,7 +374,8 @@
 
 (define op-delims (parent child :right)
   (if ((if right >= >)
-       (precedence child)
+       (+ (precedence child)
+          (priority child parent))
        (precedence parent))
       (list "(" ")")
     (list "" "")))
