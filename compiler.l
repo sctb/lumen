@@ -243,7 +243,7 @@
       (= n 95)))               ; _
 
 (define-global valid-id? (id)
-  (if (or (none? id) (reserved? id))
+  (if (or (none? id) (reserved? id) (number-code? (code id 0)))
       false
     (do (for i (# id)
           (unless (valid-code? (code id i))
