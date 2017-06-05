@@ -72,7 +72,7 @@
       (test= more (read "'\"boz" more)))
     (let ((ok e) (guard (read "(open")))
       (test= false ok)
-      (test= "Expected ) at 5" (get e 'message)))))
+      (test= 0 (search (get e 'message) "Expected ) after 0")))))
 
 (define-test nil?
   (test= true (nil? nil))
