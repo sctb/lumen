@@ -214,7 +214,8 @@ b
 c"
     (test= 5 (# s)))
   (test= 3 (# "a\nb"))
-  (test= 3 (# "a\\b")))
+  (test= 3 (# "a\\b"))
+  (test= "x3" (cat "x" (+ 1 2))))
 
 (define-test quote
   (test= 7 (quote 7))

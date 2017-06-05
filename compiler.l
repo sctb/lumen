@@ -267,8 +267,8 @@
 (define infix
   `((not: (js: ! lua: ,"not"))
     (:* :/ :%)
-    (:+ :-)
     (cat: (js: + lua: ..))
+    (:+ :-)
     (:< :> :<= :>=)
     (=: (js: === lua: ==))
     (and: (js: && lua: and))
