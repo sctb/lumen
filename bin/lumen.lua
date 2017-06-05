@@ -446,8 +446,8 @@ function _6261(...)
     return(a >= b)
   end, _xs10))
 end
-function number(s)
-  return(tonumber(s))
+function number(s, base)
+  return(tonumber(s, base))
 end
 function number_code63(n)
   return(n > 47 and n < 58)

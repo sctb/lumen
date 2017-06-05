@@ -522,8 +522,14 @@ _6261 = function () {
     return(a >= b);
   }, _xs10));
 };
-number = function (s) {
-  var _n13 = parseFloat(s);
+number = function (s, base) {
+  var _e13;
+  if (base) {
+    _e13 = parseInt(s, base);
+  } else {
+    _e13 = parseFloat(s);
+  }
+  var _n13 = _e13;
   if (! isNaN(_n13)) {
     return(_n13);
   }
@@ -550,25 +556,25 @@ escape = function (s) {
   var _i20 = 0;
   while (_i20 < _35(s)) {
     var _c = char(s, _i20);
-    var _e13;
+    var _e14;
     if (_c === "\n") {
-      _e13 = "\\n";
+      _e14 = "\\n";
     } else {
-      var _e14;
+      var _e15;
       if (_c === "\"") {
-        _e14 = "\\\"";
+        _e15 = "\\\"";
       } else {
-        var _e15;
+        var _e16;
         if (_c === "\\") {
-          _e15 = "\\\\";
+          _e16 = "\\\\";
         } else {
-          _e15 = _c;
+          _e16 = _c;
         }
-        _e14 = _e15;
+        _e15 = _e16;
       }
-      _e13 = _e14;
+      _e14 = _e15;
     }
-    var _c1 = _e13;
+    var _c1 = _e14;
     _s1 = _s1 + _c1;
     _i20 = _i20 + 1;
   }
@@ -619,13 +625,13 @@ str = function (x, stack) {
                       var _k16 = undefined;
                       for (_k16 in __o10) {
                         var _v9 = __o10[_k16];
-                        var _e16;
+                        var _e17;
                         if (numeric63(_k16)) {
-                          _e16 = parseInt(_k16);
+                          _e17 = parseInt(_k16);
                         } else {
-                          _e16 = _k16;
+                          _e17 = _k16;
                         }
-                        var _k17 = _e16;
+                        var _k17 = _e17;
                         if (number63(_k17)) {
                           _xs11[_k17] = str(_v9, _l4);
                         } else {
@@ -638,13 +644,13 @@ str = function (x, stack) {
                       var __i22 = undefined;
                       for (__i22 in __o11) {
                         var _v10 = __o11[__i22];
-                        var _e17;
+                        var _e18;
                         if (numeric63(__i22)) {
-                          _e17 = parseInt(__i22);
+                          _e18 = parseInt(__i22);
                         } else {
-                          _e17 = __i22;
+                          _e18 = __i22;
                         }
-                        var __i221 = _e17;
+                        var __i221 = _e18;
                         _s = _s + _sp + _v10;
                         _sp = " ";
                       }
@@ -677,25 +683,25 @@ setenv = function (k) {
   var __id1 = __r75;
   var _keys = cut(__id1, 0);
   if (string63(_k18)) {
-    var _e18;
+    var _e19;
     if (_keys.toplevel) {
-      _e18 = hd(environment);
+      _e19 = hd(environment);
     } else {
-      _e18 = last(environment);
+      _e19 = last(environment);
     }
-    var _frame = _e18;
+    var _frame = _e19;
     var _entry = _frame[_k18] || {};
     var __o12 = _keys;
     var _k19 = undefined;
     for (_k19 in __o12) {
       var _v11 = __o12[_k19];
-      var _e19;
+      var _e20;
       if (numeric63(_k19)) {
-        _e19 = parseInt(_k19);
+        _e20 = parseInt(_k19);
       } else {
-        _e19 = _k19;
+        _e20 = _k19;
       }
-      var _k20 = _e19;
+      var _k20 = _e20;
       _entry[_k20] = _v11;
     }
     _frame[_k18] = _entry;

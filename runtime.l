@@ -259,11 +259,11 @@
 (define-global <= xs (pairwise (fn (a b) (<= a b)) xs))
 (define-global >= xs (pairwise (fn (a b) (>= a b)) xs))
 
-(define-global number (s)
+(define-global number (s base)
   (target
-    js: (let n (parseFloat s)
+    js: (let n (if base (parseInt s base) (parseFloat s))
           (unless (isNaN n) n))
-    lua: (tonumber s)))
+    lua: (tonumber s base)))
 
 (define-global number-code? (n)
   (and (> n 47) (< n 58)))

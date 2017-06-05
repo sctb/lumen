@@ -66,12 +66,29 @@
     (if (= y (get s 'more)) y
       (list x y))))
 
-(define maybe-number (str)
-  (when (number-code? (code str (edge str)))
-    (number str)))
-
 (define real? (x)
   (and (number? x) (not (nan? x)) (not (inf? x))))
+
+(define hex-prefix? (str)
+    (and (= (char str 0) "0")
+         (let c (char str 1)
+           (or (= c "x") (= c "X")))))
+
+(define parse-number (str)
+  (if (hex-prefix? str)
+      (number (clip str 2) 16)
+      (number-code? (code str (edge str)))
+    (number str)))
+
+(define negative-prefix? (str)
+  (and (> (# str) 1)
+       (= (char str 0) "-")))
+
+(define maybe-number (str)
+  (if (negative-prefix? str)
+      (let n (parse-number (clip str 1))
+        (if (number? n) (- n) n))
+    (parse-number str)))
 
 (define-reader ("" s) ; atom
   (let (str "")
