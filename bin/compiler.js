@@ -424,7 +424,7 @@ var valid_code63 = function (n) {
   return(number_code63(n) || n > 64 && n < 91 || n > 96 && n < 123 || n === 95);
 };
 valid_id63 = function (id) {
-  if (none63(id) || reserved63(id)) {
+  if (none63(id) || reserved63(id) || number_code63(code(id, 0))) {
     return(false);
   } else {
     var _i11 = 0;

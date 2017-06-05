@@ -231,9 +231,10 @@ c"
   (test= (quote unquote) 'unquote)
   (test= (quote (unquote)) '(unquote))
   (test= (quote (unquote a)) '(unquote a))
-  (let x '(10 20 a: 33)
+  (let x '(10 20 a: 33 1a: 44)
     (test= 20 (at x 1))
-    (test= 33 (get x 'a))))
+    (test= 33 (get x 'a))
+    (test= 44 (get x '1a))))
 
 (define-test list
   (test= '() (list))

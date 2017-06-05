@@ -382,7 +382,7 @@ local function valid_code63(n)
   return(number_code63(n) or n > 64 and n < 91 or n > 96 and n < 123 or n == 95)
 end
 function valid_id63(id)
-  if none63(id) or reserved63(id) then
+  if none63(id) or reserved63(id) or number_code63(code(id, 0)) then
     return(false)
   else
     local _i11 = 0
