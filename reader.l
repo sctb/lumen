@@ -59,7 +59,7 @@
 
 (define expected (s c pos)
   (let ((:more) s)
-    (or more (error (cat "Expected " c " at " pos)))))
+    (or more (error (cat "Expected " c " after " pos)))))
 
 (define wrap (s x)
   (let y (read s)

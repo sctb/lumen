@@ -82,7 +82,7 @@ var expected = function (s, c, pos) {
   if (_id2) {
     _e = _id2;
   } else {
-    throw new Error("Expected " + c + " at " + pos);
+    throw new Error("Expected " + c + " after " + pos);
     _e = undefined;
   }
   return(_e);

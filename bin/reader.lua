@@ -82,7 +82,7 @@ local function expected(s, c, pos)
   if _id2 then
     _e = _id2
   else
-    error("Expected " .. c .. " at " .. pos)
+    error("Expected " .. c .. " after " .. pos)
     _e = nil
   end
   return(_e)
