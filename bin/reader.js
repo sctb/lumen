@@ -74,16 +74,15 @@ var key63 = function (atom) {
 var flag63 = function (atom) {
   return(string63(atom) && _35(atom) > 1 && char(atom, 0) === ":");
 };
-var expected = function (s, c) {
+var expected = function (s, c, pos) {
   var __id1 = s;
   var _more = __id1.more;
-  var _pos1 = __id1.pos;
   var _id2 = _more;
   var _e;
   if (_id2) {
     _e = _id2;
   } else {
-    throw new Error("Expected " + c + " at " + _pos1);
+    throw new Error("Expected " + c + " at " + pos);
     _e = undefined;
   }
   return(_e);
@@ -146,6 +145,7 @@ read_table[""] = function (s) {
   }
 };
 read_table["("] = function (s) {
+  var _pos1 = s.pos;
   read_char(s);
   var _r15 = undefined;
   var _l1 = [];
@@ -157,7 +157,7 @@ read_table["("] = function (s) {
       _r15 = _l1;
     } else {
       if (nil63(_c4)) {
-        _r15 = expected(s, ")");
+        _r15 = expected(s, ")", _pos1);
       } else {
         var _x2 = read(s);
         if (key63(_x2)) {
@@ -180,6 +180,7 @@ read_table[")"] = function (s) {
   throw new Error("Unexpected ) at " + s.pos);
 };
 read_table["\""] = function (s) {
+  var _pos2 = s.pos;
   read_char(s);
   var _r18 = undefined;
   var _str1 = "\"";
@@ -189,7 +190,7 @@ read_table["\""] = function (s) {
       _r18 = _str1 + read_char(s);
     } else {
       if (nil63(_c5)) {
-        _r18 = expected(s, "\"");
+        _r18 = expected(s, "\"", _pos2);
       } else {
         if (_c5 === "\\") {
           _str1 = _str1 + read_char(s);
@@ -201,6 +202,7 @@ read_table["\""] = function (s) {
   return(_r18);
 };
 read_table["|"] = function (s) {
+  var _pos3 = s.pos;
   read_char(s);
   var _r20 = undefined;
   var _str2 = "|";
@@ -210,7 +212,7 @@ read_table["|"] = function (s) {
       _r20 = _str2 + read_char(s);
     } else {
       if (nil63(_c6)) {
-        _r20 = expected(s, "|");
+        _r20 = expected(s, "|", _pos3);
       } else {
         _str2 = _str2 + read_char(s);
       }
