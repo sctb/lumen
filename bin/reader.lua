@@ -74,16 +74,15 @@ end
 local function flag63(atom)
   return(string63(atom) and _35(atom) > 1 and char(atom, 0) == ":")
 end
-local function expected(s, c)
+local function expected(s, c, pos)
   local __id1 = s
   local _more = __id1.more
-  local _pos1 = __id1.pos
   local _id2 = _more
   local _e
   if _id2 then
     _e = _id2
   else
-    error("Expected " .. c .. " at " .. _pos1)
+    error("Expected " .. c .. " after " .. pos)
     _e = nil
   end
   return(_e)
@@ -130,6 +129,7 @@ read_table[""] = function (s)
   end
 end
 read_table["("] = function (s)
+  local _pos1 = s.pos
   read_char(s)
   local _r15 = nil
   local _l1 = {}
@@ -141,7 +141,7 @@ read_table["("] = function (s)
       _r15 = _l1
     else
       if nil63(_c4) then
-        _r15 = expected(s, ")")
+        _r15 = expected(s, ")", _pos1)
       else
         local _x2 = read(s)
         if key63(_x2) then
@@ -164,6 +164,7 @@ read_table[")"] = function (s)
   error("Unexpected ) at " .. s.pos)
 end
 read_table["\""] = function (s)
+  local _pos2 = s.pos
   read_char(s)
   local _r18 = nil
   local _str1 = "\""
@@ -173,7 +174,7 @@ read_table["\""] = function (s)
       _r18 = _str1 .. read_char(s)
     else
       if nil63(_c5) then
-        _r18 = expected(s, "\"")
+        _r18 = expected(s, "\"", _pos2)
       else
         if _c5 == "\\" then
           _str1 = _str1 .. read_char(s)
@@ -185,6 +186,7 @@ read_table["\""] = function (s)
   return(_r18)
 end
 read_table["|"] = function (s)
+  local _pos3 = s.pos
   read_char(s)
   local _r20 = nil
   local _str2 = "|"
@@ -194,7 +196,7 @@ read_table["|"] = function (s)
       _r20 = _str2 .. read_char(s)
     else
       if nil63(_c6) then
-        _r20 = expected(s, "|")
+        _r20 = expected(s, "|", _pos3)
       else
         _str2 = _str2 .. read_char(s)
       end
