@@ -120,27 +120,11 @@ read_table[""] = function (s)
     if _str == "false" then
       return(false)
     else
-      if _str == "nan" then
-        return(nan)
+      local _n = maybe_number(_str)
+      if real63(_n) then
+        return(_n)
       else
-        if _str == "-nan" then
-          return(nan)
-        else
-          if _str == "inf" then
-            return(inf)
-          else
-            if _str == "-inf" then
-              return(-inf)
-            else
-              local _n = maybe_number(_str)
-              if real63(_n) then
-                return(_n)
-              else
-                return(_str)
-              end
-            end
-          end
-        end
+        return(_str)
       end
     end
   end

@@ -120,27 +120,11 @@ read_table[""] = function (s) {
     if (_str === "false") {
       return(false);
     } else {
-      if (_str === "nan") {
-        return(nan);
+      var _n = maybe_number(_str);
+      if (real63(_n)) {
+        return(_n);
       } else {
-        if (_str === "-nan") {
-          return(nan);
-        } else {
-          if (_str === "inf") {
-            return(inf);
-          } else {
-            if (_str === "-inf") {
-              return(-inf);
-            } else {
-              var _n = maybe_number(_str);
-              if (real63(_n)) {
-                return(_n);
-              } else {
-                return(_str);
-              }
-            }
-          }
-        }
+        return(_str);
       }
     }
   }
