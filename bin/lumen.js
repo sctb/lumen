@@ -63,11 +63,12 @@ atom63 = function (x) {
 };
 nan = 0 / 0;
 inf = 1 / 0;
+_inf = - inf;
 nan63 = function (n) {
   return(!( n === n));
 };
 inf63 = function (n) {
-  return(n === inf || n === -inf);
+  return(n === inf || n === _inf);
 };
 clip = function (s, from, upto) {
   return(s.substring(from, upto));
@@ -583,7 +584,7 @@ str = function (x, stack) {
       if (x === inf) {
         return("inf");
       } else {
-        if (x === -inf) {
+        if (x === _inf) {
           return("-inf");
         } else {
           if (boolean63(x)) {

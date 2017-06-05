@@ -650,7 +650,7 @@ var compile_atom = function (x) {
                 if (x === inf) {
                   return("inf");
                 } else {
-                  if (x === -inf) {
+                  if (x === _inf) {
                     return("-inf");
                   } else {
                     if (number63(x)) {

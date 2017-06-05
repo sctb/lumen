@@ -596,7 +596,7 @@ local function compile_atom(x)
                 if x == inf then
                   return("inf")
                 else
-                  if x == -inf then
+                  if x == _inf then
                     return("-inf")
                   else
                     if number63(x) then

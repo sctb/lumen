@@ -83,10 +83,6 @@
           (break))))
   (if (= str "true") true
       (= str "false") false
-      (= str "nan") nan
-      (= str "-nan") nan
-      (= str "inf") inf
-      (= str "-inf") -inf
     (let n (maybe-number str)
       (if (real? n) n str)))))
 
