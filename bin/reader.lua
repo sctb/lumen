@@ -96,9 +96,32 @@ local function wrap(s, x)
     return({x, _y})
   end
 end
+local function hex_prefix63(str)
+  local _e1
+  if code(str, 0) == 45 then
+    _e1 = 1
+  else
+    _e1 = 0
+  end
+  local _i = _e1
+  local _id3 = code(str, _i) == 48
+  local _e2
+  if _id3 then
+    _i = _i + 1
+    local _n = code(str, _i)
+    _e2 = _n == 120 or _n == 88
+  else
+    _e2 = _id3
+  end
+  return(_e2)
+end
 local function maybe_number(str)
-  if number_code63(code(str, edge(str))) then
-    return(number(str))
+  if hex_prefix63(str) then
+    return(tonumber(str))
+  else
+    if number_code63(code(str, edge(str))) then
+      return(number(str))
+    end
   end
 end
 local function real63(x)
@@ -120,9 +143,9 @@ read_table[""] = function (s)
     if _str == "false" then
       return(false)
     else
-      local _n = maybe_number(_str)
-      if real63(_n) then
-        return(_n)
+      local _n1 = maybe_number(_str)
+      if real63(_n1) then
+        return(_n1)
       else
         return(_str)
       end
@@ -131,17 +154,17 @@ read_table[""] = function (s)
 end
 read_table["("] = function (s)
   read_char(s)
-  local _r15 = nil
+  local _r16 = nil
   local _l1 = {}
-  while nil63(_r15) do
+  while nil63(_r16) do
     skip_non_code(s)
     local _c4 = peek_char(s)
     if _c4 == ")" then
       read_char(s)
-      _r15 = _l1
+      _r16 = _l1
     else
       if nil63(_c4) then
-        _r15 = expected(s, ")")
+        _r16 = expected(s, ")")
       else
         local _x2 = read(s)
         if key63(_x2) then
@@ -158,22 +181,22 @@ read_table["("] = function (s)
       end
     end
   end
-  return(_r15)
+  return(_r16)
 end
 read_table[")"] = function (s)
   error("Unexpected ) at " .. s.pos)
 end
 read_table["\""] = function (s)
   read_char(s)
-  local _r18 = nil
+  local _r19 = nil
   local _str1 = "\""
-  while nil63(_r18) do
+  while nil63(_r19) do
     local _c5 = peek_char(s)
     if _c5 == "\"" then
-      _r18 = _str1 .. read_char(s)
+      _r19 = _str1 .. read_char(s)
     else
       if nil63(_c5) then
-        _r18 = expected(s, "\"")
+        _r19 = expected(s, "\"")
       else
         if _c5 == "\\" then
           _str1 = _str1 .. read_char(s)
@@ -182,25 +205,25 @@ read_table["\""] = function (s)
       end
     end
   end
-  return(_r18)
+  return(_r19)
 end
 read_table["|"] = function (s)
   read_char(s)
-  local _r20 = nil
+  local _r21 = nil
   local _str2 = "|"
-  while nil63(_r20) do
+  while nil63(_r21) do
     local _c6 = peek_char(s)
     if _c6 == "|" then
-      _r20 = _str2 .. read_char(s)
+      _r21 = _str2 .. read_char(s)
     else
       if nil63(_c6) then
-        _r20 = expected(s, "|")
+        _r21 = expected(s, "|")
       else
         _str2 = _str2 .. read_char(s)
       end
     end
   end
-  return(_r20)
+  return(_r21)
 end
 read_table["'"] = function (s)
   read_char(s)
