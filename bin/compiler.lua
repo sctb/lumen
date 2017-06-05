@@ -1044,6 +1044,9 @@ function eval(form)
   run(_code)
   return(_37result)
 end
+function immediate_call63(x)
+  return(obj63(x) and obj63(hd(x)) and hd(hd(x)) == "%function")
+end
 setenv("do", {_stash = true, special = function (...)
   local _forms1 = unstash({...})
   local _s3 = ""
@@ -1051,6 +1054,9 @@ setenv("do", {_stash = true, special = function (...)
   local __i20 = 0
   while __i20 < _35(__x139) do
     local _x140 = __x139[__i20 + 1]
+    if target == "lua" and immediate_call63(_x140) and "\n" == char(_s3, edge(_s3)) then
+      _s3 = clip(_s3, 0, edge(_s3)) .. ";\n"
+    end
     _s3 = _s3 .. compile(_x140, {_stash = true, stmt = true})
     if not atom63(_x140) then
       if hd(_x140) == "return" or hd(_x140) == "break" then
