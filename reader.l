@@ -66,8 +66,16 @@
     (if (= y (get s 'more)) y
       (list x y))))
 
+(define hex-prefix? (str)
+  (let i (if (= (code str 0) 45) 1 0)  ; "-"
+    (and (= (code str i) 48)           ; "0"
+         (let n (code str (inc i))
+           (or (= n 120) (= n 88)))))) ; "x" or "X"
+
 (define maybe-number (str)
-  (when (number-code? (code str (edge str)))
+  (if (hex-prefix? str)
+      (target js: (parseInt str 16) lua: (tonumber str))
+      (number-code? (code str (edge str)))
     (number str)))
 
 (define real? (x)
