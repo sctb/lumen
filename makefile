@@ -1,6 +1,10 @@
 .PHONY: all clean test
 
+ifeq (, $(shell which luajit))
 LUMEN_LUA  ?= lua
+else
+LUMEN_LUA  ?= luajit
+endif
 LUMEN_NODE ?= node
 LUMEN_HOST ?= $(LUMEN_LUA)
 
