@@ -4,10 +4,10 @@ local function stream(str, more)
   return({pos = 0, string = str, len = _35(str), more = more})
 end
 local function peek_char(s)
-  local __id = s
-  local _pos = __id.pos
-  local _len = __id.len
-  local _string = __id.string
+  local __id_ = s
+  local _pos = __id_.pos
+  local _len = __id_.len
+  local _string = __id_.string
   if _pos < _len then
     return(char(_string, _pos))
   end
@@ -75,9 +75,9 @@ local function flag63(atom)
   return(string63(atom) and _35(atom) > 1 and char(atom, 0) == ":")
 end
 local function expected(s, c)
-  local __id1 = s
-  local _more = __id1.more
-  local _pos1 = __id1.pos
+  local __id1_ = s
+  local _more = __id1_.more
+  local _pos1 = __id1_.pos
   local _id2 = _more
   local _e
   if _id2 then
