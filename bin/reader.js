@@ -4,10 +4,10 @@ var stream = function (str, more) {
   return({pos: 0, string: str, len: _35(str), more: more});
 };
 var peek_char = function (s) {
-  var __id_ = s;
-  var _pos = __id_.pos;
-  var _len = __id_.len;
-  var _string = __id_.string;
+  var __id = s;
+  var _pos = __id.pos;
+  var _len = __id.len;
+  var _string = __id.string;
   if (_pos < _len) {
     return(char(_string, _pos));
   }
@@ -75,9 +75,9 @@ var flag63 = function (atom) {
   return(string63(atom) && _35(atom) > 1 && char(atom, 0) === ":");
 };
 var expected = function (s, c) {
-  var __id1_ = s;
-  var _more = __id1_.more;
-  var _pos1 = __id1_.pos;
+  var __id1 = s;
+  var _more = __id1.more;
+  var _pos1 = __id1.pos;
   var _id2 = _more;
   var _e;
   if (_id2) {
