@@ -1091,6 +1091,9 @@ eval = function (form) {
   run(_code);
   return(_37result);
 };
+immediate_call63 = function (x) {
+  return(obj63(x) && obj63(hd(x)) && hd(hd(x)) === "%function");
+};
 setenv("do", {_stash: true, special: function () {
   var _forms1 = unstash(Array.prototype.slice.call(arguments, 0));
   var _s3 = "";
@@ -1098,6 +1101,9 @@ setenv("do", {_stash: true, special: function () {
   var __i20 = 0;
   while (__i20 < _35(__x135)) {
     var _x136 = __x135[__i20];
+    if (target === "lua" && immediate_call63(_x136) && "\n" === char(_s3, edge(_s3))) {
+      _s3 = clip(_s3, 0, edge(_s3)) + ";\n";
+    }
     _s3 = _s3 + compile(_x136, {_stash: true, stmt: true});
     if (! atom63(_x136)) {
       if (hd(_x136) === "return" || hd(_x136) === "break") {

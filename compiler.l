@@ -590,9 +590,16 @@
       (run code)
       %result)))
 
+(define-global immediate-call? (x)
+  (and (obj? x) (obj? (hd x)) (= (hd (hd x)) '%function)))
+
 (define-special do forms :stmt :tr
   (with s ""
     (step x forms
+      (when (and (= target 'lua)
+                 (immediate-call? x)
+                 (= "\n" (char s (edge s))))
+        (set s (cat (clip s 0 (edge s)) ";\n")))
       (cat! s (compile x :stmt))
       (unless (atom? x)
         (if (or (= (hd x) 'return)
