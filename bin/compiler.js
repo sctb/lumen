@@ -5,13 +5,13 @@ var getenv = function (k, p) {
     while (_i >= 0) {
       var _b = environment[_i][k];
       if (is63(_b)) {
-        var _e21;
+        var _e19;
         if (p) {
-          _e21 = _b[p];
+          _e19 = _b[p];
         } else {
-          _e21 = _b;
+          _e19 = _b;
         }
-        return(_e21);
+        return(_e19);
       } else {
         _i = _i - 1;
       }
@@ -81,13 +81,13 @@ var stash42 = function (args) {
     var _k = undefined;
     for (_k in __o) {
       var _v = __o[_k];
-      var _e22;
+      var _e20;
       if (numeric63(_k)) {
-        _e22 = parseInt(_k);
+        _e20 = parseInt(_k);
       } else {
-        _e22 = _k;
+        _e20 = _k;
       }
-      var _k1 = _e22;
+      var _k1 = _e20;
       if (! number63(_k1)) {
         add(_l, literal(_k1));
         add(_l, _v);
@@ -118,28 +118,28 @@ bind = function (lh, rh) {
     var _k2 = undefined;
     for (_k2 in __o1) {
       var _v1 = __o1[_k2];
-      var _e23;
+      var _e21;
       if (numeric63(_k2)) {
-        _e23 = parseInt(_k2);
+        _e21 = parseInt(_k2);
       } else {
-        _e23 = _k2;
+        _e21 = _k2;
       }
-      var _k3 = _e23;
-      var _e24;
+      var _k3 = _e21;
+      var _e22;
       if (_k3 === "rest") {
-        _e24 = ["cut", _id, _35(lh)];
+        _e22 = ["cut", _id, _35(lh)];
       } else {
-        _e24 = ["get", _id, ["quote", bias(_k3)]];
+        _e22 = ["get", _id, ["quote", bias(_k3)]];
       }
-      var _x5 = _e24;
+      var _x5 = _e22;
       if (is63(_k3)) {
-        var _e25;
+        var _e23;
         if (_v1 === true) {
-          _e25 = _k3;
+          _e23 = _k3;
         } else {
-          _e25 = _v1;
+          _e23 = _v1;
         }
-        var _k4 = _e25;
+        var _k4 = _e23;
         _bs = join(_bs, bind(_k4, _x5));
       }
     }
@@ -168,13 +168,13 @@ bind42 = function (args, body) {
     var _k5 = undefined;
     for (_k5 in __o2) {
       var _v2 = __o2[_k5];
-      var _e26;
+      var _e24;
       if (numeric63(_k5)) {
-        _e26 = parseInt(_k5);
+        _e24 = parseInt(_k5);
       } else {
-        _e26 = _k5;
+        _e24 = _k5;
       }
-      var _k6 = _e26;
+      var _k6 = _e24;
       if (number63(_k6)) {
         if (atom63(_v2)) {
           add(_args1, _v2);
@@ -229,13 +229,13 @@ var expand_function = function (_x41) {
   var __i6 = undefined;
   for (__i6 in __o3) {
     var __x43 = __o3[__i6];
-    var _e27;
+    var _e25;
     if (numeric63(__i6)) {
-      _e27 = parseInt(__i6);
+      _e25 = parseInt(__i6);
     } else {
-      _e27 = __i6;
+      _e25 = __i6;
     }
-    var __i61 = _e27;
+    var __i61 = _e25;
     setenv(__x43, {_stash: true, variable: true});
   }
   var __x44 = join(["%function", _args], macroexpand(_body));
@@ -253,13 +253,13 @@ var expand_definition = function (_x46) {
   var __i7 = undefined;
   for (__i7 in __o4) {
     var __x48 = __o4[__i7];
-    var _e28;
+    var _e26;
     if (numeric63(__i7)) {
-      _e28 = parseInt(__i7);
+      _e26 = parseInt(__i7);
     } else {
-      _e28 = __i7;
+      _e26 = __i7;
     }
-    var __i71 = _e28;
+    var __i71 = _e26;
     setenv(__x48, {_stash: true, variable: true});
   }
   var __x49 = join([_x47, _name1, _args11], macroexpand(_body1));
@@ -313,21 +313,21 @@ var quasiquote_list = function (form, depth) {
   var _k7 = undefined;
   for (_k7 in __o5) {
     var _v4 = __o5[_k7];
-    var _e29;
+    var _e27;
     if (numeric63(_k7)) {
-      _e29 = parseInt(_k7);
+      _e27 = parseInt(_k7);
     } else {
-      _e29 = _k7;
+      _e27 = _k7;
     }
-    var _k8 = _e29;
+    var _k8 = _e27;
     if (! number63(_k8)) {
-      var _e30;
+      var _e28;
       if (quasisplice63(_v4, depth)) {
-        _e30 = quasiexpand(_v4[1]);
+        _e28 = quasiexpand(_v4[1]);
       } else {
-        _e30 = quasiexpand(_v4, depth);
+        _e28 = quasiexpand(_v4, depth);
       }
-      var _v5 = _e30;
+      var _v5 = _e28;
       last(_xs)[_k8] = _v5;
     }
   }
@@ -413,26 +413,55 @@ indentation = function () {
   }
   return(_s);
 };
-var reserved = {"=": true, "==": true, "+": true, "-": true, "%": true, "*": true, "/": true, "<": true, ">": true, "<=": true, ">=": true, "break": true, "case": true, "catch": true, "class": true, "const": true, "continue": true, "debugger": true, "default": true, "delete": true, "do": true, "else": true, "finally": true, "for": true, "function": true, "if": true, "import": true, "in": true, "instanceof": true, "let": true, "new": true, "return": true, "switch": true, "throw": true, "try": true, "typeof": true, "var": true, "void": true, "with": true, "and": true, "end": true, "repeat": true, "while": true, "false": true, "local": true, "nil": true, "then": true, "not": true, "true": true, "elseif": true, "or": true, "until": true};
+var reserved = {"if": true, "*": true, "default": true, "import": true, "return": true, "or": true, "and": true, "then": true, "switch": true, "instanceof": true, "false": true, "<=": true, "const": true, "debugger": true, "in": true, "do": true, "not": true, ">": true, "repeat": true, "<": true, "void": true, ">=": true, "new": true, "typeof": true, "while": true, "else": true, "continue": true, "for": true, "-": true, "true": true, "+": true, "class": true, "until": true, "break": true, "end": true, "/": true, "finally": true, "var": true, "elseif": true, "try": true, "%": true, "local": true, "case": true, "==": true, "function": true, "throw": true, "nil": true, "catch": true, "=": true, "let": true, "with": true, "delete": true};
 reserved63 = function (x) {
   return(has63(reserved, x));
 };
 var valid_code63 = function (n) {
   return(number_code63(n) || n > 64 && n < 91 || n > 96 && n < 123 || n === 95);
 };
-valid_id63 = function (id) {
-  if (none63(id) || reserved63(id) || number_code63(code(id, 0))) {
-    return(false);
+var id = function (id) {
+  var _e29;
+  if (number_code63(code(id, 0))) {
+    _e29 = "_";
   } else {
-    var _i11 = 0;
-    while (_i11 < _35(id)) {
-      if (! valid_code63(code(id, _i11))) {
-        return(false);
-      }
-      _i11 = _i11 + 1;
-    }
-    return(true);
+    _e29 = "";
   }
+  var _id11 = _e29;
+  var _i11 = 0;
+  while (_i11 < _35(id)) {
+    var _c1 = char(id, _i11);
+    var _n7 = code(_c1);
+    var _e30;
+    if (_c1 === "-" && !( id === "-")) {
+      _e30 = "_";
+    } else {
+      var _e31;
+      if (valid_code63(_n7)) {
+        _e31 = _c1;
+      } else {
+        var _e32;
+        if (_i11 === 0) {
+          _e32 = "_" + _n7;
+        } else {
+          _e32 = _n7;
+        }
+        _e31 = _e32;
+      }
+      _e30 = _e31;
+    }
+    var _c11 = _e30;
+    _id11 = _id11 + _c11;
+    _i11 = _i11 + 1;
+  }
+  if (reserved63(_id11)) {
+    return("_" + _id11);
+  } else {
+    return(_id11);
+  }
+};
+valid_id63 = function (x) {
+  return(some63(x) && x === id(x));
 };
 key = function (k) {
   var _i12 = inner(k);
@@ -452,13 +481,13 @@ mapo = function (f, t) {
   var _k9 = undefined;
   for (_k9 in __o7) {
     var _v6 = __o7[_k9];
-    var _e31;
+    var _e33;
     if (numeric63(_k9)) {
-      _e31 = parseInt(_k9);
+      _e33 = parseInt(_k9);
     } else {
-      _e31 = _k9;
+      _e33 = _k9;
     }
-    var _k10 = _e31;
+    var _k10 = _e33;
     var _x65 = f(_v6);
     if (is63(_x65)) {
       add(_o6, literal(_k10));
@@ -473,17 +502,17 @@ __x68.js = "!";
 __x68.lua = "not";
 __x67["not"] = __x68;
 var __x69 = [];
+__x69["%"] = true;
 __x69["*"] = true;
 __x69["/"] = true;
-__x69["%"] = true;
 var __x70 = [];
 var __x71 = [];
 __x71.js = "+";
 __x71.lua = "..";
 __x70.cat = __x71;
 var __x72 = [];
-__x72["+"] = true;
 __x72["-"] = true;
+__x72["+"] = true;
 var __x73 = [];
 __x73["<"] = true;
 __x73[">"] = true;
@@ -517,13 +546,13 @@ var precedence = function (form) {
     var _k11 = undefined;
     for (_k11 in __o8) {
       var _v7 = __o8[_k11];
-      var _e32;
+      var _e34;
       if (numeric63(_k11)) {
-        _e32 = parseInt(_k11);
+        _e34 = parseInt(_k11);
       } else {
-        _e32 = _k11;
+        _e34 = _k11;
       }
-      var _k12 = _e32;
+      var _k12 = _e34;
       if (_v7[hd(form)]) {
         return(index(_k12));
       }
@@ -551,13 +580,13 @@ infix_operator63 = function (x) {
 };
 var compile_args = function (args) {
   var _s1 = "(";
-  var _c1 = "";
+  var _c2 = "";
   var __x82 = args;
   var __i15 = 0;
   while (__i15 < _35(__x82)) {
     var _x83 = __x82[__i15];
-    _s1 = _s1 + _c1 + compile(_x83);
-    _c1 = ", ";
+    _s1 = _s1 + _c2 + compile(_x83);
+    _c2 = ", ";
     __i15 = __i15 + 1;
   }
   return(_s1 + ")");
@@ -566,57 +595,17 @@ var escape_newlines = function (s) {
   var _s11 = "";
   var _i16 = 0;
   while (_i16 < _35(s)) {
-    var _c2 = char(s, _i16);
-    var _e33;
-    if (_c2 === "\n") {
-      _e33 = "\\n";
+    var _c3 = char(s, _i16);
+    var _e35;
+    if (_c3 === "\n") {
+      _e35 = "\\n";
     } else {
-      _e33 = _c2;
+      _e35 = _c3;
     }
-    _s11 = _s11 + _e33;
+    _s11 = _s11 + _e35;
     _i16 = _i16 + 1;
   }
   return(_s11);
-};
-var id = function (id) {
-  var _e34;
-  if (number_code63(code(id, 0))) {
-    _e34 = "_";
-  } else {
-    _e34 = "";
-  }
-  var _id11 = _e34;
-  var _i17 = 0;
-  while (_i17 < _35(id)) {
-    var _c3 = char(id, _i17);
-    var _n9 = code(_c3);
-    var _e35;
-    if (_c3 === "-" && !( id === "-")) {
-      _e35 = "_";
-    } else {
-      var _e36;
-      if (valid_code63(_n9)) {
-        _e36 = _c3;
-      } else {
-        var _e37;
-        if (_i17 === 0) {
-          _e37 = "_" + _n9;
-        } else {
-          _e37 = _n9;
-        }
-        _e36 = _e37;
-      }
-      _e35 = _e36;
-    }
-    var _c11 = _e35;
-    _id11 = _id11 + _c11;
-    _i17 = _i17 + 1;
-  }
-  if (reserved63(_id11)) {
-    return("_" + _id11);
-  } else {
-    return(_id11);
-  }
 };
 var compile_atom = function (x) {
   if (x === "nil" && target === "lua") {
@@ -681,9 +670,9 @@ var compile_special = function (form, stmt63) {
   var _x84 = __id6[0];
   var _args2 = cut(__id6, 1);
   var __id7 = getenv(_x84);
-  var _special = __id7.special;
   var _stmt = __id7.stmt;
   var _self_tr63 = __id7.tr;
+  var _special = __id7.special;
   var _tr = terminator(stmt63 && ! _self_tr63);
   return(apply(_special, _args2) + _tr);
 };
@@ -706,13 +695,13 @@ var op_delims = function (parent, child) {
   var _child = destash33(child, __r57);
   var __id8 = __r57;
   var _right = __id8.right;
-  var _e38;
+  var _e36;
   if (_right) {
-    _e38 = _6261;
+    _e36 = _6261;
   } else {
-    _e38 = _62;
+    _e36 = _62;
   }
-  if (_e38(precedence(_child), precedence(_parent))) {
+  if (_e36(precedence(_child), precedence(_parent))) {
     return(["(", ")"]);
   } else {
     return(["", ""]);
@@ -746,40 +735,40 @@ compile_function = function (args, body) {
   var __id13 = __r59;
   var _name3 = __id13.name;
   var _prefix = __id13.prefix;
-  var _e39;
+  var _e37;
   if (_name3) {
-    _e39 = compile(_name3);
+    _e37 = compile(_name3);
   } else {
-    _e39 = "";
+    _e37 = "";
   }
-  var _id14 = _e39;
-  var _e40;
+  var _id14 = _e37;
+  var _e38;
   if (target === "lua" && _args4.rest) {
-    _e40 = join(_args4, ["|...|"]);
+    _e38 = join(_args4, ["|...|"]);
   } else {
-    _e40 = _args4;
+    _e38 = _args4;
   }
-  var _args12 = _e40;
+  var _args12 = _e38;
   var _args5 = compile_args(_args12);
   indent_level = indent_level + 1;
   var __x88 = compile(_body3, {_stash: true, stmt: true});
   indent_level = indent_level - 1;
   var _body4 = __x88;
   var _ind = indentation();
-  var _e41;
+  var _e39;
   if (_prefix) {
-    _e41 = _prefix + " ";
+    _e39 = _prefix + " ";
   } else {
-    _e41 = "";
+    _e39 = "";
   }
-  var _p = _e41;
-  var _e42;
+  var _p = _e39;
+  var _e40;
   if (target === "js") {
-    _e42 = "";
+    _e40 = "";
   } else {
-    _e42 = "end";
+    _e40 = "end";
   }
-  var _tr1 = _e42;
+  var _tr1 = _e40;
   if (_name3) {
     _tr1 = _tr1 + "\n";
   }
@@ -804,26 +793,26 @@ compile = function (form) {
       return(compile_special(_form, _stmt1));
     } else {
       var _tr2 = terminator(_stmt1);
-      var _e43;
+      var _e41;
       if (_stmt1) {
-        _e43 = indentation();
+        _e41 = indentation();
       } else {
-        _e43 = "";
+        _e41 = "";
       }
-      var _ind1 = _e43;
-      var _e44;
+      var _ind1 = _e41;
+      var _e42;
       if (atom63(_form)) {
-        _e44 = compile_atom(_form);
+        _e42 = compile_atom(_form);
       } else {
-        var _e45;
+        var _e43;
         if (infix63(hd(_form))) {
-          _e45 = compile_infix(_form);
+          _e43 = compile_infix(_form);
         } else {
-          _e45 = compile_call(_form);
+          _e43 = compile_call(_form);
         }
-        _e44 = _e45;
+        _e42 = _e43;
       }
-      var _form1 = _e44;
+      var _form1 = _e42;
       return(_ind1 + _form1 + _tr2);
     }
   }
@@ -831,25 +820,25 @@ compile = function (form) {
 var lower_statement = function (form, tail63) {
   var _hoist = [];
   var _e = lower(form, _hoist, true, tail63);
-  var _e46;
+  var _e44;
   if (some63(_hoist) && is63(_e)) {
-    _e46 = join(["do"], _hoist, [_e]);
+    _e44 = join(["do"], _hoist, [_e]);
   } else {
-    var _e47;
+    var _e45;
     if (is63(_e)) {
-      _e47 = _e;
+      _e45 = _e;
     } else {
-      var _e48;
+      var _e46;
       if (_35(_hoist) > 1) {
-        _e48 = join(["do"], _hoist);
+        _e46 = join(["do"], _hoist);
       } else {
-        _e48 = hd(_hoist);
+        _e46 = hd(_hoist);
       }
-      _e47 = _e48;
+      _e45 = _e46;
     }
-    _e46 = _e47;
+    _e44 = _e45;
   }
-  return(either(_e46, ["do"]));
+  return(either(_e44, ["do"]));
 };
 var lower_body = function (body, tail63) {
   return(lower_statement(join(["do"], body), tail63));
@@ -862,9 +851,9 @@ var standalone63 = function (form) {
 };
 var lower_do = function (args, hoist, stmt63, tail63) {
   var __x94 = almost(args);
-  var __i18 = 0;
-  while (__i18 < _35(__x94)) {
-    var _x95 = __x94[__i18];
+  var __i17 = 0;
+  while (__i17 < _35(__x94)) {
+    var _x95 = __x94[__i17];
     var __y = lower(_x95, hoist, stmt63);
     if (yes(__y)) {
       var _e1 = __y;
@@ -872,7 +861,7 @@ var lower_do = function (args, hoist, stmt63, tail63) {
         add(hoist, _e1);
       }
     }
-    __i18 = __i18 + 1;
+    __i17 = __i17 + 1;
   }
   var _e2 = lower(last(args), hoist, stmt63, tail63);
   if (tail63 && can_return63(_e2)) {
@@ -896,19 +885,19 @@ var lower_if = function (args, hoist, stmt63, tail63) {
   var _then = __id17[1];
   var _else = __id17[2];
   if (stmt63) {
-    var _e50;
+    var _e48;
     if (is63(_else)) {
-      _e50 = [lower_body([_else], tail63)];
+      _e48 = [lower_body([_else], tail63)];
     }
-    return(add(hoist, join(["%if", lower(_cond, hoist), lower_body([_then], tail63)], _e50)));
+    return(add(hoist, join(["%if", lower(_cond, hoist), lower_body([_then], tail63)], _e48)));
   } else {
     var _e3 = unique("e");
     add(hoist, ["%local", _e3]);
-    var _e49;
+    var _e47;
     if (is63(_else)) {
-      _e49 = [lower(["%set", _e3, _else])];
+      _e47 = [lower(["%set", _e3, _else])];
     }
-    add(hoist, join(["%if", lower(_cond, hoist), lower(["%set", _e3, _then])], _e49));
+    add(hoist, join(["%if", lower(_cond, hoist), lower(["%set", _e3, _then])], _e47));
     return(_e3);
   }
 };
@@ -920,13 +909,13 @@ var lower_short = function (x, args, hoist) {
   var _b11 = lower(_b4, _hoist1);
   if (some63(_hoist1)) {
     var _id19 = unique("id");
-    var _e51;
+    var _e49;
     if (x === "and") {
-      _e51 = ["%if", _id19, _b4, _id19];
+      _e49 = ["%if", _id19, _b4, _id19];
     } else {
-      _e51 = ["%if", _id19, _id19, _b4];
+      _e49 = ["%if", _id19, _id19, _b4];
     }
-    return(lower(["do", ["%local", _id19, _a3], _e51], hoist));
+    return(lower(["do", ["%local", _id19, _a3], _e49], hoist));
   } else {
     return([x, lower(_a3, hoist), _b11]);
   }
@@ -940,13 +929,13 @@ var lower_while = function (args, hoist) {
   var _body5 = cut(__id20, 1);
   var _pre = [];
   var _c5 = lower(_c4, _pre);
-  var _e52;
+  var _e50;
   if (none63(_pre)) {
-    _e52 = ["while", _c5, lower_body(_body5)];
+    _e50 = ["while", _c5, lower_body(_body5)];
   } else {
-    _e52 = ["while", true, join(["do"], _pre, [["%if", ["not", _c5], ["break"]], lower_body(_body5)])];
+    _e50 = ["while", true, join(["do"], _pre, [["%if", ["not", _c5], ["break"]], lower_body(_body5)])];
   }
-  return(add(hoist, _e52));
+  return(add(hoist, _e50));
 };
 var lower_for = function (args, hoist) {
   var __id21 = args;
@@ -1091,40 +1080,40 @@ eval = function (form) {
 immediate_call63 = function (x) {
   return(obj63(x) && obj63(hd(x)) && hd(hd(x)) === "%function");
 };
-setenv("do", {_stash: true, special: function () {
+setenv("do", {_stash: true, stmt: true, special: function () {
   var _forms1 = unstash(Array.prototype.slice.call(arguments, 0));
   var _s3 = "";
-  var __x135 = _forms1;
-  var __i20 = 0;
-  while (__i20 < _35(__x135)) {
-    var _x136 = __x135[__i20];
-    if (target === "lua" && immediate_call63(_x136) && "\n" === char(_s3, edge(_s3))) {
+  var __x136 = _forms1;
+  var __i19 = 0;
+  while (__i19 < _35(__x136)) {
+    var _x137 = __x136[__i19];
+    if (target === "lua" && immediate_call63(_x137) && "\n" === char(_s3, edge(_s3))) {
       _s3 = clip(_s3, 0, edge(_s3)) + ";\n";
     }
-    _s3 = _s3 + compile(_x136, {_stash: true, stmt: true});
-    if (! atom63(_x136)) {
-      if (hd(_x136) === "return" || hd(_x136) === "break") {
+    _s3 = _s3 + compile(_x137, {_stash: true, stmt: true});
+    if (! atom63(_x137)) {
+      if (hd(_x137) === "return" || hd(_x137) === "break") {
         break;
       }
     }
-    __i20 = __i20 + 1;
+    __i19 = __i19 + 1;
   }
   return(_s3);
-}, stmt: true, tr: true});
-setenv("%if", {_stash: true, special: function (cond, cons, alt) {
+}, tr: true});
+setenv("%if", {_stash: true, stmt: true, special: function (cond, cons, alt) {
   var _cond2 = compile(cond);
   indent_level = indent_level + 1;
-  var __x139 = compile(cons, {_stash: true, stmt: true});
+  var __x140 = compile(cons, {_stash: true, stmt: true});
   indent_level = indent_level - 1;
-  var _cons1 = __x139;
-  var _e53;
+  var _cons1 = __x140;
+  var _e51;
   if (alt) {
     indent_level = indent_level + 1;
-    var __x140 = compile(alt, {_stash: true, stmt: true});
+    var __x141 = compile(alt, {_stash: true, stmt: true});
     indent_level = indent_level - 1;
-    _e53 = __x140;
+    _e51 = __x141;
   }
-  var _alt1 = _e53;
+  var _alt1 = _e51;
   var _ind3 = indentation();
   var _s5 = "";
   if (target === "js") {
@@ -1144,47 +1133,47 @@ setenv("%if", {_stash: true, special: function (cond, cons, alt) {
   } else {
     return(_s5 + "\n");
   }
-}, stmt: true, tr: true});
-setenv("while", {_stash: true, special: function (cond, form) {
+}, tr: true});
+setenv("while", {_stash: true, stmt: true, special: function (cond, form) {
   var _cond4 = compile(cond);
   indent_level = indent_level + 1;
-  var __x142 = compile(form, {_stash: true, stmt: true});
+  var __x143 = compile(form, {_stash: true, stmt: true});
   indent_level = indent_level - 1;
-  var _body10 = __x142;
+  var _body10 = __x143;
   var _ind5 = indentation();
   if (target === "js") {
     return(_ind5 + "while (" + _cond4 + ") {\n" + _body10 + _ind5 + "}\n");
   } else {
     return(_ind5 + "while " + _cond4 + " do\n" + _body10 + _ind5 + "end\n");
   }
-}, stmt: true, tr: true});
-setenv("%for", {_stash: true, special: function (t, k, form) {
+}, tr: true});
+setenv("%for", {_stash: true, stmt: true, special: function (t, k, form) {
   var _t2 = compile(t);
   var _ind7 = indentation();
   indent_level = indent_level + 1;
-  var __x144 = compile(form, {_stash: true, stmt: true});
+  var __x145 = compile(form, {_stash: true, stmt: true});
   indent_level = indent_level - 1;
-  var _body12 = __x144;
+  var _body12 = __x145;
   if (target === "lua") {
     return(_ind7 + "for " + k + " in next, " + _t2 + " do\n" + _body12 + _ind7 + "end\n");
   } else {
     return(_ind7 + "for (" + k + " in " + _t2 + ") {\n" + _body12 + _ind7 + "}\n");
   }
-}, stmt: true, tr: true});
-setenv("%try", {_stash: true, special: function (form) {
+}, tr: true});
+setenv("%try", {_stash: true, stmt: true, special: function (form) {
   var _e8 = unique("e");
   var _ind9 = indentation();
   indent_level = indent_level + 1;
-  var __x149 = compile(form, {_stash: true, stmt: true});
+  var __x150 = compile(form, {_stash: true, stmt: true});
   indent_level = indent_level - 1;
-  var _body14 = __x149;
+  var _body14 = __x150;
   var _hf1 = ["return", ["%array", false, _e8]];
   indent_level = indent_level + 1;
-  var __x152 = compile(_hf1, {_stash: true, stmt: true});
+  var __x153 = compile(_hf1, {_stash: true, stmt: true});
   indent_level = indent_level - 1;
-  var _h1 = __x152;
+  var _h1 = __x153;
   return(_ind9 + "try {\n" + _body14 + _ind9 + "}\n" + _ind9 + "catch (" + _e8 + ") {\n" + _h1 + _ind9 + "}\n");
-}, stmt: true, tr: true});
+}, tr: true});
 setenv("%delete", {_stash: true, special: function (place) {
   return(indentation() + "delete " + compile(place));
 }, stmt: true});
@@ -1194,31 +1183,31 @@ setenv("break", {_stash: true, special: function () {
 setenv("%function", {_stash: true, special: function (args, body) {
   return(compile_function(args, body));
 }});
-setenv("%global-function", {_stash: true, special: function (name, args, body) {
+setenv("%global-function", {_stash: true, stmt: true, special: function (name, args, body) {
   if (target === "lua") {
-    var _x156 = compile_function(args, body, {_stash: true, name: name});
-    return(indentation() + _x156);
+    var _x157 = compile_function(args, body, {_stash: true, name: name});
+    return(indentation() + _x157);
   } else {
     return(compile(["%set", name, ["%function", args, body]], {_stash: true, stmt: true}));
   }
-}, stmt: true, tr: true});
-setenv("%local-function", {_stash: true, special: function (name, args, body) {
+}, tr: true});
+setenv("%local-function", {_stash: true, stmt: true, special: function (name, args, body) {
   if (target === "lua") {
-    var _x162 = compile_function(args, body, {_stash: true, name: name, prefix: "local"});
-    return(indentation() + _x162);
+    var _x163 = compile_function(args, body, {_stash: true, name: name, prefix: "local"});
+    return(indentation() + _x163);
   } else {
     return(compile(["%local", name, ["%function", args, body]], {_stash: true, stmt: true}));
   }
-}, stmt: true, tr: true});
+}, tr: true});
 setenv("return", {_stash: true, special: function (x) {
-  var _e54;
+  var _e52;
   if (nil63(x)) {
-    _e54 = "return";
+    _e52 = "return";
   } else {
-    _e54 = "return(" + compile(x) + ")";
+    _e52 = "return(" + compile(x) + ")";
   }
-  var _x166 = _e54;
-  return(indentation() + _x166);
+  var _x167 = _e52;
+  return(indentation() + _x167);
 }, stmt: true});
 setenv("new", {_stash: true, special: function (x) {
   return("new " + compile(x));
@@ -1227,44 +1216,44 @@ setenv("typeof", {_stash: true, special: function (x) {
   return("typeof(" + compile(x) + ")");
 }});
 setenv("error", {_stash: true, special: function (x) {
-  var _e55;
+  var _e53;
   if (target === "js") {
-    _e55 = "throw " + compile(["new", ["Error", x]]);
+    _e53 = "throw " + compile(["new", ["Error", x]]);
   } else {
-    _e55 = "error(" + compile(x) + ")";
+    _e53 = "error(" + compile(x) + ")";
   }
-  var _e12 = _e55;
+  var _e12 = _e53;
   return(indentation() + _e12);
 }, stmt: true});
 setenv("%local", {_stash: true, special: function (name, value) {
   var _id28 = compile(name);
   var _value11 = compile(value);
-  var _e56;
+  var _e54;
   if (is63(value)) {
-    _e56 = " = " + _value11;
+    _e54 = " = " + _value11;
   } else {
-    _e56 = "";
+    _e54 = "";
   }
-  var _rh2 = _e56;
-  var _e57;
+  var _rh2 = _e54;
+  var _e55;
   if (target === "js") {
-    _e57 = "var ";
+    _e55 = "var ";
   } else {
-    _e57 = "local ";
+    _e55 = "local ";
   }
-  var _keyword1 = _e57;
+  var _keyword1 = _e55;
   var _ind11 = indentation();
   return(_ind11 + _keyword1 + _id28 + _rh2);
 }, stmt: true});
 setenv("%set", {_stash: true, special: function (lh, rh) {
   var _lh2 = compile(lh);
-  var _e58;
+  var _e56;
   if (nil63(rh)) {
-    _e58 = "nil";
+    _e56 = "nil";
   } else {
-    _e58 = rh;
+    _e56 = rh;
   }
-  var _rh4 = compile(_e58);
+  var _rh4 = compile(_e56);
   return(indentation() + _lh2 + " = " + _rh4);
 }, stmt: true});
 setenv("get", {_stash: true, special: function (t, k) {
@@ -1281,34 +1270,34 @@ setenv("get", {_stash: true, special: function (t, k) {
 }});
 setenv("%array", {_stash: true, special: function () {
   var _forms3 = unstash(Array.prototype.slice.call(arguments, 0));
-  var _e59;
+  var _e57;
   if (target === "lua") {
-    _e59 = "{";
+    _e57 = "{";
   } else {
-    _e59 = "[";
+    _e57 = "[";
   }
-  var _open1 = _e59;
-  var _e60;
+  var _open1 = _e57;
+  var _e58;
   if (target === "lua") {
-    _e60 = "}";
+    _e58 = "}";
   } else {
-    _e60 = "]";
+    _e58 = "]";
   }
-  var _close1 = _e60;
+  var _close1 = _e58;
   var _s7 = "";
   var _c7 = "";
   var __o10 = _forms3;
-  var _k16 = undefined;
-  for (_k16 in __o10) {
-    var _v9 = __o10[_k16];
-    var _e61;
-    if (numeric63(_k16)) {
-      _e61 = parseInt(_k16);
+  var _k15 = undefined;
+  for (_k15 in __o10) {
+    var _v9 = __o10[_k15];
+    var _e59;
+    if (numeric63(_k15)) {
+      _e59 = parseInt(_k15);
     } else {
-      _e61 = _k16;
+      _e59 = _k15;
     }
-    var _k17 = _e61;
-    if (number63(_k17)) {
+    var _k16 = _e59;
+    if (number63(_k16)) {
       _s7 = _s7 + _c7 + compile(_v9);
       _c7 = ", ";
     }
@@ -1319,32 +1308,32 @@ setenv("%object", {_stash: true, special: function () {
   var _forms5 = unstash(Array.prototype.slice.call(arguments, 0));
   var _s9 = "{";
   var _c9 = "";
-  var _e62;
+  var _e60;
   if (target === "lua") {
-    _e62 = " = ";
+    _e60 = " = ";
   } else {
-    _e62 = ": ";
+    _e60 = ": ";
   }
-  var _sep1 = _e62;
+  var _sep1 = _e60;
   var __o12 = pair(_forms5);
-  var _k21 = undefined;
-  for (_k21 in __o12) {
-    var _v12 = __o12[_k21];
-    var _e63;
-    if (numeric63(_k21)) {
-      _e63 = parseInt(_k21);
+  var _k19 = undefined;
+  for (_k19 in __o12) {
+    var _v12 = __o12[_k19];
+    var _e61;
+    if (numeric63(_k19)) {
+      _e61 = parseInt(_k19);
     } else {
-      _e63 = _k21;
+      _e61 = _k19;
     }
-    var _k22 = _e63;
-    if (number63(_k22)) {
+    var _k20 = _e61;
+    if (number63(_k20)) {
       var __id30 = _v12;
-      var _k23 = __id30[0];
+      var _k21 = __id30[0];
       var _v13 = __id30[1];
-      if (! string63(_k23)) {
-        throw new Error("Illegal key: " + str(_k23));
+      if (! string63(_k21)) {
+        throw new Error("Illegal key: " + str(_k21));
       }
-      _s9 = _s9 + _c9 + key(_k23) + _sep1 + compile(_v13);
+      _s9 = _s9 + _c9 + key(_k21) + _sep1 + compile(_v13);
       _c9 = ", ";
     }
   }

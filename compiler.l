@@ -240,13 +240,24 @@
       (and (> n 96) (< n 123)) ; a-z
       (= n 95)))               ; _
 
-(define-global valid-id? (id)
-  (if (or (none? id) (reserved? id) (number-code? (code id 0)))
-      false
-    (do (for i (# id)
-          (unless (valid-code? (code id i))
-            (return false)))
-        true)))
+(define id (id)
+  (let id1 (if (number-code? (code id 0)) "_" "")
+    (for i (# id)
+      (let (c (char id i)
+            n (code c)
+            c1 (if (and (= c "-")
+                        (not (= id "-")))
+                   "_"
+                   (valid-code? n) c
+                   (= i 0) (cat "_" n)
+                 n))
+        (cat! id1 c1)))
+    (if (reserved? id1)
+        (cat "_" id1)
+        id1)))
+
+(define-global valid-id? (x)
+  (and (some? x) (= x (id x))))
 
 (define-global key (k)
   (let i (inner k)
@@ -309,22 +320,6 @@
     (for i (# s)
       (let c (char s i)
         (cat! s1 (if (= c "\n") "\\n" c))))))
-
-(define id (id)
-  (let id1 (if (number-code? (code id 0)) "_" "")
-    (for i (# id)
-      (let (c (char id i)
-            n (code c)
-            c1 (if (and (= c "-")
-                        (not (= id "-")))
-                   "_"
-                   (valid-code? n) c
-                   (= i 0) (cat "_" n)
-                 n))
-        (cat! id1 c1)))
-    (if (reserved? id1)
-        (cat "_" id1)
-        id1)))
 
 (define compile-atom (x)
   (if (and (= x "nil") (= target 'lua)) x
