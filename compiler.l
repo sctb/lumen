@@ -56,6 +56,10 @@
         (let i (get names x)
           (inc (get names x))
           (unique (cat x i)))
+        (let n (code x 0)
+          (or (not (valid-code? n))
+              (number-code? n)))
+        (unique (compile x))
       (do (set (get names x) 1)
           (cat "_" x)))))
 
@@ -236,7 +240,7 @@
 (define-global reserved? (x)
   (has? reserved x))
 
-(define valid-code? (n)
+(define-global valid-code? (n)
   (or (number-code? n)         ; 0-9
       (and (> n 64) (< n 91))  ; A-Z
       (and (> n 96) (< n 123)) ; a-z
@@ -313,20 +317,21 @@
         (cat! s1 (if (= c "\n") "\\n" c))))))
 
 (define id (id)
-  (let id1 (if (number-code? (code id 0)) "_" "")
+  (let (end (edge id)
+        id1 (if (number-code? (code id 0)) "_0" ""))
     (for i (# id)
-      (let (c (char id i)
-            n (code c)
-            c1 (if (and (= c "-")
-                        (not (= id "-")))
-                   "_"
-                   (valid-code? n) c
-                   (= i 0) (cat "_" n)
+      (let (n (code id i)
+            c1 (if (= n 45) ; "-"
+                   (if (or (= i 0) (= i end)) n "_")
+                   (valid-code? n)
+                   (char id i)
                  n))
         (cat! id1 c1)))
-    (if (reserved? id1)
+    (if (number-code? (code id1 0))
         (cat "_" id1)
-        id1)))
+        (reserved? id1)
+        (cat "_" id1 "_")
+      id1)))
 
 (define compile-atom (x)
   (if (and (= x "nil") (= target 'lua)) x

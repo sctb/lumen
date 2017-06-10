@@ -73,8 +73,13 @@ unique = function (x) {
     _names[x] = _names[x] + 1;
     return(unique(x + _i1));
   } else {
-    _names[x] = 1;
-    return("_" + x);
+    var _n = code(x, 0);
+    if (! valid_code63(_n) || number_code63(_n)) {
+      return(unique(compile(x)));
+    } else {
+      _names[x] = 1;
+      return("_" + x);
+    }
   }
 };
 var stash42 = function (args) {
@@ -190,9 +195,9 @@ bind42 = function (args, body) {
     }
     if (keys63(args)) {
       _bs1 = join(_bs1, [_r21, rest()]);
-      var _n3 = _35(_args1);
+      var _n4 = _35(_args1);
       var _i5 = 0;
-      while (_i5 < _n3) {
+      while (_i5 < _n4) {
         var _v3 = _args1[_i5];
         _bs1 = join(_bs1, [_v3, ["destash!", _v3, _r21]]);
         _i5 = _i5 + 1;
@@ -420,7 +425,7 @@ var reserved = {"=": true, "==": true, "+": true, "-": true, "%": true, "*": tru
 reserved63 = function (x) {
   return(has63(reserved, x));
 };
-var valid_code63 = function (n) {
+valid_code63 = function (n) {
   return(number_code63(n) || n > 64 && n < 91 || n > 96 && n < 123 || n === 95);
 };
 valid_id63 = function (id) {
@@ -582,32 +587,32 @@ var escape_newlines = function (s) {
   return(_s11);
 };
 var id = function (id) {
+  var _end = edge(id);
   var _e34;
   if (number_code63(code(id, 0))) {
-    _e34 = "_";
+    _e34 = "_0";
   } else {
     _e34 = "";
   }
   var _id11 = _e34;
   var _i17 = 0;
   while (_i17 < _35(id)) {
-    var _c3 = char(id, _i17);
-    var _n9 = code(_c3);
+    var _n10 = code(id, _i17);
     var _e35;
-    if (_c3 === "-" && !( id === "-")) {
-      _e35 = "_";
+    if (_n10 === 45) {
+      var _e37;
+      if (_i17 === 0 || _i17 === _end) {
+        _e37 = _n10;
+      } else {
+        _e37 = "_";
+      }
+      _e35 = _e37;
     } else {
       var _e36;
-      if (valid_code63(_n9)) {
-        _e36 = _c3;
+      if (valid_code63(_n10)) {
+        _e36 = char(id, _i17);
       } else {
-        var _e37;
-        if (_i17 === 0) {
-          _e37 = "_" + _n9;
-        } else {
-          _e37 = _n9;
-        }
-        _e36 = _e37;
+        _e36 = _n10;
       }
       _e35 = _e36;
     }
@@ -615,10 +620,14 @@ var id = function (id) {
     _id11 = _id11 + _c11;
     _i17 = _i17 + 1;
   }
-  if (reserved63(_id11)) {
+  if (number_code63(code(_id11, 0))) {
     return("_" + _id11);
   } else {
-    return(_id11);
+    if (reserved63(_id11)) {
+      return("_" + _id11 + "_");
+    } else {
+      return(_id11);
+    }
   }
 };
 var compile_atom = function (x) {
@@ -650,7 +659,7 @@ var compile_atom = function (x) {
                 if (x === inf) {
                   return("inf");
                 } else {
-                  if (x === _inf) {
+                  if (x === _45inf) {
                     return("-inf");
                   } else {
                     if (number63(x)) {
@@ -939,15 +948,15 @@ var lower_try = function (args, hoist, tail63) {
 };
 var lower_while = function (args, hoist) {
   var __id20 = args;
-  var _c4 = __id20[0];
+  var _c3 = __id20[0];
   var _body5 = cut(__id20, 1);
   var _pre = [];
-  var _c5 = lower(_c4, _pre);
+  var _c4 = lower(_c3, _pre);
   var _e52;
   if (none63(_pre)) {
-    _e52 = ["while", _c5, lower_body(_body5)];
+    _e52 = ["while", _c4, lower_body(_body5)];
   } else {
-    _e52 = ["while", true, join(["do"], _pre, [["%if", ["not", _c5], ["break"]], lower_body(_body5)])];
+    _e52 = ["while", true, join(["do"], _pre, [["%if", ["not", _c4], ["break"]], lower_body(_body5)])];
   }
   return(add(hoist, _e52));
 };
@@ -1299,7 +1308,7 @@ setenv("%array", {_stash: true, special: function () {
   }
   var _close1 = _e60;
   var _s7 = "";
-  var _c7 = "";
+  var _c6 = "";
   var __o10 = _forms3;
   var _k16 = undefined;
   for (_k16 in __o10) {
@@ -1312,8 +1321,8 @@ setenv("%array", {_stash: true, special: function () {
     }
     var _k17 = _e61;
     if (number63(_k17)) {
-      _s7 = _s7 + _c7 + compile(_v9);
-      _c7 = ", ";
+      _s7 = _s7 + _c6 + compile(_v9);
+      _c6 = ", ";
     }
   }
   return(_open1 + _s7 + _close1);
@@ -1321,7 +1330,7 @@ setenv("%array", {_stash: true, special: function () {
 setenv("%object", {_stash: true, special: function () {
   var _forms5 = unstash(Array.prototype.slice.call(arguments, 0));
   var _s9 = "{";
-  var _c9 = "";
+  var _c8 = "";
   var _e62;
   if (target === "lua") {
     _e62 = " = ";
@@ -1347,8 +1356,8 @@ setenv("%object", {_stash: true, special: function () {
       if (! string63(_k23)) {
         throw new Error("Illegal key: " + str(_k23));
       }
-      _s9 = _s9 + _c9 + key(_k23) + _sep1 + compile(_v13);
-      _c9 = ", ";
+      _s9 = _s9 + _c8 + key(_k23) + _sep1 + compile(_v13);
+      _c8 = ", ";
     }
   }
   return(_s9 + "}");

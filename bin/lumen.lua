@@ -60,12 +60,12 @@ function atom63(x)
 end
 nan = 0 / 0
 inf = 1 / 0
-_inf = - inf
+_45inf = - inf
 function nan63(n)
   return(not( n == n))
 end
 function inf63(n)
-  return(n == inf or n == _inf)
+  return(n == inf or n == _45inf)
 end
 function clip(s, from, upto)
   return(string.sub(s, from + 1, upto))
@@ -502,7 +502,7 @@ function str(x, stack)
       if x == inf then
         return("inf")
       else
-        if x == _inf then
+        if x == _45inf then
           return("-inf")
         else
           if boolean63(x) then

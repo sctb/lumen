@@ -73,8 +73,13 @@ function unique(x)
     _names[x] = _names[x] + 1
     return(unique(x .. _i1))
   else
-    _names[x] = 1
-    return("_" .. x)
+    local _n = code(x, 0)
+    if not valid_code63(_n) or number_code63(_n) then
+      return(unique(compile(x)))
+    else
+      _names[x] = 1
+      return("_" .. x)
+    end
   end
 end
 local function stash42(args)
@@ -169,9 +174,9 @@ function bind42(args, body)
     end
     if keys63(args) then
       _bs1 = join(_bs1, {_r21, rest()})
-      local _n3 = _35(_args1)
+      local _n4 = _35(_args1)
       local _i5 = 0
-      while _i5 < _n3 do
+      while _i5 < _n4 do
         local _v3 = _args1[_i5 + 1]
         _bs1 = join(_bs1, {_v3, {"destash!", _v3, _r21}})
         _i5 = _i5 + 1
@@ -378,7 +383,7 @@ local reserved = {["="] = true, ["=="] = true, ["+"] = true, ["-"] = true, ["%"]
 function reserved63(x)
   return(has63(reserved, x))
 end
-local function valid_code63(n)
+function valid_code63(n)
   return(number_code63(n) or n > 64 and n < 91 or n > 96 and n < 123 or n == 95)
 end
 function valid_id63(id)
@@ -528,32 +533,32 @@ local function escape_newlines(s)
   return(_s11)
 end
 local function id(id)
+  local _end = edge(id)
   local _e26
   if number_code63(code(id, 0)) then
-    _e26 = "_"
+    _e26 = "_0"
   else
     _e26 = ""
   end
   local _id11 = _e26
   local _i17 = 0
   while _i17 < _35(id) do
-    local _c3 = char(id, _i17)
-    local _n9 = code(_c3)
+    local _n10 = code(id, _i17)
     local _e27
-    if _c3 == "-" and not( id == "-") then
-      _e27 = "_"
+    if _n10 == 45 then
+      local _e29
+      if _i17 == 0 or _i17 == _end then
+        _e29 = _n10
+      else
+        _e29 = "_"
+      end
+      _e27 = _e29
     else
       local _e28
-      if valid_code63(_n9) then
-        _e28 = _c3
+      if valid_code63(_n10) then
+        _e28 = char(id, _i17)
       else
-        local _e29
-        if _i17 == 0 then
-          _e29 = "_" .. _n9
-        else
-          _e29 = _n9
-        end
-        _e28 = _e29
+        _e28 = _n10
       end
       _e27 = _e28
     end
@@ -561,10 +566,14 @@ local function id(id)
     _id11 = _id11 .. _c11
     _i17 = _i17 + 1
   end
-  if reserved63(_id11) then
+  if number_code63(code(_id11, 0)) then
     return("_" .. _id11)
   else
-    return(_id11)
+    if reserved63(_id11) then
+      return("_" .. _id11 .. "_")
+    else
+      return(_id11)
+    end
   end
 end
 local function compile_atom(x)
@@ -596,7 +605,7 @@ local function compile_atom(x)
                 if x == inf then
                   return("inf")
                 else
-                  if x == _inf then
+                  if x == _45inf then
                     return("-inf")
                   else
                     if number63(x) then
@@ -885,15 +894,15 @@ local function lower_try(args, hoist, tail63)
 end
 local function lower_while(args, hoist)
   local __id20 = args
-  local _c4 = __id20[1]
+  local _c3 = __id20[1]
   local _body5 = cut(__id20, 1)
   local _pre = {}
-  local _c5 = lower(_c4, _pre)
+  local _c4 = lower(_c3, _pre)
   local _e44
   if none63(_pre) then
-    _e44 = {"while", _c5, lower_body(_body5)}
+    _e44 = {"while", _c4, lower_body(_body5)}
   else
-    _e44 = {"while", true, join({"do"}, _pre, {{"%if", {"not", _c5}, {"break"}}, lower_body(_body5)})}
+    _e44 = {"while", true, join({"do"}, _pre, {{"%if", {"not", _c4}, {"break"}}, lower_body(_body5)})}
   end
   return(add(hoist, _e44))
 end
@@ -1252,14 +1261,14 @@ setenv("%array", {_stash = true, special = function (...)
   end
   local _close1 = _e52
   local _s7 = ""
-  local _c7 = ""
+  local _c6 = ""
   local __o10 = _forms3
   local _k10 = nil
   for _k10 in next, __o10 do
     local _v9 = __o10[_k10]
     if number63(_k10) then
-      _s7 = _s7 .. _c7 .. compile(_v9)
-      _c7 = ", "
+      _s7 = _s7 .. _c6 .. compile(_v9)
+      _c6 = ", "
     end
   end
   return(_open1 .. _s7 .. _close1)
@@ -1267,7 +1276,7 @@ end})
 setenv("%object", {_stash = true, special = function (...)
   local _forms5 = unstash({...})
   local _s9 = "{"
-  local _c9 = ""
+  local _c8 = ""
   local _e53
   if target == "lua" then
     _e53 = " = "
@@ -1286,8 +1295,8 @@ setenv("%object", {_stash = true, special = function (...)
       if not string63(_k15) then
         error("Illegal key: " .. str(_k15))
       end
-      _s9 = _s9 .. _c9 .. key(_k15) .. _sep1 .. compile(_v13)
-      _c9 = ", "
+      _s9 = _s9 .. _c8 .. key(_k15) .. _sep1 .. compile(_v13)
+      _c8 = ", "
     end
   end
   return(_s9 .. "}")
