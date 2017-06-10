@@ -31,10 +31,7 @@
   (is? (symbol-expansion k)))
 
 (define variable? (k)
-  (let b (first (fn (frame)
-                  (get frame k))
-                (reverse environment))
-    (and (not (atom? b)) (is? (get b 'variable)))))
+  (is? (getenv k 'variable)))
 
 (define-global bound? (x)
   (or (macro? x)
