@@ -1,13 +1,13 @@
-var delimiters = {"\n": true, ";": true, ")": true, "(": true};
-var whitespace = {"\t": true, " ": true, "\n": true};
+var delimiters = {"\n": true, ";": true, "(": true, ")": true};
+var whitespace = {"\n": true, "\t": true, " ": true};
 var stream = function (str, more) {
-  return({pos: 0, more: more, len: _35(str), string: str});
+  return({pos: 0, len: _35(str), string: str, more: more});
 };
 var peek_char = function (s) {
   var __id = s;
-  var _len = __id.len;
-  var _string = __id.string;
   var _pos = __id.pos;
+  var _string = __id.string;
+  var _len = __id.len;
   if (_pos < _len) {
     return(char(_string, _pos));
   }

@@ -947,7 +947,7 @@ setenv("define-global", {_stash: true, macro: function (name, x) {
   var _x152 = destash33(x, __r39);
   var __id33 = __r39;
   var _body23 = cut(__id33, 0);
-  setenv(_name7, {_stash: true, toplevel: true, variable: true});
+  setenv(_name7, {_stash: true, variable: true, toplevel: true});
   if (some63(_body23)) {
     return(join(["%global-function", _name7], bind42(_x152, _body23)));
   } else {
@@ -1036,8 +1036,8 @@ setenv("guard", {_stash: true, macro: function (expr) {
     var _msg1 = unique("msg");
     var _trace1 = unique("trace");
     var __x275 = ["obj"];
-    __x275.message = _msg1;
     __x275.stack = _trace1;
+    __x275.message = _msg1;
     return(["let", [_x253, "nil", _msg1, "nil", _trace1, "nil"], ["if", ["xpcall", ["fn", join(), ["set", _x253, expr]], ["fn", ["m"], ["set", _trace1, [["get", "debug", ["quote", "traceback"]]], _msg1, ["if", ["string?", "m"], ["clip", "m", ["+", ["search", "m", "\": \""], 2]], ["nil?", "m"], "\"\"", ["str", "m"]]]]], ["list", true, _x253], ["list", false, __x275]]]);
   }
 }});

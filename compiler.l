@@ -47,15 +47,6 @@
 (define literal (s)
   (if (string-literal? s) s (quoted s)))
 
-(let (names (obj))
-  (define-global unique (x)
-    (if (get names x)
-        (let i (get names x)
-          (inc (get names x))
-          (unique (cat x i)))
-      (do (set (get names x) 1)
-          (cat "_" x)))))
-
 (define stash* (args)
   (if (keys? args)
       (let l '(%object "_stash" true)
@@ -258,6 +249,16 @@
 
 (define-global valid-id? (x)
   (and (some? x) (= x (id x))))
+
+(let (names (obj))
+  (define-global unique (x)
+    (let x (id x)
+      (if (get names x)
+          (let i (get names x)
+            (inc (get names x))
+            (unique (cat x i)))
+        (do (set (get names x) 1)
+            (cat "__" x))))))
 
 (define-global key (k)
   (let i (inner k)

@@ -811,10 +811,10 @@ c"
 
 (define-test let-unique
   (let-unique (ham chap)
-    (test= '_ham2 ham)
-    (test= '_chap1 chap)
+    (test= '__ham2 ham)
+    (test= '__chap1 chap)
     (let-unique (ham)
-      (test= '_ham3 ham))))
+      (test= '__ham3 ham))))
 
 (define-test literals
   (test= true true)
