@@ -53,3 +53,13 @@ test: all
 	@LUMEN_HOST=$(LUMEN_NODE) ./test.l
 	@echo lua:
 	@LUMEN_HOST=$(LUMEN_LUA) ./test.l
+
+PREFIX     ?= /usr/local/bin
+LUMEN_NAME ?= lumen
+
+install: all
+	@mkdir -p "$(PREFIX)"
+	@ln -sf "$(shell pwd)/bin/lumen" "$(PREFIX)/$(LUMEN_NAME)"
+
+uninstall:
+	@rm -f "$(PREFIX)/$(LUMEN_NAME)"
