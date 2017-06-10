@@ -1230,4 +1230,6 @@ local function main()
     end
   end
 end
-main()
+if _G.debug.getinfo(3) == nil then
+  main()
+end
