@@ -1,5 +1,5 @@
-(define delimiters (set-of "(" ")" ";" "\n"))
-(define whitespace (set-of " " "\t" "\n"))
+(define delimiters (set-of "(" ")" ";" "\r" "\n"))
+(define whitespace (set-of " " "\t" "\r" "\n"))
 
 (define stream (str more)
   (obj pos: 0 string: str len: (# str) more: more))
