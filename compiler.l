@@ -66,7 +66,9 @@
   k)
 
 (define-global bind (lh rh)
-  (if (atom? lh) `(,lh ,rh)
+  (if (or (atom? lh)
+          (vector? lh))
+      `(,lh ,rh)
     (let-unique (id)
       (with bs (list id rh)
         (each (k v) lh
@@ -121,7 +123,10 @@
        (= (hd x) 'unquote-splicing)))
 
 (define expand-local ((x name value))
-  (setenv name :variable)
+  (if (vector? name)
+      (step x (tl name)
+        (setenv x :variable))
+    (setenv name :variable))
   `(%local ,name ,(macroexpand value)))
 
 (define expand-function ((x args rest: body))
@@ -571,7 +576,7 @@
 (target lua: (define load1 (or loadstring (get host 'load))))
 (target lua:
   (define run (code)
-    (let |f,e| (load1 code)
+    (let [f e] (load1 code)
       (if f (f) (error (cat e " in " code))))))
 
 (define-global %result)
@@ -585,7 +590,7 @@
       %result)))
 
 (define-global immediate-call? (x)
-  (and (obj? x) (obj? (hd x)) (= (hd (hd x)) '%function)))
+  (and (obj? x) (hd? (hd x) '%function)))
 
 (define-special do forms :stmt :tr
   (with s ""
@@ -662,9 +667,19 @@
         (cat (indentation) x))
     (compile `(%local ,name (%function ,args ,body)) :stmt)))
 
+(define-global compile-binding (form)
+  (if (vector? form)
+      (let s (inner (compile-args (tl form)))
+        (if (= target 'js)
+            (cat "[" s "]")
+          s))
+    (compile form)))
+
 (define-special return (x) :stmt
   (let x (if (nil? x)
              "return"
+             (vector? x)
+             (cat "return " (compile-binding x))
            (cat "return(" (compile x) ")"))
     (cat (indentation) x)))
 
@@ -681,7 +696,7 @@
     (cat (indentation) e)))
 
 (define-special %local (name value) :stmt
-  (let (id (compile name)
+  (let (id (compile-binding name)
         value1 (compile value)
         rh (if (is? value) (cat " = " value1) "")
         keyword (if (= target 'js) "var " "local ")

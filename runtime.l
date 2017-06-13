@@ -25,8 +25,6 @@
 (define-global one? (x) (= (# x) 1))
 (define-global two? (x) (= (# x) 2))
 
-(define-global hd (l) (at l 0))
-
 (target js: (define-global type (x) (typeof x)))
 
 (define-global string? (x) (= (type x) 'string))
@@ -40,6 +38,14 @@
 
 (define-global atom? (x)
   (or (nil? x) (string? x) (number? x) (boolean? x)))
+
+(define-global hd (l) (at l 0))
+
+(define-global hd? (l x)
+  (and (obj? l) (= (hd l) x)))
+
+(define-global vector? (x)
+  (hd? x 'vector))
 
 (define-global nan (/ 0 0))
 (define-global inf (/ 1 0))

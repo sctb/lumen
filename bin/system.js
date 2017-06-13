@@ -14,17 +14,17 @@ var directory_exists63 = function (path) {
 };
 var path_separator = require("path").sep;
 var path_join = function () {
-  var _parts = unstash(Array.prototype.slice.call(arguments, 0));
+  var __parts = unstash(Array.prototype.slice.call(arguments, 0));
   return(reduce(function (x, y) {
     return(x + path_separator + y);
-  }, _parts) || "");
+  }, __parts) || "");
 };
 var get_environment_variable = function (name) {
   return(process.env[name]);
 };
 var write = function (x) {
-  var _out = process.stdout;
-  return(_out.write(x));
+  var __out = process.stdout;
+  return(__out.write(x));
 };
 var exit = function (code) {
   return(process.exit(code));

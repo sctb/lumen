@@ -1,4 +1,4 @@
-(define delimiters (set-of "(" ")" ";" "\n"))
+(define delimiters (set-of "(" ")" "[" "]" ";" "\n"))
 (define whitespace (set-of " " "\t" "\n"))
 
 (define stream (str more)
@@ -113,6 +113,21 @@
 
 (define-reader (")" s)
   (error (cat "Unexpected ) at " (get s 'pos))))
+
+(define-reader ("[" s)
+  (read-char s)
+  (with r nil
+    (let l '(vector)
+      (while (nil? r)
+        (skip-non-code s)
+        (let c (peek-char s)
+          (if (= c "]") (do (read-char s) (set r l))
+              (nil? c) (set r (expected s "]"))
+            (let x (read s)
+              (add l x))))))))
+
+(define-reader ("]" s)
+  (error (cat "Unexpected ] at " (get s 'pos))))
 
 (define-reader ("\"" s)
   (read-char s)
