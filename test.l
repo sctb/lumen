@@ -660,7 +660,10 @@ c"
        (test= 9 q))))
   (test= 0 (+ (abs -1)
               (let abs (fn (x) x)
-                (abs -1)))))
+                (abs -1))))
+  (let f (fn (x) (return [x 1 'a]))
+    (let [a b c] (f 0)
+      (test= '(0 1 a) (list a b c)))))
 
 (define-test with
   (test= 10 (with x 9 (inc x))))

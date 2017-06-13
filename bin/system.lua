@@ -1,10 +1,10 @@
 local function call_with_file(f, path, mode)
-  local h,e = io.open(path, mode)
-  if not h then
-    error(e)
+  local __h, __e = io.open(path, mode)
+  if not __h then
+    error(__e)
   end
-  local __x = f(h)
-  h.close(h)
+  local __x = f(__h)
+  __h.close(__h)
   return(__x)
 end
 local function read_file(path)
@@ -20,28 +20,28 @@ end
 local function file_exists63(path)
   local __f = io.open(path)
   local __id = is63(__f)
-  local __e
+  local __e1
   if __id then
     local __r6 = is63(__f.read(__f, 0)) or 0 == __f.seek(__f, "end")
     __f.close(__f)
-    __e = __r6
+    __e1 = __r6
   else
-    __e = __id
+    __e1 = __id
   end
-  return(__e)
+  return(__e1)
 end
 local function directory_exists63(path)
   local __f1 = io.open(path)
   local __id1 = is63(__f1)
-  local __e1
+  local __e2
   if __id1 then
     local __r8 = not __f1.read(__f1, 0) and not( 0 == __f1.seek(__f1, "end"))
     __f1.close(__f1)
-    __e1 = __r8
+    __e2 = __r8
   else
-    __e1 = __id1
+    __e2 = __id1
   end
-  return(__e1)
+  return(__e2)
 end
 local path_separator = char(_G.package.config, 0)
 local function path_join(...)
@@ -70,4 +70,4 @@ local function run(command)
   __f2.close(__f2)
   return(__x2)
 end
-return({["write-file"] = write_file, ["directory-exists?"] = directory_exists63, run = run, exit = exit, ["read-file"] = read_file, reload = reload, argv = argv, ["path-separator"] = path_separator, ["path-join"] = path_join, ["get-environment-variable"] = get_environment_variable, ["file-exists?"] = file_exists63, write = write})
+return({["read-file"] = read_file, ["write-file"] = write_file, ["file-exists?"] = file_exists63, ["directory-exists?"] = directory_exists63, ["path-separator"] = path_separator, ["path-join"] = path_join, ["get-environment-variable"] = get_environment_variable, write = write, exit = exit, argv = argv, reload = reload, run = run})
