@@ -1,4 +1,3 @@
-host = {load = load}
 environment = {{}}
 target = "lua"
 function nil63(x)
@@ -1139,7 +1138,7 @@ function compile_file(path)
   local __form1 = compiler.expand(join({"do"}, __body))
   return(compiler.compile(__form1, {_stash = true, stmt = true}))
 end
-function load(path)
+function _load(path)
   local __previous = target
   target = "lua"
   local __code = compile_file(path)
@@ -1166,7 +1165,7 @@ end
 local function main()
   local __arg = hd(system.argv)
   if __arg and script_file63(__arg) then
-    return(load(__arg))
+    return(_load(__arg))
   else
     if __arg == "-h" or __arg == "--help" then
       return(usage())

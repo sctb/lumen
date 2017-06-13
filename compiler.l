@@ -218,9 +218,10 @@
           "instanceof" "let" "new" "return" "switch" "throw"
           "try" "typeof" "var" "void" "with"
           ;; lua
-          "and" "end" "in" "repeat" "while" "break" "false"
-          "local" "return" "do" "for" "nil" "then" "else"
-          "function" "not" "true" "elseif" "if" "or" "until"))
+          "and" "end" "in" "load" "repeat" "while" "break"
+          "false" "local" "return" "do" "for" "nil" "then"
+          "else" "function" "not" "true" "elseif" "if" "or"
+          "until"))
 
 (define-global reserved? (x)
   (has? reserved x))
@@ -567,10 +568,10 @@
 (define-global expand (form)
   (lower (macroexpand form)))
 
-(target js: (set (get global 'require) require))
-(target js: (define run (get host 'eval)))
+(target js: (set (get global 'require) |require|))
+(target js: (define run |eval|))
 
-(target lua: (define load1 (or loadstring (get host 'load))))
+(target lua: (define load1 (or |loadstring| |load|)))
 (target lua:
   (define run (code)
     (let |f,e| (load1 code)

@@ -1,4 +1,3 @@
-host = {"eval": eval};
 environment = [{}];
 target = "js";
 nil63 = function (x) {
@@ -1236,7 +1235,7 @@ compile_file = function (path) {
   var __form1 = compiler.expand(join(["do"], __body));
   return(compiler.compile(__form1, {_stash: true, stmt: true}));
 };
-load = function (path) {
+_load = function (path) {
   var __previous = target;
   target = "js";
   var __code = compile_file(path);
@@ -1263,7 +1262,7 @@ var usage = function () {
 var main = function () {
   var __arg = hd(system.argv);
   if (__arg && script_file63(__arg)) {
-    return(load(__arg));
+    return(_load(__arg));
   } else {
     if (__arg === "-h" || __arg === "--help") {
       return(usage());
