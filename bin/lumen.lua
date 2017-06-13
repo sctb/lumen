@@ -474,14 +474,20 @@ function escape(s)
       __e4 = "\\n"
     else
       local __e5
-      if __c == "\"" then
-        __e5 = "\\\""
+      if __c == "\r" then
+        __e5 = "\\r"
       else
         local __e6
-        if __c == "\\" then
-          __e6 = "\\\\"
+        if __c == "\"" then
+          __e6 = "\\\""
         else
-          __e6 = __c
+          local __e7
+          if __c == "\\" then
+            __e7 = "\\\\"
+          else
+            __e7 = __c
+          end
+          __e6 = __e7
         end
         __e5 = __e6
       end
@@ -586,13 +592,13 @@ function setenv(k, ...)
   local ____id1 = ____r72
   local __keys = cut(____id1, 0)
   if string63(__k9) then
-    local __e7
+    local __e8
     if __keys.toplevel then
-      __e7 = hd(environment)
+      __e8 = hd(environment)
     else
-      __e7 = last(environment)
+      __e8 = last(environment)
     end
-    local __frame = __e7
+    local __frame = __e8
     local __entry = __frame[__k9] or {}
     local ____o12 = __keys
     local __k10 = nil

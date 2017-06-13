@@ -1,5 +1,5 @@
-var delimiters = {"(": true, ")": true, ";": true, "\n": true};
-var whitespace = {" ": true, "\t": true, "\n": true};
+var delimiters = {"(": true, ")": true, ";": true, "\r": true, "\n": true};
+var whitespace = {" ": true, "\t": true, "\r": true, "\n": true};
 var stream = function (str, more) {
   return({pos: 0, string: str, len: _35(str), more: more});
 };

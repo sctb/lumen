@@ -320,7 +320,9 @@
   (with s1 ""
     (for i (# s)
       (let c (char s i)
-        (cat! s1 (if (= c "\n") "\\n" c))))))
+        (cat! s1 (if (= c "\n") "\\n"
+                     (= c "\r") "\\r"
+                   c))))))
 
 (define compile-atom (x)
   (if (and (= x "nil") (= target 'lua)) x

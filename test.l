@@ -226,6 +226,7 @@ c"
   (test= (quote (quote a)) ''a)
   (test= "\"a\"" '"a")
   (test= "\"\\n\"" (quote "\n"))
+  (test= "\"\\r\\n\"" (quote "\r\n"))
   (test= "\"\\\\\"" (quote "\\"))
   (test= '(quote "a") ''"a")
   (test= "|(|" '|(|)

@@ -1,5 +1,5 @@
-local delimiters = {["("] = true, [")"] = true, [";"] = true, ["\n"] = true}
-local whitespace = {[" "] = true, ["\t"] = true, ["\n"] = true}
+local delimiters = {["("] = true, [")"] = true, [";"] = true, ["\r"] = true, ["\n"] = true}
+local whitespace = {[" "] = true, ["\t"] = true, ["\r"] = true, ["\n"] = true}
 local function stream(str, more)
   return({pos = 0, string = str, len = _35(str), more = more})
 end
