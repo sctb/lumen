@@ -120,18 +120,6 @@
        (not (atom? x))
        (= (hd x) 'unquote-splicing)))
 
-(define expand-local ((x name value))
-  (setenv name :variable)
-  `(%local ,name ,(macroexpand value)))
-
-(define expand-function ((x args rest: body))
-  (with-bindings (args)
-    `(%function ,args ,@(macroexpand body))))
-
-(define expand-definition ((x name args rest: body))
-  (with-bindings (args)
-    `(,x ,name ,args ,@(macroexpand body))))
-
 (define expand-macro (form)
   (expand1 form true))
 
@@ -147,11 +135,7 @@
       (macroexpand (symbol-expansion form))
       (atom? form) form
     (let x (hd form)
-      (if (= x '%local) (expand-local form)
-          (= x '%function) (expand-function form)
-          (= x '%global-function) (expand-definition form)
-          (= x '%local-function) (expand-definition form)
-          (macro? x) (expand-macro form)
+      (if (macro? x) (expand-macro form)
         (map macroexpand form)))))
 
 (define quasiquote-list (form depth)

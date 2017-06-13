@@ -234,3 +234,19 @@
 
 (define-macro when-compiling body
   (eval `(do ,@body)))
+
+(define-macro %local (name value) :once
+  (setenv name :variable)
+  `(%local ,name ,(macroexpand value)))
+
+(define-macro %function (args rest: body) :once
+  (with-bindings (args)
+    `(%function ,args ,@(map macroexpand body))))
+
+(define-macro %local-function (name args rest: body) :once
+  (with-bindings (args)
+    `(%local-function ,name ,args ,@(map macroexpand body))))
+
+(define-macro %global-function (name args rest: body) :once
+  (with-bindings (args)
+    `(%global-function ,name ,args ,@(map macroexpand body))))
