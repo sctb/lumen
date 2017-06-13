@@ -70,4 +70,4 @@ local function run(command)
   __f2.close(__f2)
   return(__x2)
 end
-return({["write-file"] = write_file, ["directory-exists?"] = directory_exists63, run = run, exit = exit, ["read-file"] = read_file, reload = reload, argv = argv, ["path-separator"] = path_separator, ["path-join"] = path_join, ["get-environment-variable"] = get_environment_variable, ["file-exists?"] = file_exists63, write = write})
+return({["read-file"] = read_file, ["write-file"] = write_file, ["file-exists?"] = file_exists63, ["directory-exists?"] = directory_exists63, ["path-separator"] = path_separator, ["path-join"] = path_join, ["get-environment-variable"] = get_environment_variable, write = write, exit = exit, argv = argv, reload = reload, run = run})
