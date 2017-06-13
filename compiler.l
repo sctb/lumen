@@ -218,9 +218,10 @@
           "instanceof" "let" "new" "return" "switch" "throw"
           "try" "typeof" "var" "void" "with"
           ;; lua
-          "and" "end" "in" "repeat" "while" "break" "false"
-          "local" "return" "do" "for" "nil" "then" "else"
-          "function" "not" "true" "elseif" "if" "or" "until"))
+          "and" "end" "in" "load" "repeat" "while" "break"
+          "false" "local" "return" "do" "for" "nil" "then"
+          "else" "function" "not" "true" "elseif" "if" "or"
+          "until"))
 
 (define-global reserved? (x)
   (has? reserved x))
