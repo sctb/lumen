@@ -1,4 +1,4 @@
-host = {eval: eval};
+host = {"eval": eval};
 environment = [{}];
 target = "js";
 nil63 = function (x) {
@@ -903,7 +903,7 @@ setenv("define-macro", {_stash: true, macro: function (name, args) {
   var ____x103 = ["setenv", ["quote", __name1]];
   ____x103.macro = join(["fn", __args3], __body15);
   var __form1 = ____x103;
-  eval(__form1);
+  _eval(__form1);
   return(__form1);
 }});
 setenv("define-special", {_stash: true, macro: function (name, args) {
@@ -915,7 +915,7 @@ setenv("define-special", {_stash: true, macro: function (name, args) {
   var ____x109 = ["setenv", ["quote", __name3]];
   ____x109.special = join(["fn", __args5], __body17);
   var __form3 = join(____x109, keys(__body17));
-  eval(__form3);
+  _eval(__form3);
   return(__form3);
 }});
 setenv("define-symbol", {_stash: true, macro: function (name, expansion) {
@@ -1186,7 +1186,7 @@ setenv("export", {_stash: true, macro: function () {
 }});
 setenv("when-compiling", {_stash: true, macro: function () {
   var __body43 = unstash(Array.prototype.slice.call(arguments, 0));
-  return(eval(join(["do"], __body43)));
+  return(_eval(join(["do"], __body43)));
 }});
 var reader = require("reader");
 var compiler = require("compiler");
@@ -1194,7 +1194,7 @@ var system = require("system");
 var eval_print = function (form) {
   var ____id = (function () {
     try {
-      return([true, compiler.eval(form)]);
+      return([true, compiler["eval"](form)]);
     }
     catch (__e) {
       return([false, __e]);

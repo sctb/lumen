@@ -1,4 +1,4 @@
-(define-global host (target js: (obj eval: eval) lua: (obj load: load)))
+(define-global host (target js: (obj eval: |eval|) lua: (obj load: |load|)))
 (define-global environment (list (obj)))
 (define-global target (language))
 
