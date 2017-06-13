@@ -1,4 +1,3 @@
-host = {["load"] = load}
 environment = {{}}
 target = "lua"
 function nil63(x)

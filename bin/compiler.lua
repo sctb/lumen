@@ -1019,7 +1019,7 @@ end
 function expand(form)
   return(lower(macroexpand(form)))
 end
-local load1 = loadstring or host["load"]
+local load1 = loadstring or load
 local function run(code)
   local f,e = load1(code)
   if f then

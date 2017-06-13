@@ -568,10 +568,10 @@
 (define-global expand (form)
   (lower (macroexpand form)))
 
-(target js: (set (get global 'require) require))
-(target js: (define run (get host 'eval)))
+(target js: (set (get global 'require) |require|))
+(target js: (define run |eval|))
 
-(target lua: (define load1 (or loadstring (get host 'load))))
+(target lua: (define load1 (or |loadstring| |load|)))
 (target lua:
   (define run (code)
     (let |f,e| (load1 code)

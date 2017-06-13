@@ -1,4 +1,3 @@
-host = {"eval": eval};
 environment = [{}];
 target = "js";
 nil63 = function (x) {
