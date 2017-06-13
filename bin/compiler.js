@@ -402,7 +402,7 @@ indentation = function () {
   }
   return(__s);
 };
-var reserved = {"=": true, "==": true, "+": true, "-": true, "%": true, "*": true, "/": true, "<": true, ">": true, "<=": true, ">=": true, "break": true, "case": true, "catch": true, "class": true, "const": true, "continue": true, "debugger": true, "default": true, "delete": true, "do": true, "else": true, "finally": true, "for": true, "function": true, "if": true, "import": true, "in": true, "instanceof": true, "let": true, "new": true, "return": true, "switch": true, "throw": true, "try": true, "typeof": true, "var": true, "void": true, "with": true, "and": true, "end": true, "repeat": true, "while": true, "false": true, "local": true, "nil": true, "then": true, "not": true, "true": true, "elseif": true, "or": true, "until": true};
+var reserved = {"=": true, "==": true, "+": true, "-": true, "%": true, "*": true, "/": true, "<": true, ">": true, "<=": true, ">=": true, "break": true, "case": true, "catch": true, "class": true, "const": true, "continue": true, "debugger": true, "default": true, "delete": true, "do": true, "else": true, "eval": true, "finally": true, "for": true, "function": true, "if": true, "import": true, "in": true, "instanceof": true, "let": true, "new": true, "return": true, "switch": true, "throw": true, "try": true, "typeof": true, "var": true, "void": true, "with": true, "and": true, "end": true, "repeat": true, "while": true, "false": true, "local": true, "nil": true, "then": true, "not": true, "true": true, "elseif": true, "or": true, "until": true};
 reserved63 = function (x) {
   return(has63(reserved, x));
 };
@@ -1074,9 +1074,9 @@ expand = function (form) {
   return(lower(macroexpand(form)));
 };
 global.require = require;
-var run = host.eval;
+var run = host["eval"];
 _37result = undefined;
-eval = function (form) {
+_eval = function (form) {
   var __previous = target;
   target = "js";
   var __code = compile(expand(["set", "%result", form]));
@@ -1351,6 +1351,6 @@ setenv("%literal", {_stash: true, special: function () {
   return(apply(cat, map(compile, __args111)));
 }});
 exports.run = run;
-exports.eval = eval;
+exports["eval"] = _eval;
 exports.expand = expand;
 exports.compile = compile;

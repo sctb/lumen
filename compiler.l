@@ -213,7 +213,7 @@
   (set-of "=" "==" "+" "-" "%" "*" "/" "<" ">" "<=" ">="
           ;; js
           "break" "case" "catch" "class" "const" "continue"
-          "debugger" "default" "delete" "do" "else"
+          "debugger" "default" "delete" "do" "else" "eval"
           "finally" "for" "function" "if" "import" "in"
           "instanceof" "let" "new" "return" "switch" "throw"
           "try" "typeof" "var" "void" "with"
