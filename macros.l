@@ -57,8 +57,9 @@
 (define-macro let (bs rest: body)
   (if (atom? bs) `(let (,bs ,(hd body)) ,@(tl body))
       (none? bs) `(do ,@body)
-    (let ((lh rh rest: bs2) bs
-          (id val rest: bs1) (bind lh rh))
+    (let (own (and (= target 'js) (get body 'own))
+          (lh rh rest: bs2) bs
+          (id val rest: bs1) (bind lh rh own))
       (let renames ()
         (unless (id-literal? id)
           (let id1 (unique id)
