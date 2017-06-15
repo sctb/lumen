@@ -1088,6 +1088,7 @@ c"
     (define g () nil)
     (f 1 'x g)
     (test= (list 'x g) l))
-  (test= nil ((fn (:keys) keys))))
+  (test= nil ((fn (:keys) keys)))
+  (test= nil ((fn ((:keys)) keys) ())))
 
 (run)

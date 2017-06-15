@@ -71,11 +71,11 @@
       (with bs (list id rh)
         (each (k v) lh
           (let x (if (= k 'rest)
-                     `(cut ,id ,(# lh))
-                     own?
-                     `(if (has? ,id ',(bias k))
-                        (get ,id ',(bias k)))
-                    `(get ,id ',(bias k)))
+                    `(cut ,id ,(# lh))
+                    (number? k) `(get ,id ',(bias k))
+                    (not own?) `(get ,id ',k)
+                  `(if (has? ,id ',k)
+                     (get ,id ',k)))
             (when (is? k)
               (let k (if (= v true) k v)
                 (join! bs (bind k x))))))))))
@@ -92,7 +92,7 @@
         '(unstash (list |...|))))
     (if (atom? args)
         (list args1 `(let ,(list args (rest)) ,@body))
-      (let (bs () ks ())
+      (let bs ()
         (let-unique (r)
           (each (k v) args
             (when (number? k)
@@ -104,8 +104,8 @@
             (join! bs (list r (rest)))
             (step v args1
               (join! bs (list v `(destash! ,v ,r))))
-            (join! ks (list (keys args) r)))
-        (list args1 `(let ,bs (let ,ks :own ,@body))))))))
+            (join! bs (list (keys args) r))))
+        (list args1 `(let ,bs :own ,@body))))))
 
 (define quoting? (depth)
   (number? depth))
