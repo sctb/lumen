@@ -749,11 +749,12 @@ setenv("let", {_stash = true, macro = function (bs, ...)
     if none63(__bs11) then
       return(join({"do"}, __body9))
     else
+      local __own1 = target == "js" and __body9.own
       local ____id15 = __bs11
       local __lh3 = ____id15[1]
       local __rh3 = ____id15[2]
       local __bs21 = cut(____id15, 2)
-      local ____id16 = bind(__lh3, __rh3)
+      local ____id16 = bind(__lh3, __rh3, __own1)
       local __id17 = ____id16[1]
       local __val1 = ____id16[2]
       local __bs12 = cut(____id16, 2)

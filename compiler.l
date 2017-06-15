@@ -65,14 +65,17 @@
       (inc k)))
   k)
 
-(define-global bind (lh rh)
+(define-global bind (lh rh own?)
   (if (atom? lh) `(,lh ,rh)
     (let-unique (id)
       (with bs (list id rh)
         (each (k v) lh
           (let x (if (= k 'rest)
                      `(cut ,id ,(# lh))
-                   `(get ,id ',(bias k)))
+                     (number? k) `(get ,id ',(bias k))
+                     (not own?) `(get ,id ',k)
+                   `(if (has? ,id ',k)
+                      (get ,id ',k)))
             (when (is? k)
               (let k (if (= v true) k v)
                 (join! bs (bind k x))))))))))
@@ -99,12 +102,10 @@
                   (join! bs (list v x))))))
           (when (keys? args)
             (join! bs (list r (rest)))
-            (let n (# args1)
-              (for i n
-                (let v (at args1 i)
-                  (join! bs (list v `(destash! ,v ,r))))))
+            (step v args1
+              (join! bs (list v `(destash! ,v ,r))))
             (join! bs (list (keys args) r))))
-        (list args1 `(let ,bs ,@body))))))
+        (list args1 `(let ,bs :own ,@body))))))
 
 (define quoting? (depth)
   (number? depth))

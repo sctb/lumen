@@ -858,11 +858,12 @@ setenv("let", {_stash: true, macro: function (bs) {
     if (none63(__bs11)) {
       return(join(["do"], __body9));
     } else {
+      var __own1 = target === "js" && __body9.own;
       var ____id15 = __bs11;
       var __lh3 = ____id15[0];
       var __rh3 = ____id15[1];
       var __bs21 = cut(____id15, 2);
-      var ____id16 = bind(__lh3, __rh3);
+      var ____id16 = bind(__lh3, __rh3, __own1);
       var __id17 = ____id16[0];
       var __val1 = ____id16[1];
       var __bs12 = cut(____id16, 2);
