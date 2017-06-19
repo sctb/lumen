@@ -254,7 +254,7 @@
 (let (names (obj))
   (define-global unique (x)
     (let x (id x)
-      (if (get names x)
+      (if (has? names x)
           (let i (get names x)
             (inc (get names x))
             (unique (cat x i)))
