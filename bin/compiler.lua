@@ -423,15 +423,19 @@ function unique(x)
   end
 end
 function key(k)
-  local __i12 = inner(k)
-  if valid_id63(__i12) then
-    return(__i12)
-  else
-    if target == "js" then
-      return(k)
+  if string_literal63(k) then
+    local __i12 = inner(k)
+    if valid_id63(__i12) then
+      return(__i12)
     else
-      return("[" .. k .. "]")
+      if target == "js" then
+        return(k)
+      else
+        return("[" .. k .. "]")
+      end
     end
+  else
+    return("[" .. k .. "]")
   end
 end
 function mapo(f, t)
@@ -1276,9 +1280,6 @@ setenv("%object", {_stash = true, special = function (...)
       local ____id30 = __v12
       local __k15 = ____id30[1]
       local __v13 = ____id30[2]
-      if not string63(__k15) then
-        error("Illegal key: " .. str(__k15))
-      end
       __s9 = __s9 .. __c9 .. key(__k15) .. __sep1 .. compile(__v13)
       __c9 = ", "
     end

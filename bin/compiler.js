@@ -465,15 +465,19 @@ unique = function (x) {
   }
 };
 key = function (k) {
-  var __i12 = inner(k);
-  if (valid_id63(__i12)) {
-    return(__i12);
-  } else {
-    if (target === "js") {
-      return(k);
+  if (string_literal63(k)) {
+    var __i12 = inner(k);
+    if (valid_id63(__i12)) {
+      return(__i12);
     } else {
-      return("[" + k + "]");
+      if (target === "js") {
+        return(k);
+      } else {
+        return("[" + k + "]");
+      }
     }
+  } else {
+    return("[" + k + "]");
   }
 };
 mapo = function (f, t) {
@@ -1337,9 +1341,6 @@ setenv("%object", {_stash: true, special: function () {
       var ____id30 = __v12;
       var __k23 = ____id30[0];
       var __v13 = ____id30[1];
-      if (! string63(__k23)) {
-        throw new Error("Illegal key: " + str(__k23));
-      }
       __s9 = __s9 + __c9 + key(__k23) + __sep1 + compile(__v13);
       __c9 = ", ";
     }
