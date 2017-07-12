@@ -79,7 +79,7 @@
            ,@body)))))
 
 (define-macro define-macro (name args rest: body)
-  (let form `(setenv ',name macro: (fn ,args ,@body))
+  (let form `(setenv ',name macro: (fn ,args ,@body) ,@(keys body))
     (eval form)
     form))
 

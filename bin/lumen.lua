@@ -792,7 +792,7 @@ setenv("define-macro", {_stash = true, macro = function (name, args, ...)
   local __body15 = cut(____id23, 0)
   local ____x114 = {"setenv", {"quote", __name1}}
   ____x114.macro = join({"fn", __args3}, __body15)
-  local __form1 = ____x114
+  local __form1 = join(____x114, keys(__body15))
   _eval(__form1)
   return(__form1)
 end})

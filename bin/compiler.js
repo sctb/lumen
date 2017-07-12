@@ -256,7 +256,11 @@ var expand_definition = function (__x46) {
   return(____x49);
 };
 var expand_macro = function (form) {
-  return(macroexpand(expand1(form)));
+  if (getenv(hd(form), "expanded")) {
+    return(expand1(form));
+  } else {
+    return(macroexpand(expand1(form)));
+  }
 };
 expand1 = function (__x51) {
   var ____id4 = __x51;
