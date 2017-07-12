@@ -1145,11 +1145,15 @@ function _load(path)
   target = __previous
   return(compiler.run(__code))
 end
-local function run_file(path)
-  return(compiler.run(system["read-file"](path)))
-end
 local function script_file63(path)
   return(not( "-" == char(path, 0) or ".js" == clip(path, _35(path) - 3) or ".lua" == clip(path, _35(path) - 4)))
+end
+local function run_file(path)
+  if script_file63(path) then
+    return(_load(path))
+  else
+    return(compiler.run(system["read-file"](path)))
+  end
 end
 local function usage()
   print("usage: lumen [<file> <arguments> | options <object files>]")
