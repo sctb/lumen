@@ -274,17 +274,18 @@ sort = function (l, f) {
   }
   return l.sort(__e6);
 };
-map = function (f, x) {
-  var __t1 = [];
-  var ____x6 = x;
-  var ____i9 = 0;
-  while (____i9 < _35(____x6)) {
-    var __v3 = ____x6[____i9];
-    var __y2 = f(__v3);
-    if (is63(__y2)) {
-      add(__t1, __y2);
+map = function (f, x, l, from) {
+  var __t1 = l || [];
+  var __i9 = 0;
+  while (__i9 < _35(x)) {
+    if (__i9 >= (from || 0)) {
+      var __v3 = x[__i9];
+      var __y2 = f(__v3);
+      if (is63(__y2)) {
+        add(__t1, __y2);
+      }
     }
-    ____i9 = ____i9 + 1;
+    __i9 = __i9 + 1;
   }
   var ____o4 = x;
   var __k6 = undefined;
@@ -335,7 +336,7 @@ empty63 = function (t) {
   var ____o6 = t;
   var ____i12 = undefined;
   for (____i12 in ____o6) {
-    var __x7 = ____o6[____i12];
+    var __x6 = ____o6[____i12];
     var __e9;
     if (numeric63(____i12)) {
       __e9 = parseInt(____i12);
