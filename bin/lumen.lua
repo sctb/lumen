@@ -237,17 +237,18 @@ function sort(l, f)
   table.sort(l, f)
   return l
 end
-function map(f, x)
-  local __t1 = {}
-  local ____x7 = x
-  local ____i9 = 0
-  while ____i9 < _35(____x7) do
-    local __v3 = ____x7[____i9 + 1]
-    local __y2 = f(__v3)
-    if is63(__y2) then
-      add(__t1, __y2)
+function map(f, x, l, from)
+  local __t1 = l or {}
+  local __i9 = 0
+  while __i9 < _35(x) do
+    if __i9 >= (from or 0) then
+      local __v3 = x[__i9 + 1]
+      local __y2 = f(__v3)
+      if is63(__y2) then
+        add(__t1, __y2)
+      end
     end
-    ____i9 = ____i9 + 1
+    __i9 = __i9 + 1
   end
   local ____o4 = x
   local __k3 = nil
@@ -284,7 +285,7 @@ function empty63(t)
   local ____o6 = t
   local ____i12 = nil
   for ____i12 in next, ____o6 do
-    local __x8 = ____o6[____i12]
+    local __x7 = ____o6[____i12]
     return false
   end
   return true

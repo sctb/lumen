@@ -155,12 +155,14 @@
     lua: (do ((get table 'sort) l f) l)
     js: ((get l 'sort) (when f (fn (a b) (if (f a b) -1 1))))))
 
-(define-global map (f x)
-  (with t ()
-    (step v x
-      (let y (f v)
-        (if (is? y)
-          (add t y))))
+(define-global map (f x l from)
+  (with t (or l ())
+    (for i (# x)
+      (when (>= i (or from 0))
+        (let (v (at x i)
+              y (f v))
+          (if (is? y)
+            (add t y)))))
     (each (k v) x
       (unless (number? k)
         (let y (f v)
