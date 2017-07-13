@@ -928,18 +928,15 @@ setenv("guard", {_stash = true, macro = function (expr)
   if target == "js" then
     return({{"fn", join(), {"%try", {"list", true, expr}}}})
   else
-    local __x249 = unique("x")
-    local __msg1 = unique("msg")
-    local __trace1 = unique("trace")
-    local ____x257 = {"obj"}
-    ____x257.stack = {{"get", "debug", {"quote", "traceback"}}}
-    ____x257.message = {"if", {"string?", "m"}, {"clip", "m", {"+", {"search", "m", "\": \""}, 2}}, {"nil?", "m"}, "\"\"", {"str", "m"}}
-    return({"list", {"xpcall", {"fn", join(), expr}, {"fn", {"m"}, {"if", {"obj?", "m"}, "m", ____x257}}}})
+    local ____x255 = {"obj"}
+    ____x255.stack = {{"get", "debug", {"quote", "traceback"}}}
+    ____x255.message = {"if", {"string?", "m"}, {"clip", "m", {"+", {"search", "m", "\": \""}, 2}}, {"nil?", "m"}, "\"\"", {"str", "m"}}
+    return({"list", {"xpcall", {"fn", join(), expr}, {"fn", {"m"}, {"if", {"obj?", "m"}, "m", ____x255}}}})
   end
 end})
 setenv("each", {_stash = true, macro = function (x, t, ...)
   local ____r61 = unstash({...})
-  local __x283 = destash33(x, ____r61)
+  local __x281 = destash33(x, ____r61)
   local __t1 = destash33(t, ____r61)
   local ____id52 = ____r61
   local __body37 = cut(____id52, 0)
@@ -947,14 +944,14 @@ setenv("each", {_stash = true, macro = function (x, t, ...)
   local __n3 = unique("n")
   local __i3 = unique("i")
   local __e8
-  if atom63(__x283) then
-    __e8 = {__i3, __x283}
+  if atom63(__x281) then
+    __e8 = {__i3, __x281}
   else
     local __e9
-    if _35(__x283) > 1 then
-      __e9 = __x283
+    if _35(__x281) > 1 then
+      __e9 = __x281
     else
-      __e9 = {__i3, hd(__x283)}
+      __e9 = {__i3, hd(__x281)}
     end
     __e8 = __e9
   end
@@ -983,9 +980,9 @@ setenv("step", {_stash = true, macro = function (v, t, ...)
   local __t3 = destash33(t, ____r65)
   local ____id57 = ____r65
   local __body41 = cut(____id57, 0)
-  local __x317 = unique("x")
+  local __x315 = unique("x")
   local __i7 = unique("i")
-  return({"let", {__x317, __t3}, {"for", __i7, {"#", __x317}, join({"let", {__v9, {"at", __x317, __i7}}}, __body41)}})
+  return({"let", {__x315, __t3}, {"for", __i7, {"#", __x315}, join({"let", {__v9, {"at", __x315, __i7}}}, __body41)}})
 end})
 setenv("set-of", {_stash = true, macro = function (...)
   local __xs1 = unstash({...})
@@ -993,8 +990,8 @@ setenv("set-of", {_stash = true, macro = function (...)
   local ____o5 = __xs1
   local ____i9 = nil
   for ____i9 in next, ____o5 do
-    local __x328 = ____o5[____i9]
-    __l3[__x328] = true
+    local __x326 = ____o5[____i9]
+    __l3[__x326] = true
   end
   return(join({"obj"}, __l3))
 end})
@@ -1038,8 +1035,8 @@ setenv("dec", {_stash = true, macro = function (n, by)
   return({"set", n, {"-", n, __e12}})
 end})
 setenv("with-indent", {_stash = true, macro = function (form)
-  local __x356 = unique("x")
-  return({"do", {"inc", "indent-level"}, {"with", __x356, form, {"dec", "indent-level"}}})
+  local __x354 = unique("x")
+  return({"do", {"inc", "indent-level"}, {"with", __x354, form, {"dec", "indent-level"}}})
 end})
 setenv("export", {_stash = true, macro = function (...)
   local __names5 = unstash({...})
@@ -1048,16 +1045,16 @@ setenv("export", {_stash = true, macro = function (...)
       return({"set", {"get", "exports", {"quote", k}}, k})
     end, __names5)))
   else
-    local __x373 = {}
+    local __x371 = {}
     local ____o7 = __names5
     local ____i11 = nil
     for ____i11 in next, ____o7 do
       local __k6 = ____o7[____i11]
-      __x373[__k6] = __k6
+      __x371[__k6] = __k6
     end
     return({"return", join({"%object"}, mapo(function (x)
       return(x)
-    end, __x373))})
+    end, __x371))})
   end
 end})
 setenv("when-compiling", {_stash = true, macro = function (...)
@@ -1200,10 +1197,10 @@ local function main()
         end
         __i = __i + 1
       end
-      local ____x3 = __pre
+      local ____x2 = __pre
       local ____i1 = 0
-      while ____i1 < _35(____x3) do
-        local __file = ____x3[____i1 + 1]
+      while ____i1 < _35(____x2) do
+        local __file = ____x2[____i1 + 1]
         run_file(__file)
         ____i1 = ____i1 + 1
       end
