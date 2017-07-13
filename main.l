@@ -45,13 +45,15 @@
       (set target previous)
       ((get compiler 'run) code))))
 
-(define run-file (path)
-  ((get compiler 'run) ((get system 'read-file) path)))
-
 (define script-file? (path)
   (not (or (= "-" (char path 0))
            (= ".js" (clip path (- (# path) 3)))
            (= ".lua" (clip path (- (# path) 4))))))
+
+(define run-file (path)
+  (if (script-file? path)
+      (load path)
+    ((get compiler 'run) ((get system 'read-file) path))))
 
 (define usage ()
   (print "usage: lumen [<file> <arguments> | options <object files>]")

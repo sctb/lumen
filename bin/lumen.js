@@ -1239,11 +1239,15 @@ _load = function (path) {
   target = __previous;
   return compiler.run(__code);
 };
-var run_file = function (path) {
-  return compiler.run(system["read-file"](path));
-};
 var script_file63 = function (path) {
   return !( "-" === char(path, 0) || ".js" === clip(path, _35(path) - 3) || ".lua" === clip(path, _35(path) - 4));
+};
+var run_file = function (path) {
+  if (script_file63(path)) {
+    return _load(path);
+  } else {
+    return compiler.run(system["read-file"](path));
+  }
 };
 var usage = function () {
   print("usage: lumen [<file> <arguments> | options <object files>]");
