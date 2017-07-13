@@ -1,7 +1,7 @@
 var delimiters = {"(": true, ")": true, ";": true, "\r": true, "\n": true};
 var whitespace = {" ": true, "\t": true, "\r": true, "\n": true};
 var stream = function (str, more) {
-  return({pos: 0, string: str, len: _35(str), more: more});
+  return {pos: 0, string: str, len: _35(str), more: more};
 };
 var peek_char = function (s) {
   var ____id = s;
@@ -9,14 +9,14 @@ var peek_char = function (s) {
   var __len = ____id.len;
   var __string = ____id.string;
   if (__pos < __len) {
-    return(char(__string, __pos));
+    return char(__string, __pos);
   }
 };
 var read_char = function (s) {
   var __c = peek_char(s);
   if (__c) {
     s.pos = s.pos + 1;
-    return(__c);
+    return __c;
   }
 };
 var skip_non_code = function (s) {
@@ -46,9 +46,9 @@ var read = function (s) {
   skip_non_code(s);
   var __c2 = peek_char(s);
   if (is63(__c2)) {
-    return((read_table[__c2] || read_table[""])(s));
+    return (read_table[__c2] || read_table[""])(s);
   } else {
-    return(eof);
+    return eof;
   }
 };
 var read_all = function (s) {
@@ -60,19 +60,19 @@ var read_all = function (s) {
     }
     add(__l, __form);
   }
-  return(__l);
+  return __l;
 };
 read_string = function (str, more) {
   var __x = read(stream(str, more));
   if (!( __x === eof)) {
-    return(__x);
+    return __x;
   }
 };
 var key63 = function (atom) {
-  return(string63(atom) && _35(atom) > 1 && char(atom, edge(atom)) === ":");
+  return string63(atom) && _35(atom) > 1 && char(atom, edge(atom)) === ":";
 };
 var flag63 = function (atom) {
-  return(string63(atom) && _35(atom) > 1 && char(atom, 0) === ":");
+  return string63(atom) && _35(atom) > 1 && char(atom, 0) === ":";
 };
 var expected = function (s, c) {
   var ____id1 = s;
@@ -86,14 +86,14 @@ var expected = function (s, c) {
     throw new Error("Expected " + c + " at " + __pos1);
     __e = undefined;
   }
-  return(__e);
+  return __e;
 };
 var wrap = function (s, x) {
   var __y = read(s);
   if (__y === s.more) {
-    return(__y);
+    return __y;
   } else {
-    return([x, __y]);
+    return [x, __y];
   }
 };
 var hex_prefix63 = function (str) {
@@ -113,19 +113,19 @@ var hex_prefix63 = function (str) {
   } else {
     __e2 = __id3;
   }
-  return(__e2);
+  return __e2;
 };
 var maybe_number = function (str) {
   if (hex_prefix63(str)) {
-    return(parseInt(str, 16));
+    return parseInt(str, 16);
   } else {
     if (number_code63(code(str, edge(str)))) {
-      return(number(str));
+      return number(str);
     }
   }
 };
 var real63 = function (x) {
-  return(number63(x) && ! nan63(x) && ! inf63(x));
+  return number63(x) && ! nan63(x) && ! inf63(x);
 };
 read_table[""] = function (s) {
   var __str = "";
@@ -138,16 +138,16 @@ read_table[""] = function (s) {
     }
   }
   if (__str === "true") {
-    return(true);
+    return true;
   } else {
     if (__str === "false") {
-      return(false);
+      return false;
     } else {
       var __n1 = maybe_number(__str);
       if (real63(__n1)) {
-        return(__n1);
+        return __n1;
       } else {
-        return(__str);
+        return __str;
       }
     }
   }
@@ -181,7 +181,7 @@ read_table["("] = function (s) {
       }
     }
   }
-  return(__r16);
+  return __r16;
 };
 read_table[")"] = function (s) {
   throw new Error("Unexpected ) at " + s.pos);
@@ -205,7 +205,7 @@ read_table["\""] = function (s) {
       }
     }
   }
-  return(__r19);
+  return __r19;
 };
 read_table["|"] = function (s) {
   read_char(s);
@@ -223,23 +223,23 @@ read_table["|"] = function (s) {
       }
     }
   }
-  return(__r21);
+  return __r21;
 };
 read_table["'"] = function (s) {
   read_char(s);
-  return(wrap(s, "quote"));
+  return wrap(s, "quote");
 };
 read_table["`"] = function (s) {
   read_char(s);
-  return(wrap(s, "quasiquote"));
+  return wrap(s, "quasiquote");
 };
 read_table[","] = function (s) {
   read_char(s);
   if (peek_char(s) === "@") {
     read_char(s);
-    return(wrap(s, "unquote-splicing"));
+    return wrap(s, "unquote-splicing");
   } else {
-    return(wrap(s, "unquote"));
+    return wrap(s, "unquote");
   }
 };
 exports.stream = stream;
