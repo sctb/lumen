@@ -1,7 +1,7 @@
 local delimiters = {["("] = true, [")"] = true, [";"] = true, ["\r"] = true, ["\n"] = true}
 local whitespace = {[" "] = true, ["\t"] = true, ["\r"] = true, ["\n"] = true}
 local function stream(str, more)
-  return({pos = 0, string = str, len = _35(str), more = more})
+  return {pos = 0, string = str, len = _35(str), more = more}
 end
 local function peek_char(s)
   local ____id = s
@@ -9,14 +9,14 @@ local function peek_char(s)
   local __len = ____id.len
   local __string = ____id.string
   if __pos < __len then
-    return(char(__string, __pos))
+    return char(__string, __pos)
   end
 end
 local function read_char(s)
   local __c = peek_char(s)
   if __c then
     s.pos = s.pos + 1
-    return(__c)
+    return __c
   end
 end
 local function skip_non_code(s)
@@ -46,9 +46,9 @@ local function read(s)
   skip_non_code(s)
   local __c2 = peek_char(s)
   if is63(__c2) then
-    return((read_table[__c2] or read_table[""])(s))
+    return (read_table[__c2] or read_table[""])(s)
   else
-    return(eof)
+    return eof
   end
 end
 local function read_all(s)
@@ -60,19 +60,19 @@ local function read_all(s)
     end
     add(__l, __form)
   end
-  return(__l)
+  return __l
 end
 function read_string(str, more)
   local __x = read(stream(str, more))
   if not( __x == eof) then
-    return(__x)
+    return __x
   end
 end
 local function key63(atom)
-  return(string63(atom) and _35(atom) > 1 and char(atom, edge(atom)) == ":")
+  return string63(atom) and _35(atom) > 1 and char(atom, edge(atom)) == ":"
 end
 local function flag63(atom)
-  return(string63(atom) and _35(atom) > 1 and char(atom, 0) == ":")
+  return string63(atom) and _35(atom) > 1 and char(atom, 0) == ":"
 end
 local function expected(s, c)
   local ____id1 = s
@@ -86,14 +86,14 @@ local function expected(s, c)
     error("Expected " .. c .. " at " .. __pos1)
     __e = nil
   end
-  return(__e)
+  return __e
 end
 local function wrap(s, x)
   local __y = read(s)
   if __y == s.more then
-    return(__y)
+    return __y
   else
-    return({x, __y})
+    return {x, __y}
   end
 end
 local function hex_prefix63(str)
@@ -113,19 +113,19 @@ local function hex_prefix63(str)
   else
     __e2 = __id3
   end
-  return(__e2)
+  return __e2
 end
 local function maybe_number(str)
   if hex_prefix63(str) then
-    return(tonumber(str))
+    return tonumber(str)
   else
     if number_code63(code(str, edge(str))) then
-      return(number(str))
+      return number(str)
     end
   end
 end
 local function real63(x)
-  return(number63(x) and not nan63(x) and not inf63(x))
+  return number63(x) and not nan63(x) and not inf63(x)
 end
 read_table[""] = function (s)
   local __str = ""
@@ -138,16 +138,16 @@ read_table[""] = function (s)
     end
   end
   if __str == "true" then
-    return(true)
+    return true
   else
     if __str == "false" then
-      return(false)
+      return false
     else
       local __n1 = maybe_number(__str)
       if real63(__n1) then
-        return(__n1)
+        return __n1
       else
-        return(__str)
+        return __str
       end
     end
   end
@@ -181,7 +181,7 @@ read_table["("] = function (s)
       end
     end
   end
-  return(__r16)
+  return __r16
 end
 read_table[")"] = function (s)
   error("Unexpected ) at " .. s.pos)
@@ -205,7 +205,7 @@ read_table["\""] = function (s)
       end
     end
   end
-  return(__r19)
+  return __r19
 end
 read_table["|"] = function (s)
   read_char(s)
@@ -223,23 +223,23 @@ read_table["|"] = function (s)
       end
     end
   end
-  return(__r21)
+  return __r21
 end
 read_table["'"] = function (s)
   read_char(s)
-  return(wrap(s, "quote"))
+  return wrap(s, "quote")
 end
 read_table["`"] = function (s)
   read_char(s)
-  return(wrap(s, "quasiquote"))
+  return wrap(s, "quasiquote")
 end
 read_table[","] = function (s)
   read_char(s)
   if peek_char(s) == "@" then
     read_char(s)
-    return(wrap(s, "unquote-splicing"))
+    return wrap(s, "unquote-splicing")
   else
-    return(wrap(s, "unquote"))
+    return wrap(s, "unquote")
   end
 end
-return({stream = stream, read = read, ["read-all"] = read_all, ["read-string"] = read_string, ["read-table"] = read_table})
+return {stream = stream, read = read, ["read-all"] = read_all, ["read-string"] = read_string, ["read-table"] = read_table}
