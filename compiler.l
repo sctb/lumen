@@ -133,7 +133,9 @@
     `(,x ,name ,args ,@(macroexpand body))))
 
 (define expand-macro (form)
-  (macroexpand (expand1 form)))
+  (if (getenv (hd form) 'expanded)
+      (expand1 form)
+    (macroexpand (expand1 form))))
 
 (define-global expand1 ((name rest: body))
   (apply (macro-function name) body))

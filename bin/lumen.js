@@ -901,7 +901,7 @@ setenv("define-macro", {_stash: true, macro: function (name, args) {
   var __body15 = cut(____id23, 0);
   var ____x103 = ["setenv", ["quote", __name1]];
   ____x103.macro = join(["fn", __args3], __body15);
-  var __form1 = ____x103;
+  var __form1 = join(____x103, keys(__body15));
   _eval(__form1);
   return(__form1);
 }});

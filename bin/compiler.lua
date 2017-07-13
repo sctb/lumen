@@ -221,7 +221,11 @@ local function expand_definition(__x46)
   return(____x49)
 end
 local function expand_macro(form)
-  return(macroexpand(expand1(form)))
+  if getenv(hd(form), "expanded") then
+    return(expand1(form))
+  else
+    return(macroexpand(expand1(form)))
+  end
 end
 function expand1(__x51)
   local ____id4 = __x51
