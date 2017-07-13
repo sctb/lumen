@@ -1211,7 +1211,7 @@ setenv("return", {_stash: true, special: function (x) {
   if (nil63(x)) {
     __e55 = "return";
   } else {
-    __e55 = "return(" + compile(x) + ")";
+    __e55 = "return " + compile(x);
   }
   var __x167 = __e55;
   return(indentation() + __x167);

@@ -1164,7 +1164,7 @@ setenv("return", {_stash = true, special = function (x)
   if nil63(x) then
     __e47 = "return"
   else
-    __e47 = "return(" .. compile(x) .. ")"
+    __e47 = "return " .. compile(x)
   end
   local __x171 = __e47
   return(indentation() .. __x171)
