@@ -10,7 +10,8 @@
             (dec i)))))))
 
 (define macro-function (k)
-  (getenv k 'macro))
+  (let f (getenv k 'macro)
+    (if (string? f) (macro-function f) f)))
 
 (define macro? (k)
   (is? (macro-function k)))

@@ -95,7 +95,7 @@
 (define-macro define-reader ((char s) rest: body)
   `(set (get read-table ,char) (fn (,s) ,@body)))
 
-(define-macro define (name x rest: body)
+(define-macro define-local (name x rest: body)
   (setenv name :variable)
   (if (some? body)
       `(%local-function ,name ,@(bind* x body))
@@ -106,6 +106,8 @@
   (if (some? body)
       `(%global-function ,name ,@(bind* x body))
     `(set ,name ,x)))
+
+(setenv 'define macro: 'define-local)
 
 (define-macro with-frame body
   (let-unique (x)
@@ -118,6 +120,7 @@
    `(with-frame
       (each ,x ,names
         (setenv ,x :variable))
+      (setenv 'define macro: 'define-local)
       ,@body)))
 
 (define-macro let-macro (definitions rest: body)

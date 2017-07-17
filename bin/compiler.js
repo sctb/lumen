@@ -19,7 +19,12 @@ var getenv = function (k, p) {
   }
 };
 var macro_function = function (k) {
-  return getenv(k, "macro");
+  var __f = getenv(k, "macro");
+  if (string63(__f)) {
+    return macro_function(__f);
+  } else {
+    return __f;
+  }
 };
 var macro63 = function (k) {
   return is63(macro_function(k));
@@ -227,6 +232,7 @@ var expand_function = function (__x41) {
     var ____i51 = __e27;
     setenv(____x43, {_stash: true, variable: true});
   }
+  setenv("define", {_stash: true, macro: "define-local"});
   var ____x44 = join(["%function", __args], macroexpand(__body));
   drop(environment);
   return ____x44;
@@ -251,6 +257,7 @@ var expand_definition = function (__x46) {
     var ____i61 = __e28;
     setenv(____x48, {_stash: true, variable: true});
   }
+  setenv("define", {_stash: true, macro: "define-local"});
   var ____x49 = join([__x47, __name1, __args11], macroexpand(__body1));
   drop(environment);
   return ____x49;
@@ -687,13 +694,13 @@ var parenthesize_call63 = function (x) {
   return ! atom63(x) && hd(x) === "%function" || precedence(x) > 0;
 };
 var compile_call = function (form) {
-  var __f = hd(form);
-  var __f1 = compile(__f);
+  var __f1 = hd(form);
+  var __f11 = compile(__f1);
   var __args3 = compile_args(stash42(tl(form)));
-  if (parenthesize_call63(__f)) {
-    return "(" + __f1 + ")" + __args3;
+  if (parenthesize_call63(__f1)) {
+    return "(" + __f11 + ")" + __args3;
   } else {
-    return __f1 + __args3;
+    return __f11 + __args3;
   }
 };
 var op_delims = function (parent, child) {
