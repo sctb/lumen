@@ -31,10 +31,7 @@
   (is? (symbol-expansion k)))
 
 (define variable? (k)
-  (let b (first (fn (frame)
-                  (get frame k))
-                (reverse environment))
-    (and (not (atom? b)) (is? (get b 'variable)))))
+  (is? (getenv k 'variable)))
 
 (define-global bound? (x)
   (or (macro? x)
@@ -49,15 +46,6 @@
 
 (define literal (s)
   (if (string-literal? s) s (quoted s)))
-
-(let (names (obj))
-  (define-global unique (x)
-    (if (get names x)
-        (let i (get names x)
-          (inc (get names x))
-          (unique (cat x i)))
-      (do (set (get names x) 1)
-          (cat "_" x)))))
 
 (define stash* (args)
   (if (keys? args)
@@ -95,9 +83,10 @@
 (define-global bind* (args body)
   (let args1 ()
     (define rest ()
+      (set (get args1 'rest) true)
       (if (= target 'js)
           `(unstash (arguments% ,(# args1)))
-        (do (add args1 '|...|) '(unstash (list |...|)))))
+        '(unstash (list |...|))))
     (if (atom? args)
         (list args1 `(let ,(list args (rest)) ,@body))
       (let bs ()
@@ -110,7 +99,7 @@
                   (join! bs (list v x))))))
           (when (keys? args)
             (join! bs (list r (rest)))
-            (let n (if (= target 'lua) (edge args1) (# args1))
+            (let n (# args1)
               (for i n
                 (let v (at args1 i)
                   (join! bs (list v `(destash! ,v ,r))))))
@@ -223,19 +212,19 @@
 (define reserved
   (set-of "=" "==" "+" "-" "%" "*" "/" "<" ">" "<=" ">="
           ;; js
-          "break" "case" "catch" "continue" "debugger"
-          "default" "delete" "do" "else" "finally" "for"
-          "function" "if" "in" "instanceof" "new" "return"
-          "switch" "throw" "try" "typeof" "var" "void" "with"
+          "break" "case" "catch" "class" "const" "continue"
+          "debugger" "default" "delete" "do" "else" "eval"
+          "finally" "for" "function" "if" "import" "in"
+          "instanceof" "let" "new" "return" "switch" "throw"
+          "try" "typeof" "var" "void" "with"
           ;; lua
-          "and" "end" "in" "repeat" "while" "break" "false"
-          "local" "return" "do" "for" "nil" "then" "else"
-          "function" "not" "true" "elseif" "if" "or" "until"))
+          "and" "end" "in" "load" "repeat" "while" "break"
+          "false" "local" "return" "do" "for" "nil" "then"
+          "else" "function" "not" "true" "elseif" "if" "or"
+          "until"))
 
 (define-global reserved? (x)
-  (target
-    lua: (get reserved x)
-    js: ((get reserved 'hasOwnProperty) x)))
+  (has? reserved x))
 
 (define valid-code? (n)
   (or (number-code? n)         ; 0-9
@@ -243,13 +232,34 @@
       (and (> n 96) (< n 123)) ; a-z
       (= n 95)))               ; _
 
-(define-global valid-id? (id)
-  (if (or (none? id) (reserved? id))
-      false
-    (do (for i (# id)
-          (unless (valid-code? (code id i))
-            (return false)))
-        true)))
+(define id (id)
+  (let id1 (if (number-code? (code id 0)) "_" "")
+    (for i (# id)
+      (let (c (char id i)
+            n (code c)
+            c1 (if (and (= c "-")
+                        (not (= id "-")))
+                   "_"
+                   (valid-code? n) c
+                   (= i 0) (cat "_" n)
+                 n))
+        (cat! id1 c1)))
+    (if (reserved? id1)
+        (cat "_" id1)
+        id1)))
+
+(define-global valid-id? (x)
+  (and (some? x) (= x (id x))))
+
+(let (names (obj))
+  (define-global unique (x)
+    (let x (id x)
+      (if (get names x)
+          (let i (get names x)
+            (inc (get names x))
+            (unique (cat x i)))
+        (do (set (get names x) 1)
+            (cat "__" x))))))
 
 (define-global key (k)
   (let i (inner k)
@@ -268,8 +278,8 @@
 (define infix
   `((not: (js: ! lua: ,"not"))
     (:* :/ :%)
-    (:+ :-)
     (cat: (js: + lua: ..))
+    (:+ :-)
     (:< :> :<= :>=)
     (=: (js: === lua: ==))
     (and: (js: && lua: and))
@@ -297,6 +307,9 @@
 (define infix? (x)
   (is? (getop x)))
 
+(define-global infix-operator? (x)
+  (and (obj? x) (infix? (hd x))))
+
 (define compile-args (args)
   (let (s "(" c "")
     (step x args
@@ -308,23 +321,9 @@
   (with s1 ""
     (for i (# s)
       (let c (char s i)
-        (cat! s1 (if (= c "\n") "\\n" c))))))
-
-(define id (id)
-  (let id1 (if (number-code? (code id 0)) "_" "")
-    (for i (# id)
-      (let (c (char id i)
-            n (code c)
-            c1 (if (and (= c "-")
-                        (not (= id "-")))
-                   "_"
-                   (valid-code? n) c
-                   (= i 0) (cat "_" n)
-                 n))
-        (cat! id1 c1)))
-    (if (reserved? id1)
-        (cat "_" id1)
-        id1)))
+        (cat! s1 (if (= c "\n") "\\n"
+                     (= c "\r") "\\r"
+                   c))))))
 
 (define compile-atom (x)
   (if (and (= x "nil") (= target 'lua)) x
@@ -383,7 +382,11 @@
 
 (define-global compile-function (args body :name :prefix)
   (let (id (if name (compile name) "")
-        args (compile-args args)
+        args1 (if (and (= target 'lua)
+                       (get args 'rest))
+                  `(,@args |...|)
+                args)
+        args (compile-args args1)
         body (with-indent (compile body :stmt))
         ind (indentation)
         p (if prefix (cat prefix " ") "")
@@ -411,12 +414,14 @@
       (cat ind form tr))))
 
 (define lower-statement (form tail?)
-  (let (hoist () e (lower form hoist true tail?))
-    (if (and (some? hoist) (is? e))
-        `(do ,@hoist ,e)
-        (is? e) e
-        (> (# hoist) 1) `(do ,@hoist)
-      (hd hoist))))
+  (either
+    (let (hoist () e (lower form hoist true tail?))
+      (if (and (some? hoist) (is? e))
+          `(do ,@hoist ,e)
+          (is? e) e
+          (> (# hoist) 1) `(do ,@hoist)
+        (hd hoist)))
+    '(do)))
 
 (define lower-body (body tail?)
   (lower-statement `(do ,@body) tail?))
@@ -445,7 +450,7 @@
 
 (define lower-set (args hoist stmt? tail?)
   (let ((lh rh) args)
-    (add hoist `(%set ,lh ,(lower rh hoist)))
+    (add hoist `(%set ,(lower lh hoist) ,(lower rh hoist)))
     (unless (and stmt? (not tail?))
       lh)))
 
@@ -563,15 +568,15 @@
 (define-global expand (form)
   (lower (macroexpand form)))
 
-(target js: (set (get module 'filename)
-                 ((get (require 'path) 'resolve) 'repl)))
-(target js: (set (get module 'paths)
-                 ((get (require 'module) '_nodeModulePaths)
-                  (get module 'filename))))
-(target js: (set (get global 'require) require))
-(target js: (define run eval))
+(target js: (set (get |global| 'require) |require|))
+(target js: (define run |eval|))
 
-(target lua: (define load1 (or loadstring load)))
+(target js:
+  (set (get |module| 'filename) ((get (require 'path) 'resolve) "repl")
+       (get |module| 'paths) ((get (require 'module) '_nodeModulePaths)
+                              (get |module| 'filename))))
+
+(target lua: (define load1 (or |loadstring| |load|)))
 (target lua:
   (define run (code)
     (let |f,e| (load1 code)
@@ -587,9 +592,16 @@
       (run code)
       %result)))
 
+(define-global immediate-call? (x)
+  (and (obj? x) (obj? (hd x)) (= (hd (hd x)) '%function)))
+
 (define-special do forms :stmt :tr
   (with s ""
     (step x forms
+      (when (and (= target 'lua)
+                 (immediate-call? x)
+                 (= "\n" (char s (edge s))))
+        (set s (cat (clip s 0 (edge s)) ";\n")))
       (cat! s (compile x :stmt))
       (unless (atom? x)
         (if (or (= (hd x) 'return)
@@ -661,7 +673,7 @@
 (define-special return (x) :stmt
   (let x (if (nil? x)
              "return"
-           (cat "return(" (compile x) ")"))
+           (cat "return " (compile x)))
     (cat (indentation) x)))
 
 (define-special new (x)
@@ -690,15 +702,16 @@
     (cat (indentation) lh " = " rh)))
 
 (define-special get (t k)
-  (let (t (compile t)
+  (let (t1 (compile t)
         k1 (compile k))
-    (when (and (= target 'lua)
-               (= (char t 0) "{"))
-      (set t (cat "(" t ")")))
+    (when (or (and (= target 'lua)
+                   (= (char t1 0) "{"))
+              (infix-operator? t))
+      (set t1 (cat "(" t1 ")")))
     (if (and (string-literal? k)
              (valid-id? (inner k)))
-        (cat t "." (inner k))
-      (cat t "[" k1 "]"))))
+        (cat t1 "." (inner k))
+      (cat t1 "[" k1 "]"))))
 
 (define-special %array forms
   (let (open (if (= target 'lua) "{" "[")

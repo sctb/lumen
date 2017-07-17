@@ -39,6 +39,11 @@
     (test= "nil" (read "nil"))
     (test= 17 (read "17"))
     (test= 0.015 (read "1.5e-2"))
+    (test= 15 (read "0xF"))
+    (test= -15 (read "-0Xf"))
+    (test= "0x" (read "0x"))
+    (test= "-0X" (read "-0X"))
+    (test= "-0Xg" (read "-0Xg"))
     (test= true (read "true"))
     (test= (not true) (read "false"))
     (test= 'hi (read "hi"))
@@ -54,10 +59,6 @@
     (test= 7 (get (read "(1 2 a: 7)") 'a))
     (test= true (get (read "(:a)") 'a))
     (test= 1 (- -1))
-    (test= true (nan? (read "nan")))
-    (test= true (nan? (read "-nan")))
-    (test= true (inf? (read "inf")))
-    (test= true (inf? (read "-inf")))
     (test= "0?" (read "0?"))
     (test= "0!" (read "0!"))
     (test= "0." (read "0."))))
@@ -214,7 +215,8 @@ b
 c"
     (test= 5 (# s)))
   (test= 3 (# "a\nb"))
-  (test= 3 (# "a\\b")))
+  (test= 3 (# "a\\b"))
+  (test= "x3" (cat "x" (+ 1 2))))
 
 (define-test quote
   (test= 7 (quote 7))
@@ -224,15 +226,17 @@ c"
   (test= (quote (quote a)) ''a)
   (test= "\"a\"" '"a")
   (test= "\"\\n\"" (quote "\n"))
+  (test= "\"\\r\\n\"" (quote "\r\n"))
   (test= "\"\\\\\"" (quote "\\"))
   (test= '(quote "a") ''"a")
   (test= "|(|" '|(|)
   (test= (quote unquote) 'unquote)
   (test= (quote (unquote)) '(unquote))
   (test= (quote (unquote a)) '(unquote a))
-  (let x '(10 20 a: 33)
+  (let x '(10 20 a: 33 1a: 44)
     (test= 20 (at x 1))
-    (test= 33 (get x 'a))))
+    (test= 33 (get x 'a))
+    (test= 44 (get x '1a))))
 
 (define-test list
   (test= '() (list))
@@ -328,7 +332,9 @@ c"
   (let (f (fn () 42)
         l (list f)
         t (obj f: f))
-    (test= 42 (f))
+    (f)
+    ((fn ()
+      (test= 42 (f))))
     (test= 42 ((at l 0)))
     (test= 42 ((get t 'f)))
     (test= nil ((fn () (return))))
@@ -396,7 +402,8 @@ c"
         (do (set a 20)
             (test= 20 a)))
     (test= 20 (do (set a 10)
-                  (do (set a 20) a)))))
+                  (do (set a 20) a))))
+  (test= '(do) (expand '(do))))
 
 (define-test if
   (test= 'a (macroexpand '(if a)))
@@ -438,7 +445,8 @@ c"
     (test= 2 (case x a 1 (z) 2 7))
     (test= 2 (case x a 1 (b z) 2 7)))
   (let (n 0 f (fn () (inc n))) ; no multiple eval
-    (test= 'b (case (f) 0 'a 1 'b 'c))))
+    (test= 'b (case (f) 0 'a 1 'b 'c)))
+  (test= 'b ((fn () (case 2 0 (do) 1 'a 2 'b)))))
 
 (define-test while
   (let i 0
@@ -486,7 +494,6 @@ c"
 (define-test at
   (let l '(a b c d)
     (test= 'a (at l 0))
-    (test= 'a l.0)
     (test= 'b (at l 1))
     (set (at l 0) 9)
     (test= 9 (at l 0))
@@ -498,10 +505,13 @@ c"
     (set (get t 'foo) 'bar)
     (test= 'bar (get t 'foo))
     (test= 'bar (get t "foo"))
-    (test= 'bar t.foo)
     (let k 'foo
       (test= 'bar (get t k)))
-    (test= 'bar (get t (cat "f" "oo")))))
+    (test= 'bar (get t (cat "f" "oo"))))
+  (let (t1 (obj) t2 (obj))
+    (set (get (or nil t1 t2) 'foo) 'bar)
+    (test= 'bar (get t1 'foo))
+    (test= nil (get t2 'foo))))
 
 (define-test each
   (let t '(1 2 3 :a b: false)
@@ -648,7 +658,10 @@ c"
     ((fn ()
        (let q 10
          (test= 10 q))
-       (test= 9 q)))))
+       (test= 9 q))))
+  (test= 0 (+ (abs -1)
+              (let abs (fn (x) x)
+                (abs -1)))))
 
 (define-test with
   (test= 10 (with x 9 (inc x))))
@@ -799,10 +812,10 @@ c"
 
 (define-test let-unique
   (let-unique (ham chap)
-    (test= '_ham2 ham)
-    (test= '_chap1 chap)
+    (test= '__ham2 ham)
+    (test= '__chap1 chap)
     (let-unique (ham)
-      (test= '_ham3 ham))))
+      (test= '__ham3 ham))))
 
 (define-test literals
   (test= true true)
@@ -811,6 +824,7 @@ c"
   (test= false (< inf -1e10))
   (test= false (= nan nan))
   (test= true (nan? nan))
+  (test= true (nan? (- nan)))
   (test= true (nan? (* nan 20)))
   (test= -inf (- inf))
   (test= inf (- -inf))
@@ -921,8 +935,8 @@ c"
   (test= (list "a" "b" "") (split "azzbzz" "zz")))
 
 (define-test reduce
-  (test= 'a (reduce (fn (a b) (+ a b)) '() 'a))
-  (test= 'a (reduce (fn (a b) (+ a b)) '(a)))
+  (test= 'a (either (reduce (fn (a b) (+ a b)) '()) 'a))
+  (test= 'a (either (reduce (fn (a b) (+ a b)) '(a)) 'a))
   (test= 6 (reduce (fn (a b) (+ a b)) '(1 2 3)))
   (test= '(1 (2 3))
          (reduce
@@ -995,6 +1009,15 @@ c"
   (test= false (obj? 1))
   (test= false (obj? 'zz))
   (test= false (obj? (fn ()))))
+
+(define-test str
+  (define f (x) x)
+  (let (l () l2 ())
+    (set (get l f) true)
+    (set (get l2 (target js: (str l) lua: l)) true)
+    (let k (target js: f lua: 'function)
+      (test= (cat "(" k ": true)") (str l))
+      (test= (cat "((" k ": true): true)") (str l2)))))
 
 (define-test apply
   (test= 4 (apply (fn (a b) (+ a b)) '(2 2)))

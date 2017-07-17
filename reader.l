@@ -1,5 +1,5 @@
-(define delimiters (set-of "(" ")" ";" "\n"))
-(define whitespace (set-of " " "\t" "\n"))
+(define delimiters (set-of "(" ")" ";" "\r" "\n"))
+(define whitespace (set-of " " "\t" "\r" "\n"))
 
 (define stream (str more)
   (obj pos: 0 string: str len: (# str) more: more))
@@ -66,47 +66,33 @@
     (if (= y (get s 'more)) y
       (list x y))))
 
+(define hex-prefix? (str)
+  (let i (if (= (code str 0) 45) 1 0)  ; "-"
+    (and (= (code str i) 48)           ; "0"
+         (let n (code str (inc i))
+           (or (= n 120) (= n 88)))))) ; "x" or "X"
+
 (define maybe-number (str)
-  (when (number-code? (code str (edge str)))
+  (if (hex-prefix? str)
+      (target js: (parseInt str 16) lua: (tonumber str))
+      (number-code? (code str (edge str)))
     (number str)))
 
 (define real? (x)
   (and (number? x) (not (nan? x)) (not (inf? x))))
 
-(define valid-access? (str)
-  (and (> (# str) 2)
-       (not (= "." (char str 0)))
-       (not (= "." (char str (edge str))))
-       (not (search str ".."))))
-
-(define parse-access (str)
-  (reduce (fn (a b)
-            (let n (number a)
-              (if (is? n)
-                  `(at ,b ,n)
-                `(get ,b (quote ,a)))))
-          (reverse (split str "."))))
-
 (define-reader ("" s) ; atom
-  (let (str "" dot? false)
+  (let (str "")
     (while true
       (let c (peek-char s)
         (if (and c (and (not (get whitespace c))
                         (not (get delimiters c))))
-            (do (if (= c ".") (set dot? true))
-                (cat! str (read-char s)))
+            (cat! str (read-char s))
           (break))))
   (if (= str "true") true
       (= str "false") false
-      (= str "nan") nan
-      (= str "-nan") nan
-      (= str "inf") inf
-      (= str "-inf") -inf
     (let n (maybe-number str)
-      (if (real? n) n
-          (and dot? (valid-access? str))
-          (parse-access str)
-        str)))))
+      (if (real? n) n str)))))
 
 (define-reader ("(" s)
   (read-char s)

@@ -10,6 +10,11 @@
 
 (define-global no (x) (or (nil? x) (= x false)))
 (define-global yes (x) (not (no x)))
+(define-global either (x y) (if (is? x) x y))
+
+(define-global has? (l k)
+  (target js: ((get l 'hasOwnProperty) k)
+          lua: (is? (get l k))))
 
 (define-global # (x)
   (target js: (or (get x 'length) 0) lua: |#x|))
@@ -37,6 +42,7 @@
 
 (define-global nan (/ 0 0))
 (define-global inf (/ 1 0))
+(define-global -inf (- inf))
 
 (define-global nan? (n)
   (not (= n n)))
@@ -111,8 +117,8 @@
         (add l1 (at l i))
         (dec i)))))
 
-(define-global reduce (f x none)
-  (if (none? x) none
+(define-global reduce (f x)
+  (if (none? x) nil
       (one? x) (hd x)
     (f (hd x) (reduce f (tl x)))))
 
@@ -222,22 +228,22 @@
         (add l s)))))
 
 (define-global cat xs
-  (reduce (fn (a b) (cat a b)) xs ""))
+  (either (reduce (fn (a b) (cat a b)) xs) ""))
 
 (define-global + xs
-  (reduce (fn (a b) (+ a b)) xs 0))
+  (either (reduce (fn (a b) (+ a b)) xs) 0))
 
 (define-global - xs
-  (reduce (fn (b a) (- a b)) (reverse xs) 0))
+  (either (reduce (fn (b a) (- a b)) (reverse xs)) 0))
 
 (define-global * xs
-  (reduce (fn (a b) (* a b)) xs 1))
+  (either (reduce (fn (a b) (* a b)) xs) 1))
 
 (define-global / xs
-  (reduce (fn (b a) (/ a b)) (reverse xs) 1))
+  (either (reduce (fn (b a) (/ a b)) (reverse xs)) 1))
 
 (define-global % xs
-  (reduce (fn (b a) (% a b)) (reverse xs) 0))
+  (either (reduce (fn (b a) (% a b)) (reverse xs)) 0))
 
 (define pairwise (f xs)
   (for i (edge xs)
@@ -276,6 +282,7 @@
     (for i (# s)
       (let (c (char s i)
             c1 (if (= c "\n") "\\n"
+                   (= c "\r") "\\r"
                    (= c "\"") "\\\""
                    (= c "\\") "\\\\"
                  c))
@@ -301,7 +308,10 @@
       (each (k v) x
         (if (number? k)
             (set (get xs k) (str v l))
-          (do (add ks (cat k ":"))
+          (do (target lua:
+                (unless (string? k)
+                  (set k (str k l))))
+              (add ks (cat k ":"))
               (add ks (str v l)))))
       (drop l)
       (each v (join xs ks)
