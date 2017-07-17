@@ -96,6 +96,10 @@
 (define-global id-literal? (x)
   (and (string? x) (= (char x 0) "|")))
 
+(define-global insert (l x pos)
+  (target js: (do ((get l 'splice) pos 0 x) nil)
+          lua: ((get table 'insert) l (+ pos 1) x)))
+
 (define-global add (l x)
   (target js: (do ((get l 'push) x) nil)
           lua: ((get table 'insert) l x)))

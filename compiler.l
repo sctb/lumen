@@ -120,20 +120,20 @@
        (not (atom? x))
        (= (hd x) 'unquote-splicing)))
 
-(define expand-local ((x name value))
+(define expand-local (x (name value))
   (setenv name :variable)
   `(%local ,name ,(macroexpand value)))
 
-(define expand-function ((x args rest: body))
+(define expand-function (x (args rest: body))
   (with-bindings (args)
     `(%function ,args ,@(macroexpand body))))
 
-(define expand-definition ((x name args rest: body))
+(define expand-definition (x (name args rest: body))
   (with-bindings (args)
     `(,x ,name ,args ,@(macroexpand body))))
 
-(define expand-macro (form)
-  (macroexpand (expand1 form)))
+(define expand-macro (x args)
+  (macroexpand (apply (macro-function x) args)))
 
 (define-global expand1 ((name rest: body))
   (apply (macro-function name) body))
@@ -142,13 +142,17 @@
   (if (symbol? form)
       (macroexpand (symbol-expansion form))
       (atom? form) form
-    (let x (hd form)
-      (if (= x '%local) (expand-local form)
-          (= x '%function) (expand-function form)
-          (= x '%global-function) (expand-definition form)
-          (= x '%local-function) (expand-definition form)
-          (macro? x) (expand-macro form)
-        (map macroexpand form)))))
+      (none? form) (map macroexpand form)
+    (let ((x rest: args) form
+          x (macroexpand x))
+      (if (nil? x) (macroexpand args)
+          (= x '%local) (expand-local x args)
+          (= x '%function) (expand-function x args)
+          (= x '%global-function) (expand-definition x args)
+          (= x '%local-function) (expand-definition x args)
+          (macro? x) (expand-macro x args)
+        (with form (map macroexpand args)
+          (insert form x 0))))))
 
 (define quasiquote-list (form depth)
   (let xs (list '(list))

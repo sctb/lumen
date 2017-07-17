@@ -140,6 +140,9 @@ end
 function id_literal63(x)
   return string63(x) and char(x, 0) == "|"
 end
+function insert(l, x, pos)
+  return table.insert(l, pos + 1, x)
+end
 function add(l, x)
   return table.insert(l, x)
 end
@@ -174,13 +177,13 @@ function reduce(f, x)
 end
 function join(...)
   local __ls = unstash({...})
-  local __r36 = {}
+  local __r37 = {}
   local ____x2 = __ls
   local ____i4 = 0
   while ____i4 < _35(____x2) do
     local __l11 = ____x2[____i4 + 1]
     if __l11 then
-      local __n3 = _35(__r36)
+      local __n3 = _35(__r37)
       local ____o2 = __l11
       local __k2 = nil
       for __k2 in next, ____o2 do
@@ -188,12 +191,12 @@ function join(...)
         if number63(__k2) then
           __k2 = __k2 + __n3
         end
-        __r36[__k2] = __v2
+        __r37[__k2] = __v2
       end
     end
     ____i4 = ____i4 + 1
   end
-  return __r36
+  return __r37
 end
 function find(f, t)
   local ____o3 = t
@@ -579,16 +582,16 @@ function apply(f, args)
   return f(values(__args))
 end
 function call(f, ...)
-  local ____r71 = unstash({...})
-  local __f = destash33(f, ____r71)
-  local ____id = ____r71
+  local ____r72 = unstash({...})
+  local __f = destash33(f, ____r72)
+  local ____id = ____r72
   local __args11 = cut(____id, 0)
   return apply(__f, __args11)
 end
 function setenv(k, ...)
-  local ____r72 = unstash({...})
-  local __k9 = destash33(k, ____r72)
-  local ____id1 = ____r72
+  local ____r73 = unstash({...})
+  local __k9 = destash33(k, ____r73)
+  local ____id1 = ____r73
   local __keys = cut(____id1, 0)
   if string63(__k9) then
     local __e8
