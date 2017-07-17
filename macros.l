@@ -4,8 +4,48 @@
 (define-macro quasiquote (form)
   (quasiexpand form 1))
 
+(define-global gv-get (place _do)
+  (let place (macroexpand place)
+    (if (or (atom? place)
+            (and (= (hd place) 'get)
+                 (nil? (getenv 'get 'gv-expander))))
+        (_do place (fn (v) `(%set ,place ,v)))
+      (let (head (hd place)
+            gf (getenv head 'gv-expander))
+        (if gf (apply gf _do (tl place))
+          (error (cat (str place) " is not a valid place expression")))))))
+
+(define-macro gv-letplace (vars place rest: body)
+  `(gv-get ,place (fn ,vars ,@body)))
+
+(define-macro gv-define-expander (name handler)
+  (with form `(setenv ',name gv-expander: ,handler)
+    (eval form)))
+
+(define-global gv--defsetter (name setter _do args vars)
+  (if (none? args)
+      (let vars (reverse vars)
+        (_do `(,name ,@vars) (fn (v) (apply setter v vars))))
+    (let v (hd args)
+      (gv--defsetter name setter _do (tl args) `(,v ,@vars)))))
+
+(define-macro gv-define-setter (name arglist rest: body)
+  `(gv-define-expander ,name
+     (fn (_do rest: args)
+       (gv--defsetter ',name (fn ,arglist ,@body) _do args))))
+
+(define-macro gv-define-simple-setter (name setter fix-return)
+  `(gv-define-setter ,name (val rest: args)
+     ,(if fix-return
+          `(let v val
+             `(do (,',setter ,@args ,v)
+                  ,v))
+        ``(,',setter ,@args ,val))))
+
 (define-macro set args
-  `(do ,@(map (fn ((lh rh)) `(%set ,lh ,rh))
+  `(do ,@(map (fn ((lh rh))
+                (gv-letplace (_getter setter) lh
+                  (setter rh)))
               (pair args))))
 
 (define-macro at (l i)
