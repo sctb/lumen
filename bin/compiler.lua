@@ -19,7 +19,12 @@ local function getenv(k, p)
   end
 end
 local function macro_function(k)
-  return getenv(k, "macro")
+  local __f = getenv(k, "macro")
+  if string63(__f) then
+    return macro_function(__f)
+  else
+    return __f
+  end
 end
 local function macro63(k)
   return is63(macro_function(k))
@@ -199,6 +204,7 @@ local function expand_function(__x41)
     local ____x43 = ____o3[____i5]
     setenv(____x43, {_stash = true, variable = true})
   end
+  setenv("define", {_stash = true, macro = "define-local"})
   local ____x44 = join({"%function", __args}, macroexpand(__body))
   drop(environment)
   return ____x44
@@ -216,6 +222,7 @@ local function expand_definition(__x46)
     local ____x48 = ____o4[____i6]
     setenv(____x48, {_stash = true, variable = true})
   end
+  setenv("define", {_stash = true, macro = "define-local"})
   local ____x49 = join({__x47, __name1, __args11}, macroexpand(__body1))
   drop(environment)
   return ____x49
@@ -633,13 +640,13 @@ local function parenthesize_call63(x)
   return not atom63(x) and hd(x) == "%function" or precedence(x) > 0
 end
 local function compile_call(form)
-  local __f = hd(form)
-  local __f1 = compile(__f)
+  local __f1 = hd(form)
+  local __f11 = compile(__f1)
   local __args3 = compile_args(stash42(tl(form)))
-  if parenthesize_call63(__f) then
-    return "(" .. __f1 .. ")" .. __args3
+  if parenthesize_call63(__f1) then
+    return "(" .. __f11 .. ")" .. __args3
   else
-    return __f1 .. __args3
+    return __f11 .. __args3
   end
 end
 local function op_delims(parent, child, ...)
