@@ -574,7 +574,7 @@
 (target lua: (define load1 (or |loadstring| |load|)))
 (target lua:
   (define run (code)
-    (let |f,e| (load1 code)
+    (let ((f e) (list (load1 code)))
       (if f (f) (error (cat e " in " code))))))
 
 (define-global %result)
