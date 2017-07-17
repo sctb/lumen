@@ -153,6 +153,10 @@ string_literal63 = function (x) {
 id_literal63 = function (x) {
   return string63(x) && char(x, 0) === "|";
 };
+insert = function (l, x, pos) {
+  l.splice(pos, 0, x);
+  return undefined;
+};
 add = function (l, x) {
   l.push(x);
   return undefined;
@@ -188,13 +192,13 @@ reduce = function (f, x) {
 };
 join = function () {
   var __ls = unstash(Array.prototype.slice.call(arguments, 0));
-  var __r37 = [];
+  var __r38 = [];
   var ____x1 = __ls;
   var ____i4 = 0;
   while (____i4 < _35(____x1)) {
     var __l11 = ____x1[____i4];
     if (__l11) {
-      var __n3 = _35(__r37);
+      var __n3 = _35(__r38);
       var ____o2 = __l11;
       var __k4 = undefined;
       for (__k4 in ____o2) {
@@ -209,12 +213,12 @@ join = function () {
         if (number63(__k5)) {
           __k5 = __k5 + __n3;
         }
-        __r37[__k5] = __v2;
+        __r38[__k5] = __v2;
       }
     }
     ____i4 = ____i4 + 1;
   }
-  return __r37;
+  return __r38;
 };
 find = function (f, t) {
   var ____o3 = t;
@@ -671,16 +675,16 @@ apply = function (f, args) {
   return f.apply(f, __args);
 };
 call = function (f) {
-  var ____r74 = unstash(Array.prototype.slice.call(arguments, 1));
-  var __f = destash33(f, ____r74);
-  var ____id = ____r74;
+  var ____r75 = unstash(Array.prototype.slice.call(arguments, 1));
+  var __f = destash33(f, ____r75);
+  var ____id = ____r75;
   var __args11 = cut(____id, 0);
   return apply(__f, __args11);
 };
 setenv = function (k) {
-  var ____r75 = unstash(Array.prototype.slice.call(arguments, 1));
-  var __k18 = destash33(k, ____r75);
-  var ____id1 = ____r75;
+  var ____r76 = unstash(Array.prototype.slice.call(arguments, 1));
+  var __k18 = destash33(k, ____r76);
+  var ____id1 = ____r76;
   var __keys = cut(____id1, 0);
   if (string63(__k18)) {
     var __e19;
