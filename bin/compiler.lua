@@ -973,34 +973,38 @@ function lower(form, hoist, stmt63, tail63)
           if __x134 == "do" then
             return lower_do(__args9, hoist, stmt63, tail63)
           else
-            if __x134 == "%set" then
-              return lower_set(__args9, hoist, stmt63, tail63)
+            if __x134 == "%call" then
+              return lower(__args9, hoist, stmt63, tail63)
             else
-              if __x134 == "%if" then
-                return lower_if(__args9, hoist, stmt63, tail63)
+              if __x134 == "%set" then
+                return lower_set(__args9, hoist, stmt63, tail63)
               else
-                if __x134 == "%try" then
-                  return lower_try(__args9, hoist, tail63)
+                if __x134 == "%if" then
+                  return lower_if(__args9, hoist, stmt63, tail63)
                 else
-                  if __x134 == "while" then
-                    return lower_while(__args9, hoist)
+                  if __x134 == "%try" then
+                    return lower_try(__args9, hoist, tail63)
                   else
-                    if __x134 == "%for" then
-                      return lower_for(__args9, hoist)
+                    if __x134 == "while" then
+                      return lower_while(__args9, hoist)
                     else
-                      if __x134 == "%function" then
-                        return lower_function(__args9)
+                      if __x134 == "%for" then
+                        return lower_for(__args9, hoist)
                       else
-                        if __x134 == "%local-function" or __x134 == "%global-function" then
-                          return lower_definition(__x134, __args9, hoist)
+                        if __x134 == "%function" then
+                          return lower_function(__args9)
                         else
-                          if in63(__x134, {"and", "or"}) then
-                            return lower_short(__x134, __args9, hoist)
+                          if __x134 == "%local-function" or __x134 == "%global-function" then
+                            return lower_definition(__x134, __args9, hoist)
                           else
-                            if statement63(__x134) then
-                              return lower_special(form, hoist)
+                            if in63(__x134, {"and", "or"}) then
+                              return lower_short(__x134, __args9, hoist)
                             else
-                              return lower_call(form, hoist)
+                              if statement63(__x134) then
+                                return lower_special(form, hoist)
+                              else
+                                return lower_call(form, hoist)
+                              end
                             end
                           end
                         end

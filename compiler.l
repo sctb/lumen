@@ -551,6 +551,7 @@
       (lower-infix? form) (lower-infix form hoist)
     (let ((x rest: args) form)
       (if (= x 'do) (lower-do args hoist stmt? tail?)
+          (= x '%call) (lower args hoist stmt? tail?)
           (= x '%set) (lower-set args hoist stmt? tail?)
           (= x '%if) (lower-if args hoist stmt? tail?)
           (= x '%try) (lower-try args hoist tail?)
