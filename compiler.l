@@ -138,12 +138,16 @@
 (define-global expand1 ((name rest: body))
   (apply (macro-function name) body))
 
+(define-global macroexpansion (x)
+  `(%expansion ,x))
+
 (define-global macroexpand (form)
   (if (symbol? form)
       (macroexpand (symbol-expansion form))
       (atom? form) form
     (let x (hd form)
-      (if (= x '%local) (expand-local form)
+      (if (= x '%expansion) (at form 1)
+          (= x '%local) (expand-local form)
           (= x '%function) (expand-function form)
           (= x '%global-function) (expand-definition form)
           (= x '%local-function) (expand-definition form)

@@ -55,18 +55,22 @@
   `(%object ,@(mapo (fn (x) x) body)))
 
 (define-macro let (bs rest: body)
-  (if (atom? bs) `(let (,bs ,(hd body)) ,@(tl body))
-      (none? bs) `(do ,@body)
-    (let ((lh rh rest: bs2) bs
-          (id val rest: bs1) (bind lh rh))
-      (let renames ()
-        (unless (id-literal? id)
-          (let id1 (unique id)
-            (set renames (list id id1)
-                 id id1)))
-        `(do (%local ,id ,val)
-             (let-symbol ,renames
-               (let ,(join bs1 bs2) ,@body)))))))
+  (when (atom? bs)
+    (set bs (list bs (hd body))
+         body (tl body)))
+  (let (ids () frame (last environment))
+    (with-frame
+      (while (some? bs)
+        (let ((lh rh rest: bs2) bs
+              (id val rest: bs1) (bind lh (macroexpand rh)))
+          (unless (id-literal? id)
+            (let id1 (unique id)
+              (setenv id symbol: id1)
+              (set id id1 (get frame id) (obj :variable))))
+          (add ids `(%local ,id ,val))
+          (set bs (join bs1 bs2))))
+      (macroexpansion
+        `(do ,@ids ,@(map macroexpand body))))))
 
 (define-macro with (x v rest: body)
   `(let (,x ,v) ,@body ,x))
