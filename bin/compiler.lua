@@ -827,9 +827,11 @@ local function lower_set(args, hoist, stmt63, tail63)
   local ____id16 = args
   local __lh = ____id16[1]
   local __rh = ____id16[2]
-  add(hoist, {"%set", lower(__lh, hoist), lower(__rh, hoist)})
+  local __lh1 = lower(__lh, hoist)
+  local __rh1 = lower(__rh, hoist)
+  add(hoist, {"%set", __lh1, __rh1})
   if not( stmt63 and not tail63) then
-    return __lh
+    return __lh1
   end
 end
 local function lower_if(args, hoist, stmt63, tail63)
