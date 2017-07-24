@@ -919,24 +919,24 @@ setenv("apply", {_stash = true, macro = function (f, ...)
   local ____id49 = ____r57
   local __args9 = cut(____id49, 0)
   if _35(__args9) > 1 then
-    return {{"do", "apply"}, __f1, {"join", join({"list"}, almost(__args9)), last(__args9)}}
+    return {"%call", "apply", __f1, {"join", join({"list"}, almost(__args9)), last(__args9)}}
   else
-    return join({{"do", "apply"}, __f1}, __args9)
+    return join({"%call", "apply", __f1}, __args9)
   end
 end})
 setenv("guard", {_stash = true, macro = function (expr)
   if target == "js" then
     return {{"fn", join(), {"%try", {"list", true, expr}}}}
   else
-    local ____x255 = {"obj"}
-    ____x255.stack = {{"get", "debug", {"quote", "traceback"}}}
-    ____x255.message = {"if", {"string?", "m"}, {"clip", "m", {"+", {"search", "m", "\": \""}, 2}}, {"nil?", "m"}, "\"\"", {"str", "m"}}
-    return {"list", {"xpcall", {"fn", join(), expr}, {"fn", {"m"}, {"if", {"obj?", "m"}, "m", ____x255}}}}
+    local ____x251 = {"obj"}
+    ____x251.stack = {{"get", "debug", {"quote", "traceback"}}}
+    ____x251.message = {"if", {"string?", "m"}, {"clip", "m", {"+", {"search", "m", "\": \""}, 2}}, {"nil?", "m"}, "\"\"", {"str", "m"}}
+    return {"list", {"xpcall", {"fn", join(), expr}, {"fn", {"m"}, {"if", {"obj?", "m"}, "m", ____x251}}}}
   end
 end})
 setenv("each", {_stash = true, macro = function (x, t, ...)
   local ____r61 = unstash({...})
-  local __x281 = destash33(x, ____r61)
+  local __x277 = destash33(x, ____r61)
   local __t1 = destash33(t, ____r61)
   local ____id52 = ____r61
   local __body37 = cut(____id52, 0)
@@ -944,14 +944,14 @@ setenv("each", {_stash = true, macro = function (x, t, ...)
   local __n3 = unique("n")
   local __i3 = unique("i")
   local __e8
-  if atom63(__x281) then
-    __e8 = {__i3, __x281}
+  if atom63(__x277) then
+    __e8 = {__i3, __x277}
   else
     local __e9
-    if _35(__x281) > 1 then
-      __e9 = __x281
+    if _35(__x277) > 1 then
+      __e9 = __x277
     else
-      __e9 = {__i3, hd(__x281)}
+      __e9 = {__i3, hd(__x277)}
     end
     __e8 = __e9
   end
@@ -980,9 +980,9 @@ setenv("step", {_stash = true, macro = function (v, t, ...)
   local __t3 = destash33(t, ____r65)
   local ____id57 = ____r65
   local __body41 = cut(____id57, 0)
-  local __x315 = unique("x")
+  local __x311 = unique("x")
   local __i7 = unique("i")
-  return {"let", {__x315, __t3}, {"for", __i7, {"#", __x315}, join({"let", {__v9, {"at", __x315, __i7}}}, __body41)}}
+  return {"let", {__x311, __t3}, {"for", __i7, {"#", __x311}, join({"let", {__v9, {"at", __x311, __i7}}}, __body41)}}
 end})
 setenv("set-of", {_stash = true, macro = function (...)
   local __xs1 = unstash({...})
@@ -990,8 +990,8 @@ setenv("set-of", {_stash = true, macro = function (...)
   local ____o5 = __xs1
   local ____i9 = nil
   for ____i9 in next, ____o5 do
-    local __x326 = ____o5[____i9]
-    __l3[__x326] = true
+    local __x322 = ____o5[____i9]
+    __l3[__x322] = true
   end
   return join({"obj"}, __l3)
 end})
@@ -1035,8 +1035,8 @@ setenv("dec", {_stash = true, macro = function (n, by)
   return {"set", n, {"-", n, __e12}}
 end})
 setenv("with-indent", {_stash = true, macro = function (form)
-  local __x354 = unique("x")
-  return {"do", {"inc", "indent-level"}, {"with", __x354, form, {"dec", "indent-level"}}}
+  local __x350 = unique("x")
+  return {"do", {"inc", "indent-level"}, {"with", __x350, form, {"dec", "indent-level"}}}
 end})
 setenv("export", {_stash = true, macro = function (...)
   local __names5 = unstash({...})
@@ -1045,16 +1045,16 @@ setenv("export", {_stash = true, macro = function (...)
       return {"set", {"get", "exports", {"quote", k}}, k}
     end, __names5))
   else
-    local __x371 = {}
+    local __x367 = {}
     local ____o7 = __names5
     local ____i11 = nil
     for ____i11 in next, ____o7 do
       local __k6 = ____o7[____i11]
-      __x371[__k6] = __k6
+      __x367[__k6] = __k6
     end
     return {"return", join({"%object"}, mapo(function (x)
       return x
-    end, __x371))}
+    end, __x367))}
   end
 end})
 setenv("when-compiling", {_stash = true, macro = function (...)
