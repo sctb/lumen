@@ -569,8 +569,13 @@
 (define-global expand (form)
   (lower (macroexpand form)))
 
-(target js: (set (get global 'require) |require|))
+(target js: (set (get |global| 'require) |require|))
 (target js: (define run |eval|))
+
+(target js:
+  (set (get |module| 'filename) ((get (require 'path) 'resolve) "repl")
+       (get |module| 'paths) ((get (require 'module) '_nodeModulePaths)
+                              (get |module| 'filename))))
 
 (target lua: (define load1 (or |loadstring| |load|)))
 (target lua:

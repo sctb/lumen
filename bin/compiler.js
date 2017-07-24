@@ -1079,6 +1079,8 @@ expand = function (form) {
 };
 global.require = require;
 var run = eval;
+module.filename = require("path").resolve("repl");
+module.paths = require("module")._nodeModulePaths(module.filename);
 _37result = undefined;
 _eval = function (form) {
   var __previous = target;
