@@ -1199,15 +1199,18 @@ var eval_print = function (form) {
   var __ok = ____id[0];
   var __v = ____id[1];
   if (! __ok) {
-    return print(__v.stack);
+    print(__v.stack);
   } else {
     if (is63(__v)) {
-      return print(str(__v));
+      print(str(__v));
     }
   }
+  return __ok;
 };
 var rep = function (s) {
-  return eval_print(reader["read-string"](s));
+  if (! eval_print(reader["read-string"](s))) {
+    return system.exit(1);
+  }
 };
 var repl = function () {
   var __buf = "";
