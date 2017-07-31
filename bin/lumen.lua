@@ -1089,15 +1089,18 @@ local function eval_print(form)
   local __ok = ____id[1]
   local __v = ____id[2]
   if not __ok then
-    return print("error: " .. __v.message .. "\n" .. __v.stack)
+    print("error: " .. __v.message .. "\n" .. __v.stack)
   else
     if is63(__v) then
-      return print(str(__v))
+      print(str(__v))
     end
   end
+  return __ok
 end
 local function rep(s)
-  return eval_print(reader["read-string"](s))
+  if not eval_print(reader["read-string"](s)) then
+    return system.exit(1)
+  end
 end
 local function repl()
   local __buf = ""

@@ -8,10 +8,12 @@
         (target
           js: (print (get v 'stack))
           lua: (print (cat "error: " (get v 'message) "\n" (get v 'stack))))
-        (is? v) (print (str v)))))
+        (is? v) (print (str v)))
+    ok))
 
 (define rep (s)
-  (eval-print ((get reader 'read-string) s)))
+  (unless (eval-print ((get reader 'read-string) s))
+    ((get system 'exit) 1)))
 
 (define repl ()
   (let buf ""
