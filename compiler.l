@@ -22,7 +22,7 @@
   (and (not (atom? form)) (special? (hd form))))
 
 (define statement? (k)
-  (and (special? k) (getenv k 'stmt)))
+  (getenv k 'stmt))
 
 (define symbol-expansion (k)
   (getenv k 'symbol))
