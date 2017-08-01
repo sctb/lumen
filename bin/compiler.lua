@@ -31,7 +31,7 @@ local function special_form63(form)
   return not atom63(form) and special63(hd(form))
 end
 local function statement63(k)
-  return special63(k) and getenv(k, "stmt")
+  return getenv(k, "stmt")
 end
 local function symbol_expansion(k)
   return getenv(k, "symbol")

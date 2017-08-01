@@ -31,7 +31,7 @@ var special_form63 = function (form) {
   return ! atom63(form) && special63(hd(form));
 };
 var statement63 = function (k) {
-  return special63(k) && getenv(k, "stmt");
+  return getenv(k, "stmt");
 };
 var symbol_expansion = function (k) {
   return getenv(k, "symbol");
