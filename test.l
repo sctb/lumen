@@ -432,7 +432,10 @@ c"
   (test= 1 (if false 2 (let a 1 a)))
   (test= 1 (if false 2 true (with a 1)))
   (test= 1 (if false 2 false 3 (let a 1 a)))
-  (test= 0 (if false 1 0)))
+  (test= 0 (if false 1 0))
+  (for i 2
+    (test= (if (< i 1) true)
+           (if (< i 1) true nil))))
 
 (define-test case
   (let x 10
