@@ -892,16 +892,18 @@ var lower_if = function (args, hoist, stmt63, tail63) {
   var ___then = ____id17[1];
   var ___else = ____id17[2];
   if (stmt63) {
-    var __e51;
+    var __e51 = undefined;
     if (is63(___else)) {
       __e51 = [lower_body([___else], tail63)];
     }
     return add(hoist, join(["%if", lower(__cond, hoist), lower_body([___then], tail63)], __e51));
   } else {
     var __e3 = unique("e");
-    add(hoist, ["%local", __e3]);
     var __e50;
-    if (is63(___else)) {
+    if (nil63(___else)) {
+      __e50 = add(hoist, ["%local", __e3, "nil"]);
+    } else {
+      add(hoist, ["%local", __e3]);
       __e50 = [lower(["%set", __e3, ___else])];
     }
     add(hoist, join(["%if", lower(__cond, hoist), lower(["%set", __e3, ___then])], __e50));
@@ -979,10 +981,10 @@ var lower_pairwise = function (form) {
   if (pairwise63(form)) {
     var __e4 = [];
     var ____id24 = form;
-    var __x125 = ____id24[0];
+    var __x126 = ____id24[0];
     var __args7 = cut(____id24, 1);
     reduce(function (a, b) {
-      add(__e4, [__x125, a, b]);
+      add(__e4, [__x126, a, b]);
       return a;
     }, __args7);
     return join(["and"], reverse(__e4));
@@ -996,10 +998,10 @@ var lower_infix63 = function (form) {
 var lower_infix = function (form, hoist) {
   var __form3 = lower_pairwise(form);
   var ____id25 = __form3;
-  var __x128 = ____id25[0];
+  var __x129 = ____id25[0];
   var __args8 = cut(____id25, 1);
   return lower(reduce(function (a, b) {
-    return [__x128, b, a];
+    return [__x129, b, a];
   }, reverse(__args8)), hoist);
 };
 var lower_special = function (form, hoist) {
@@ -1022,39 +1024,39 @@ lower = function (form, hoist, stmt63, tail63) {
           return lower_infix(form, hoist);
         } else {
           var ____id26 = form;
-          var __x131 = ____id26[0];
+          var __x132 = ____id26[0];
           var __args9 = cut(____id26, 1);
-          if (__x131 === "do") {
+          if (__x132 === "do") {
             return lower_do(__args9, hoist, stmt63, tail63);
           } else {
-            if (__x131 === "%call") {
+            if (__x132 === "%call") {
               return lower(__args9, hoist, stmt63, tail63);
             } else {
-              if (__x131 === "%set") {
+              if (__x132 === "%set") {
                 return lower_set(__args9, hoist, stmt63, tail63);
               } else {
-                if (__x131 === "%if") {
+                if (__x132 === "%if") {
                   return lower_if(__args9, hoist, stmt63, tail63);
                 } else {
-                  if (__x131 === "%try") {
+                  if (__x132 === "%try") {
                     return lower_try(__args9, hoist, tail63);
                   } else {
-                    if (__x131 === "while") {
+                    if (__x132 === "while") {
                       return lower_while(__args9, hoist);
                     } else {
-                      if (__x131 === "%for") {
+                      if (__x132 === "%for") {
                         return lower_for(__args9, hoist);
                       } else {
-                        if (__x131 === "%function") {
+                        if (__x132 === "%function") {
                           return lower_function(__args9);
                         } else {
-                          if (__x131 === "%local-function" || __x131 === "%global-function") {
-                            return lower_definition(__x131, __args9, hoist);
+                          if (__x132 === "%local-function" || __x132 === "%global-function") {
+                            return lower_definition(__x132, __args9, hoist);
                           } else {
-                            if (in63(__x131, ["and", "or"])) {
-                              return lower_short(__x131, __args9, hoist);
+                            if (in63(__x132, ["and", "or"])) {
+                              return lower_short(__x132, __args9, hoist);
                             } else {
-                              if (statement63(__x131)) {
+                              if (statement63(__x132)) {
                                 return lower_special(form, hoist);
                               } else {
                                 return lower_call(form, hoist);
@@ -1094,16 +1096,16 @@ immediate_call63 = function (x) {
 setenv("do", {_stash: true, special: function () {
   var __forms1 = unstash(Array.prototype.slice.call(arguments, 0));
   var __s3 = "";
-  var ____x136 = __forms1;
+  var ____x137 = __forms1;
   var ____i19 = 0;
-  while (____i19 < _35(____x136)) {
-    var __x137 = ____x136[____i19];
-    if (target === "lua" && immediate_call63(__x137) && "\n" === char(__s3, edge(__s3))) {
+  while (____i19 < _35(____x137)) {
+    var __x138 = ____x137[____i19];
+    if (target === "lua" && immediate_call63(__x138) && "\n" === char(__s3, edge(__s3))) {
       __s3 = clip(__s3, 0, edge(__s3)) + ";\n";
     }
-    __s3 = __s3 + compile(__x137, {_stash: true, stmt: true});
-    if (! atom63(__x137)) {
-      if (hd(__x137) === "return" || hd(__x137) === "break") {
+    __s3 = __s3 + compile(__x138, {_stash: true, stmt: true});
+    if (! atom63(__x138)) {
+      if (hd(__x138) === "return" || hd(__x138) === "break") {
         break;
       }
     }
@@ -1114,15 +1116,15 @@ setenv("do", {_stash: true, special: function () {
 setenv("%if", {_stash: true, special: function (cond, cons, alt) {
   var __cond2 = compile(cond);
   indent_level = indent_level + 1;
-  var ____x140 = compile(cons, {_stash: true, stmt: true});
+  var ____x141 = compile(cons, {_stash: true, stmt: true});
   indent_level = indent_level - 1;
-  var __cons1 = ____x140;
-  var __e54;
+  var __cons1 = ____x141;
+  var __e54 = undefined;
   if (alt) {
     indent_level = indent_level + 1;
-    var ____x141 = compile(alt, {_stash: true, stmt: true});
+    var ____x142 = compile(alt, {_stash: true, stmt: true});
     indent_level = indent_level - 1;
-    __e54 = ____x141;
+    __e54 = ____x142;
   }
   var __alt1 = __e54;
   var __ind3 = indentation();
@@ -1148,9 +1150,9 @@ setenv("%if", {_stash: true, special: function (cond, cons, alt) {
 setenv("while", {_stash: true, special: function (cond, form) {
   var __cond4 = compile(cond);
   indent_level = indent_level + 1;
-  var ____x143 = compile(form, {_stash: true, stmt: true});
+  var ____x144 = compile(form, {_stash: true, stmt: true});
   indent_level = indent_level - 1;
-  var __body10 = ____x143;
+  var __body10 = ____x144;
   var __ind5 = indentation();
   if (target === "js") {
     return __ind5 + "while (" + __cond4 + ") {\n" + __body10 + __ind5 + "}\n";
@@ -1162,9 +1164,9 @@ setenv("%for", {_stash: true, special: function (t, k, form) {
   var __t2 = compile(t);
   var __ind7 = indentation();
   indent_level = indent_level + 1;
-  var ____x145 = compile(form, {_stash: true, stmt: true});
+  var ____x146 = compile(form, {_stash: true, stmt: true});
   indent_level = indent_level - 1;
-  var __body12 = ____x145;
+  var __body12 = ____x146;
   if (target === "lua") {
     return __ind7 + "for " + k + " in next, " + __t2 + " do\n" + __body12 + __ind7 + "end\n";
   } else {
@@ -1175,14 +1177,14 @@ setenv("%try", {_stash: true, special: function (form) {
   var __e8 = unique("e");
   var __ind9 = indentation();
   indent_level = indent_level + 1;
-  var ____x150 = compile(form, {_stash: true, stmt: true});
+  var ____x151 = compile(form, {_stash: true, stmt: true});
   indent_level = indent_level - 1;
-  var __body14 = ____x150;
+  var __body14 = ____x151;
   var __hf1 = ["return", ["%array", false, __e8]];
   indent_level = indent_level + 1;
-  var ____x153 = compile(__hf1, {_stash: true, stmt: true});
+  var ____x154 = compile(__hf1, {_stash: true, stmt: true});
   indent_level = indent_level - 1;
-  var __h1 = ____x153;
+  var __h1 = ____x154;
   return __ind9 + "try {\n" + __body14 + __ind9 + "}\n" + __ind9 + "catch (" + __e8 + ") {\n" + __h1 + __ind9 + "}\n";
 }, stmt: true, tr: true});
 setenv("%delete", {_stash: true, special: function (place) {
@@ -1196,16 +1198,16 @@ setenv("%function", {_stash: true, special: function (args, body) {
 }});
 setenv("%global-function", {_stash: true, special: function (name, args, body) {
   if (target === "lua") {
-    var __x157 = compile_function(args, body, {_stash: true, name: name});
-    return indentation() + __x157;
+    var __x158 = compile_function(args, body, {_stash: true, name: name});
+    return indentation() + __x158;
   } else {
     return compile(["%set", name, ["%function", args, body]], {_stash: true, stmt: true});
   }
 }, stmt: true, tr: true});
 setenv("%local-function", {_stash: true, special: function (name, args, body) {
   if (target === "lua") {
-    var __x163 = compile_function(args, body, {_stash: true, name: name, prefix: "local"});
-    return indentation() + __x163;
+    var __x164 = compile_function(args, body, {_stash: true, name: name, prefix: "local"});
+    return indentation() + __x164;
   } else {
     return compile(["%local", name, ["%function", args, body]], {_stash: true, stmt: true});
   }
@@ -1217,8 +1219,8 @@ setenv("return", {_stash: true, special: function (x) {
   } else {
     __e55 = "return " + compile(x);
   }
-  var __x167 = __e55;
-  return indentation() + __x167;
+  var __x168 = __e55;
+  return indentation() + __x168;
 }, stmt: true});
 setenv("new", {_stash: true, special: function (x) {
   return "new " + compile(x);
