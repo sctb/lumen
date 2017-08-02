@@ -213,7 +213,7 @@ var expand_function = function (__x41) {
   var __x42 = ____id2[0];
   var __args = ____id2[1];
   var __body = cut(____id2, 2);
-  add(environment, {});
+  add(environment, {_scope: true});
   var ____o3 = __args;
   var ____i5 = undefined;
   for (____i5 in ____o3) {
@@ -237,7 +237,7 @@ var expand_definition = function (__x46) {
   var __name1 = ____id3[1];
   var __args11 = ____id3[2];
   var __body1 = cut(____id3, 3);
-  add(environment, {});
+  add(environment, {_scope: true});
   var ____o4 = __args11;
   var ____i6 = undefined;
   for (____i6 in ____o4) {

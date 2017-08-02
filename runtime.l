@@ -340,6 +340,11 @@
         (set (get entry k) v))
       (set (get frame k) entry))))
 
+(define-global toplevel? ()
+  (not (first (fn ((_scope: scope))
+                scope)
+              environment)))
+
 (target js:
   (define-global print (x)
     ((get console 'log) x)))
