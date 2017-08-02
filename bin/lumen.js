@@ -262,7 +262,7 @@ pair = function (l) {
   return __l12;
 };
 sort = function (l, f) {
-  var __e6;
+  var __e6 = undefined;
   if (f) {
     __e6 = function (a, b) {
       if (f(a, b)) {

@@ -128,7 +128,7 @@ function char(s, n)
   return clip(s, n, n + 1)
 end
 function code(s, n)
-  local __e2
+  local __e2 = nil
   if n then
     __e2 = n + 1
   end
@@ -341,7 +341,7 @@ function destash33(l, args1)
   end
 end
 function search(s, pattern, start)
-  local __e3
+  local __e3 = nil
   if start then
     __e3 = start + 1
   end
