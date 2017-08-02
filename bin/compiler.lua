@@ -192,7 +192,7 @@ local function expand_function(__x41)
   local __x42 = ____id2[1]
   local __args = ____id2[2]
   local __body = cut(____id2, 2)
-  add(environment, {})
+  add(environment, {_scope = true})
   local ____o3 = __args
   local ____i5 = nil
   for ____i5 in next, ____o3 do
@@ -209,7 +209,7 @@ local function expand_definition(__x46)
   local __name1 = ____id3[2]
   local __args11 = ____id3[3]
   local __body1 = cut(____id3, 3)
-  add(environment, {})
+  add(environment, {_scope = true})
   local ____o4 = __args11
   local ____i6 = nil
   for ____i6 in next, ____o4 do
