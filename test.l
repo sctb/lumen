@@ -666,13 +666,6 @@ c"
 (define-test with
   (test= 10 (with x 9 (inc x))))
 
-(define-test let-when
-  (test= nil (let-when frips (= 'a 'b) 19))
-  (test= 19 (let-when frips 20 (- frips 1)))
-  (test= 20 (let-when (a b) '(19 20) b))
-  (test= nil (let-when (a b) nil b))
-  (test= 123 (let-when a 0 (+ a 123))))
-
 (define zzop 99)
 (define zzap 100)
 

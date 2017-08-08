@@ -861,12 +861,9 @@ var lower_do = function (args, hoist, stmt63, tail63) {
   var ____i17 = 0;
   while (____i17 < _35(____x95)) {
     var __x96 = ____x95[____i17];
-    var ____y = lower(__x96, hoist, stmt63);
-    if (yes(____y)) {
-      var __e1 = ____y;
-      if (standalone63(__e1)) {
-        add(hoist, __e1);
-      }
+    var __e1 = lower(__x96, hoist, stmt63);
+    if (standalone63(__e1)) {
+      add(hoist, __e1);
     }
     ____i17 = ____i17 + 1;
   }

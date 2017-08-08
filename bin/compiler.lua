@@ -807,12 +807,9 @@ local function lower_do(args, hoist, stmt63, tail63)
   local ____i17 = 0
   while ____i17 < _35(____x98) do
     local __x99 = ____x98[____i17 + 1]
-    local ____y = lower(__x99, hoist, stmt63)
-    if yes(____y) then
-      local __e1 = ____y
-      if standalone63(__e1) then
-        add(hoist, __e1)
-      end
+    local __e1 = lower(__x99, hoist, stmt63)
+    if standalone63(__e1) then
+      add(hoist, __e1)
     end
     ____i17 = ____i17 + 1
   end
