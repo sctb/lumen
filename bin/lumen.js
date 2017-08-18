@@ -612,7 +612,7 @@ str = function (x, stack) {
                   if (stack && in63(x, stack)) {
                     return "circular";
                   } else {
-                    if (false) {
+                    if (!( type(x) === "object")) {
                       return escape(tostring(x));
                     } else {
                       var __s = "(";
