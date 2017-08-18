@@ -299,7 +299,7 @@
       (atom? x) (tostring x)
       (function? x) "function"
       (and stack (in? x stack)) "circular"
-      (target js: false lua: (not (= (type x) 'table)))
+      (not (= (type x) (target js: 'object lua: 'table)))
       (escape (tostring x))
     (let (s "(" sp ""
           xs () ks ()
