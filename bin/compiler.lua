@@ -632,7 +632,7 @@ end
 local function parenthesize_call63(x)
   return not atom63(x) and hd(x) == "%function" or precedence(x) > 0
 end
-local function compile_call(form)
+function compile_call(form)
   local __f = hd(form)
   local __f1 = compile(__f)
   local __args3 = compile_args(stash42(tl(form)))
@@ -973,38 +973,34 @@ function lower(form, hoist, stmt63, tail63)
           if __x134 == "do" then
             return lower_do(__args9, hoist, stmt63, tail63)
           else
-            if __x134 == "%call" then
-              return lower(__args9, hoist, stmt63, tail63)
+            if __x134 == "%set" then
+              return lower_set(__args9, hoist, stmt63, tail63)
             else
-              if __x134 == "%set" then
-                return lower_set(__args9, hoist, stmt63, tail63)
+              if __x134 == "%if" then
+                return lower_if(__args9, hoist, stmt63, tail63)
               else
-                if __x134 == "%if" then
-                  return lower_if(__args9, hoist, stmt63, tail63)
+                if __x134 == "%try" then
+                  return lower_try(__args9, hoist, tail63)
                 else
-                  if __x134 == "%try" then
-                    return lower_try(__args9, hoist, tail63)
+                  if __x134 == "while" then
+                    return lower_while(__args9, hoist)
                   else
-                    if __x134 == "while" then
-                      return lower_while(__args9, hoist)
+                    if __x134 == "%for" then
+                      return lower_for(__args9, hoist)
                     else
-                      if __x134 == "%for" then
-                        return lower_for(__args9, hoist)
+                      if __x134 == "%function" then
+                        return lower_function(__args9)
                       else
-                        if __x134 == "%function" then
-                          return lower_function(__args9)
+                        if __x134 == "%local-function" or __x134 == "%global-function" then
+                          return lower_definition(__x134, __args9, hoist)
                         else
-                          if __x134 == "%local-function" or __x134 == "%global-function" then
-                            return lower_definition(__x134, __args9, hoist)
+                          if in63(__x134, {"and", "or"}) then
+                            return lower_short(__x134, __args9, hoist)
                           else
-                            if in63(__x134, {"and", "or"}) then
-                              return lower_short(__x134, __args9, hoist)
+                            if statement63(__x134) then
+                              return lower_special(form, hoist)
                             else
-                              if statement63(__x134) then
-                                return lower_special(form, hoist)
-                              else
-                                return lower_call(form, hoist)
-                              end
+                              return lower_call(form, hoist)
                             end
                           end
                         end
@@ -1292,5 +1288,9 @@ end})
 setenv("%literal", {_stash = true, special = function (...)
   local __args111 = unstash({...})
   return apply(cat, map(compile, __args111))
+end})
+setenv("%call", {_stash = true, special = function (...)
+  local __form5 = unstash({...})
+  return compile_call(__form5)
 end})
 return {run = run, ["eval"] = _eval, expand = expand, compile = compile}
