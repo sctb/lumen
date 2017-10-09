@@ -686,7 +686,7 @@ var compile_special = function (form, stmt63) {
 var parenthesize_call63 = function (x) {
   return ! atom63(x) && hd(x) === "%function" || precedence(x) > 0;
 };
-var compile_call = function (form) {
+compile_call = function (form) {
   var __f = hd(form);
   var __f1 = compile(__f);
   var __args3 = compile_args(stash42(tl(form)));
@@ -1027,38 +1027,34 @@ lower = function (form, hoist, stmt63, tail63) {
           if (__x131 === "do") {
             return lower_do(__args9, hoist, stmt63, tail63);
           } else {
-            if (__x131 === "%call") {
-              return lower(__args9, hoist, stmt63, tail63);
+            if (__x131 === "%set") {
+              return lower_set(__args9, hoist, stmt63, tail63);
             } else {
-              if (__x131 === "%set") {
-                return lower_set(__args9, hoist, stmt63, tail63);
+              if (__x131 === "%if") {
+                return lower_if(__args9, hoist, stmt63, tail63);
               } else {
-                if (__x131 === "%if") {
-                  return lower_if(__args9, hoist, stmt63, tail63);
+                if (__x131 === "%try") {
+                  return lower_try(__args9, hoist, tail63);
                 } else {
-                  if (__x131 === "%try") {
-                    return lower_try(__args9, hoist, tail63);
+                  if (__x131 === "while") {
+                    return lower_while(__args9, hoist);
                   } else {
-                    if (__x131 === "while") {
-                      return lower_while(__args9, hoist);
+                    if (__x131 === "%for") {
+                      return lower_for(__args9, hoist);
                     } else {
-                      if (__x131 === "%for") {
-                        return lower_for(__args9, hoist);
+                      if (__x131 === "%function") {
+                        return lower_function(__args9);
                       } else {
-                        if (__x131 === "%function") {
-                          return lower_function(__args9);
+                        if (__x131 === "%local-function" || __x131 === "%global-function") {
+                          return lower_definition(__x131, __args9, hoist);
                         } else {
-                          if (__x131 === "%local-function" || __x131 === "%global-function") {
-                            return lower_definition(__x131, __args9, hoist);
+                          if (in63(__x131, ["and", "or"])) {
+                            return lower_short(__x131, __args9, hoist);
                           } else {
-                            if (in63(__x131, ["and", "or"])) {
-                              return lower_short(__x131, __args9, hoist);
+                            if (statement63(__x131)) {
+                              return lower_special(form, hoist);
                             } else {
-                              if (statement63(__x131)) {
-                                return lower_special(form, hoist);
-                              } else {
-                                return lower_call(form, hoist);
-                              }
+                              return lower_call(form, hoist);
                             }
                           }
                         }
@@ -1353,6 +1349,10 @@ setenv("%object", {_stash: true, special: function () {
 setenv("%literal", {_stash: true, special: function () {
   var __args111 = unstash(Array.prototype.slice.call(arguments, 0));
   return apply(cat, map(compile, __args111));
+}});
+setenv("%call", {_stash: true, special: function () {
+  var __form5 = unstash(Array.prototype.slice.call(arguments, 0));
+  return compile_call(__form5);
 }});
 exports.run = run;
 exports["eval"] = _eval;
