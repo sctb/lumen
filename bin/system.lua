@@ -50,7 +50,7 @@ local function path_join(...)
     return x .. path_separator .. y
   end, __parts) or ""
 end
-local function get_environment_variable(name)
+function get_environment_variable(name)
   return os.getenv(name)
 end
 local function write(x)

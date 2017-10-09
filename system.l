@@ -51,7 +51,7 @@
 (define path-join parts
   (or (reduce (fn (x y) (cat x path-separator y)) parts) ""))
 
-(define get-environment-variable (name)
+(define-global get-environment-variable (name)
   (target
     js: (get (get process 'env) name)
     lua: ((get os 'getenv) name)))
