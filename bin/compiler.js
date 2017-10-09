@@ -577,7 +577,7 @@ var infix63 = function (x) {
   return is63(getop(x));
 };
 infix_operator63 = function (x) {
-  return obj63(x) && infix63(hd(x));
+  return obj63(x) && infix63(hd(x)) && ! keys63(x);
 };
 var compile_args = function (args) {
   var __s1 = "(";
@@ -812,7 +812,7 @@ compile = function (form) {
         __e45 = compile_atom(__form);
       } else {
         var __e46;
-        if (infix63(hd(__form))) {
+        if (infix_operator63(__form)) {
           __e46 = compile_infix(__form);
         } else {
           __e46 = compile_call(__form);
@@ -854,7 +854,7 @@ var literal63 = function (form) {
   return atom63(form) || hd(form) === "%array" || hd(form) === "%object";
 };
 var standalone63 = function (form) {
-  return ! atom63(form) && ! infix63(hd(form)) && ! literal63(form) && !( "get" === hd(form)) || id_literal63(form);
+  return ! atom63(form) && ! infix_operator63(form) && ! literal63(form) && !( "get" === hd(form)) || id_literal63(form);
 };
 var lower_do = function (args, hoist, stmt63, tail63) {
   var ____x95 = almost(args);
@@ -991,7 +991,7 @@ var lower_pairwise = function (form) {
   }
 };
 var lower_infix63 = function (form) {
-  return infix63(hd(form)) && _35(form) > 3;
+  return infix_operator63(form) && _35(form) > 3;
 };
 var lower_infix = function (form, hoist) {
   var __form3 = lower_pairwise(form);

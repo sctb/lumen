@@ -523,7 +523,7 @@ local function infix63(x)
   return is63(getop(x))
 end
 function infix_operator63(x)
-  return obj63(x) and infix63(hd(x))
+  return obj63(x) and infix63(hd(x)) and not keys63(x)
 end
 local function compile_args(args)
   local __s1 = "("
@@ -758,7 +758,7 @@ function compile(form, ...)
         __e37 = compile_atom(__form)
       else
         local __e38
-        if infix63(hd(__form)) then
+        if infix_operator63(__form) then
           __e38 = compile_infix(__form)
         else
           __e38 = compile_call(__form)
@@ -800,7 +800,7 @@ local function literal63(form)
   return atom63(form) or hd(form) == "%array" or hd(form) == "%object"
 end
 local function standalone63(form)
-  return not atom63(form) and not infix63(hd(form)) and not literal63(form) and not( "get" == hd(form)) or id_literal63(form)
+  return not atom63(form) and not infix_operator63(form) and not literal63(form) and not( "get" == hd(form)) or id_literal63(form)
 end
 local function lower_do(args, hoist, stmt63, tail63)
   local ____x98 = almost(args)
@@ -937,7 +937,7 @@ local function lower_pairwise(form)
   end
 end
 local function lower_infix63(form)
-  return infix63(hd(form)) and _35(form) > 3
+  return infix_operator63(form) and _35(form) > 3
 end
 local function lower_infix(form, hoist)
   local __form3 = lower_pairwise(form)

@@ -308,7 +308,7 @@
   (is? (getop x)))
 
 (define-global infix-operator? (x)
-  (and (obj? x) (infix? (hd x))))
+  (and (obj? x) (infix? (hd x)) (not (keys? x))))
 
 (define compile-args (args)
   (let (s "(" c "")
@@ -409,7 +409,7 @@
     (let (tr (terminator stmt)
           ind (if stmt (indentation) "")
           form (if (atom? form) (compile-atom form)
-                   (infix? (hd form)) (compile-infix form)
+                   (infix-operator? form) (compile-infix form)
                  (compile-call form)))
       (cat ind form tr))))
 
@@ -433,7 +433,7 @@
 
 (define standalone? (form)
   (or (and (not (atom? form))
-           (not (infix? (hd form)))
+           (not (infix-operator? form))
            (not (literal? form))
            (not (= 'get (hd form))))
       (id-literal? form)))
@@ -530,7 +530,7 @@
     form))
 
 (define lower-infix? (form)
-  (and (infix? (hd form)) (> (# form) 3)))
+  (and (infix-operator? form) (> (# form) 3)))
 
 (define lower-infix (form hoist)
   (let (form (lower-pairwise form)
