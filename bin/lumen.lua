@@ -918,7 +918,7 @@ setenv("apply", {_stash = true, macro = function (f, ...)
   local __f1 = destash33(f, ____r57)
   local ____id49 = ____r57
   local __args9 = cut(____id49, 0)
-  if _35(__args9) > 1 then
+  if _35(__args9) > 1 or keys63(__args9) then
     return {"%call", "apply", __f1, {"join", join({"list"}, almost(__args9)), last(__args9)}}
   else
     return join({"%call", "apply", __f1}, __args9)
