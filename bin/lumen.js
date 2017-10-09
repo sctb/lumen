@@ -1027,7 +1027,7 @@ setenv("apply", {_stash: true, macro: function (f) {
   var __f1 = destash33(f, ____r57);
   var ____id49 = ____r57;
   var __args9 = cut(____id49, 0);
-  if (_35(__args9) > 1) {
+  if (_35(__args9) > 1 || keys63(__args9)) {
     return ["%call", "apply", __f1, ["join", join(["list"], almost(__args9)), last(__args9)]];
   } else {
     return join(["%call", "apply", __f1], __args9);

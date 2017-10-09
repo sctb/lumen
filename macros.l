@@ -145,7 +145,7 @@
   `(%function ,@(bind* args body)))
 
 (define-macro apply (f rest: args)
-  (if (> (# args) 1)
+  (if (or (> (# args) 1) (keys? args))
       `(%call apply ,f (join (list ,@(almost args)) ,(last args)))
       `(%call apply ,f ,@args)))
 
