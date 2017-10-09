@@ -19,7 +19,7 @@ var path_join = function () {
     return x + path_separator + y;
   }, __parts) || "";
 };
-var get_environment_variable = function (name) {
+get_environment_variable = function (name) {
   return process.env[name];
 };
 var write = function (x) {
