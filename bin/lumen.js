@@ -1184,9 +1184,9 @@ setenv("when-compiling", {_stash: true, macro: function () {
   var __body43 = unstash(Array.prototype.slice.call(arguments, 0));
   return _eval(join(["do"], __body43));
 }});
-var reader = require("reader");
-var compiler = require("compiler");
-var system = require("system");
+var reader = require("./reader");
+var compiler = require("./compiler");
+var system = require("./system");
 var eval_print = function (form) {
   var ____id = (function () {
     try {
@@ -1333,4 +1333,18 @@ var main = function () {
     }
   }
 };
-main();
+if (require.main === module) {
+  main();
+}
+exports.reader = reader;
+exports.compiler = compiler;
+exports.system = system;
+exports["eval-print"] = eval_print;
+exports.rep = rep;
+exports.repl = repl;
+exports["compile-file"] = compile_file;
+exports["load"] = _load;
+exports["script-file?"] = script_file63;
+exports["run-file"] = run_file;
+exports.usage = usage;
+exports.main = main;

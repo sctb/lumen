@@ -1228,4 +1228,7 @@ local function main()
     end
   end
 end
-main()
+if true then
+  main()
+end
+return {reader = reader, compiler = compiler, system = system, ["eval-print"] = eval_print, rep = rep, repl = repl, ["compile-file"] = compile_file, ["load"] = _load, ["script-file?"] = script_file63, ["run-file"] = run_file, usage = usage, main = main}
