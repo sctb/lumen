@@ -1,6 +1,6 @@
-(define reader (require 'reader))
-(define compiler (require 'compiler))
-(define system (require 'system))
+(define reader (require (target js: "./reader" lua: 'reader)))
+(define compiler (require (target js: "./compiler" lua: 'compiler)))
+(define system (require (target js: "./system" lua: 'system)))
 
 (define eval-print (form)
   (let ((ok v) (guard ((get compiler 'eval) form)))
@@ -100,4 +100,18 @@
                     (print code)
                   ((get system 'write-file) output code)))))))))
 
-(main)
+(when (target js: (= (get require 'main) module) lua: true)
+  (main))
+
+(export reader
+        compiler
+        system
+        eval-print
+        rep
+        repl
+        compile-file
+        load
+        script-file?
+        run-file
+        usage
+        main)
