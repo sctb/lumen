@@ -409,7 +409,10 @@ reserved63 = function (x) {
 var valid_code63 = function (n) {
   return number_code63(n) || n > 64 && n < 91 || n > 96 && n < 123 || n === 95;
 };
-var id = function (id) {
+accessor63 = function (x) {
+  return string63(x) && _35(x) > 1 && code(x, 0) === 46 && !( code(x, 1) === 46) || obj63(x) && hd(x) === "%brackets";
+};
+var id = function (id, raw63) {
   var __e31;
   if (number_code63(code(id, 0))) {
     __e31 = "_";
@@ -443,10 +446,14 @@ var id = function (id) {
     __id11 = __id11 + __c11;
     __i10 = __i10 + 1;
   }
-  if (reserved63(__id11)) {
-    return "_" + __id11;
-  } else {
+  if (raw63) {
     return __id11;
+  } else {
+    if (reserved63(__id11)) {
+      return "_" + __id11;
+    } else {
+      return __id11;
+    }
   }
 };
 valid_id63 = function (x) {
@@ -579,18 +586,45 @@ var infix63 = function (x) {
 infix_operator63 = function (x) {
   return obj63(x) && infix63(hd(x));
 };
-var compile_args = function (args) {
-  var __s1 = "(";
-  var __c2 = "";
-  var ____x83 = args;
-  var ____i15 = 0;
-  while (____i15 < _35(____x83)) {
-    var __x84 = ____x83[____i15];
-    __s1 = __s1 + __c2 + compile(__x84);
-    __c2 = ", ";
-    ____i15 = ____i15 + 1;
+compile_next = function (x, args, call63) {
+  if (none63(args)) {
+    if (call63) {
+      return x + "()";
+    } else {
+      return x;
+    }
+  } else {
+    return x + compile_args(args, call63);
   }
-  return __s1 + ")";
+};
+compile_args = function (args, call63) {
+  var __a1 = hd(args);
+  if (accessor63(__a1)) {
+    return compile_next(compile(__a1), tl(args), call63);
+  } else {
+    if (obj63(__a1) && accessor63(hd(__a1))) {
+      var ____id6 = __a1;
+      var __x83 = ____id6[0];
+      var __ys = cut(____id6, 1);
+      var __s1 = compile_next(compile(__x83), __ys, true);
+      return compile_next(__s1, tl(args), call63);
+    } else {
+      var __s2 = "";
+      var __c2 = "";
+      var __i15 = 0;
+      while (__i15 < _35(args)) {
+        var __x84 = args[__i15];
+        if (accessor63(__x84) || obj63(__x84) && accessor63(hd(__x84))) {
+          return compile_next("(" + __s2 + ")", cut(args, __i15), call63);
+        } else {
+          __s2 = __s2 + __c2 + compile(__x84);
+        }
+        __c2 = ", ";
+        __i15 = __i15 + 1;
+      }
+      return "(" + __s2 + ")";
+    }
+  }
 };
 var escape_newlines = function (s) {
   var __s11 = "";
@@ -614,42 +648,54 @@ var escape_newlines = function (s) {
   }
   return __s11;
 };
-var compile_atom = function (x) {
-  if (x === "nil" && target === "lua") {
-    return x;
+accessor = function (x) {
+  var __prop = id(clip(x, 1), true);
+  if (valid_id63(__prop)) {
+    return "." + __prop;
   } else {
-    if (x === "nil") {
-      return "undefined";
+    return "[" + escape(__prop) + "]";
+  }
+};
+var compile_atom = function (x) {
+  if (accessor63(x)) {
+    return accessor(x);
+  } else {
+    if (x === "nil" && target === "lua") {
+      return x;
     } else {
-      if (id_literal63(x)) {
-        return inner(x);
+      if (x === "nil") {
+        return "undefined";
       } else {
-        if (string_literal63(x)) {
-          return escape_newlines(x);
+        if (id_literal63(x)) {
+          return inner(x);
         } else {
-          if (string63(x)) {
-            return id(x);
+          if (string_literal63(x)) {
+            return escape_newlines(x);
           } else {
-            if (boolean63(x)) {
-              if (x) {
-                return "true";
-              } else {
-                return "false";
-              }
+            if (string63(x)) {
+              return id(x);
             } else {
-              if (nan63(x)) {
-                return "nan";
-              } else {
-                if (x === inf) {
-                  return "inf";
+              if (boolean63(x)) {
+                if (x) {
+                  return "true";
                 } else {
-                  if (x === _inf) {
-                    return "-inf";
+                  return "false";
+                }
+              } else {
+                if (nan63(x)) {
+                  return "nan";
+                } else {
+                  if (x === inf) {
+                    return "inf";
                   } else {
-                    if (number63(x)) {
-                      return x + "";
+                    if (x === _inf) {
+                      return "-inf";
                     } else {
-                      throw new Error("Cannot compile atom: " + str(x));
+                      if (number63(x)) {
+                        return x + "";
+                      } else {
+                        throw new Error("Cannot compile atom: " + str(x));
+                      }
                     }
                   }
                 }

@@ -367,7 +367,10 @@ end
 local function valid_code63(n)
   return number_code63(n) or n > 64 and n < 91 or n > 96 and n < 123 or n == 95
 end
-local function id(id)
+function accessor63(x)
+  return string63(x) and _35(x) > 1 and code(x, 0) == 46 and not( code(x, 1) == 46) or obj63(x) and hd(x) == "%brackets"
+end
+local function id(id, raw63)
   local __e25
   if number_code63(code(id, 0)) then
     __e25 = "_"
@@ -401,10 +404,14 @@ local function id(id)
     __id11 = __id11 .. __c11
     __i10 = __i10 + 1
   end
-  if reserved63(__id11) then
-    return "_" .. __id11
-  else
+  if raw63 then
     return __id11
+  else
+    if reserved63(__id11) then
+      return "_" .. __id11
+    else
+      return __id11
+    end
   end
 end
 function valid_id63(x)
@@ -525,18 +532,45 @@ end
 function infix_operator63(x)
   return obj63(x) and infix63(hd(x))
 end
-local function compile_args(args)
-  local __s1 = "("
-  local __c2 = ""
-  local ____x83 = args
-  local ____i15 = 0
-  while ____i15 < _35(____x83) do
-    local __x84 = ____x83[____i15 + 1]
-    __s1 = __s1 .. __c2 .. compile(__x84)
-    __c2 = ", "
-    ____i15 = ____i15 + 1
+function compile_next(x, args, call63)
+  if none63(args) then
+    if call63 then
+      return x .. "()"
+    else
+      return x
+    end
+  else
+    return x .. compile_args(args, call63)
   end
-  return __s1 .. ")"
+end
+function compile_args(args, call63)
+  local __a1 = hd(args)
+  if accessor63(__a1) then
+    return compile_next(compile(__a1), tl(args), call63)
+  else
+    if obj63(__a1) and accessor63(hd(__a1)) then
+      local ____id6 = __a1
+      local __x83 = ____id6[1]
+      local __ys = cut(____id6, 1)
+      local __s1 = compile_next(compile(__x83), __ys, true)
+      return compile_next(__s1, tl(args), call63)
+    else
+      local __s2 = ""
+      local __c2 = ""
+      local __i15 = 0
+      while __i15 < _35(args) do
+        local __x84 = args[__i15 + 1]
+        if accessor63(__x84) or obj63(__x84) and accessor63(hd(__x84)) then
+          return compile_next("(" .. __s2 .. ")", cut(args, __i15), call63)
+        else
+          __s2 = __s2 .. __c2 .. compile(__x84)
+        end
+        __c2 = ", "
+        __i15 = __i15 + 1
+      end
+      return "(" .. __s2 .. ")"
+    end
+  end
 end
 local function escape_newlines(s)
   local __s11 = ""
@@ -560,42 +594,54 @@ local function escape_newlines(s)
   end
   return __s11
 end
-local function compile_atom(x)
-  if x == "nil" and target == "lua" then
-    return x
+function accessor(x)
+  local __prop = id(clip(x, 1), true)
+  if valid_id63(__prop) then
+    return "." .. __prop
   else
-    if x == "nil" then
-      return "undefined"
+    return "[" .. escape(__prop) .. "]"
+  end
+end
+local function compile_atom(x)
+  if accessor63(x) then
+    return accessor(x)
+  else
+    if x == "nil" and target == "lua" then
+      return x
     else
-      if id_literal63(x) then
-        return inner(x)
+      if x == "nil" then
+        return "undefined"
       else
-        if string_literal63(x) then
-          return escape_newlines(x)
+        if id_literal63(x) then
+          return inner(x)
         else
-          if string63(x) then
-            return id(x)
+          if string_literal63(x) then
+            return escape_newlines(x)
           else
-            if boolean63(x) then
-              if x then
-                return "true"
-              else
-                return "false"
-              end
+            if string63(x) then
+              return id(x)
             else
-              if nan63(x) then
-                return "nan"
-              else
-                if x == inf then
-                  return "inf"
+              if boolean63(x) then
+                if x then
+                  return "true"
                 else
-                  if x == _inf then
-                    return "-inf"
+                  return "false"
+                end
+              else
+                if nan63(x) then
+                  return "nan"
+                else
+                  if x == inf then
+                    return "inf"
                   else
-                    if number63(x) then
-                      return x .. ""
+                    if x == _inf then
+                      return "-inf"
                     else
-                      error("Cannot compile atom: " .. str(x))
+                      if number63(x) then
+                        return x .. ""
+                      else
+                        error("Cannot compile atom: " .. str(x))
+                      end
                     end
                   end
                 end

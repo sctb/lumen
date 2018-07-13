@@ -77,7 +77,7 @@
       (test= more (read "'\"boz" more)))
     (let ((ok e) (guard (read "(open")))
       (test= false ok)
-      (test= "Expected ) at 5" (get e 'message)))))
+      (test= "Expected ) at 5" (e .message)))))
 
 (define-test nil?
   (test= true (nil? nil))
@@ -329,7 +329,7 @@ c"
          (macroexpand '``(,x))))
 
 (define-test calls
-  (let (f (fn () 42)
+  (let (f (fn (x) (or x 42))
         l (list f)
         t (obj f: f))
     (f)
@@ -337,6 +337,10 @@ c"
       (test= 42 (f))))
     (test= 42 ((at l 0)))
     (test= 42 ((get t 'f)))
+    (test= 42 ((t .f)))
+    (test= 42 (t (.f)))
+    (test= 1 (t .f 1))
+    (test= 1 ((t .f) 1))
     (test= nil ((fn () (return))))
     (test= 10 ((fn (x) (- x 2)) 12))))
 

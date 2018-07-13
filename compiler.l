@@ -232,7 +232,15 @@
       (and (> n 96) (< n 123)) ; a-z
       (= n 95)))               ; _
 
-(define id (id)
+(define-global accessor? (x)
+  (or (and (string? x)
+           (> (# x) 1)
+           (= (code x 0) (when-compiling (code "." 0)))
+           (not (= (code x 1) (when-compiling (code "." 0)))))
+      (and (obj? x)
+           (= (hd x) '%brackets))))
+
+(define id (id raw?)
   (let id1 (if (number-code? (code id 0)) "_" "")
     (for i (# id)
       (let (c (char id i)
@@ -244,7 +252,8 @@
                    (= i 0) (cat "_" n)
                  n))
         (cat! id1 c1)))
-    (if (reserved? id1)
+    (if raw? id1
+        (reserved? id1)
         (cat "_" id1)
         id1)))
 
@@ -310,12 +319,28 @@
 (define-global infix-operator? (x)
   (and (obj? x) (infix? (hd x))))
 
-(define compile-args (args)
-  (let (s "(" c "")
-    (step x args
-      (cat! s c (compile x))
-      (set c ", "))
-    (cat s ")")))
+(define-global compile-next (x args call?)
+  (if (none? args)
+      (if call? (cat x "()") x)
+    (cat x (compile-args args call?))))
+
+(define-global compile-args (args call?)
+  (let a (hd args)
+    (if (accessor? a)
+        (compile-next (compile a) (tl args) call?)
+        (and (obj? a) (accessor? (hd a)))
+        (let ((x rest: ys) a
+              s (compile-next (compile x) ys true))
+          (compile-next s (tl args) call?))
+      (let (s "" c "")
+        (for i (# args)
+          (let x (at args i)
+            (if (or (accessor? x)
+                    (and (obj? x) (accessor? (hd x))))
+                (return (compile-next (cat "(" s ")") (cut args i) call?))
+              (cat! s c (compile x)))
+            (set c ", ")))
+        (cat "(" s ")")))))
 
 (define escape-newlines (s)
   (with s1 ""
@@ -325,8 +350,15 @@
                      (= c "\r") "\\r"
                    c))))))
 
+(define-global accessor (x)
+  (let prop (id (clip x 1) true)
+    (if (valid-id? prop)
+        (cat "." prop)
+      (cat "[" (escape prop) "]"))))
+
 (define compile-atom (x)
-  (if (and (= x "nil") (= target 'lua)) x
+  (if (accessor? x) (accessor x)
+      (and (= x "nil") (= target 'lua)) x
       (= x "nil") "undefined"
       (id-literal? x) (inner x)
       (string-literal? x) (escape-newlines x)
