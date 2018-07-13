@@ -3,47 +3,47 @@
 (define system (require 'system))
 
 (define eval-print (form)
-  (let ((ok v) (guard ((get compiler 'eval) form)))
+  (let ((ok v) (guard (compiler .eval form)))
     (if (not ok)
         (target
-          js: (print (get v 'stack))
-          lua: (print (cat "error: " (get v 'message) "\n" (get v 'stack))))
+          js: (print (v .stack))
+          lua: (print (cat "error: " (v .message) "\n" (v .stack))))
         (is? v) (print (str v)))))
 
 (define rep (s)
-  (eval-print ((get reader 'read-string) s)))
+  (eval-print (reader .read-string s)))
 
 (define repl ()
   (let buf ""
     (define rep1 (s)
       (cat! buf s)
       (let (more ()
-            form ((get reader 'read-string) buf more))
+            form (reader .read-string buf more))
           (unless (= form more)
             (eval-print form)
             (set buf "")
-            ((get system 'write) "> ")))))
-  ((get system 'write) "> ")
+            (system .write "> ")))))
+  (system .write "> ")
   (target
-    js: (let in (get process 'stdin)
-          ((get in 'setEncoding) 'utf8)
-          ((get in 'on) 'data rep1))
+    js: (let in (process .stdin)
+          (in .set-encoding 'utf8)
+          (in .on 'data rep1))
     lua: (while true
-           (let s ((get io 'read))
+           (let s (io (.read))
              (if s (rep1 (cat s "\n")) (break))))))
 
 (define-global compile-file (path)
-  (let (s ((get reader 'stream) ((get system 'read-file) path))
-        body ((get reader 'read-all) s)
-        form ((get compiler 'expand) `(do ,@body)))
-    ((get compiler 'compile) form :stmt)))
+  (let (s (reader .stream (system .read-file path))
+        body (reader .read-all s)
+        form (compiler .expand `(do ,@body)))
+    (compiler .compile form :stmt)))
 
 (define-global load (path)
   (let previous target
     (set target (language))
     (let code (compile-file path)
       (set target previous)
-      ((get compiler 'run) code))))
+      (compiler .run code))))
 
 (define script-file? (path)
   (not (or (= "-" (char path 0))
@@ -53,7 +53,7 @@
 (define run-file (path)
   (if (script-file? path)
       (load path)
-    ((get compiler 'run) ((get system 'read-file) path))))
+    (compiler .run (system .read-file path))))
 
 (define usage ()
   (print "usage: lumen [<file> <arguments> | options <object files>]")
@@ -67,7 +67,7 @@
   (print " -e <expr>\tExpression to evaluate"))
 
 (define main ()
-  (let arg (hd (get system 'argv))
+  (let arg (hd (system .argv))
     (if (and arg (script-file? arg))
         (load arg)
         (or (= arg "-h")
@@ -78,7 +78,7 @@
             output nil
             target1 nil
             expr nil
-            argv (get system 'argv))
+            argv (system .argv))
         (for i (# argv)
           (let a (at argv i)
             (if (or (= a "-c") (= a "-o") (= a "-t") (= a "-e"))
@@ -98,6 +98,6 @@
               (let code (compile-file input)
                 (if (or (nil? output) (= output "-"))
                     (print code)
-                  ((get system 'write-file) output code)))))))))
+                  (system .write-file output code)))))))))
 
 (main)

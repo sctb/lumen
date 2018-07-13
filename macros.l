@@ -80,12 +80,12 @@
 
 (define-macro define-macro (name args rest: body)
   (let form `(setenv ',name macro: (fn ,args ,@body))
-    (eval form)
+    ; (eval form)
     form))
 
 (define-macro define-special (name args rest: body)
   (let form `(setenv ',name special: (fn ,args ,@body) ,@(keys body))
-    (eval form)
+    ; (eval form)
     form))
 
 (define-macro define-symbol (name expansion)
@@ -123,7 +123,7 @@
 (define-macro let-macro (definitions rest: body)
   (with-frame
     (map (fn (m)
-           (macroexpand `(define-macro ,@m)))
+           (eval `(define-macro ,@m)))
          definitions)
     `(do ,@(macroexpand body))))
 
@@ -156,7 +156,7 @@
              (fn () ,expr)
              (fn (m)
                (if (obj? m) m
-                 (obj stack: ((get debug 'traceback))
+                 (obj stack: (debug (.traceback))
                       message: (if (string? m) (clip m (+ (search m ": ") 2))
                                    (nil? m) ""
                                  (str m)))))))))
@@ -220,12 +220,17 @@
 (define-macro export names
   (if (= target 'js)
       `(do ,@(map (fn (k)
-                    `(set (get exports ',k) ,k))
+                    `(set (exports ,(cat "." k)) ,k))
                   names))
     (let x (obj)
       (each k names
-        (set (get x k) k))
+        (let k (compile-id k)
+          (set (get x k) k)))
       `(return (%object ,@(mapo (fn (x) x) x))))))
 
 (define-macro when-compiling body
   (eval `(do ,@body)))
+
+(define-macro during-compilation body
+  (with form `(do ,@body)
+    (eval form)))

@@ -1,5 +1,3 @@
-(define reader (require 'reader))
-
 (define getenv (k p)
   (when (string? k)
     (let i (edge environment)
@@ -78,7 +76,7 @@
                 (join! bs (bind k x))))))))))
 
 (define-macro arguments% (from)
-  `((get (get (get Array 'prototype) 'slice) 'call) arguments ,from))
+  `(Array .prototype .slice .call arguments ,from))
 
 (define-global bind* (args body)
   (let args1 ()
@@ -240,8 +238,9 @@
       (and (obj? x)
            (= (hd x) '%brackets))))
 
-(define id (id raw?)
-  (let id1 (if (number-code? (code id 0)) "_" "")
+(define-global compile-id (id)
+  (let (id (camel-case id)
+        id1 (if (number-code? (code id 0)) "_" ""))
     (for i (# id)
       (let (c (char id i)
             n (code c)
@@ -252,17 +251,18 @@
                    (= i 0) (cat "_" n)
                  n))
         (cat! id1 c1)))
-    (if raw? id1
-        (reserved? id1)
-        (cat "_" id1)
-        id1)))
+    id1))
 
 (define-global valid-id? (x)
-  (and (some? x) (= x (id x))))
+  (and (some? x)
+       (= x (compile-id x))
+       (if (= target 'lua)
+           (not (reserved? x))
+          true)))
 
 (let (names (obj))
   (define-global unique (x)
-    (let x (id x)
+    (let x (compile-id x)
       (if (get names x)
           (let i (get names x)
             (inc (get names x))
@@ -351,7 +351,7 @@
                    c))))))
 
 (define-global accessor (x)
-  (let prop (id (clip x 1) true)
+  (let prop (compile-id (clip x 1))
     (if (valid-id? prop)
         (cat "." prop)
       (cat "[" (escape prop) "]"))))
@@ -362,7 +362,8 @@
       (= x "nil") "undefined"
       (id-literal? x) (inner x)
       (string-literal? x) (escape-newlines x)
-      (string? x) (id x)
+      (string? x) (let s (compile-id x)
+                    (if (reserved? s) (cat "_" s) s))
       (boolean? x) (if x "true" "false")
       (nan? x) "nan"
       (= x inf) "inf"
@@ -601,7 +602,7 @@
 (define-global expand (form)
   (lower (macroexpand form)))
 
-(target js: (set (get global 'require) |require|))
+(target js: (set (global .require) |require|))
 (target js: (define run |eval|))
 
 (target lua: (define load1 (or |loadstring| |load|)))

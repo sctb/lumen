@@ -7,24 +7,25 @@
 (define reader (require 'reader))
 (define compiler (require 'compiler))
 
-(define-macro test (x msg)
-  `(if (not ,x)
-       (do (set failed (+ failed 1))
-           (return ,msg))
-     (inc passed)))
-
 (define equal? (a b)
   (if (atom? a) (= a b)
     (= (str a) (str b))))
 
-(define-macro test= (a b)
-  (let-unique (x y)
-    `(let (,x ,a ,y ,b)
-       (test (equal? ,x ,y)
-             (cat "failed: expected " (str ,x) ", was " (str ,y))))))
+(during-compilation
+  (define-macro test (x msg)
+    `(if (not ,x)
+         (do (set failed (+ failed 1))
+             (return ,msg))
+       (inc passed)))
 
-(define-macro define-test (name rest: body)
-  `(add tests (list ',name (fn () ,@body))))
+  (define-macro test= (a b)
+    (let-unique (x y)
+      `(let (,x ,a ,y ,b)
+         (test (equal? ,x ,y)
+               (cat "failed: expected " (str ,x) ", was " (str ,y))))))
+
+  (define-macro define-test (name rest: body)
+    `(add tests (list ',name (fn () ,@body)))))
 
 (define-global run ()
   (each ((name f)) tests
@@ -34,7 +35,7 @@
   (print (cat " " passed " passed, " failed " failed")))
 
 (define-test reader
-  (let read (get reader 'read-string)
+  (let read (reader .read-string)
     (test= nil (read ""))
     (test= "nil" (read "nil"))
     (test= 17 (read "17"))
@@ -64,7 +65,7 @@
     (test= "0." (read "0."))))
 
 (define-test read-more
-  (let read (get reader 'read-string)
+  (let read (reader .read-string)
     (test= 17 (read "17" true))
     (let more ()
       (test= more (read "(open" more))
@@ -206,7 +207,7 @@
   (test= 3 (# "foo"))
   (test= 3 (# "\"a\""))
   (test= 'a "a")
-  (test= "a" (char "bar" 1))
+  (test= "a" (from-code (code (char "bar" 1))))
   (let s "a
 b"
     (test= 3 (# s)))
@@ -602,7 +603,7 @@ c"
   (let-macro ((guard1 (x)
                 (let-unique (ok v)
                   `(let ((,ok ,v) (guard ,x))
-                     (list ,ok (if ,ok ,v (get ,v 'message)))))))
+                     (list ,ok (if ,ok ,v (,v .message)))))))
     (test= (list false "") (guard1 (error)))
     (test= (list false "") (guard1 (error nil)))
     (test= (list false "false") (guard1 (error false)))
@@ -1034,7 +1035,7 @@ c"
   (test= 116 (apply + 1 5 '(100 10))))
 
 (define-test eval
-  (let eval (get compiler 'eval)
+  (let eval (compiler .eval)
     (test= 4 (eval '(+ 2 2)))
     (test= 5 (eval '(let a 3 (+ 2 a))))
     (test= 9 (eval '(do (define x 7) (+ x 2))))
