@@ -1,4 +1,4 @@
-local function call_with_file(f, path, mode)
+local function callWithFile(f, path, mode)
   local h,e = io.open(path, mode)
   if not h then
     error(e)
@@ -7,17 +7,17 @@ local function call_with_file(f, path, mode)
   h.close(h)
   return __x
 end
-local function read_file(path)
-  return call_with_file(function (f)
+local function readFile(path)
+  return callWithFile(function (f)
     return f.read(f, "*a")
   end, path)
 end
-local function write_file(path, data)
-  return call_with_file(function (f)
+local function writeFile(path, data)
+  return callWithFile(function (f)
     return f.write(f, data)
   end, path, "w")
 end
-local function file_exists63(path)
+local function fileExists63(path)
   local __f = io.open(path)
   local __id = is63(__f)
   local __e
@@ -30,7 +30,7 @@ local function file_exists63(path)
   end
   return __e
 end
-local function directory_exists63(path)
+local function directoryExists63(path)
   local __f1 = io.open(path)
   local __id1 = is63(__f1)
   local __e1
@@ -43,14 +43,14 @@ local function directory_exists63(path)
   end
   return __e1
 end
-local path_separator = char(_G.package.config, 0)
-local function path_join(...)
+local pathSeparator = char(_G.package.config, 0)
+local function pathJoin(...)
   local __parts = unstash({...})
   return reduce(function (x, y)
-    return x .. path_separator .. y
+    return x .. pathSeparator .. y
   end, __parts) or ""
 end
-local function get_environment_variable(name)
+local function getEnvironmentVariable(name)
   return os.getenv(name)
 end
 local function write(x)
@@ -70,4 +70,4 @@ local function run(command)
   __f2.close(__f2)
   return __x2
 end
-return {["read-file"] = read_file, ["write-file"] = write_file, ["file-exists?"] = file_exists63, ["directory-exists?"] = directory_exists63, ["path-separator"] = path_separator, ["path-join"] = path_join, ["get-environment-variable"] = get_environment_variable, write = write, exit = exit, argv = argv, reload = reload, run = run}
+return {readFile = readFile, writeFile = writeFile, fileExists63 = fileExists63, directoryExists63 = directoryExists63, pathSeparator = pathSeparator, pathJoin = pathJoin, getEnvironmentVariable = getEnvironmentVariable, write = write, exit = exit, argv = argv, reload = reload, run = run}

@@ -34,7 +34,7 @@
   (print (cat " " passed " passed, " failed " failed")))
 
 (define-test reader
-  (let read (get reader 'read-string)
+  (let read (reader .read-string)
     (test= nil (read ""))
     (test= "nil" (read "nil"))
     (test= 17 (read "17"))
@@ -64,7 +64,7 @@
     (test= "0." (read "0."))))
 
 (define-test read-more
-  (let read (get reader 'read-string)
+  (let read (reader .read-string)
     (test= 17 (read "17" true))
     (let more ()
       (test= more (read "(open" more))
@@ -77,7 +77,7 @@
       (test= more (read "'\"boz" more)))
     (let ((ok e) (guard (read "(open")))
       (test= false ok)
-      (test= "Expected ) at 5" (get e 'message)))))
+      (test= "Expected ) at 5" (e .message)))))
 
 (define-test nil?
   (test= true (nil? nil))
@@ -206,7 +206,7 @@
   (test= 3 (# "foo"))
   (test= 3 (# "\"a\""))
   (test= 'a "a")
-  (test= "a" (char "bar" 1))
+  (test= "a" (from-code (code (char "bar" 1))))
   (let s "a
 b"
     (test= 3 (# s)))
@@ -329,7 +329,7 @@ c"
          (macroexpand '``(,x))))
 
 (define-test calls
-  (let (f (fn () 42)
+  (let (f (fn (x) (or x 42))
         l (list f)
         t (obj f: f))
     (f)
@@ -337,6 +337,10 @@ c"
       (test= 42 (f))))
     (test= 42 ((at l 0)))
     (test= 42 ((get t 'f)))
+    (test= 42 ((t .f)))
+    (test= 42 (t (.f)))
+    (test= 1 (t .f 1))
+    (test= 1 ((t .f) 1))
     (test= nil ((fn () (return))))
     (test= 10 ((fn (x) (- x 2)) 12))))
 
@@ -598,7 +602,7 @@ c"
   (let-macro ((guard1 (x)
                 (let-unique (ok v)
                   `(let ((,ok ,v) (guard ,x))
-                     (list ,ok (if ,ok ,v (get ,v 'message)))))))
+                     (list ,ok (if ,ok ,v (,v .message)))))))
     (test= (list false "") (guard1 (error)))
     (test= (list false "") (guard1 (error nil)))
     (test= (list false "false") (guard1 (error false)))
@@ -1030,7 +1034,7 @@ c"
   (test= 116 (apply + 1 5 '(100 10))))
 
 (define-test eval
-  (let eval (get compiler 'eval)
+  (let eval (compiler .eval)
     (test= 4 (eval '(+ 2 2)))
     (test= 5 (eval '(let a 3 (+ 2 a))))
     (test= 9 (eval '(do (define x 7) (+ x 2))))

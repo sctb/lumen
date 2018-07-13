@@ -3,7 +3,7 @@ var whitespace = {" ": true, "\t": true, "\r": true, "\n": true};
 var stream = function (str, more) {
   return {pos: 0, string: str, len: _35(str), more: more};
 };
-var peek_char = function (s) {
+var peekChar = function (s) {
   var ____id = s;
   var __pos = ____id.pos;
   var __len = ____id.len;
@@ -12,27 +12,27 @@ var peek_char = function (s) {
     return char(__string, __pos);
   }
 };
-var read_char = function (s) {
-  var __c = peek_char(s);
+var readChar = function (s) {
+  var __c = peekChar(s);
   if (__c) {
     s.pos = s.pos + 1;
     return __c;
   }
 };
-var skip_non_code = function (s) {
+var skipNonCode = function (s) {
   while (true) {
-    var __c1 = peek_char(s);
+    var __c1 = peekChar(s);
     if (nil63(__c1)) {
       break;
     } else {
       if (whitespace[__c1]) {
-        read_char(s);
+        readChar(s);
       } else {
         if (__c1 === ";") {
           while (__c1 && !( __c1 === "\n")) {
-            __c1 = read_char(s);
+            __c1 = readChar(s);
           }
-          skip_non_code(s);
+          skipNonCode(s);
         } else {
           break;
         }
@@ -40,18 +40,18 @@ var skip_non_code = function (s) {
     }
   }
 };
-var read_table = {};
+var readTable = {};
 var eof = {};
 var read = function (s) {
-  skip_non_code(s);
-  var __c2 = peek_char(s);
+  skipNonCode(s);
+  var __c2 = peekChar(s);
   if (is63(__c2)) {
-    return (read_table[__c2] || read_table[""])(s);
+    return (readTable[__c2] || readTable[""])(s);
   } else {
     return eof;
   }
 };
-var read_all = function (s) {
+var readAll = function (s) {
   var __l = [];
   while (true) {
     var __form = read(s);
@@ -62,7 +62,7 @@ var read_all = function (s) {
   }
   return __l;
 };
-read_string = function (str, more) {
+readString = function (str, more) {
   var __x = read(stream(str, more));
   if (!( __x === eof)) {
     return __x;
@@ -96,7 +96,7 @@ var wrap = function (s, x) {
     return [x, __y];
   }
 };
-var hex_prefix63 = function (str) {
+var hexPrefix63 = function (str) {
   var __e1;
   if (code(str, 0) === 45) {
     __e1 = 1;
@@ -115,11 +115,11 @@ var hex_prefix63 = function (str) {
   }
   return __e2;
 };
-var maybe_number = function (str) {
-  if (hex_prefix63(str)) {
+var maybeNumber = function (str) {
+  if (hexPrefix63(str)) {
     return parseInt(str, 16);
   } else {
-    if (number_code63(code(str, edge(str)))) {
+    if (numberCode63(code(str, edge(str)))) {
       return number(str);
     }
   }
@@ -127,12 +127,12 @@ var maybe_number = function (str) {
 var real63 = function (x) {
   return number63(x) && ! nan63(x) && ! inf63(x);
 };
-read_table[""] = function (s) {
+readTable[""] = function (s) {
   var __str = "";
   while (true) {
-    var __c3 = peek_char(s);
+    var __c3 = peekChar(s);
     if (__c3 && (! whitespace[__c3] && ! delimiters[__c3])) {
-      __str = __str + read_char(s);
+      __str = __str + readChar(s);
     } else {
       break;
     }
@@ -143,7 +143,7 @@ read_table[""] = function (s) {
     if (__str === "false") {
       return false;
     } else {
-      var __n1 = maybe_number(__str);
+      var __n1 = maybeNumber(__str);
       if (real63(__n1)) {
         return __n1;
       } else {
@@ -152,15 +152,15 @@ read_table[""] = function (s) {
     }
   }
 };
-read_table["("] = function (s) {
-  read_char(s);
+readTable["("] = function (s) {
+  readChar(s);
   var __r16 = undefined;
   var __l1 = [];
   while (nil63(__r16)) {
-    skip_non_code(s);
-    var __c4 = peek_char(s);
+    skipNonCode(s);
+    var __c4 = peekChar(s);
     if (__c4 === ")") {
-      read_char(s);
+      readChar(s);
       __r16 = __l1;
     } else {
       if (nil63(__c4)) {
@@ -183,60 +183,60 @@ read_table["("] = function (s) {
   }
   return __r16;
 };
-read_table[")"] = function (s) {
+readTable[")"] = function (s) {
   throw new Error("Unexpected ) at " + s.pos);
 };
-read_table["\""] = function (s) {
-  read_char(s);
+readTable["\""] = function (s) {
+  readChar(s);
   var __r19 = undefined;
   var __str1 = "\"";
   while (nil63(__r19)) {
-    var __c5 = peek_char(s);
+    var __c5 = peekChar(s);
     if (__c5 === "\"") {
-      __r19 = __str1 + read_char(s);
+      __r19 = __str1 + readChar(s);
     } else {
       if (nil63(__c5)) {
         __r19 = expected(s, "\"");
       } else {
         if (__c5 === "\\") {
-          __str1 = __str1 + read_char(s);
+          __str1 = __str1 + readChar(s);
         }
-        __str1 = __str1 + read_char(s);
+        __str1 = __str1 + readChar(s);
       }
     }
   }
   return __r19;
 };
-read_table["|"] = function (s) {
-  read_char(s);
+readTable["|"] = function (s) {
+  readChar(s);
   var __r21 = undefined;
   var __str2 = "|";
   while (nil63(__r21)) {
-    var __c6 = peek_char(s);
+    var __c6 = peekChar(s);
     if (__c6 === "|") {
-      __r21 = __str2 + read_char(s);
+      __r21 = __str2 + readChar(s);
     } else {
       if (nil63(__c6)) {
         __r21 = expected(s, "|");
       } else {
-        __str2 = __str2 + read_char(s);
+        __str2 = __str2 + readChar(s);
       }
     }
   }
   return __r21;
 };
-read_table["'"] = function (s) {
-  read_char(s);
+readTable["'"] = function (s) {
+  readChar(s);
   return wrap(s, "quote");
 };
-read_table["`"] = function (s) {
-  read_char(s);
+readTable["`"] = function (s) {
+  readChar(s);
   return wrap(s, "quasiquote");
 };
-read_table[","] = function (s) {
-  read_char(s);
-  if (peek_char(s) === "@") {
-    read_char(s);
+readTable[","] = function (s) {
+  readChar(s);
+  if (peekChar(s) === "@") {
+    readChar(s);
     return wrap(s, "unquote-splicing");
   } else {
     return wrap(s, "unquote");
@@ -244,6 +244,6 @@ read_table[","] = function (s) {
 };
 exports.stream = stream;
 exports.read = read;
-exports["read-all"] = read_all;
-exports["read-string"] = read_string;
-exports["read-table"] = read_table;
+exports.readAll = readAll;
+exports.readString = readString;
+exports.readTable = readTable;

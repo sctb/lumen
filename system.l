@@ -3,83 +3,82 @@
 
 (target lua:
   (define call-with-file (f path mode)
-    (let |h,e| ((get io 'open) path mode)
+    (let |h,e| (io .open path mode)
       (unless h
         (error e))
       (with x (f h)
-        ((get h 'close) h)))))
+        (h .close h)))))
 
 (define read-file (path)
   (target
-    js: ((get fs 'readFileSync) path 'utf8)
+    js: (fs .read-file-sync path 'utf8)
     lua: (call-with-file
-          (fn (f) ((get f 'read) f '*a))
+          (fn (f) (f .read f '*a))
           path)))
 
 (define write-file (path data)
   (target
-    js: ((get fs 'writeFileSync) path data 'utf8)
+    js: (fs .write-file-sync path data 'utf8)
     lua: (call-with-file
-          (fn (f) ((get f 'write) f data))
+          (fn (f) (f .write f data))
           path 'w)))
 
 (define file-exists? (path)
   (target
-    js: (and ((get fs 'existsSync) path 'utf8)
-             ((get ((get fs 'statSync) path) 'isFile)))
-    lua: (let f ((get io 'open) path)
+    js: (and (fs .exists-sync path 'utf8)
+             (fs .stat-sync path (.is-file)))
+    lua: (let f (io .open path)
            (and (is? f)
-                (with r (or (is? ((get f 'read) f 0))
-                            (= 0 ((get f 'seek) f 'end)))
-                  ((get f 'close) f))))))
+                (with r (or (is? (f .read f 0))
+                            (= 0 (f .seek f 'end)))
+                  (f .close f))))))
 
 (define directory-exists? (path)
   (target
-    js: (and ((get fs 'existsSync) path 'utf8)
-             ((get ((get fs 'statSync) path) 'isDirectory)))
-    lua: (let f ((get io 'open) path)
+    js: (and (fs .exists-sync path 'utf8)
+             (fs .stat-sync path (.is-directory)))
+    lua: (let f (io .open path)
            (and (is? f)
-                (with r (and (not ((get f 'read) f 0))
-                             (not (= 0 ((get f 'seek) f 'end))))
-                  ((get f 'close) f))))))
+                (with r (and (not (f .read f 0))
+                             (not (= 0 (f .seek f 'end))))
+                  (f .close f))))))
 
 (define path-separator
   (target
-    js: (get (require 'path) 'sep)
-    lua: (char (get (get _G 'package) 'config) 0)))
+    js: (require 'path .sep)
+    lua: (char (_G .package .config) 0)))
 
 (define path-join parts
   (or (reduce (fn (x y) (cat x path-separator y)) parts) ""))
 
 (define get-environment-variable (name)
   (target
-    js: (get (get process 'env) name)
-    lua: ((get os 'getenv) name)))
+    js: (get (process .env) name)
+    lua: (os .getenv name)))
 
 (define write (x)
-  (target js: (let out (get process 'stdout)
-                ((get out 'write) x))
-          lua: ((get io 'write) x)))
+  (target js: (process .stdout .write x)
+          lua: (io .write x)))
 
 (define exit (code)
-  (target js: ((get process 'exit) code)
-          lua: ((get os 'exit) code)))
+  (target js: (process .exit code)
+          lua: (os .exit code)))
 
 (define argv
-  (target js: (cut (get process 'argv) 2) lua: arg))
+  (target js: (cut (process .argv) 2) lua: arg))
 
 (define reload (module)
   (wipe (target
-          lua: (get (get package 'loaded) module)
-          js: (get (get require 'cache) ((get require 'resolve) module))))
+          lua: (get (package .loaded) module)
+          js: (get (require .cache) (require .resolve module))))
   (require module))
 
 (define run (command)
   (target
-    js: ((get ((get child_process 'execSync) command) 'toString))
-    lua: (let f ((get io 'popen) command)
-           (with x ((get f 'read) f '*all)
-             ((get f 'close) f)))))
+    js: (child_process .exec-sync command (.to-string))
+    lua: (let f (io .popen command)
+           (with x (f .read f '*all)
+             (f .close f)))))
 
 (export read-file
         write-file
