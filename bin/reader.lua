@@ -115,12 +115,19 @@ local function hex_prefix63(str)
   end
   return __e2
 end
+local function octal_prefix63(str)
+  return code(str, 0) == 48 and number_code63(code(str, 1) or 0)
+end
 local function maybe_number(str)
   if hex_prefix63(str) then
     return tonumber(str)
   else
-    if number_code63(code(str, edge(str))) then
-      return number(str)
+    if octal_prefix63(str) then
+      return tonumber(str, 8)
+    else
+      if number_code63(code(str, edge(str))) then
+        return number(str)
+      end
     end
   end
 end

@@ -115,12 +115,19 @@ var hex_prefix63 = function (str) {
   }
   return __e2;
 };
+var octal_prefix63 = function (str) {
+  return code(str, 0) === 48 && number_code63(code(str, 1) || 0);
+};
 var maybe_number = function (str) {
   if (hex_prefix63(str)) {
     return parseInt(str, 16);
   } else {
-    if (number_code63(code(str, edge(str)))) {
-      return number(str);
+    if (octal_prefix63(str)) {
+      return parseInt(str, 8);
+    } else {
+      if (number_code63(code(str, edge(str)))) {
+        return number(str);
+      }
     }
   }
 };
