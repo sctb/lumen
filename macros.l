@@ -80,12 +80,12 @@
 
 (define-macro define-macro (name args rest: body)
   (let form `(setenv ',name macro: (fn ,args ,@body))
-    ; (eval form)
+    (eval form)
     form))
 
 (define-macro define-special (name args rest: body)
   (let form `(setenv ',name special: (fn ,args ,@body) ,@(keys body))
-    ; (eval form)
+    (eval form)
     form))
 
 (define-macro define-symbol (name expansion)
@@ -123,7 +123,7 @@
 (define-macro let-macro (definitions rest: body)
   (with-frame
     (map (fn (m)
-           (eval `(define-macro ,@m)))
+           (macroexpand `(define-macro ,@m)))
          definitions)
     `(do ,@(macroexpand body))))
 
