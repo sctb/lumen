@@ -1184,6 +1184,12 @@ setenv("when-compiling", {_stash: true, macro: function () {
   var __body43 = unstash(Array.prototype.slice.call(arguments, 0));
   return _eval(join(["do"], __body43));
 }});
+setenv("during-compilation", {_stash: true, macro: function () {
+  var __body45 = unstash(Array.prototype.slice.call(arguments, 0));
+  var __form5 = join(["do"], __body45);
+  _eval(__form5);
+  return __form5;
+}});
 var reader = require("reader");
 var compiler = require("compiler");
 var system = require("system");
