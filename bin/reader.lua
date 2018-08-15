@@ -78,15 +78,7 @@ local function expected(s, c)
   local ____id1 = s
   local __more = ____id1.more
   local __pos1 = ____id1.pos
-  local __id2 = __more
-  local __e
-  if __id2 then
-    __e = __id2
-  else
-    error("Expected " .. c .. " at " .. __pos1)
-    __e = nil
-  end
-  return __e
+  return __more or error("Expected " .. c .. " at " .. __pos1)
 end
 local function wrap(s, x)
   local __y = read(s)
@@ -97,23 +89,23 @@ local function wrap(s, x)
   end
 end
 local function hex_prefix63(str)
-  local __e1
+  local __e
   if code(str, 0) == 45 then
-    __e1 = 1
+    __e = 1
   else
-    __e1 = 0
+    __e = 0
   end
-  local __i = __e1
-  local __id3 = code(str, __i) == 48
-  local __e2
-  if __id3 then
+  local __i = __e
+  local __id2 = code(str, __i) == 48
+  local __e1
+  if __id2 then
     __i = __i + 1
     local __n = code(str, __i)
-    __e2 = __n == 120 or __n == 88
+    __e1 = __n == 120 or __n == 88
   else
-    __e2 = __id3
+    __e1 = __id2
   end
-  return __e2
+  return __e1
 end
 local function maybe_number(str)
   if hex_prefix63(str) then
@@ -184,7 +176,7 @@ read_table["("] = function (s)
   return __r16
 end
 read_table[")"] = function (s)
-  error("Unexpected ) at " .. s.pos)
+  return error("Unexpected ) at " .. s.pos)
 end
 read_table["\""] = function (s)
   read_char(s)

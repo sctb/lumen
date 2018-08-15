@@ -711,6 +711,9 @@ setenv = function (k) {
 print = function (x) {
   return console.log(x);
 };
+error = function (x) {
+  throw new Error(x);
+};
 var math = Math;
 abs = math.abs;
 acos = math.acos;

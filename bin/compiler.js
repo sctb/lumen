@@ -649,7 +649,7 @@ var compile_atom = function (x) {
                     if (number63(x)) {
                       return x + "";
                     } else {
-                      throw new Error("Cannot compile atom: " + str(x));
+                      return error("Cannot compile atom: " + str(x));
                     }
                   }
                 }
@@ -1226,10 +1226,10 @@ setenv("new", {_stash: true, special: function (x) {
 setenv("typeof", {_stash: true, special: function (x) {
   return "typeof(" + compile(x) + ")";
 }});
-setenv("error", {_stash: true, special: function (x) {
+setenv("throw", {_stash: true, special: function (x) {
   var __e56;
   if (target === "js") {
-    __e56 = "throw " + compile(["new", ["Error", x]]);
+    __e56 = "throw " + compile(x);
   } else {
     __e56 = "error(" + compile(x) + ")";
   }
@@ -1342,7 +1342,7 @@ setenv("%object", {_stash: true, special: function () {
       var __k23 = ____id30[0];
       var __v13 = ____id30[1];
       if (! string63(__k23)) {
-        throw new Error("Illegal key: " + str(__k23));
+        error("Illegal key: " + str(__k23));
       }
       __s9 = __s9 + __c9 + key(__k23) + __sep1 + compile(__v13);
       __c9 = ", ";

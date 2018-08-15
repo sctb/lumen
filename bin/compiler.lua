@@ -595,7 +595,7 @@ local function compile_atom(x)
                     if number63(x) then
                       return x .. ""
                     else
-                      error("Cannot compile atom: " .. str(x))
+                      return error("Cannot compile atom: " .. str(x))
                     end
                   end
                 end
@@ -1029,7 +1029,7 @@ local function run(code)
   if f then
     return f()
   else
-    error(e .. " in " .. code)
+    return error(e .. " in " .. code)
   end
 end
 _37result = nil
@@ -1179,10 +1179,10 @@ end})
 setenv("typeof", {_stash = true, special = function (x)
   return "typeof(" .. compile(x) .. ")"
 end})
-setenv("error", {_stash = true, special = function (x)
+setenv("throw", {_stash = true, special = function (x)
   local __e48
   if target == "js" then
-    __e48 = "throw " .. compile({"new", {"Error", x}})
+    __e48 = "throw " .. compile(x)
   else
     __e48 = "error(" .. compile(x) .. ")"
   end

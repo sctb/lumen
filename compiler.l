@@ -678,9 +678,9 @@
 (define-special typeof (x)
   (cat "typeof(" (compile x) ")"))
 
-(define-special error (x) :stmt
+(define-special throw (x) :stmt
   (let e (if (= target 'js)
-             (cat "throw " (compile `(new (Error ,x))))
+             (cat "throw " (compile x))
            (cat "error(" (compile x) ")"))
     (cat (indentation) e)))
 
