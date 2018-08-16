@@ -344,6 +344,10 @@
   (define-global print (x)
     ((get console 'log) x)))
 
+(target js:
+  (define-global error (x)
+    (throw (new (Error x)))))
+
 (define math (target js: Math lua: math))
 
 (define-global abs (get math 'abs))
