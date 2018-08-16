@@ -1226,6 +1226,15 @@ setenv("new", {_stash: true, special: function (x) {
 setenv("typeof", {_stash: true, special: function (x) {
   return "typeof(" + compile(x) + ")";
 }});
+setenv("instanceof", {_stash: true, special: function (x, t) {
+  return "(" + compile(x) + " instanceof " + compile(t) + ")";
+}});
+setenv("async", {_stash: true, special: function (x) {
+  return "async " + compile(x);
+}});
+setenv("await", {_stash: true, special: function (x) {
+  return "await " + compile(x);
+}});
 setenv("throw", {_stash: true, special: function (x) {
   var __e56;
   if (target === "js") {

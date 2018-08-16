@@ -1179,6 +1179,15 @@ end})
 setenv("typeof", {_stash = true, special = function (x)
   return "typeof(" .. compile(x) .. ")"
 end})
+setenv("instanceof", {_stash = true, special = function (x, t)
+  return "(" .. compile(x) .. " instanceof " .. compile(t) .. ")"
+end})
+setenv("async", {_stash = true, special = function (x)
+  return "async " .. compile(x)
+end})
+setenv("await", {_stash = true, special = function (x)
+  return "await " .. compile(x)
+end})
 setenv("throw", {_stash = true, special = function (x)
   local __e48
   if target == "js" then
