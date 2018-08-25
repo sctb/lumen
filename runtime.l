@@ -40,6 +40,9 @@
 (define-global atom? (x)
   (or (nil? x) (string? x) (number? x) (boolean? x)))
 
+(define-global hd? (l x)
+  (and (obj? l) (= (hd l) x)))
+
 (define-global nan (/ 0 0))
 (define-global inf (/ 1 0))
 (define-global -inf (- inf))

@@ -1089,4 +1089,10 @@ c"
     (f 1 'x g)
     (test= (list 'x g) l)))
 
+(define-test hd?
+  (test= true (hd? '(%if 1 2) '%if))
+  (test= false (hd? '((%if) 1 2) '(%if)))
+  (test= false (hd? 42 '%if))
+  (test= true (hd? '() nil)))
+
 (run)
