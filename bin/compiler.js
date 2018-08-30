@@ -881,9 +881,11 @@ var lower_set = function (args, hoist, stmt63, tail63) {
   var ____id16 = args;
   var __lh = ____id16[0];
   var __rh = ____id16[1];
-  add(hoist, ["%set", lower(__lh, hoist), lower(__rh, hoist)]);
+  var __lh1 = lower(__lh, hoist);
+  var __rh1 = lower(__rh, hoist);
+  add(hoist, ["%set", __lh1, __rh1]);
   if (!( stmt63 && ! tail63)) {
-    return __lh;
+    return __lh1;
   }
 };
 var lower_if = function (args, hoist, stmt63, tail63) {
