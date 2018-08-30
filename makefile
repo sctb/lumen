@@ -2,6 +2,7 @@
 
 LUMEN_LUA  ?= lua
 LUMEN_NODE ?= node
+LUMEN_R    ?= r
 LUMEN_HOST ?= $(LUMEN_LUA)
 
 LUMEN := LUMEN_HOST="$(LUMEN_HOST)" bin/lumen
@@ -15,11 +16,11 @@ MODS := bin/lumen.x	\
 	bin/compiler.x	\
 	bin/system.x
 
-all: $(MODS:.x=.js) $(MODS:.x=.lua)
+all: $(MODS:.x=.js) $(MODS:.x=.lua) $(MODS:.x=.R)
 
 clean:
-	@git checkout bin/*.js
-	@git checkout bin/*.lua
+	@git checkout -f bin/*.js
+	@git checkout -f bin/*.lua
 	@rm -f obj/*
 
 bin/lumen.js: $(OBJS:.o=.js)
@@ -32,6 +33,11 @@ bin/lumen.lua: $(OBJS:.o=.lua)
 	@cat $^ > $@.tmp
 	@mv $@.tmp $@
 
+bin/lumen.R: $(OBJS:.o=.R)
+	@echo $@
+	@cat $^ > $@.tmp
+	@mv $@.tmp $@
+
 obj/%.js : %.l
 	@echo "  $@"
 	@$(LUMEN) -c $< -o $@ -t js
@@ -39,6 +45,10 @@ obj/%.js : %.l
 obj/%.lua : %.l
 	@echo "  $@"
 	@$(LUMEN) -c $< -o $@ -t lua
+
+obj/%.R : %.l
+	@echo "  $@"
+	@$(LUMEN) -c $< -o $@ -t r
 
 bin/%.js : %.l
 	@echo $@
@@ -48,8 +58,14 @@ bin/%.lua : %.l
 	@echo $@
 	@$(LUMEN) -c $< -o $@ -t lua
 
+bin/%.R : %.l
+	@echo $@
+	@$(LUMEN) -c $< -o $@ -t r
+
 test: all
 	@echo js:
 	@LUMEN_HOST=$(LUMEN_NODE) ./test.l
 	@echo lua:
 	@LUMEN_HOST=$(LUMEN_LUA) ./test.l
+	@echo R:
+	@LUMEN_HOST=$(LUMEN_R) ./test.l
