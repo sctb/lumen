@@ -1,4 +1,3 @@
-var reader = require("reader");
 var getenv = function (k, p) {
   if (string63(k)) {
     var __i = edge(environment);
