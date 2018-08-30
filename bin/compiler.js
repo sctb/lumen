@@ -256,7 +256,12 @@ var expand_definition = function (__x46) {
   return ____x49;
 };
 var expand_macro = function (form) {
-  return macroexpand(expand1(form));
+  var __result = expand1(form);
+  if (function63(__result)) {
+    return __result(form);
+  } else {
+    return macroexpand(__result);
+  }
 };
 expand1 = function (__x51) {
   var ____id4 = __x51;
