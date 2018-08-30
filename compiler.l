@@ -1,5 +1,3 @@
-(define reader (require 'reader))
-
 (define getenv (k p)
   (when (string? k)
     (let i (edge environment)
@@ -232,28 +230,34 @@
       (and (> n 96) (< n 123)) ; a-z
       (= n 95)))               ; _
 
-(define id (id)
-  (let id1 (if (number-code? (code id 0)) "_" "")
-    (for i (# id)
-      (let (c (char id i)
+(define-global accessor-id? (x)
+  (and (string? x)
+       (= (char x 0) ".")
+       (some? (char x 1))
+       (not (= (char x 1) "."))))
+
+(define-global compile-id (id)
+  (let (id0 (if (accessor-id? id) (clip id 1) id)
+        id1 (if (number-code? (code id0 0)) "_" ""))
+    (for i (# id0)
+      (let (c (char id0 i)
             n (code c)
             c1 (if (and (= c "-")
-                        (not (= id "-")))
+                        (not (= id0 "-")))
                    "_"
                    (valid-code? n) c
                    (= i 0) (cat "_" n)
                  n))
         (cat! id1 c1)))
-    (if (reserved? id1)
-        (cat "_" id1)
-        id1)))
+    (let id2 (if (reserved? id1) (cat "_" id1) id1)
+      (if (= id id0) id2 (cat (char id 0) id2)))))
 
 (define-global valid-id? (x)
-  (and (some? x) (= x (id x))))
+  (and (some? x) (= x (compile-id x))))
 
 (let (names (obj))
   (define-global unique (x)
-    (let x (id x)
+    (let x (compile-id x)
       (if (get names x)
           (let i (get names x)
             (inc (get names x))
@@ -330,7 +334,7 @@
       (= x "nil") "undefined"
       (id-literal? x) (inner x)
       (string-literal? x) (escape-newlines x)
-      (string? x) (id x)
+      (string? x) (compile-id x)
       (boolean? x) (if x "true" "false")
       (nan? x) "nan"
       (= x inf) "inf"
@@ -706,9 +710,8 @@
                    (= (char t1 0) "{"))
               (infix-operator? t))
       (set t1 (cat "(" t1 ")")))
-    (if (and (string-literal? k)
-             (valid-id? (inner k)))
-        (cat t1 "." (inner k))
+    (if (accessor-id? k)
+        (cat t1 k1)
       (cat t1 "[" k1 "]"))))
 
 (define-special %array forms
