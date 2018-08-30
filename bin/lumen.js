@@ -79,7 +79,7 @@ clip = function (s, from, upto) {
 cut = function (x, from, upto) {
   var __l = [];
   var __j = 0;
-  var __e;
+  var __e = undefined;
   if (nil63(from) || from < 0) {
     __e = 0;
   } else {
@@ -87,7 +87,7 @@ cut = function (x, from, upto) {
   }
   var __i = __e;
   var __n = _35(x);
-  var __e1;
+  var __e1 = undefined;
   if (nil63(upto) || upto > __n) {
     __e1 = __n;
   } else {
@@ -103,7 +103,7 @@ cut = function (x, from, upto) {
   var __k = undefined;
   for (__k in ____o) {
     var __v = ____o[__k];
-    var __e2;
+    var __e2 = undefined;
     if (numeric63(__k)) {
       __e2 = parseInt(__k);
     } else {
@@ -122,7 +122,7 @@ keys = function (x) {
   var __k2 = undefined;
   for (__k2 in ____o1) {
     var __v1 = ____o1[__k2];
-    var __e3;
+    var __e3 = undefined;
     if (numeric63(__k2)) {
       __e3 = parseInt(__k2);
     } else {
@@ -202,7 +202,7 @@ join = function () {
       var __k4 = undefined;
       for (__k4 in ____o2) {
         var __v2 = ____o2[__k4];
-        var __e4;
+        var __e4 = undefined;
         if (numeric63(__k4)) {
           __e4 = parseInt(__k4);
         } else {
@@ -224,7 +224,7 @@ find = function (f, t) {
   var ____i6 = undefined;
   for (____i6 in ____o3) {
     var __x2 = ____o3[____i6];
-    var __e5;
+    var __e5 = undefined;
     if (numeric63(____i6)) {
       __e5 = parseInt(____i6);
     } else {
@@ -265,7 +265,7 @@ pair = function (l) {
   return __l12;
 };
 sort = function (l, f) {
-  var __e6;
+  var __e6 = undefined;
   if (f) {
     __e6 = function (a, b) {
       if (f(a, b)) {
@@ -293,7 +293,7 @@ map = function (f, x) {
   var __k6 = undefined;
   for (__k6 in ____o4) {
     var __v4 = ____o4[__k6];
-    var __e7;
+    var __e7 = undefined;
     if (numeric63(__k6)) {
       __e7 = parseInt(__k6);
     } else {
@@ -321,7 +321,7 @@ keys63 = function (t) {
   var __k8 = undefined;
   for (__k8 in ____o5) {
     var __v5 = ____o5[__k8];
-    var __e8;
+    var __e8 = undefined;
     if (numeric63(__k8)) {
       __e8 = parseInt(__k8);
     } else {
@@ -339,7 +339,7 @@ empty63 = function (t) {
   var ____i12 = undefined;
   for (____i12 in ____o6) {
     var __x7 = ____o6[____i12];
-    var __e9;
+    var __e9 = undefined;
     if (numeric63(____i12)) {
       __e9 = parseInt(____i12);
     } else {
@@ -357,7 +357,7 @@ stash = function (args) {
     var __k10 = undefined;
     for (__k10 in ____o7) {
       var __v6 = ____o7[__k10];
-      var __e10;
+      var __e10 = undefined;
       if (numeric63(__k10)) {
         __e10 = parseInt(__k10);
       } else {
@@ -384,7 +384,7 @@ unstash = function (args) {
       var __k12 = undefined;
       for (__k12 in ____o8) {
         var __v7 = ____o8[__k12];
-        var __e11;
+        var __e11 = undefined;
         if (numeric63(__k12)) {
           __e11 = parseInt(__k12);
         } else {
@@ -407,7 +407,7 @@ destash33 = function (l, args1) {
     var __k14 = undefined;
     for (__k14 in ____o9) {
       var __v8 = ____o9[__k14];
-      var __e12;
+      var __e12 = undefined;
       if (numeric63(__k14)) {
         __e12 = parseInt(__k14);
       } else {
@@ -553,19 +553,19 @@ escape = function (s) {
   var __i20 = 0;
   while (__i20 < _35(s)) {
     var __c = char(s, __i20);
-    var __e13;
+    var __e13 = undefined;
     if (__c === "\n") {
       __e13 = "\\n";
     } else {
-      var __e14;
+      var __e14 = undefined;
       if (__c === "\r") {
         __e14 = "\\r";
       } else {
-        var __e15;
+        var __e15 = undefined;
         if (__c === "\"") {
           __e15 = "\\\"";
         } else {
-          var __e16;
+          var __e16 = undefined;
           if (__c === "\\") {
             __e16 = "\\\\";
           } else {
@@ -628,7 +628,7 @@ str = function (x, stack) {
                       var __k16 = undefined;
                       for (__k16 in ____o10) {
                         var __v9 = ____o10[__k16];
-                        var __e17;
+                        var __e17 = undefined;
                         if (numeric63(__k16)) {
                           __e17 = parseInt(__k16);
                         } else {
@@ -647,7 +647,7 @@ str = function (x, stack) {
                       var ____i22 = undefined;
                       for (____i22 in ____o11) {
                         var __v10 = ____o11[____i22];
-                        var __e18;
+                        var __e18 = undefined;
                         if (numeric63(____i22)) {
                           __e18 = parseInt(____i22);
                         } else {
@@ -686,7 +686,7 @@ setenv = function (k) {
   var ____id1 = ____r76;
   var __keys = cut(____id1, 0);
   if (string63(__k18)) {
-    var __e19;
+    var __e19 = undefined;
     if (__keys.toplevel) {
       __e19 = hd(environment);
     } else {
@@ -698,7 +698,7 @@ setenv = function (k) {
     var __k19 = undefined;
     for (__k19 in ____o12) {
       var __v11 = ____o12[__k19];
-      var __e20;
+      var __e20 = undefined;
       if (numeric63(__k19)) {
         __e20 = parseInt(__k19);
       } else {
@@ -779,7 +779,7 @@ setenv("list", {_stash: true, macro: function () {
   var __k2 = undefined;
   for (__k2 in ____o1) {
     var __v1 = ____o1[__k2];
-    var __e8;
+    var __e8 = undefined;
     if (numeric63(__k2)) {
       __e8 = parseInt(__k2);
     } else {
@@ -1058,11 +1058,11 @@ setenv("each", {_stash: true, macro: function (x, t) {
   var __o3 = unique("o");
   var __n3 = unique("n");
   var __i3 = unique("i");
-  var __e9;
+  var __e9 = undefined;
   if (atom63(__x256)) {
     __e9 = [__i3, __x256];
   } else {
-    var __e10;
+    var __e10 = undefined;
     if (_35(__x256) > 1) {
       __e10 = __x256;
     } else {
@@ -1073,7 +1073,7 @@ setenv("each", {_stash: true, macro: function (x, t) {
   var ____id53 = __e9;
   var __k5 = ____id53[0];
   var __v7 = ____id53[1];
-  var __e11;
+  var __e11 = undefined;
   if (target === "lua") {
     __e11 = __body37;
   } else {
@@ -1106,7 +1106,7 @@ setenv("set-of", {_stash: true, macro: function () {
   var ____i9 = undefined;
   for (____i9 in ____o5) {
     var __x298 = ____o5[____i9];
-    var __e12;
+    var __e12 = undefined;
     if (numeric63(____i9)) {
       __e12 = parseInt(____i9);
     } else {
@@ -1139,7 +1139,7 @@ setenv("cat!", {_stash: true, macro: function (a) {
   return ["set", __a5, join(["cat", __a5], __bs7)];
 }});
 setenv("inc", {_stash: true, macro: function (n, by) {
-  var __e13;
+  var __e13 = undefined;
   if (nil63(by)) {
     __e13 = 1;
   } else {
@@ -1148,7 +1148,7 @@ setenv("inc", {_stash: true, macro: function (n, by) {
   return ["set", n, ["+", n, __e13]];
 }});
 setenv("dec", {_stash: true, macro: function (n, by) {
-  var __e14;
+  var __e14 = undefined;
   if (nil63(by)) {
     __e14 = 1;
   } else {
@@ -1172,7 +1172,7 @@ setenv("export", {_stash: true, macro: function () {
     var ____i11 = undefined;
     for (____i11 in ____o7) {
       var __k7 = ____o7[____i11];
-      var __e15;
+      var __e15 = undefined;
       if (numeric63(____i11)) {
         __e15 = parseInt(____i11);
       } else {

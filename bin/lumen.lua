@@ -76,7 +76,7 @@ end
 function cut(x, from, upto)
   local __l = {}
   local __j = 0
-  local __e
+  local __e = nil
   if nil63(from) or from < 0 then
     __e = 0
   else
@@ -84,7 +84,7 @@ function cut(x, from, upto)
   end
   local __i = __e
   local __n = _35(x)
-  local __e1
+  local __e1 = nil
   if nil63(upto) or upto > __n then
     __e1 = __n
   else
@@ -131,7 +131,7 @@ function char(s, n)
   return clip(s, n, n + 1)
 end
 function code(s, n)
-  local __e2
+  local __e2 = nil
   if n then
     __e2 = n + 1
   end
@@ -344,7 +344,7 @@ function destash33(l, args1)
   end
 end
 function search(s, pattern, start)
-  local __e3
+  local __e3 = nil
   if start then
     __e3 = start + 1
   end
@@ -471,19 +471,19 @@ function escape(s)
   local __i20 = 0
   while __i20 < _35(s) do
     local __c = char(s, __i20)
-    local __e4
+    local __e4 = nil
     if __c == "\n" then
       __e4 = "\\n"
     else
-      local __e5
+      local __e5 = nil
       if __c == "\r" then
         __e5 = "\\r"
       else
-        local __e6
+        local __e6 = nil
         if __c == "\"" then
           __e6 = "\\\""
         else
-          local __e7
+          local __e7 = nil
           if __c == "\\" then
             __e7 = "\\\\"
           else
@@ -594,7 +594,7 @@ function setenv(k, ...)
   local ____id1 = ____r73
   local __keys = cut(____id1, 0)
   if string63(__k9) then
-    local __e8
+    local __e8 = nil
     if __keys.toplevel then
       __e8 = hd(environment)
     else
@@ -946,11 +946,11 @@ setenv("each", {_stash = true, macro = function (x, t, ...)
   local __o3 = unique("o")
   local __n3 = unique("n")
   local __i3 = unique("i")
-  local __e8
+  local __e8 = nil
   if atom63(__x279) then
     __e8 = {__i3, __x279}
   else
-    local __e9
+    local __e9 = nil
     if _35(__x279) > 1 then
       __e9 = __x279
     else
@@ -961,7 +961,7 @@ setenv("each", {_stash = true, macro = function (x, t, ...)
   local ____id53 = __e8
   local __k4 = ____id53[1]
   local __v7 = ____id53[2]
-  local __e10
+  local __e10 = nil
   if target == "lua" then
     __e10 = __body37
   else
@@ -1020,7 +1020,7 @@ setenv("cat!", {_stash = true, macro = function (a, ...)
   return {"set", __a5, join({"cat", __a5}, __bs7)}
 end})
 setenv("inc", {_stash = true, macro = function (n, by)
-  local __e11
+  local __e11 = nil
   if nil63(by) then
     __e11 = 1
   else
@@ -1029,7 +1029,7 @@ setenv("inc", {_stash = true, macro = function (n, by)
   return {"set", n, {"+", n, __e11}}
 end})
 setenv("dec", {_stash = true, macro = function (n, by)
-  local __e12
+  local __e12 = nil
   if nil63(by) then
     __e12 = 1
   else
@@ -1080,11 +1080,11 @@ local function eval_print(form)
     if obj63(m) then
       return m
     else
-      local __e
+      local __e = nil
       if string63(m) then
         __e = clip(m, (search(m, ": ") or -2) + 2)
       else
-        local __e1
+        local __e1 = nil
         if nil63(m) then
           __e1 = ""
         else

@@ -89,7 +89,7 @@ local function wrap(s, x)
   end
 end
 local function hex_prefix63(str)
-  local __e
+  local __e = nil
   if code(str, 0) == 45 then
     __e = 1
   else
@@ -97,7 +97,7 @@ local function hex_prefix63(str)
   end
   local __i = __e
   local __id2 = code(str, __i) == 48
-  local __e1
+  local __e1 = nil
   if __id2 then
     __i = __i + 1
     local __n = code(str, __i)
