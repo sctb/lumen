@@ -615,49 +615,53 @@ str = function (x, stack) {
                   if (stack && in63(x, stack)) {
                     return "circular";
                   } else {
-                    if (false) {
-                      return escape(tostring(x));
+                    if (type(x) === "symbol") {
+                      return tostring(x);
                     } else {
-                      var __s = "(";
-                      var __sp = "";
-                      var __xs11 = [];
-                      var __ks = [];
-                      var __l4 = stack || [];
-                      add(__l4, x);
-                      var ____o10 = x;
-                      var __k16 = undefined;
-                      for (__k16 in ____o10) {
-                        var __v9 = ____o10[__k16];
-                        var __e17;
-                        if (numeric63(__k16)) {
-                          __e17 = parseInt(__k16);
-                        } else {
-                          __e17 = __k16;
+                      if (false) {
+                        return escape(tostring(x));
+                      } else {
+                        var __s = "(";
+                        var __sp = "";
+                        var __xs11 = [];
+                        var __ks = [];
+                        var __l4 = stack || [];
+                        add(__l4, x);
+                        var ____o10 = x;
+                        var __k16 = undefined;
+                        for (__k16 in ____o10) {
+                          var __v9 = ____o10[__k16];
+                          var __e17;
+                          if (numeric63(__k16)) {
+                            __e17 = parseInt(__k16);
+                          } else {
+                            __e17 = __k16;
+                          }
+                          var __k17 = __e17;
+                          if (number63(__k17)) {
+                            __xs11[__k17] = str(__v9, __l4);
+                          } else {
+                            add(__ks, __k17 + ":");
+                            add(__ks, str(__v9, __l4));
+                          }
                         }
-                        var __k17 = __e17;
-                        if (number63(__k17)) {
-                          __xs11[__k17] = str(__v9, __l4);
-                        } else {
-                          add(__ks, __k17 + ":");
-                          add(__ks, str(__v9, __l4));
+                        drop(__l4);
+                        var ____o11 = join(__xs11, __ks);
+                        var ____i22 = undefined;
+                        for (____i22 in ____o11) {
+                          var __v10 = ____o11[____i22];
+                          var __e18;
+                          if (numeric63(____i22)) {
+                            __e18 = parseInt(____i22);
+                          } else {
+                            __e18 = ____i22;
+                          }
+                          var ____i221 = __e18;
+                          __s = __s + __sp + __v10;
+                          __sp = " ";
                         }
+                        return __s + ")";
                       }
-                      drop(__l4);
-                      var ____o11 = join(__xs11, __ks);
-                      var ____i22 = undefined;
-                      for (____i22 in ____o11) {
-                        var __v10 = ____o11[____i22];
-                        var __e18;
-                        if (numeric63(____i22)) {
-                          __e18 = parseInt(____i22);
-                        } else {
-                          __e18 = ____i22;
-                        }
-                        var ____i221 = __e18;
-                        __s = __s + __sp + __v10;
-                        __sp = " ";
-                      }
-                      return __s + ")";
                     }
                   }
                 }

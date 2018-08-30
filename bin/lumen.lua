@@ -533,38 +533,42 @@ function str(x, stack)
                   if stack and in63(x, stack) then
                     return "circular"
                   else
-                    if not( type(x) == "table") then
-                      return escape(tostring(x))
+                    if false then
+                      return tostring(x)
                     else
-                      local __s = "("
-                      local __sp = ""
-                      local __xs11 = {}
-                      local __ks = {}
-                      local __l4 = stack or {}
-                      add(__l4, x)
-                      local ____o10 = x
-                      local __k8 = nil
-                      for __k8 in next, ____o10 do
-                        local __v9 = ____o10[__k8]
-                        if number63(__k8) then
-                          __xs11[__k8] = str(__v9, __l4)
-                        else
-                          if not string63(__k8) then
-                            __k8 = str(__k8, __l4)
+                      if not( type(x) == "table") then
+                        return escape(tostring(x))
+                      else
+                        local __s = "("
+                        local __sp = ""
+                        local __xs11 = {}
+                        local __ks = {}
+                        local __l4 = stack or {}
+                        add(__l4, x)
+                        local ____o10 = x
+                        local __k8 = nil
+                        for __k8 in next, ____o10 do
+                          local __v9 = ____o10[__k8]
+                          if number63(__k8) then
+                            __xs11[__k8] = str(__v9, __l4)
+                          else
+                            if not string63(__k8) then
+                              __k8 = str(__k8, __l4)
+                            end
+                            add(__ks, __k8 .. ":")
+                            add(__ks, str(__v9, __l4))
                           end
-                          add(__ks, __k8 .. ":")
-                          add(__ks, str(__v9, __l4))
                         end
+                        drop(__l4)
+                        local ____o11 = join(__xs11, __ks)
+                        local ____i22 = nil
+                        for ____i22 in next, ____o11 do
+                          local __v10 = ____o11[____i22]
+                          __s = __s .. __sp .. __v10
+                          __sp = " "
+                        end
+                        return __s .. ")"
                       end
-                      drop(__l4)
-                      local ____o11 = join(__xs11, __ks)
-                      local ____i22 = nil
-                      for ____i22 in next, ____o11 do
-                        local __v10 = ____o11[____i22]
-                        __s = __s .. __sp .. __v10
-                        __sp = " "
-                      end
-                      return __s .. ")"
                     end
                   end
                 end
