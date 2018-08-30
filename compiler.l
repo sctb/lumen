@@ -680,6 +680,15 @@
 (define-special typeof (x)
   (cat "typeof(" (compile x) ")"))
 
+(define-special instanceof (x t)
+  (cat "(" (compile x) " instanceof " (compile t) ")"))
+
+(define-special async (x)
+  (cat "async " (compile x)))
+
+(define-special await (x)
+  (cat "await " (compile x)))
+
 (define-special throw (x) :stmt
   (let e (if (= target 'js)
              (cat "throw " (compile x))
