@@ -454,22 +454,22 @@ ____x69.js = "!"
 ____x69.lua = "not"
 ____x68["not"] = ____x69
 local ____x70 = {}
-____x70["*"] = true
-____x70["/"] = true
-____x70["%"] = true
+____x70["*"] = "*"
+____x70["/"] = "/"
+____x70["%"] = "%"
 local ____x71 = {}
 local ____x72 = {}
 ____x72.js = "+"
 ____x72.lua = ".."
 ____x71.cat = ____x72
 local ____x73 = {}
-____x73["+"] = true
-____x73["-"] = true
+____x73["+"] = "+"
+____x73["-"] = "-"
 local ____x74 = {}
-____x74["<"] = true
-____x74[">"] = true
-____x74["<="] = true
-____x74[">="] = true
+____x74["<"] = "<"
+____x74[">"] = ">"
+____x74["<="] = "<="
+____x74[">="] = ">="
 local ____x75 = {}
 local ____x76 = {}
 ____x76.js = "==="
@@ -513,8 +513,12 @@ local function getop(op)
     if __x82 == true then
       return op
     else
-      if is63(__x82) then
-        return __x82[target]
+      if string63(__x82) then
+        return __x82
+      else
+        if is63(__x82) then
+          return __x82[target]
+        end
       end
     end
   end, infix)
