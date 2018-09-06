@@ -501,6 +501,32 @@ function escape(s)
   end
   return __s1 .. "\""
 end
+local function simple_id63(x)
+  local ____id = {xpcall(function ()
+    return read_string(x)
+  end, function (m)
+    if obj63(m) then
+      return m
+    else
+      local __e8
+      if string63(m) then
+        __e8 = clip(m, (search(m, ": ") or -2) + 2)
+      else
+        local __e9
+        if nil63(m) then
+          __e9 = ""
+        else
+          __e9 = str(m)
+        end
+        __e8 = __e9
+      end
+      return {stack = debug.traceback(), message = __e8}
+    end
+  end)}
+  local __ok = ____id[1]
+  local __v9 = ____id[2]
+  return __ok and __v9 == x
+end
 function str(x, stack)
   if nil63(x) then
     return "nil"
@@ -522,7 +548,11 @@ function str(x, stack)
             end
           else
             if string63(x) then
-              return escape(x)
+              if simple_id63(x) then
+                return x
+              else
+                return escape(x)
+              end
             else
               if atom63(x) then
                 return tostring(x)
@@ -545,23 +575,23 @@ function str(x, stack)
                       local ____o10 = x
                       local __k8 = nil
                       for __k8 in next, ____o10 do
-                        local __v9 = ____o10[__k8]
+                        local __v10 = ____o10[__k8]
                         if number63(__k8) then
-                          __xs11[__k8] = str(__v9, __l4)
+                          __xs11[__k8] = str(__v10, __l4)
                         else
                           if not string63(__k8) then
                             __k8 = str(__k8, __l4)
                           end
                           add(__ks, __k8 .. ":")
-                          add(__ks, str(__v9, __l4))
+                          add(__ks, str(__v10, __l4))
                         end
                       end
                       drop(__l4)
                       local ____o11 = join(__xs11, __ks)
                       local ____i22 = nil
                       for ____i22 in next, ____o11 do
-                        local __v10 = ____o11[____i22]
-                        __s = __s .. __sp .. __v10
+                        local __v11 = ____o11[____i22]
+                        __s = __s .. __sp .. __v11
                         __sp = " "
                       end
                       return __s .. ")"
@@ -582,31 +612,31 @@ function apply(f, args)
   return f(values(__args))
 end
 function call(f, ...)
-  local ____r72 = unstash({...})
-  local __f = destash33(f, ____r72)
-  local ____id = ____r72
-  local __args11 = cut(____id, 0)
+  local ____r75 = unstash({...})
+  local __f = destash33(f, ____r75)
+  local ____id1 = ____r75
+  local __args11 = cut(____id1, 0)
   return apply(__f, __args11)
 end
 function setenv(k, ...)
-  local ____r73 = unstash({...})
-  local __k9 = destash33(k, ____r73)
-  local ____id1 = ____r73
-  local __keys = cut(____id1, 0)
+  local ____r76 = unstash({...})
+  local __k9 = destash33(k, ____r76)
+  local ____id2 = ____r76
+  local __keys = cut(____id2, 0)
   if string63(__k9) then
-    local __e8
+    local __e10
     if __keys.toplevel then
-      __e8 = hd(environment)
+      __e10 = hd(environment)
     else
-      __e8 = last(environment)
+      __e10 = last(environment)
     end
-    local __frame = __e8
+    local __frame = __e10
     local __entry = __frame[__k9] or {}
     local ____o12 = __keys
     local __k10 = nil
     for __k10 in next, ____o12 do
-      local __v11 = ____o12[__k10]
-      __entry[__k10] = __v11
+      local __v12 = ____o12[__k10]
+      __entry[__k10] = __v12
     end
     __frame[__k9] = __entry
     return __frame[__k9]
