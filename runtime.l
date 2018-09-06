@@ -292,13 +292,17 @@
         (cat! s1 c1)))
     (cat s1 "\"")))
 
+(define simple-id? (x)
+  (let ((ok v) (guard (read-string x)))
+    (and ok (= v x))))
+
 (define-global str (x stack)
   (if (nil? x) "nil"
       (nan? x) "nan"
       (= x inf) "inf"
       (= x -inf) "-inf"
       (boolean? x) (if x "true" "false")
-      (string? x) (escape x)
+      (string? x) (if (simple-id? x) x (escape x))
       (atom? x) (tostring x)
       (function? x) "function"
       (and stack (in? x stack)) "circular"
