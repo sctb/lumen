@@ -1,10 +1,14 @@
-(define-global environment (list (obj)))
+(define environment (list (obj)))
 (define-global target (language))
+
+(define-global get-environment ()
+  environment)
 
 (define-global nil? (x)
   (target
     js: (or (= x nil) (= x null))
-    lua: (= x nil)))
+    lua: (= x nil)
+    r: ((get is .null) x)))
 
 (define-global is? (x) (not (nil? x)))
 
@@ -13,11 +17,23 @@
 (define-global either (x y) (if (is? x) x y))
 
 (define-global has? (l k)
-  (target js: ((get l 'hasOwnProperty) k)
-          lua: (is? (get l k))))
+  (target js: ((get l .hasOwnProperty) k)
+          lua: (is? (get l k))
+          r: (%literal k | %in% | (names l))))
+
+(target r:
+(define-global indices (l)
+  (Map (fn (k i) (if (= k "") i k))
+       (names l)
+       (seq_len (length l)))))
 
 (define-global # (x)
-  (target js: (or (get x 'length) 0) lua: |#x|))
+  (target js: (or (get x .length) 0)
+          lua: (%literal |#| x)
+          r: (if ((get is .character) x)
+                 (nchar x)
+                 (- (length x)
+                    (length (Filter nchar (names x)))))))
 
 (define-global none? (x) (= (# x) 0))
 (define-global some? (x) (> (# x) 0))
@@ -27,15 +43,16 @@
 (define-global hd (l) (at l 0))
 
 (target js: (define-global type (x) (typeof x)))
+(target r: (define-global type (x) (mode x)))
 
-(define-global string? (x) (= (type x) 'string))
-(define-global number? (x) (= (type x) 'number))
-(define-global boolean? (x) (= (type x) 'boolean))
+(define-global string? (x) (= (type x) (target r: 'character js: 'string lua: 'string)))
+(define-global number? (x) (= (type x) (target r: 'numeric js: 'number lua: 'number)))
+(define-global boolean? (x) (= (type x) (target r: 'logical js: 'boolean lua: 'boolean)))
 (define-global function? (x) (= (type x) 'function))
 
 (define-global obj? (x)
   (and (is? x)
-       (= (type x) (target lua: 'table js: 'object))))
+       (= (type x) (target r: 'list lua: 'table js: 'object))))
 
 (define-global atom? (x)
   (or (nil? x) (string? x) (number? x) (boolean? x)))
@@ -48,13 +65,20 @@
 (define-global -inf (- inf))
 
 (define-global nan? (n)
-  (not (= n n)))
+  (target
+    r: ((get is .nan) n)
+    js: (not (= n n))
+    lua: (not (= n n))))
 
 (define-global inf? (n)
-  (or (= n inf) (= n -inf)))
+  (target
+    r: (not ((get is .finite) n))
+    js: (or (= n inf) (= n -inf))
+    lua: (or (= n inf) (= n -inf))))
 
 (define-global clip (s from upto)
-  (target js: ((get s 'substring) from upto)
+  (target r: (substr s (+ from 1) upto)
+          js: ((get s 'substring) from upto)
           lua: ((get string 'sub) s (+ from 1) upto)))
 
 (define-global cut (x from upto)
@@ -334,14 +358,15 @@
   (apply f args))
 
 (define-global setenv (k rest: keys)
-  (when (string? k)
-    (let (frame (if (get keys 'toplevel)
-                    (hd environment)
-                  (last environment))
-          entry (or (get frame k) (obj)))
-      (each (k v) keys
-        (set (get entry k) v))
-      (set (get frame k) entry))))
+  (let env (get-environment)
+    (when (string? k)
+      (let (frame (if (get keys 'toplevel)
+                      (hd env)
+                    (last env))
+            entry (or (get frame k) (obj)))
+        (each (k v) keys
+          (set (get entry k) v))
+        (set (get frame k) entry)))))
 
 (target js:
   (define-global print (x)

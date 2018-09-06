@@ -9,27 +9,29 @@
               (pair args))))
 
 (define-macro at (l i)
-  (if (and (= target 'lua) (number? i))
+  (if (and (or (= target 'lua) (= target 'r)) (number? i))
       (inc i)
-      (= target 'lua)
+      (or (= target 'lua) (= target 'r))
       (set i `(+ ,i 1)))
   `(get ,l ,i))
 
 (define-macro wipe (place)
-  (if (= target 'lua)
+  (if (or (= target 'lua) (= target 'r))
       `(set ,place nil)
     `(%delete ,place)))
 
 (define-macro list body
-  (let-unique (x)
-    (let (l () forms ())
-      (each (k v) body
-        (if (number? k)
-            (set (get l k) v)
-          (add forms `(set (get ,x ',k) ,v))))
-      (if (some? forms)
-          `(let ,x (%array ,@l) ,@forms ,x)
-        `(%array ,@l)))))
+  (if (= target 'r)
+      `(%call list ,@body)
+    (let-unique (x)
+      (let (l () forms ())
+        (each (k v) body
+          (if (number? k)
+              (set (get l k) v)
+            (add forms `(set (get ,x ',k) ,v))))
+        (if (some? forms)
+            `(let ,x (%array ,@l) ,@forms ,x)
+          `(%array ,@l))))))
 
 (define-macro if branches
   (hd (expand-if branches)))
@@ -109,9 +111,9 @@
 
 (define-macro with-frame body
   (let-unique (x)
-    `(do (add environment (obj))
+    `(do (add (get-environment) (obj))
          (with ,x (do ,@body)
-           (drop environment)))))
+           (drop (get-environment))))))
 
 (define-macro with-bindings ((names) rest: body)
   (let-unique (x)
@@ -167,9 +169,11 @@
                   (if (> (# x) 1) x
                       (list i (hd x)))))
       `(let (,o ,t ,k nil)
-         (%for ,o ,k
+         (%for ,(if (= target 'r) `(indices ,o) o) ,k
            (let (,v (get ,o ,k))
-             ,@(if (= target 'lua) body
+             ,@(if (or (= target 'lua)
+                       (= target 'r))
+                   body
                    `((let ,k (if (numeric? ,k)
                                  (parseInt ,k)
                                ,k)

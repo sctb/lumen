@@ -67,5 +67,3 @@ test: all
 	@LUMEN_HOST=$(LUMEN_NODE) ./test.l
 	@echo lua:
 	@LUMEN_HOST=$(LUMEN_LUA) ./test.l
-	@echo R:
-	@LUMEN_HOST=$(LUMEN_R) ./test.l
