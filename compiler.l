@@ -779,11 +779,13 @@
 
 (define-special %stash args
   (if (= target 'r)
-      (with s ""
-        (let c ""
-          (step (k v) args
-            (cat! s c (inner (compile k)) " = " (compile v))
-            (set c ", "))))
+      (with-indent
+        (let ind (indentation)
+          (with s ""
+            (let c ""
+              (step (k v) args
+                (cat! s c "\n" ind (inner (compile k)) " = " (compile v))
+                (set c ","))))))
     (let l '(%object "_stash" true)
       (step (k v) args
         (add l (literal k))

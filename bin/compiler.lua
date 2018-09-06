@@ -1447,25 +1447,29 @@ end})
 setenv("%stash", {_stash = true, special = function (...)
   local __args13 = unstash({...})
   if target == "r" then
+    indent_level = indent_level + 1
+    local __ind13 = indentation()
     local __s13 = ""
     local __c111 = ""
-    local ____x189 = __args13
+    local ____x191 = __args13
     local ____i28 = 0
-    while ____i28 < _35(____x189) do
-      local ____id33 = ____x189[____i28 + 1]
+    while ____i28 < _35(____x191) do
+      local ____id33 = ____x191[____i28 + 1]
       local __k18 = ____id33[1]
       local __v16 = ____id33[2]
-      __s13 = __s13 .. __c111 .. inner(compile(__k18)) .. " = " .. compile(__v16)
-      __c111 = ", "
+      __s13 = __s13 .. __c111 .. "\n" .. __ind13 .. inner(compile(__k18)) .. " = " .. compile(__v16)
+      __c111 = ","
       ____i28 = ____i28 + 1
     end
-    return __s13
+    local ____x190 = __s13
+    indent_level = indent_level - 1
+    return ____x190
   else
     local __l2 = {"%object", "\"_stash\"", true}
-    local ____x191 = __args13
+    local ____x193 = __args13
     local ____i29 = 0
-    while ____i29 < _35(____x191) do
-      local ____id34 = ____x191[____i29 + 1]
+    while ____i29 < _35(____x193) do
+      local ____id34 = ____x193[____i29 + 1]
       local __k19 = ____id34[1]
       local __v17 = ____id34[2]
       add(__l2, literal(__k19))

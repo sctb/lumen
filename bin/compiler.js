@@ -1508,25 +1508,29 @@ setenv("%literal", {_stash: true, special: function () {
 setenv("%stash", {_stash: true, special: function () {
   var __args13 = unstash(Array["prototype"]["slice"]["call"](arguments, 0));
   if (target === "r") {
+    indent_level = indent_level + 1;
+    var __ind13 = indentation();
     var __s13 = "";
     var __c111 = "";
-    var ____x180 = __args13;
+    var ____x182 = __args13;
     var ____i28 = 0;
-    while (____i28 < _35(____x180)) {
-      var ____id33 = ____x180[____i28];
+    while (____i28 < _35(____x182)) {
+      var ____id33 = ____x182[____i28];
       var __k26 = ____id33[0];
       var __v16 = ____id33[1];
-      __s13 = __s13 + __c111 + inner(compile(__k26)) + " = " + compile(__v16);
-      __c111 = ", ";
+      __s13 = __s13 + __c111 + "\n" + __ind13 + inner(compile(__k26)) + " = " + compile(__v16);
+      __c111 = ",";
       ____i28 = ____i28 + 1;
     }
-    return __s13;
+    var ____x181 = __s13;
+    indent_level = indent_level - 1;
+    return ____x181;
   } else {
     var __l2 = ["%object", "\"_stash\"", true];
-    var ____x182 = __args13;
+    var ____x184 = __args13;
     var ____i29 = 0;
-    while (____i29 < _35(____x182)) {
-      var ____id34 = ____x182[____i29];
+    while (____i29 < _35(____x184)) {
+      var ____id34 = ____x184[____i29];
       var __k27 = ____id34[0];
       var __v17 = ____id34[1];
       add(__l2, literal(__k27));

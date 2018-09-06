@@ -120,9 +120,10 @@ bind <- function (lh, rh) {
     V__bs
   }
 }
-setenv("arguments%", macro = function (from) {
-  list(list("get", list("get", list("get", "Array", list("quote", "prototype")), list("quote", "slice")), list("quote", "call")), "arguments", from)
-})
+setenv("arguments%", 
+  macro = function (from) {
+    list(list("get", list("get", list("get", "Array", list("quote", "prototype")), list("quote", "slice")), list("quote", "call")), "arguments", from)
+  })
 bind42 <- function (args, body) {
   V__args1 <- list()
   rest <- function () {
@@ -189,7 +190,8 @@ expand_local <- function (V__x9) {
   V__x10 <- V__V__id1[[1]]
   V__name <- V__V__id1[[2]]
   V__value <- V__V__id1[[3]]
-  setenv(V__name, variable = TRUE)
+  setenv(V__name, 
+    variable = TRUE)
   list("%local", V__name, macroexpand(V__value))
 }
 expand_function <- function (V__x11) {
@@ -202,7 +204,8 @@ expand_function <- function (V__x11) {
   V__V__i5 <- NULL
   for (V__V__i5 in indices(V__V__o3)) {
     V__V__x13 <- V__V__o3[[V__V__i5]]
-    setenv(V__V__x13, variable = TRUE)
+    setenv(V__V__x13, 
+      variable = TRUE)
   }
   V__V__x14 <- join(list("%function", V__args), macroexpand(V__body))
   drop(get_environment())
@@ -219,7 +222,8 @@ expand_definition <- function (V__x15) {
   V__V__i6 <- NULL
   for (V__V__i6 in indices(V__V__o4)) {
     V__V__x17 <- V__V__o4[[V__V__i6]]
-    setenv(V__V__x17, variable = TRUE)
+    setenv(V__V__x17, 
+      variable = TRUE)
   }
   V__V__x18 <- join(list(V__x16, V__name1, V__args11), macroexpand(V__body1))
   drop(get_environment())
@@ -494,7 +498,35 @@ mapo <- function (f, t) {
   }
   V__o6
 }
-infix <- list(list(not = list(r = "!", js = "!", lua = "not")), list(* = TRUE, / = TRUE, % = TRUE), list(cat = list(js = "+", lua = "..")), list(+ = TRUE, - = TRUE), list(< = TRUE, > = TRUE, <= = TRUE, >= = TRUE), list(= = list(r = "==", js = "===", lua = "==")), list(and = list(r = "&&", js = "&&", lua = "and")), list(or = list(r = "||", js = "||", lua = "or")))
+infix <- list(list(
+  not = list(
+    r = "!",
+    js = "!",
+    lua = "not")), list(
+  * = TRUE,
+  / = TRUE,
+  % = TRUE), list(
+  cat = list(
+    js = "+",
+    lua = "..")), list(
+  + = TRUE,
+  - = TRUE), list(
+  < = TRUE,
+  > = TRUE,
+  <= = TRUE,
+  >= = TRUE), list(
+  = = list(
+    r = "==",
+    js = "===",
+    lua = "==")), list(
+  and = list(
+    r = "&&",
+    js = "&&",
+    lua = "and")), list(
+  or = list(
+    r = "||",
+    js = "||",
+    lua = "or")))
 unary63 <- function (form) {
   two63(form) && in63(hd(form), list("not", "-"))
 }
@@ -698,7 +730,8 @@ compile_infix <- function (form) {
   V__V__id111 <- op_delims(form, V__a1)
   V__ao <- V__V__id111[[1]]
   V__ac <- V__V__id111[[2]]
-  V__V__id12 <- op_delims(form, V__b2, right = TRUE)
+  V__V__id12 <- op_delims(form, V__b2, 
+    right = TRUE)
   V__bo <- V__V__id12[[1]]
   V__bc <- V__V__id12[[2]]
   V__a2 <- compile(V__a1)
@@ -731,7 +764,8 @@ compile_function <- function (args, body, ...) {
   V__args12 <- V__e45
   V__args4 <- compile_args(V__args12)
   indent_level <- indent_level + 1
-  V__V__x31 <- compile(body, stmt = TRUE)
+  V__V__x31 <- compile(body, 
+    stmt = TRUE)
   indent_level <- indent_level - 1
   V__body3 <- V__V__x31
   V__ind <- indentation()
@@ -1070,354 +1104,413 @@ V_eval <- function (form) {
 immediate_call63 <- function (x) {
   obj63(x) && obj63(hd(x)) && hd(hd(x)) == "%function"
 }
-setenv("do", special = function (...) {
-  V__forms1 <- list(...)
-  V__s3 <- ""
-  V__V__x39 <- V__forms1
-  V__V__i19 <- 0
-  while (V__V__i19 < V_35(V__V__x39)) {
-    V__x40 <- V__V__x39[[V__V__i19 + 1]]
-    if (target == "lua" && immediate_call63(V__x40) && "\n" == char(V__s3, edge(V__s3))) {
-      V__s3 <- cat(clip(V__s3, 0, edge(V__s3)), ";\n")
-    }
-    V__s3 <- cat(V__s3, compile(V__x40, stmt = TRUE))
-    if (! atom63(V__x40)) {
-      if (hd(V__x40) == "return" || hd(V__x40) == "break") {
-        break
+setenv("do", 
+  special = function (...) {
+    V__forms1 <- list(...)
+    V__s3 <- ""
+    V__V__x39 <- V__forms1
+    V__V__i19 <- 0
+    while (V__V__i19 < V_35(V__V__x39)) {
+      V__x40 <- V__V__x39[[V__V__i19 + 1]]
+      if (target == "lua" && immediate_call63(V__x40) && "\n" == char(V__s3, edge(V__s3))) {
+        V__s3 <- cat(clip(V__s3, 0, edge(V__s3)), ";\n")
       }
+      V__s3 <- cat(V__s3, compile(V__x40, 
+        stmt = TRUE))
+      if (! atom63(V__x40)) {
+        if (hd(V__x40) == "return" || hd(V__x40) == "break") {
+          break
+        }
+      }
+      V__V__i19 <- V__V__i19 + 1
     }
-    V__V__i19 <- V__V__i19 + 1
-  }
-  V__s3
-}, stmt = TRUE, tr = TRUE)
-setenv("%block", special = function (...) {
-  V__forms3 <- list(...)
-  V__s5 <- "{\n"
-  indent_level <- indent_level + 1
-  V__V__x45 <- V__forms3
-  V__V__i21 <- 0
-  while (V__V__i21 < V_35(V__V__x45)) {
-    V__x46 <- V__V__x45[[V__V__i21 + 1]]
-    V__s5 <- cat(V__s5, compile(V__x46, stmt = TRUE))
-    V__V__i21 <- V__V__i21 + 1
-  }
-  V__V__x44
-  indent_level <- indent_level - 1
-  V__s5 <- cat(V__s5, indentation(), "}")
-  V__s5
-})
-setenv("%if", special = function (cond, cons, alt) {
-  V__cond2 <- compile(cond)
-  indent_level <- indent_level + 1
-  V__V__x49 <- compile(cons, stmt = TRUE)
-  indent_level <- indent_level - 1
-  V__cons1 <- V__V__x49
-  V__e58
-  if (alt) {
+    V__s3
+  },
+  stmt = TRUE,
+  tr = TRUE)
+setenv("%block", 
+  special = function (...) {
+    V__forms3 <- list(...)
+    V__s5 <- "{\n"
     indent_level <- indent_level + 1
-    V__V__x50 <- compile(alt, stmt = TRUE)
+    V__V__x45 <- V__forms3
+    V__V__i21 <- 0
+    while (V__V__i21 < V_35(V__V__x45)) {
+      V__x46 <- V__V__x45[[V__V__i21 + 1]]
+      V__s5 <- cat(V__s5, compile(V__x46, 
+        stmt = TRUE))
+      V__V__i21 <- V__V__i21 + 1
+    }
+    V__V__x44
     indent_level <- indent_level - 1
-    V__e58 <- V__V__x50
-  }
-  V__alt1 <- V__e58
-  V__ind3 <- indentation()
-  V__s7 <- ""
-  if (target == "lua") {
-    V__s7 <- cat(V__s7, V__ind3, "if ", V__cond2, " then\n", V__cons1)
-  } else {
-    V__s7 <- cat(V__s7, V__ind3, "if (", V__cond2, ") {\n", V__cons1, V__ind3, "}")
-  }
-  if (V__alt1 && target == "lua") {
-    V__s7 <- cat(V__s7, V__ind3, "else\n", V__alt1)
-  } else {
-    if (V__alt1) {
-      V__s7 <- cat(V__s7, " else {\n", V__alt1, V__ind3, "}")
+    V__s5 <- cat(V__s5, indentation(), "}")
+    V__s5
+  })
+setenv("%if", 
+  special = function (cond, cons, alt) {
+    V__cond2 <- compile(cond)
+    indent_level <- indent_level + 1
+    V__V__x49 <- compile(cons, 
+      stmt = TRUE)
+    indent_level <- indent_level - 1
+    V__cons1 <- V__V__x49
+    V__e58
+    if (alt) {
+      indent_level <- indent_level + 1
+      V__V__x50 <- compile(alt, 
+        stmt = TRUE)
+      indent_level <- indent_level - 1
+      V__e58 <- V__V__x50
     }
-  }
-  if (target == "lua") {
-    cat(V__s7, V__ind3, "end\n")
-  } else {
-    cat(V__s7, "\n")
-  }
-}, stmt = TRUE, tr = TRUE)
-setenv("while", special = function (cond, form) {
-  V__cond4 <- compile(cond)
-  indent_level <- indent_level + 1
-  V__V__x52 <- compile(form, stmt = TRUE)
-  indent_level <- indent_level - 1
-  V__body9 <- V__V__x52
-  V__ind5 <- indentation()
-  if (target == "lua") {
-    cat(V__ind5, "while ", V__cond4, " do\n", V__body9, V__ind5, "end\n")
-  } else {
-    cat(V__ind5, "while (", V__cond4, ") {\n", V__body9, V__ind5, "}\n")
-  }
-}, stmt = TRUE, tr = TRUE)
-setenv("%for", special = function (t, k, form) {
-  V__t2 <- compile(t)
-  V__ind7 <- indentation()
-  indent_level <- indent_level + 1
-  V__V__x54 <- compile(form, stmt = TRUE)
-  indent_level <- indent_level - 1
-  V__body11 <- V__V__x54
-  if (target == "lua") {
-    cat(V__ind7, "for ", k, " in next, ", V__t2, " do\n", V__body11, V__ind7, "end\n")
-  } else {
-    cat(V__ind7, "for (", k, " in ", V__t2, ") {\n", V__body11, V__ind7, "}\n")
-  }
-}, stmt = TRUE, tr = TRUE)
-setenv("%try", special = function (form) {
-  V__e8 <- unique("e")
-  V__ind9 <- indentation()
-  indent_level <- indent_level + 1
-  V__V__x59 <- compile(form, stmt = TRUE)
-  indent_level <- indent_level - 1
-  V__body13 <- V__V__x59
-  V__hf1 <- list("return", list("%array", FALSE, V__e8))
-  indent_level <- indent_level + 1
-  V__V__x60 <- compile(V__hf1, stmt = TRUE)
-  indent_level <- indent_level - 1
-  V__h1 <- V__V__x60
-  cat(V__ind9, "try {\n", V__body13, V__ind9, "}\n", V__ind9, "catch (", V__e8, ") {\n", V__h1, V__ind9, "}\n")
-}, stmt = TRUE, tr = TRUE)
-setenv("%delete", special = function (place) {
-  cat(indentation(), "delete ", compile(place))
-}, stmt = TRUE)
-setenv("break", special = function () {
-  cat(indentation(), "break")
-}, stmt = TRUE)
-setenv("%function", special = function (args, body) {
-  compile_function(args, body)
-})
-setenv("%global-function", special = function (name, args, body) {
-  if (target == "lua") {
-    V__x64 <- compile_function(args, body, name = name)
-    cat(indentation(), V__x64)
-  } else {
-    compile(list("%set", name, list("%function", args, body)), stmt = TRUE)
-  }
-}, stmt = TRUE, tr = TRUE)
-setenv("%local-function", special = function (name, args, body) {
-  if (target == "lua") {
-    V__x68 <- compile_function(args, body, name = name, prefix = "local")
-    cat(indentation(), V__x68)
-  } else {
-    compile(list("%local", name, list("%function", args, body)), stmt = TRUE)
-  }
-}, stmt = TRUE, tr = TRUE)
-setenv("return", special = function (x) {
-  V__e59
-  if (nil63(x)) {
-    V__e59 <- "return"
-  } else {
-    V__e59 <- cat("return ", compile(x))
-  }
-  V__x70 <- V__e59
-  cat(indentation(), V__x70)
-}, stmt = TRUE)
-setenv("new", special = function (x) {
-  cat("new ", compile(x))
-})
-setenv("typeof", special = function (x) {
-  cat("typeof(", compile(x), ")")
-})
-setenv("throw", special = function (x) {
-  V__e60
-  if (target == "js") {
-    V__e60 <- cat("throw ", compile(x))
-  } else {
-    V__e60 <- cat("error(", compile(x), ")")
-  }
-  V__e12 <- V__e60
-  cat(indentation(), V__e12)
-}, stmt = TRUE)
-setenv("%local", special = function (name, value) {
-  V__id28 <- compile(name)
-  V__value11 <- compile(value)
-  V__e61
-  if (target == "r") {
-    V__e61 <- " <- "
-  } else {
-    V__e61 <- " = "
-  }
-  V__sep1 <- V__e61
-  V__e62
-  if (is63(value)) {
-    V__e62 <- cat(V__sep1, V__value11)
-  } else {
-    V__e62 <- ""
-  }
-  V__rh2 <- V__e62
-  V__e63
-  if (target == "js") {
-    V__e63 <- "var "
-  } else {
-    V__e64
+    V__alt1 <- V__e58
+    V__ind3 <- indentation()
+    V__s7 <- ""
     if (target == "lua") {
-      V__e64 <- "local "
+      V__s7 <- cat(V__s7, V__ind3, "if ", V__cond2, " then\n", V__cons1)
     } else {
-      V__e64 <- ""
+      V__s7 <- cat(V__s7, V__ind3, "if (", V__cond2, ") {\n", V__cons1, V__ind3, "}")
     }
-    V__e63 <- V__e64
-  }
-  V__keyword1 <- V__e63
-  V__ind11 <- indentation()
-  cat(V__ind11, V__keyword1, V__id28, V__rh2)
-}, stmt = TRUE)
-setenv("%set", special = function (lh, rh) {
-  V__lh12 <- compile(lh)
-  V__e65
-  if (nil63(rh)) {
-    V__e65 <- "nil"
-  } else {
-    V__e65 <- rh
-  }
-  V__rh13 <- compile(V__e65)
-  V__e66
-  if (target == "r") {
-    V__e67
-    if (hd63(lh, "get")) {
-      V__e67 <- " <<- "
+    if (V__alt1 && target == "lua") {
+      V__s7 <- cat(V__s7, V__ind3, "else\n", V__alt1)
     } else {
-      V__e67 <- " <- "
-    }
-    V__e66 <- V__e67
-  } else {
-    V__e66 <- " = "
-  }
-  V__sep3 <- V__e66
-  cat(indentation(), V__lh12, V__sep3, V__rh13)
-}, stmt = TRUE)
-setenv("get", special = function (t, k) {
-  V__t12 <- compile(t)
-  V__k12 <- compile(k)
-  if (target == "lua" && char(V__t12, 0) == "{" || infix_operator63(t)) {
-    V__t12 <- cat("(", V__t12, ")")
-  }
-  if (accessor_id63(k)) {
-    cat(V__t12, V__k12)
-  } else {
-    if (target == "r") {
-      cat(V__t12, "[[", V__k12, "]]")
-    } else {
-      cat(V__t12, "[", V__k12, "]")
-    }
-  }
-})
-setenv("%array", special = function (...) {
-  V__forms5 <- list(...)
-  V__e68
-  if (target == "r") {
-    V__e68 <- "list("
-  } else {
-    V__e69
-    if (target == "lua") {
-      V__e69 <- "{"
-    } else {
-      V__e69 <- "["
-    }
-    V__e68 <- V__e69
-  }
-  V__open1 <- V__e68
-  V__e70
-  if (target == "r") {
-    V__e70 <- ")"
-  } else {
-    V__e71
-    if (target == "lua") {
-      V__e71 <- "}"
-    } else {
-      V__e71 <- "]"
-    }
-    V__e70 <- V__e71
-  }
-  V__close1 <- V__e70
-  V__s9 <- ""
-  V__c7 <- ""
-  V__V__o10 <- V__forms5
-  V__k10 <- NULL
-  for (V__k10 in indices(V__V__o10)) {
-    V__v9 <- V__V__o10[[V__k10]]
-    if (number63(V__k10)) {
-      V__s9 <- cat(V__s9, V__c7, compile(V__v9))
-      V__c7 <- ", "
-    }
-  }
-  cat(V__open1, V__s9, V__close1)
-})
-setenv("%object", special = function (...) {
-  V__forms7 <- list(...)
-  V__e72
-  if (target == "r") {
-    V__e72 <- "list("
-  } else {
-    V__e72 <- "{"
-  }
-  V__s111 <- V__e72
-  V__c9 <- ""
-  V__e73
-  if (target == "js") {
-    V__e73 <- ": "
-  } else {
-    V__e73 <- " = "
-  }
-  V__sep5 <- V__e73
-  V__V__o12 <- pair(V__forms7)
-  V__k14 <- NULL
-  for (V__k14 in indices(V__V__o12)) {
-    V__v12 <- V__V__o12[[V__k14]]
-    if (number63(V__k14)) {
-      V__V__id30 <- V__v12
-      V__k15 <- V__V__id30[[1]]
-      V__v13 <- V__V__id30[[2]]
-      if (! string63(V__k15)) {
-        error(cat("Illegal key: ", str(V__k15)))
+      if (V__alt1) {
+        V__s7 <- cat(V__s7, " else {\n", V__alt1, V__ind3, "}")
       }
-      V__s111 <- cat(V__s111, V__c9, key(V__k15), V__sep5, compile(V__v13))
-      V__c9 <- ", "
     }
-  }
-  V__e74
-  if (target == "r") {
-    V__e74 <- ")"
-  } else {
-    V__e74 <- "}"
-  }
-  cat(V__s111, V__e74)
-})
-setenv("%literal", special = function (...) {
-  V__args10 <- list(...)
-  apply(cat, map(compile, V__args10))
-})
-setenv("%stash", special = function (...) {
-  V__args121 <- list(...)
-  if (target == "r") {
-    V__s13 <- ""
-    V__c111 <- ""
-    V__V__x74 <- V__args121
-    V__V__i28 <- 0
-    while (V__V__i28 < V_35(V__V__x74)) {
-      V__V__id33 <- V__V__x74[[V__V__i28 + 1]]
-      V__k18 <- V__V__id33[[1]]
-      V__v16 <- V__V__id33[[2]]
-      V__s13 <- cat(V__s13, V__c111, inner(compile(V__k18)), " = ", compile(V__v16))
-      V__c111 <- ", "
-      V__V__i28 <- V__V__i28 + 1
+    if (target == "lua") {
+      cat(V__s7, V__ind3, "end\n")
+    } else {
+      cat(V__s7, "\n")
     }
-    V__s13
-  } else {
-    V__l2 <- list("%object", "\"_stash\"", TRUE)
-    V__V__x75 <- V__args121
-    V__V__i29 <- 0
-    while (V__V__i29 < V_35(V__V__x75)) {
-      V__V__id34 <- V__V__x75[[V__V__i29 + 1]]
-      V__k19 <- V__V__id34[[1]]
-      V__v17 <- V__V__id34[[2]]
-      add(V__l2, literal(V__k19))
-      add(V__l2, V__v17)
-      V__V__i29 <- V__V__i29 + 1
+  },
+  stmt = TRUE,
+  tr = TRUE)
+setenv("while", 
+  special = function (cond, form) {
+    V__cond4 <- compile(cond)
+    indent_level <- indent_level + 1
+    V__V__x52 <- compile(form, 
+      stmt = TRUE)
+    indent_level <- indent_level - 1
+    V__body9 <- V__V__x52
+    V__ind5 <- indentation()
+    if (target == "lua") {
+      cat(V__ind5, "while ", V__cond4, " do\n", V__body9, V__ind5, "end\n")
+    } else {
+      cat(V__ind5, "while (", V__cond4, ") {\n", V__body9, V__ind5, "}\n")
     }
-    compile(V__l2)
-  }
-})
+  },
+  stmt = TRUE,
+  tr = TRUE)
+setenv("%for", 
+  special = function (t, k, form) {
+    V__t2 <- compile(t)
+    V__ind7 <- indentation()
+    indent_level <- indent_level + 1
+    V__V__x54 <- compile(form, 
+      stmt = TRUE)
+    indent_level <- indent_level - 1
+    V__body11 <- V__V__x54
+    if (target == "lua") {
+      cat(V__ind7, "for ", k, " in next, ", V__t2, " do\n", V__body11, V__ind7, "end\n")
+    } else {
+      cat(V__ind7, "for (", k, " in ", V__t2, ") {\n", V__body11, V__ind7, "}\n")
+    }
+  },
+  stmt = TRUE,
+  tr = TRUE)
+setenv("%try", 
+  special = function (form) {
+    V__e8 <- unique("e")
+    V__ind9 <- indentation()
+    indent_level <- indent_level + 1
+    V__V__x59 <- compile(form, 
+      stmt = TRUE)
+    indent_level <- indent_level - 1
+    V__body13 <- V__V__x59
+    V__hf1 <- list("return", list("%array", FALSE, V__e8))
+    indent_level <- indent_level + 1
+    V__V__x60 <- compile(V__hf1, 
+      stmt = TRUE)
+    indent_level <- indent_level - 1
+    V__h1 <- V__V__x60
+    cat(V__ind9, "try {\n", V__body13, V__ind9, "}\n", V__ind9, "catch (", V__e8, ") {\n", V__h1, V__ind9, "}\n")
+  },
+  stmt = TRUE,
+  tr = TRUE)
+setenv("%delete", 
+  special = function (place) {
+    cat(indentation(), "delete ", compile(place))
+  },
+  stmt = TRUE)
+setenv("break", 
+  special = function () {
+    cat(indentation(), "break")
+  },
+  stmt = TRUE)
+setenv("%function", 
+  special = function (args, body) {
+    compile_function(args, body)
+  })
+setenv("%global-function", 
+  special = function (name, args, body) {
+    if (target == "lua") {
+      V__x64 <- compile_function(args, body, 
+        name = name)
+      cat(indentation(), V__x64)
+    } else {
+      compile(list("%set", name, list("%function", args, body)), 
+        stmt = TRUE)
+    }
+  },
+  stmt = TRUE,
+  tr = TRUE)
+setenv("%local-function", 
+  special = function (name, args, body) {
+    if (target == "lua") {
+      V__x68 <- compile_function(args, body, 
+        name = name,
+        prefix = "local")
+      cat(indentation(), V__x68)
+    } else {
+      compile(list("%local", name, list("%function", args, body)), 
+        stmt = TRUE)
+    }
+  },
+  stmt = TRUE,
+  tr = TRUE)
+setenv("return", 
+  special = function (x) {
+    V__e59
+    if (nil63(x)) {
+      V__e59 <- "return"
+    } else {
+      V__e59 <- cat("return ", compile(x))
+    }
+    V__x70 <- V__e59
+    cat(indentation(), V__x70)
+  },
+  stmt = TRUE)
+setenv("new", 
+  special = function (x) {
+    cat("new ", compile(x))
+  })
+setenv("typeof", 
+  special = function (x) {
+    cat("typeof(", compile(x), ")")
+  })
+setenv("throw", 
+  special = function (x) {
+    V__e60
+    if (target == "js") {
+      V__e60 <- cat("throw ", compile(x))
+    } else {
+      V__e60 <- cat("error(", compile(x), ")")
+    }
+    V__e12 <- V__e60
+    cat(indentation(), V__e12)
+  },
+  stmt = TRUE)
+setenv("%local", 
+  special = function (name, value) {
+    V__id28 <- compile(name)
+    V__value11 <- compile(value)
+    V__e61
+    if (target == "r") {
+      V__e61 <- " <- "
+    } else {
+      V__e61 <- " = "
+    }
+    V__sep1 <- V__e61
+    V__e62
+    if (is63(value)) {
+      V__e62 <- cat(V__sep1, V__value11)
+    } else {
+      V__e62 <- ""
+    }
+    V__rh2 <- V__e62
+    V__e63
+    if (target == "js") {
+      V__e63 <- "var "
+    } else {
+      V__e64
+      if (target == "lua") {
+        V__e64 <- "local "
+      } else {
+        V__e64 <- ""
+      }
+      V__e63 <- V__e64
+    }
+    V__keyword1 <- V__e63
+    V__ind11 <- indentation()
+    cat(V__ind11, V__keyword1, V__id28, V__rh2)
+  },
+  stmt = TRUE)
+setenv("%set", 
+  special = function (lh, rh) {
+    V__lh12 <- compile(lh)
+    V__e65
+    if (nil63(rh)) {
+      V__e65 <- "nil"
+    } else {
+      V__e65 <- rh
+    }
+    V__rh13 <- compile(V__e65)
+    V__e66
+    if (target == "r") {
+      V__e67
+      if (hd63(lh, "get")) {
+        V__e67 <- " <<- "
+      } else {
+        V__e67 <- " <- "
+      }
+      V__e66 <- V__e67
+    } else {
+      V__e66 <- " = "
+    }
+    V__sep3 <- V__e66
+    cat(indentation(), V__lh12, V__sep3, V__rh13)
+  },
+  stmt = TRUE)
+setenv("get", 
+  special = function (t, k) {
+    V__t12 <- compile(t)
+    V__k12 <- compile(k)
+    if (target == "lua" && char(V__t12, 0) == "{" || infix_operator63(t)) {
+      V__t12 <- cat("(", V__t12, ")")
+    }
+    if (accessor_id63(k)) {
+      cat(V__t12, V__k12)
+    } else {
+      if (target == "r") {
+        cat(V__t12, "[[", V__k12, "]]")
+      } else {
+        cat(V__t12, "[", V__k12, "]")
+      }
+    }
+  })
+setenv("%array", 
+  special = function (...) {
+    V__forms5 <- list(...)
+    V__e68
+    if (target == "r") {
+      V__e68 <- "list("
+    } else {
+      V__e69
+      if (target == "lua") {
+        V__e69 <- "{"
+      } else {
+        V__e69 <- "["
+      }
+      V__e68 <- V__e69
+    }
+    V__open1 <- V__e68
+    V__e70
+    if (target == "r") {
+      V__e70 <- ")"
+    } else {
+      V__e71
+      if (target == "lua") {
+        V__e71 <- "}"
+      } else {
+        V__e71 <- "]"
+      }
+      V__e70 <- V__e71
+    }
+    V__close1 <- V__e70
+    V__s9 <- ""
+    V__c7 <- ""
+    V__V__o10 <- V__forms5
+    V__k10 <- NULL
+    for (V__k10 in indices(V__V__o10)) {
+      V__v9 <- V__V__o10[[V__k10]]
+      if (number63(V__k10)) {
+        V__s9 <- cat(V__s9, V__c7, compile(V__v9))
+        V__c7 <- ", "
+      }
+    }
+    cat(V__open1, V__s9, V__close1)
+  })
+setenv("%object", 
+  special = function (...) {
+    V__forms7 <- list(...)
+    V__e72
+    if (target == "r") {
+      V__e72 <- "list("
+    } else {
+      V__e72 <- "{"
+    }
+    V__s111 <- V__e72
+    V__c9 <- ""
+    V__e73
+    if (target == "js") {
+      V__e73 <- ": "
+    } else {
+      V__e73 <- " = "
+    }
+    V__sep5 <- V__e73
+    V__V__o12 <- pair(V__forms7)
+    V__k14 <- NULL
+    for (V__k14 in indices(V__V__o12)) {
+      V__v12 <- V__V__o12[[V__k14]]
+      if (number63(V__k14)) {
+        V__V__id30 <- V__v12
+        V__k15 <- V__V__id30[[1]]
+        V__v13 <- V__V__id30[[2]]
+        if (! string63(V__k15)) {
+          error(cat("Illegal key: ", str(V__k15)))
+        }
+        V__s111 <- cat(V__s111, V__c9, key(V__k15), V__sep5, compile(V__v13))
+        V__c9 <- ", "
+      }
+    }
+    V__e74
+    if (target == "r") {
+      V__e74 <- ")"
+    } else {
+      V__e74 <- "}"
+    }
+    cat(V__s111, V__e74)
+  })
+setenv("%literal", 
+  special = function (...) {
+    V__args10 <- list(...)
+    apply(cat, map(compile, V__args10))
+  })
+setenv("%stash", 
+  special = function (...) {
+    V__args121 <- list(...)
+    if (target == "r") {
+      indent_level <- indent_level + 1
+      V__ind13 <- indentation()
+      V__s13 <- ""
+      V__c111 <- ""
+      V__V__x76 <- V__args121
+      V__V__i28 <- 0
+      while (V__V__i28 < V_35(V__V__x76)) {
+        V__V__id33 <- V__V__x76[[V__V__i28 + 1]]
+        V__k18 <- V__V__id33[[1]]
+        V__v16 <- V__V__id33[[2]]
+        V__s13 <- cat(V__s13, V__c111, "\n", V__ind13, inner(compile(V__k18)), " = ", compile(V__v16))
+        V__c111 <- ","
+        V__V__i28 <- V__V__i28 + 1
+      }
+      V__V__x75 <- V__s13
+      indent_level <- indent_level - 1
+      V__V__x75
+    } else {
+      V__l2 <- list("%object", "\"_stash\"", TRUE)
+      V__V__x77 <- V__args121
+      V__V__i29 <- 0
+      while (V__V__i29 < V_35(V__V__x77)) {
+        V__V__id34 <- V__V__x77[[V__V__i29 + 1]]
+        V__k19 <- V__V__id34[[1]]
+        V__v17 <- V__V__id34[[2]]
+        add(V__l2, literal(V__k19))
+        add(V__l2, V__v17)
+        V__V__i29 <- V__V__i29 + 1
+      }
+      compile(V__l2)
+    }
+  })
 return list(run = run, "eval" = V_eval, expand = expand, compile = compile)
