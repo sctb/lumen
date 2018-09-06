@@ -49,7 +49,7 @@
 
 (define stash* (args)
   (if (keys? args)
-      (let l '(%object "_stash" true)
+      (let l `(%stash)
         (each (k v) args
           (unless (number? k)
             (add l (literal k))
@@ -735,6 +735,9 @@
 
 (define-special %literal args
   (apply cat (map compile args)))
+
+(define-special %stash args
+  (compile `(%object "_stash" true ,@args)))
 
 (export run
         eval
