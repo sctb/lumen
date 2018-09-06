@@ -5,9 +5,9 @@ var stream = function (str, more) {
 };
 var peek_char = function (s) {
   var ____id = s;
-  var __pos = ____id.pos;
-  var __len = ____id.len;
-  var __string = ____id.string;
+  var __pos = ____id["pos"];
+  var __len = ____id["len"];
+  var __string = ____id["string"];
   if (__pos < __len) {
     return char(__string, __pos);
   }
@@ -15,7 +15,7 @@ var peek_char = function (s) {
 var read_char = function (s) {
   var __c = peek_char(s);
   if (__c) {
-    s.pos = s.pos + 1;
+    s["pos"] = s["pos"] + 1;
     return __c;
   }
 };
@@ -76,13 +76,13 @@ var flag63 = function (atom) {
 };
 var expected = function (s, c) {
   var ____id1 = s;
-  var __more = ____id1.more;
-  var __pos1 = ____id1.pos;
+  var __more = ____id1["more"];
+  var __pos1 = ____id1["pos"];
   return __more || error("Expected " + c + " at " + __pos1);
 };
 var wrap = function (s, x) {
   var __y = read(s);
-  if (__y === s.more) {
+  if (__y === s["more"]) {
     return __y;
   } else {
     return [x, __y];
@@ -176,7 +176,7 @@ read_table["("] = function (s) {
   return __r16;
 };
 read_table[")"] = function (s) {
-  return error("Unexpected ) at " + s.pos);
+  return error("Unexpected ) at " + s["pos"]);
 };
 read_table["\""] = function (s) {
   read_char(s);
@@ -234,8 +234,8 @@ read_table[","] = function (s) {
     return wrap(s, "unquote");
   }
 };
-exports.stream = stream;
-exports.read = read;
+exports["stream"] = stream;
+exports["read"] = read;
 exports["read-all"] = read_all;
 exports["read-string"] = read_string;
 exports["read-table"] = read_table;

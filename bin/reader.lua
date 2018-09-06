@@ -5,9 +5,9 @@ local function stream(str, more)
 end
 local function peek_char(s)
   local ____id = s
-  local __pos = ____id.pos
-  local __len = ____id.len
-  local __string = ____id.string
+  local __pos = ____id["pos"]
+  local __len = ____id["len"]
+  local __string = ____id["string"]
   if __pos < __len then
     return char(__string, __pos)
   end
@@ -15,7 +15,7 @@ end
 local function read_char(s)
   local __c = peek_char(s)
   if __c then
-    s.pos = s.pos + 1
+    s["pos"] = s["pos"] + 1
     return __c
   end
 end
@@ -76,13 +76,13 @@ local function flag63(atom)
 end
 local function expected(s, c)
   local ____id1 = s
-  local __more = ____id1.more
-  local __pos1 = ____id1.pos
+  local __more = ____id1["more"]
+  local __pos1 = ____id1["pos"]
   return __more or error("Expected " .. c .. " at " .. __pos1)
 end
 local function wrap(s, x)
   local __y = read(s)
-  if __y == s.more then
+  if __y == s["more"] then
     return __y
   else
     return {x, __y}
@@ -176,7 +176,7 @@ read_table["("] = function (s)
   return __r16
 end
 read_table[")"] = function (s)
-  return error("Unexpected ) at " .. s.pos)
+  return error("Unexpected ) at " .. s["pos"])
 end
 read_table["\""] = function (s)
   read_char(s)
