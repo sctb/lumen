@@ -22,9 +22,16 @@ var path_join = function () {
 var get_environment_variable = function (name) {
   return process.env[name];
 };
-var write = function (x) {
-  var __out = process.stdout;
-  return __out.write(x);
+var stdout = function () {
+  return process.stdout;
+};
+var stderr = function () {
+  return process.stderr;
+};
+var write = function (x, out) {
+  var __out = out || stdout();
+  __out.write(x);
+  return undefined;
 };
 var exit = function (code) {
   return process.exit(code);
@@ -44,6 +51,8 @@ exports["directory-exists?"] = directory_exists63;
 exports["path-separator"] = path_separator;
 exports["path-join"] = path_join;
 exports["get-environment-variable"] = get_environment_variable;
+exports.stdout = stdout;
+exports.stderr = stderr;
 exports.write = write;
 exports.exit = exit;
 exports.argv = argv;

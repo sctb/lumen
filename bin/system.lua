@@ -53,8 +53,16 @@ end
 local function get_environment_variable(name)
   return os.getenv(name)
 end
-local function write(x)
-  return io.write(x)
+local function stdout()
+  return io.stdout
+end
+local function stderr()
+  return io.stderr
+end
+local function write(x, out)
+  local __out = out or stdout()
+  __out.write(__out, x)
+  return nil
 end
 local function exit(code)
   return os.exit(code)
@@ -70,4 +78,4 @@ local function run(command)
   __f2.close(__f2)
   return __x2
 end
-return {["read-file"] = read_file, ["write-file"] = write_file, ["file-exists?"] = file_exists63, ["directory-exists?"] = directory_exists63, ["path-separator"] = path_separator, ["path-join"] = path_join, ["get-environment-variable"] = get_environment_variable, write = write, exit = exit, argv = argv, reload = reload, run = run}
+return {["read-file"] = read_file, ["write-file"] = write_file, ["file-exists?"] = file_exists63, ["directory-exists?"] = directory_exists63, ["path-separator"] = path_separator, ["path-join"] = path_join, ["get-environment-variable"] = get_environment_variable, stdout = stdout, stderr = stderr, write = write, exit = exit, argv = argv, reload = reload, run = run}
