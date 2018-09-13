@@ -87,7 +87,9 @@
       (let c (peek-char s)
         (if (and c (and (not (get whitespace c))
                         (not (get delimiters c))))
-            (cat! str (read-char s))
+            (do (when (= c "\\")
+                  (cat! str (read-char s)))
+                (cat! str (read-char s)))
           (break))))
   (if (= str "true") true
       (= str "false") false
