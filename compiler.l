@@ -1,5 +1,3 @@
-(define reader (require 'reader))
-
 (define getenv (k p)
   (when (string? k)
     (let i (edge environment)
