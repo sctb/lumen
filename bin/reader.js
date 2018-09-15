@@ -89,7 +89,7 @@ var wrap = function (s, x) {
   }
 };
 var hex_prefix63 = function (str) {
-  var __e;
+  var __e = undefined;
   if (code(str, 0) === 45) {
     __e = 1;
   } else {
@@ -97,7 +97,7 @@ var hex_prefix63 = function (str) {
   }
   var __i = __e;
   var __id2 = code(str, __i) === 48;
-  var __e1;
+  var __e1 = undefined;
   if (__id2) {
     __i = __i + 1;
     var __n = code(str, __i);

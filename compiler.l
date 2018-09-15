@@ -464,7 +464,7 @@
                    ,(lower-body (list then) tail?)
                    ,@(if (is? else) (list (lower-body (list else) tail?)))))
       (let-unique (e)
-        (add hoist `(%local ,e))
+        (add hoist `(%local ,e nil))
         (add hoist
              `(%if ,(lower cond hoist)
                    ,(lower `(%set ,e ,then))

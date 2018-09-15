@@ -20,7 +20,7 @@ end
 local function file_exists63(path)
   local __f = io.open(path)
   local __id = is63(__f)
-  local __e
+  local __e = nil
   if __id then
     local __r6 = is63(__f.read(__f, 0)) or 0 == __f.seek(__f, "end")
     __f.close(__f)
@@ -33,7 +33,7 @@ end
 local function directory_exists63(path)
   local __f1 = io.open(path)
   local __id1 = is63(__f1)
-  local __e1
+  local __e1 = nil
   if __id1 then
     local __r8 = not __f1.read(__f1, 0) and not( 0 == __f1.seek(__f1, "end"))
     __f1.close(__f1)
