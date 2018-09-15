@@ -71,9 +71,6 @@ read_string = function (str, more) {
 var key63 = function (atom) {
   return string63(atom) && _35(atom) > 1 && char(atom, edge(atom)) === ":";
 };
-var flag63 = function (atom) {
-  return string63(atom) && _35(atom) > 1 && char(atom, 0) === ":";
-};
 var expected = function (s, c) {
   var ____id1 = s;
   var __more = ____id1.more;
@@ -146,17 +143,17 @@ read_table[""] = function (s) {
 };
 read_table["("] = function (s) {
   read_char(s);
-  var __r16 = undefined;
+  var __r15 = undefined;
   var __l1 = [];
-  while (nil63(__r16)) {
+  while (nil63(__r15)) {
     skip_non_code(s);
     var __c4 = peek_char(s);
     if (__c4 === ")") {
       read_char(s);
-      __r16 = __l1;
+      __r15 = __l1;
     } else {
       if (nil63(__c4)) {
-        __r16 = expected(s, ")");
+        __r15 = expected(s, ")");
       } else {
         var __x2 = read(s);
         if (key63(__x2)) {
@@ -164,31 +161,27 @@ read_table["("] = function (s) {
           var __v = read(s);
           __l1[__k] = __v;
         } else {
-          if (flag63(__x2)) {
-            __l1[clip(__x2, 1)] = true;
-          } else {
-            add(__l1, __x2);
-          }
+          add(__l1, __x2);
         }
       }
     }
   }
-  return __r16;
+  return __r15;
 };
 read_table[")"] = function (s) {
   return error("Unexpected ) at " + s.pos);
 };
 read_table["\""] = function (s) {
   read_char(s);
-  var __r19 = undefined;
+  var __r18 = undefined;
   var __str1 = "\"";
-  while (nil63(__r19)) {
+  while (nil63(__r18)) {
     var __c5 = peek_char(s);
     if (__c5 === "\"") {
-      __r19 = __str1 + read_char(s);
+      __r18 = __str1 + read_char(s);
     } else {
       if (nil63(__c5)) {
-        __r19 = expected(s, "\"");
+        __r18 = expected(s, "\"");
       } else {
         if (__c5 === "\\") {
           __str1 = __str1 + read_char(s);
@@ -197,25 +190,25 @@ read_table["\""] = function (s) {
       }
     }
   }
-  return __r19;
+  return __r18;
 };
 read_table["|"] = function (s) {
   read_char(s);
-  var __r21 = undefined;
+  var __r20 = undefined;
   var __str2 = "|";
-  while (nil63(__r21)) {
+  while (nil63(__r20)) {
     var __c6 = peek_char(s);
     if (__c6 === "|") {
-      __r21 = __str2 + read_char(s);
+      __r20 = __str2 + read_char(s);
     } else {
       if (nil63(__c6)) {
-        __r21 = expected(s, "|");
+        __r20 = expected(s, "|");
       } else {
         __str2 = __str2 + read_char(s);
       }
     }
   }
-  return __r21;
+  return __r20;
 };
 read_table["'"] = function (s) {
   read_char(s);

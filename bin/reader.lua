@@ -71,9 +71,6 @@ end
 local function key63(atom)
   return string63(atom) and _35(atom) > 1 and char(atom, edge(atom)) == ":"
 end
-local function flag63(atom)
-  return string63(atom) and _35(atom) > 1 and char(atom, 0) == ":"
-end
 local function expected(s, c)
   local ____id1 = s
   local __more = ____id1.more
@@ -146,17 +143,17 @@ read_table[""] = function (s)
 end
 read_table["("] = function (s)
   read_char(s)
-  local __r16 = nil
+  local __r15 = nil
   local __l1 = {}
-  while nil63(__r16) do
+  while nil63(__r15) do
     skip_non_code(s)
     local __c4 = peek_char(s)
     if __c4 == ")" then
       read_char(s)
-      __r16 = __l1
+      __r15 = __l1
     else
       if nil63(__c4) then
-        __r16 = expected(s, ")")
+        __r15 = expected(s, ")")
       else
         local __x2 = read(s)
         if key63(__x2) then
@@ -164,31 +161,27 @@ read_table["("] = function (s)
           local __v = read(s)
           __l1[__k] = __v
         else
-          if flag63(__x2) then
-            __l1[clip(__x2, 1)] = true
-          else
-            add(__l1, __x2)
-          end
+          add(__l1, __x2)
         end
       end
     end
   end
-  return __r16
+  return __r15
 end
 read_table[")"] = function (s)
   return error("Unexpected ) at " .. s.pos)
 end
 read_table["\""] = function (s)
   read_char(s)
-  local __r19 = nil
+  local __r18 = nil
   local __str1 = "\""
-  while nil63(__r19) do
+  while nil63(__r18) do
     local __c5 = peek_char(s)
     if __c5 == "\"" then
-      __r19 = __str1 .. read_char(s)
+      __r18 = __str1 .. read_char(s)
     else
       if nil63(__c5) then
-        __r19 = expected(s, "\"")
+        __r18 = expected(s, "\"")
       else
         if __c5 == "\\" then
           __str1 = __str1 .. read_char(s)
@@ -197,25 +190,25 @@ read_table["\""] = function (s)
       end
     end
   end
-  return __r19
+  return __r18
 end
 read_table["|"] = function (s)
   read_char(s)
-  local __r21 = nil
+  local __r20 = nil
   local __str2 = "|"
-  while nil63(__r21) do
+  while nil63(__r20) do
     local __c6 = peek_char(s)
     if __c6 == "|" then
-      __r21 = __str2 .. read_char(s)
+      __r20 = __str2 .. read_char(s)
     else
       if nil63(__c6) then
-        __r21 = expected(s, "|")
+        __r20 = expected(s, "|")
       else
         __str2 = __str2 .. read_char(s)
       end
     end
   end
-  return __r21
+  return __r20
 end
 read_table["'"] = function (s)
   read_char(s)

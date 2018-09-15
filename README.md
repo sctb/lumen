@@ -66,12 +66,6 @@ Positional values can be gotten out of lists using the `at` operator, and keys u
 20
 ```
 
-A shortcut for a key whose value is `true` looks like this, called a flag:
-```
-> (list :yes)
-(yes: true)
-```
-
 #### Variables
 Variables are declared using `define` and `define-global`. Variables declared with `define` are available for use anywhere in subsequent expressions in the same scope, and `define-global` makes them globally available.
 ```
@@ -227,22 +221,12 @@ A function's parameter list can contain both positional and key parameters, wher
 15
 ```
 
-If the key's value is `true`, the same name as the key is used to bind the parameter's value. This makes it easy to define named parameters with flags:
-```
-> (let f (fn (a b: true) (+ a b))
-    (f 1 b: 2))
-3
-> (let f (fn (a :b) (+ a b)) ; use a flag
-    (f 10 b: 20))
-30
-```
-
 Parameters in Lumen are always optional, and those without a supplied argument have the value `nil`:
 ```
 > (let f (fn (a) a)
     (f))
 >
-> (let f (fn (:b) (if (= b nil) 10 20))
+> (let f (fn (b: b) (if (= b nil) 10 20))
     (f a: 99))
 10
 ```
@@ -270,7 +254,7 @@ Variables can be bound to values in a list at certain positions or key:
 2
 > ((fn ((a b: my-b)) (list a my-b)) (list 1 b: 2))
 (1 2)
-> (let ((a :b) (list 1 b: 2))
+> (let ((a b: b) (list 1 b: 2))
     b)
 2
 ```
@@ -279,7 +263,7 @@ The `rest` key works with destructuring as it does with function parameters, whi
 > (let ((a rest: as) (list 1 2 3))
     (list a as))
 (1 (2 3))
-> (let ((a :rest) (list 1 2 3))
+> (let ((a rest: rest) (list 1 2 3))
     (list a rest))
 (1 (2 3))
 ```
