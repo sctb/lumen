@@ -413,7 +413,7 @@ end
 local __names = {}
 function unique(x)
   local __x65 = id(x)
-  if __names[__x65] then
+  if has63(__names, __x65) then
     local __i11 = __names[__x65]
     __names[__x65] = __names[__x65] + 1
     return unique(__x65 .. __i11)

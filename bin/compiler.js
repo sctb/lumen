@@ -455,7 +455,7 @@ valid_id63 = function (x) {
 var __names = {};
 unique = function (x) {
   var __x65 = id(x);
-  if (__names[__x65]) {
+  if (has63(__names, __x65)) {
     var __i11 = __names[__x65];
     __names[__x65] = __names[__x65] + 1;
     return unique(__x65 + __i11);
