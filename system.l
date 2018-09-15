@@ -56,10 +56,17 @@
     js: (get (get process 'env) name)
     lua: ((get os 'getenv) name)))
 
-(define write (x)
-  (target js: (let out (get process 'stdout)
-                ((get out 'write) x))
-          lua: ((get io 'write) x)))
+(define stdout ()
+  (get (target js: process lua: io) 'stdout))
+
+(define stderr ()
+  (get (target js: process lua: io) 'stderr))
+
+(define write (x out)
+  (let out (or out (stdout))
+    (target js: ((get out 'write) x)
+            lua: ((get out 'write) out x)))
+  nil)
 
 (define exit (code)
   (target js: ((get process 'exit) code)
@@ -88,6 +95,8 @@
         path-separator
         path-join
         get-environment-variable
+        stdout
+        stderr
         write
         exit
         argv
