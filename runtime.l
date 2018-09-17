@@ -26,16 +26,14 @@
 
 (define-global hd (l) (at l 0))
 
-(target js: (define-global type (x) (typeof x)))
-
-(define-global string? (x) (= (type x) 'string))
-(define-global number? (x) (= (type x) 'number))
-(define-global boolean? (x) (= (type x) 'boolean))
-(define-global function? (x) (= (type x) 'function))
+(define-global string? (x) (= (typeof x) 'string))
+(define-global number? (x) (= (typeof x) 'number))
+(define-global boolean? (x) (= (typeof x) 'boolean))
+(define-global function? (x) (= (typeof x) 'function))
 
 (define-global obj? (x)
   (and (is? x)
-       (= (type x) (target lua: 'table js: 'object))))
+       (= (typeof x) (target lua: 'table js: 'object))))
 
 (define-global atom? (x)
   (or (nil? x) (string? x) (number? x) (boolean? x)))
@@ -302,7 +300,7 @@
       (atom? x) (tostring x)
       (function? x) "function"
       (and stack (in? x stack)) "circular"
-      (target js: false lua: (not (= (type x) 'table)))
+      (target js: false lua: (not (= (typeof x) 'table)))
       (escape (tostring x))
     (let (s "(" sp ""
           xs () ks ()

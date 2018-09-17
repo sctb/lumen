@@ -676,7 +676,14 @@
   (cat "new " (compile x)))
 
 (define-special typeof (x)
-  (cat "typeof(" (compile x) ")"))
+  (if (= target 'lua)
+      (compile `(type ,x))
+    (cat "typeof(" (compile x) ")")))
+
+(define-special instanceof (x t)
+  (if (= target 'lua)
+      (compile `(= (getmetatable ,x) ,t))
+    (cat "((" (compile x) ") instanceof " (compile t) ")")))
 
 (define-special throw (x) :stmt
   (let e (if (= target 'js)

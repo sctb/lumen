@@ -40,23 +40,20 @@ two63 = function (x) {
 hd = function (l) {
   return l[0];
 };
-type = function (x) {
-  return typeof(x);
-};
 string63 = function (x) {
-  return type(x) === "string";
+  return typeof(x) === "string";
 };
 number63 = function (x) {
-  return type(x) === "number";
+  return typeof(x) === "number";
 };
 boolean63 = function (x) {
-  return type(x) === "boolean";
+  return typeof(x) === "boolean";
 };
 function63 = function (x) {
-  return type(x) === "function";
+  return typeof(x) === "function";
 };
 obj63 = function (x) {
-  return is63(x) && type(x) === "object";
+  return is63(x) && typeof(x) === "object";
 };
 atom63 = function (x) {
   return nil63(x) || string63(x) || number63(x) || boolean63(x);
@@ -191,13 +188,13 @@ reduce = function (f, x) {
 };
 join = function () {
   var __ls = unstash(Array.prototype.slice.call(arguments, 0));
-  var __r38 = [];
+  var __r37 = [];
   var ____x1 = __ls;
   var ____i4 = 0;
   while (____i4 < _35(____x1)) {
     var __l11 = ____x1[____i4];
     if (__l11) {
-      var __n3 = _35(__r38);
+      var __n3 = _35(__r37);
       var ____o2 = __l11;
       var __k4 = undefined;
       for (__k4 in ____o2) {
@@ -212,12 +209,12 @@ join = function () {
         if (number63(__k5)) {
           __k5 = __k5 + __n3;
         }
-        __r38[__k5] = __v2;
+        __r37[__k5] = __v2;
       }
     }
     ____i4 = ____i4 + 1;
   }
-  return __r38;
+  return __r37;
 };
 find = function (f, t) {
   var ____o3 = t;
@@ -674,16 +671,16 @@ apply = function (f, args) {
   return f.apply(f, __args);
 };
 call = function (f) {
-  var ____r75 = unstash(Array.prototype.slice.call(arguments, 1));
-  var __f = destash33(f, ____r75);
-  var ____id = ____r75;
+  var ____r74 = unstash(Array.prototype.slice.call(arguments, 1));
+  var __f = destash33(f, ____r74);
+  var ____id = ____r74;
   var __args11 = cut(____id, 0);
   return apply(__f, __args11);
 };
 setenv = function (k) {
-  var ____r76 = unstash(Array.prototype.slice.call(arguments, 1));
-  var __k18 = destash33(k, ____r76);
-  var ____id1 = ____r76;
+  var ____r75 = unstash(Array.prototype.slice.call(arguments, 1));
+  var __k18 = destash33(k, ____r75);
+  var ____id1 = ____r75;
   var __keys = cut(____id1, 0);
   if (string63(__k18)) {
     var __e19 = undefined;
