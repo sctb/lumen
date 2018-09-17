@@ -27,7 +27,7 @@ var special63 = function (k) {
   return is63(getenv(k, "special"));
 };
 var special_form63 = function (form) {
-  return ! atom63(form) && special63(hd(form));
+  return hd63(form, special63);
 };
 var statement63 = function (k) {
   return special63(k) && getenv(k, "stmt");
@@ -197,7 +197,7 @@ var can_unquote63 = function (depth) {
   return quoting63(depth) && depth === 1;
 };
 var quasisplice63 = function (x, depth) {
-  return can_unquote63(depth) && ! atom63(x) && hd(x) === "unquote-splicing";
+  return can_unquote63(depth) && hd63(x, "unquote-splicing");
 };
 var expand_local = function (__x38) {
   var ____id1 = __x38;
@@ -576,7 +576,7 @@ var infix63 = function (x) {
   return is63(getop(x));
 };
 infix_operator63 = function (x) {
-  return obj63(x) && infix63(hd(x));
+  return hd63(x, infix63);
 };
 var compile_args = function (args) {
   var __s1 = "(";
@@ -683,7 +683,7 @@ var compile_special = function (form, stmt63) {
   return apply(__special, __args2) + __tr;
 };
 var parenthesize_call63 = function (x) {
-  return ! atom63(x) && hd(x) === "%function" || precedence(x) > 0;
+  return hd63(x, "%function") || precedence(x) > 0;
 };
 var compile_call = function (form) {
   var __f = hd(form);
@@ -811,7 +811,7 @@ compile = function (form) {
         __e45 = compile_atom(__form);
       } else {
         var __e46 = undefined;
-        if (infix63(hd(__form))) {
+        if (infix_operator63(__form)) {
           __e46 = compile_infix(__form);
         } else {
           __e46 = compile_call(__form);
@@ -853,7 +853,7 @@ var literal63 = function (form) {
   return atom63(form) || hd(form) === "%array" || hd(form) === "%object";
 };
 var standalone63 = function (form) {
-  return ! atom63(form) && ! infix63(hd(form)) && ! literal63(form) && !( "get" === hd(form)) || id_literal63(form);
+  return ! atom63(form) && ! infix_operator63(form) && ! literal63(form) && ! hd63(form, "get") || id_literal63(form);
 };
 var lower_do = function (args, hoist, stmt63, tail63) {
   var ____x95 = almost(args);
@@ -992,7 +992,7 @@ var lower_pairwise = function (form) {
   }
 };
 var lower_infix63 = function (form) {
-  return infix63(hd(form)) && _35(form) > 3;
+  return infix_operator63(form) && _35(form) > 3;
 };
 var lower_infix = function (form, hoist) {
   var __form3 = lower_pairwise(form);
@@ -1090,7 +1090,9 @@ _eval = function (form) {
   return _37result;
 };
 immediate_call63 = function (x) {
-  return obj63(x) && obj63(hd(x)) && hd(hd(x)) === "%function";
+  return hd63(x, function (x) {
+    return hd63(x, "%function");
+  });
 };
 setenv("do", {_stash: true, special: function () {
   var __forms1 = unstash(Array.prototype.slice.call(arguments, 0));
@@ -1103,10 +1105,8 @@ setenv("do", {_stash: true, special: function () {
       __s3 = clip(__s3, 0, edge(__s3)) + ";\n";
     }
     __s3 = __s3 + compile(__x137, {_stash: true, stmt: true});
-    if (! atom63(__x137)) {
-      if (hd(__x137) === "return" || hd(__x137) === "break") {
-        break;
-      }
+    if (hd63(__x137, "return") || hd63(__x137, "break")) {
+      break;
     }
     ____i19 = ____i19 + 1;
   }

@@ -17,7 +17,7 @@
   (is? (getenv k 'special)))
 
 (define special-form? (form)
-  (and (not (atom? form)) (special? (hd form))))
+  (hd? form special?))
 
 (define statement? (k)
   (and (special? k) (getenv k 'stmt)))
@@ -115,8 +115,7 @@
 
 (define quasisplice? (x depth)
   (and (can-unquote? depth)
-       (not (atom? x))
-       (= (hd x) 'unquote-splicing)))
+       (hd? x 'unquote-splicing)))
 
 (define expand-local ((x name value))
   (setenv name :variable)
@@ -306,7 +305,7 @@
   (is? (getop x)))
 
 (define-global infix-operator? (x)
-  (and (obj? x) (infix? (hd x))))
+  (hd? x infix?))
 
 (define compile-args (args)
   (let (s "(" c "")
@@ -348,8 +347,7 @@
     (cat (apply special args) tr)))
 
 (define parenthesize-call? (x)
-  (or (and (not (atom? x))
-           (= (hd x) '%function))
+  (or (hd? x '%function)
       (> (precedence x) 0)))
 
 (define compile-call (form)
@@ -407,7 +405,7 @@
     (let (tr (terminator stmt)
           ind (if stmt (indentation) "")
           form (if (atom? form) (compile-atom form)
-                   (infix? (hd form)) (compile-infix form)
+                   (infix-operator? form) (compile-infix form)
                  (compile-call form)))
       (cat ind form tr))))
 
@@ -431,9 +429,9 @@
 
 (define standalone? (form)
   (or (and (not (atom? form))
-           (not (infix? (hd form)))
+           (not (infix-operator? form))
            (not (literal? form))
-           (not (= 'get (hd form))))
+           (not (hd? form 'get)))
       (id-literal? form)))
 
 (define lower-do (args hoist stmt? tail?)
@@ -530,7 +528,7 @@
     form))
 
 (define lower-infix? (form)
-  (and (infix? (hd form)) (> (# form) 3)))
+  (and (infix-operator? form) (> (# form) 3)))
 
 (define lower-infix (form hoist)
   (let (form (lower-pairwise form)
@@ -589,7 +587,7 @@
       %result)))
 
 (define-global immediate-call? (x)
-  (and (obj? x) (obj? (hd x)) (= (hd (hd x)) '%function)))
+  (hd? x (fn (x) (hd? x '%function))))
 
 (define-special do forms :stmt :tr
   (with s ""
@@ -599,10 +597,9 @@
                  (= "\n" (char s (edge s))))
         (set s (cat (clip s 0 (edge s)) ";\n")))
       (cat! s (compile x :stmt))
-      (unless (atom? x)
-        (if (or (= (hd x) 'return)
-                (= (hd x) 'break))
-            (break))))))
+      (when (or (hd? x 'return)
+                (hd? x 'break))
+        (break)))))
 
 (define-special %if (cond cons alt) :stmt :tr
   (let (cond (compile cond)

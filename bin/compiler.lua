@@ -27,7 +27,7 @@ local function special63(k)
   return is63(getenv(k, "special"))
 end
 local function special_form63(form)
-  return not atom63(form) and special63(hd(form))
+  return hd63(form, special63)
 end
 local function statement63(k)
   return special63(k) and getenv(k, "stmt")
@@ -176,7 +176,7 @@ local function can_unquote63(depth)
   return quoting63(depth) and depth == 1
 end
 local function quasisplice63(x, depth)
-  return can_unquote63(depth) and not atom63(x) and hd(x) == "unquote-splicing"
+  return can_unquote63(depth) and hd63(x, "unquote-splicing")
 end
 local function expand_local(__x38)
   local ____id1 = __x38
@@ -522,7 +522,7 @@ local function infix63(x)
   return is63(getop(x))
 end
 function infix_operator63(x)
-  return obj63(x) and infix63(hd(x))
+  return hd63(x, infix63)
 end
 local function compile_args(args)
   local __s1 = "("
@@ -629,7 +629,7 @@ local function compile_special(form, stmt63)
   return apply(__special, __args2) .. __tr
 end
 local function parenthesize_call63(x)
-  return not atom63(x) and hd(x) == "%function" or precedence(x) > 0
+  return hd63(x, "%function") or precedence(x) > 0
 end
 local function compile_call(form)
   local __f = hd(form)
@@ -757,7 +757,7 @@ function compile(form, ...)
         __e37 = compile_atom(__form)
       else
         local __e38 = nil
-        if infix63(hd(__form)) then
+        if infix_operator63(__form) then
           __e38 = compile_infix(__form)
         else
           __e38 = compile_call(__form)
@@ -799,7 +799,7 @@ local function literal63(form)
   return atom63(form) or hd(form) == "%array" or hd(form) == "%object"
 end
 local function standalone63(form)
-  return not atom63(form) and not infix63(hd(form)) and not literal63(form) and not( "get" == hd(form)) or id_literal63(form)
+  return not atom63(form) and not infix_operator63(form) and not literal63(form) and not hd63(form, "get") or id_literal63(form)
 end
 local function lower_do(args, hoist, stmt63, tail63)
   local ____x98 = almost(args)
@@ -938,7 +938,7 @@ local function lower_pairwise(form)
   end
 end
 local function lower_infix63(form)
-  return infix63(hd(form)) and _35(form) > 3
+  return infix_operator63(form) and _35(form) > 3
 end
 local function lower_infix(form, hoist)
   local __form3 = lower_pairwise(form)
@@ -1043,7 +1043,9 @@ function _eval(form)
   return _37result
 end
 function immediate_call63(x)
-  return obj63(x) and obj63(hd(x)) and hd(hd(x)) == "%function"
+  return hd63(x, function (x)
+    return hd63(x, "%function")
+  end)
 end
 setenv("do", {_stash = true, special = function (...)
   local __forms1 = unstash({...})
@@ -1056,10 +1058,8 @@ setenv("do", {_stash = true, special = function (...)
       __s3 = clip(__s3, 0, edge(__s3)) .. ";\n"
     end
     __s3 = __s3 .. compile(__x141, {_stash = true, stmt = true})
-    if not atom63(__x141) then
-      if hd(__x141) == "return" or hd(__x141) == "break" then
-        break
-      end
+    if hd63(__x141, "return") or hd63(__x141, "break") then
+      break
     end
     ____i19 = ____i19 + 1
   end
