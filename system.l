@@ -3,11 +3,11 @@
 
 (target lua:
   (define call-with-file (f path mode)
-    (let |h,e| ((get io 'open) path mode)
-      (unless h
-        (error e))
-      (with x (f h)
-        ((get h 'close) h)))))
+    (define (h e) ((get io 'open) path mode))
+    (unless h
+      (error e))
+    (with x (f h)
+      ((get h 'close) h))))
 
 (define read-file (path)
   (target

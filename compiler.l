@@ -119,7 +119,8 @@
        (= (hd x) 'unquote-splicing)))
 
 (define expand-local ((x name value))
-  (setenv name :variable)
+  (step x (if (obj? name) name (list name))
+    (setenv x :variable))
   `(%local ,name ,(macroexpand value)))
 
 (define expand-function ((x args rest: body))
@@ -309,11 +310,7 @@
   (and (obj? x) (infix? (hd x))))
 
 (define compile-args (args)
-  (let (s "(" c "")
-    (step x args
-      (cat! s c (compile x))
-      (set c ", "))
-    (cat s ")")))
+  (cat "(" (mapcat compile args ", ") ")"))
 
 (define escape-newlines (s)
   (with s1 ""
@@ -666,11 +663,11 @@
         (cat (indentation) x))
     (compile `(%local ,name (%function ,args ,body)) :stmt)))
 
-(define-special return (x) :stmt
-  (let x (if (nil? x)
-             "return"
-           (cat "return " (compile x)))
-    (cat (indentation) x)))
+(define-special return args :stmt
+  (let s (mapcat compile args ", ")
+    (when (and (= target 'js) (> (# args) 1))
+      (set s (cat "[" s "]")))
+    (cat (indentation) "return" (if (some? s) " " "") s)))
 
 (define-special new (x)
   (cat "new " (compile x)))
@@ -685,7 +682,10 @@
     (cat (indentation) e)))
 
 (define-special %local (name value) :stmt
-  (let (id (compile name)
+  (let (id (if (obj? name)
+               (let s (mapcat compile name ", ")
+                 (if (= target 'js) (cat "[" s "]") s))
+             (compile name))
         value1 (compile value)
         rh (if (is? value) (cat " = " value1) "")
         keyword (if (= target 'js) "var " "local ")
@@ -711,28 +711,19 @@
 
 (define-special %array forms
   (let (open (if (= target 'lua) "{" "[")
-        close (if (= target 'lua) "}" "]")
-        s "" c "")
-    (each (k v) forms
-      (when (number? k)
-        (cat! s c (compile v))
-        (set c ", ")))
-    (cat open s close)))
+        close (if (= target 'lua) "}" "]"))
+    (cat open (mapcat compile forms ", ") close)))
 
 (define-special %object forms
-  (let (s "{" c ""
-        sep (if (= target 'lua) " = " ": "))
-    (each (k v) (pair forms)
-      (when (number? k)
-        (let ((k v) v)
-          (unless (string? k)
-            (error (cat "Illegal key: " (str k))))
-          (cat! s c (key k) sep (compile v))
-          (set c ", "))))
-    (cat s "}")))
+  (let (sep (if (= target 'lua) " = " ": ")
+        s (mapcat (fn ((k v))
+                       (cat (key k) sep (compile v)))
+                     (pair forms)
+                     ", "))
+    (cat "{" s "}")))
 
 (define-special %literal args
-  (apply cat (map compile args)))
+  (mapcat compile args))
 
 (export run
         eval

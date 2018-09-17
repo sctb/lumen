@@ -96,7 +96,6 @@
   `(set (get read-table ,char) (fn (,s) ,@body)))
 
 (define-macro define (name x rest: body)
-  (setenv name :variable)
   (if (some? body)
       `(%local-function ,name ,@(bind* x body))
     `(%local ,name ,x)))
