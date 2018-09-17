@@ -1,11 +1,11 @@
 (define getenv (k p)
   (when (string? k)
-    (let i (edge environment)
-      (while (>= i 0)
-        (let b (get (at environment i) k)
+    (let env (current-environment)
+      (while env
+        (let b (get env k)
           (if (is? b)
               (return (if p (get b p) b))
-            (dec i)))))))
+            (set env (parent-environment env))))))))
 
 (define macro-function (k)
   (getenv k 'macro))
