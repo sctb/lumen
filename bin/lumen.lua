@@ -59,7 +59,20 @@ function atom63(x)
   return nil63(x) or string63(x) or number63(x) or boolean63(x)
 end
 function hd63(l, x)
-  return obj63(l) and hd(l) == x
+  local __id2 = obj63(l)
+  local __e1 = nil
+  if __id2 then
+    local __e2 = nil
+    if function63(x) then
+      __e2 = x(hd(l))
+    else
+      __e2 = hd(l) == x
+    end
+    __e1 = __e2
+  else
+    __e1 = __id2
+  end
+  return __e1
 end
 nan = 0 / 0
 inf = 1 / 0
@@ -76,21 +89,21 @@ end
 function cut(x, from, upto)
   local __l = {}
   local __j = 0
-  local __e = nil
+  local __e3 = nil
   if nil63(from) or from < 0 then
-    __e = 0
+    __e3 = 0
   else
-    __e = from
+    __e3 = from
   end
-  local __i = __e
+  local __i = __e3
   local __n = _35(x)
-  local __e1 = nil
+  local __e4 = nil
   if nil63(upto) or upto > __n then
-    __e1 = __n
+    __e4 = __n
   else
-    __e1 = upto
+    __e4 = upto
   end
-  local __upto = __e1
+  local __upto = __e4
   while __i < __upto do
     __l[__j + 1] = x[__i + 1]
     __i = __i + 1
@@ -131,11 +144,11 @@ function char(s, n)
   return clip(s, n, n + 1)
 end
 function code(s, n)
-  local __e2 = nil
+  local __e5 = nil
   if n then
-    __e2 = n + 1
+    __e5 = n + 1
   end
-  return string.byte(s, __e2)
+  return string.byte(s, __e5)
 end
 function string_literal63(x)
   return string63(x) and char(x, 0) == "\""
@@ -344,11 +357,11 @@ function destash33(l, args1)
   end
 end
 function search(s, pattern, start)
-  local __e3 = nil
+  local __e6 = nil
   if start then
-    __e3 = start + 1
+    __e6 = start + 1
   end
-  local __start = __e3
+  local __start = __e6
   local __i16 = string.find(s, pattern, __start, true)
   return __i16 and __i16 - 1
 end
@@ -471,31 +484,31 @@ function escape(s)
   local __i20 = 0
   while __i20 < _35(s) do
     local __c = char(s, __i20)
-    local __e4 = nil
+    local __e7 = nil
     if __c == "\n" then
-      __e4 = "\\n"
+      __e7 = "\\n"
     else
-      local __e5 = nil
+      local __e8 = nil
       if __c == "\r" then
-        __e5 = "\\r"
+        __e8 = "\\r"
       else
-        local __e6 = nil
+        local __e9 = nil
         if __c == "\"" then
-          __e6 = "\\\""
+          __e9 = "\\\""
         else
-          local __e7 = nil
+          local __e10 = nil
           if __c == "\\" then
-            __e7 = "\\\\"
+            __e10 = "\\\\"
           else
-            __e7 = __c
+            __e10 = __c
           end
-          __e6 = __e7
+          __e9 = __e10
         end
-        __e5 = __e6
+        __e8 = __e9
       end
-      __e4 = __e5
+      __e7 = __e8
     end
-    local __c1 = __e4
+    local __c1 = __e7
     __s1 = __s1 .. __c1
     __i20 = __i20 + 1
   end
@@ -594,13 +607,13 @@ function setenv(k, ...)
   local ____id1 = ____r73
   local __keys = cut(____id1, 0)
   if string63(__k9) then
-    local __e8 = nil
+    local __e11 = nil
     if __keys.toplevel then
-      __e8 = hd(environment)
+      __e11 = hd(environment)
     else
-      __e8 = last(environment)
+      __e11 = last(environment)
     end
-    local __frame = __e8
+    local __frame = __e11
     local __entry = __frame[__k9] or {}
     local ____o12 = __keys
     local __k10 = nil
