@@ -1,5 +1,25 @@
-(define-global environment (list (obj)))
+(define-global environment (obj))
 (define-global target (language))
+
+(define-global current-environment (x)
+  (set environment (or x environment)))
+
+(define-global make-environment ()
+  (obj %parent: (current-environment)))
+
+(define-global parent-environment (e)
+  (get (or e (current-environment)) '%parent))
+
+(define-global find-environment (f e)
+  (when e
+    (let x (f e)
+      (if (is? x) e
+        (find-environment f (parent-environment e))))))
+
+(define-global toplevel-environment (e)
+  (find-environment
+    (fn (e) (nil? (parent-environment e)))
+    (or e (current-environment))))
 
 (define-global nil? (x)
   (target
@@ -336,8 +356,8 @@
 (define-global setenv (k rest: keys)
   (when (string? k)
     (let (frame (if (get keys 'toplevel)
-                    (hd environment)
-                  (last environment))
+                    (toplevel-environment)
+                  (current-environment))
           entry (or (get frame k) (obj)))
       (each (k v) keys
         (set (get entry k) v))
