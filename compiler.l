@@ -309,11 +309,7 @@
   (and (obj? x) (infix? (hd x))))
 
 (define compile-args (args)
-  (let (s "(" c "")
-    (step x args
-      (cat! s c (compile x))
-      (set c ", "))
-    (cat s ")")))
+  (cat "(" (mapcat compile args ", ") ")"))
 
 (define escape-newlines (s)
   (with s1 ""
@@ -711,28 +707,19 @@
 
 (define-special %array forms
   (let (open (if (= target 'lua) "{" "[")
-        close (if (= target 'lua) "}" "]")
-        s "" c "")
-    (each (k v) forms
-      (when (number? k)
-        (cat! s c (compile v))
-        (set c ", ")))
-    (cat open s close)))
+        close (if (= target 'lua) "}" "]"))
+    (cat open (mapcat compile forms ", ") close)))
 
 (define-special %object forms
-  (let (s "{" c ""
-        sep (if (= target 'lua) " = " ": "))
-    (each (k v) (pair forms)
-      (when (number? k)
-        (let ((k v) v)
-          (unless (string? k)
-            (error (cat "Illegal key: " (str k))))
-          (cat! s c (key k) sep (compile v))
-          (set c ", "))))
-    (cat s "}")))
+  (let (sep (if (= target 'lua) " = " ": ")
+        s (mapcat (fn ((k v))
+                       (cat (key k) sep (compile v)))
+                     (pair forms)
+                     ", "))
+    (cat "{" s "}")))
 
 (define-special %literal args
-  (apply cat (map compile args)))
+  (mapcat compile args))
 
 (export run
         eval
