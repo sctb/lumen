@@ -595,7 +595,9 @@ c"
     (let b ((fn () (inc a)))
       (test= 12 b)
       (test= 12 a)))
-  (test= 1 ((fn () (return (if true (return 1) 2))))))
+  (test= 1 ((fn () (return (if true (return 1) 2)))))
+  (define (a b) ((fn () (return true 1))))
+  (test= '(true 1) (list a b)))
 
 (define-test guard
   (let-macro ((guard1 (x)

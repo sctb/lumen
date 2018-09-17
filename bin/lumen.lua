@@ -850,7 +850,6 @@ setenv("define", {_stash = true, macro = function (name, x, ...)
   local __x145 = destash33(x, ____r37)
   local ____id31 = ____r37
   local __body21 = cut(____id31, 0)
-  setenv(__name5, {_stash = true, variable = true})
   if some63(__body21) then
     return join({"%local-function", __name5}, bind42(__x145, __body21))
   else

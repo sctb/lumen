@@ -1,5 +1,5 @@
 local function call_with_file(f, path, mode)
-  local h,e = io.open(path, mode)
+  local h, e = io.open(path, mode)
   if not h then
     error(e)
   end

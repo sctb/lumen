@@ -119,7 +119,8 @@
        (= (hd x) 'unquote-splicing)))
 
 (define expand-local ((x name value))
-  (setenv name :variable)
+  (step x (if (obj? name) name (list name))
+    (setenv x :variable))
   `(%local ,name ,(macroexpand value)))
 
 (define expand-function ((x args rest: body))
@@ -662,11 +663,11 @@
         (cat (indentation) x))
     (compile `(%local ,name (%function ,args ,body)) :stmt)))
 
-(define-special return (x) :stmt
-  (let x (if (nil? x)
-             "return"
-           (cat "return " (compile x)))
-    (cat (indentation) x)))
+(define-special return args :stmt
+  (let s (mapcat compile args ", ")
+    (when (and (= target 'js) (> (# args) 1))
+      (set s (cat "[" s "]")))
+    (cat (indentation) "return" (if (some? s) " " "") s)))
 
 (define-special new (x)
   (cat "new " (compile x)))
@@ -681,7 +682,10 @@
     (cat (indentation) e)))
 
 (define-special %local (name value) :stmt
-  (let (id (compile name)
+  (let (id (if (obj? name)
+               (let s (mapcat compile name ", ")
+                 (if (= target 'js) (cat "[" s "]") s))
+             (compile name))
         value1 (compile value)
         rh (if (is? value) (cat " = " value1) "")
         keyword (if (= target 'js) "var " "local ")

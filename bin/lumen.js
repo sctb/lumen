@@ -962,7 +962,6 @@ setenv("define", {_stash: true, macro: function (name, x) {
   var __x131 = destash33(x, ____r37);
   var ____id31 = ____r37;
   var __body21 = cut(____id31, 0);
-  setenv(__name5, {_stash: true, variable: true});
   if (some63(__body21)) {
     return join(["%local-function", __name5], bind42(__x131, __body21));
   } else {
