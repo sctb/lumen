@@ -412,14 +412,9 @@
       (cat ind form tr))))
 
 (define lower-statement (form tail?)
-  (either
-    (let (hoist () e (lower form hoist true tail?))
-      (if (and (some? hoist) (is? e))
-          `(do ,@hoist ,e)
-          (is? e) e
-          (> (# hoist) 1) `(do ,@hoist)
-        (hd hoist)))
-    '(do)))
+  (let (hoist () e (lower form hoist true tail?))
+    (if (is? e) (add hoist e))
+    `(do ,@hoist)))
 
 (define lower-body (body tail?)
   (lower-statement `(do ,@body) tail?))
