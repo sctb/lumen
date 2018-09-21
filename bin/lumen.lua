@@ -143,11 +143,30 @@ end
 function id_literal63(x)
   return string63(x) and char(x, 0) == "|"
 end
-function add(l, x)
-  return table.insert(l, x)
+function add(l, x, i)
+  if nil63(i) then
+    table.insert(l, x)
+  else
+    if number63(i) then
+      table.insert(l, i + 1, x)
+    else
+      l[i] = x
+    end
+  end
+  return nil
 end
-function drop(l)
-  return table.remove(l)
+function drop(l, i)
+  if nil63(i) then
+    return table.remove(l)
+  else
+    if number63(i) then
+      return table.remove(l, i)
+    else
+      local __x1 = l[i]
+      l[i] = nil
+      return __x1
+    end
+  end
 end
 function last(l)
   return l[edge(l) + 1]
@@ -178,10 +197,10 @@ end
 function join(...)
   local __ls = unstash({...})
   local __r37 = {}
-  local ____x2 = __ls
+  local ____x3 = __ls
   local ____i4 = 0
-  while ____i4 < _35(____x2) do
-    local __l11 = ____x2[____i4 + 1]
+  while ____i4 < _35(____x3) do
+    local __l11 = ____x3[____i4 + 1]
     if __l11 then
       local __n3 = _35(__r37)
       local ____o2 = __l11
@@ -202,19 +221,19 @@ function find(f, t)
   local ____o3 = t
   local ____i6 = nil
   for ____i6 in next, ____o3 do
-    local __x3 = ____o3[____i6]
-    local __y = f(__x3)
+    local __x4 = ____o3[____i6]
+    local __y = f(__x4)
     if __y then
       return __y
     end
   end
 end
 function first(f, l)
-  local ____x4 = l
+  local ____x5 = l
   local ____i7 = 0
-  while ____i7 < _35(____x4) do
-    local __x5 = ____x4[____i7 + 1]
-    local __y1 = f(__x5)
+  while ____i7 < _35(____x5) do
+    local __x6 = ____x5[____i7 + 1]
+    local __y1 = f(__x6)
     if __y1 then
       return __y1
     end
@@ -242,10 +261,10 @@ function sort(l, f)
 end
 function map(f, x)
   local __t1 = {}
-  local ____x7 = x
+  local ____x8 = x
   local ____i9 = 0
-  while ____i9 < _35(____x7) do
-    local __v3 = ____x7[____i9 + 1]
+  while ____i9 < _35(____x8) do
+    local __v3 = ____x8[____i9 + 1]
     local __y2 = f(__v3)
     if is63(__y2) then
       add(__t1, __y2)
@@ -287,7 +306,7 @@ function empty63(t)
   local ____o6 = t
   local ____i12 = nil
   for ____i12 in next, ____o6 do
-    local __x8 = ____o6[____i12]
+    local __x9 = ____o6[____i12]
     return false
   end
   return true
@@ -595,7 +614,7 @@ function setenv(k, ...)
   local __keys = cut(____id1, 0)
   if string63(__k9) then
     local __e8 = nil
-    if __keys.toplevel then
+    if drop(__keys, "toplevel") then
       __e8 = hd(environment)
     else
       __e8 = last(environment)
