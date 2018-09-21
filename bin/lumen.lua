@@ -807,7 +807,9 @@ setenv("define-special", {_stash = true, macro = function (name, args, ...)
   local __body17 = cut(____id25, 0)
   local ____x121 = {"setenv", {"quote", __name3}}
   ____x121.special = join({"fn", __args5}, __body17)
-  local __form3 = join(____x121, keys(__body17))
+  local __arg5 = keys(__body17)
+  local __arg6 = join(____x121, __arg5)
+  local __form3 = __arg6
   _eval(__form3)
   return __form3
 end})
@@ -879,7 +881,8 @@ setenv("let-macro", {_stash = true, macro = function (definitions, ...)
   map(function (m)
     return macroexpand(join({"define-macro"}, m))
   end, __definitions1)
-  local ____x185 = join({"do"}, macroexpand(__body29))
+  local __arg7 = join({"do"}, macroexpand(__body29))
+  local ____x185 = __arg7
   drop(environment)
   return ____x185
 end})
@@ -895,7 +898,8 @@ setenv("let-symbol", {_stash = true, macro = function (expansions, ...)
     local __exp1 = ____id43[2]
     return macroexpand({"define-symbol", __name9, __exp1})
   end, pair(__expansions1))
-  local ____x193 = join({"do"}, macroexpand(__body31))
+  local __arg8 = join({"do"}, macroexpand(__body31))
+  local ____x193 = __arg8
   drop(environment)
   return ____x193
 end})
@@ -967,7 +971,8 @@ setenv("each", {_stash = true, macro = function (x, t, ...)
   else
     __e10 = {join({"let", __k4, {"if", {"numeric?", __k4}, {"parseInt", __k4}, __k4}}, __body37)}
   end
-  return {"let", {__o3, __t1, __k4, "nil"}, {"%for", __o3, __k4, join({"let", {__v7, {"get", __o3, __k4}}}, __e10)}}
+  local __arg9 = join({"let", {__v7, {"get", __o3, __k4}}}, __e10)
+  return {"let", {__o3, __t1, __k4, "nil"}, {"%for", __o3, __k4, __arg9}}
 end})
 setenv("for", {_stash = true, macro = function (i, to, ...)
   local ____r63 = unstash({...})
@@ -1080,6 +1085,7 @@ local function eval_print(form)
     if obj63(m) then
       return m
     else
+      local __arg1 = debug.traceback()
       local __e = nil
       if string63(m) then
         __e = clip(m, (search(m, ": ") or -2) + 2)
@@ -1092,7 +1098,7 @@ local function eval_print(form)
         end
         __e = __e1
       end
-      return {stack = debug.traceback(), message = __e}
+      return {stack = __arg1, message = __e}
     end
   end)}
   local __ok = ____id[1]

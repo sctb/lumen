@@ -513,9 +513,25 @@
   (let ((name args rest: body) args)
     (add hoist `(,kind ,name ,args ,(lower-body body true)))))
 
-(define lower-call (form hoist)
-  (let form (map (fn (x) (lower x hoist)) form)
-    (if (some? form) form)))
+(define lower-args (args hoist)
+  (let (simple true
+        args1 (map (fn (x)
+                     (let (h () x (lower x h))
+                       (if (some? h) (set simple false))
+                       (list h x)))
+                   args))
+    (map (fn ((h x))
+           (step v h
+             (add hoist v))
+           (if (or simple (literal? x)) x
+             (with arg (unique 'arg)
+               (add hoist `(%local ,arg ,x)))))
+         args1)))
+
+(define lower-call ((f rest: args) hoist)
+  (let f (lower f hoist)
+    (if (nil? f) (if (some? args) (lower-call args hoist))
+      `(,f ,@(lower-args args hoist)))))
 
 (define pairwise? (form)
   (in? (hd form) '(< <= = >= >)))

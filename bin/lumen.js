@@ -919,7 +919,9 @@ setenv("define-special", {_stash: true, macro: function (name, args) {
   var __body17 = cut(____id25, 0);
   var ____x109 = ["setenv", ["quote", __name3]];
   ____x109.special = join(["fn", __args5], __body17);
-  var __form3 = join(____x109, keys(__body17));
+  var __arg5 = keys(__body17);
+  var __arg6 = join(____x109, __arg5);
+  var __form3 = __arg6;
   _eval(__form3);
   return __form3;
 }});
@@ -991,7 +993,8 @@ setenv("let-macro", {_stash: true, macro: function (definitions) {
   map(function (m) {
     return macroexpand(join(["define-macro"], m));
   }, __definitions1);
-  var ____x167 = join(["do"], macroexpand(__body29));
+  var __arg7 = join(["do"], macroexpand(__body29));
+  var ____x167 = __arg7;
   drop(environment);
   return ____x167;
 }});
@@ -1007,7 +1010,8 @@ setenv("let-symbol", {_stash: true, macro: function (expansions) {
     var __exp1 = ____id43[1];
     return macroexpand(["define-symbol", __name9, __exp1]);
   }, pair(__expansions1));
-  var ____x174 = join(["do"], macroexpand(__body31));
+  var __arg8 = join(["do"], macroexpand(__body31));
+  var ____x174 = __arg8;
   drop(environment);
   return ____x174;
 }});
@@ -1079,7 +1083,8 @@ setenv("each", {_stash: true, macro: function (x, t) {
   } else {
     __e11 = [join(["let", __k5, ["if", ["numeric?", __k5], ["parseInt", __k5], __k5]], __body37)];
   }
-  return ["let", [__o3, __t1, __k5, "nil"], ["%for", __o3, __k5, join(["let", [__v7, ["get", __o3, __k5]]], __e11)]];
+  var __arg9 = join(["let", [__v7, ["get", __o3, __k5]]], __e11);
+  return ["let", [__o3, __t1, __k5, "nil"], ["%for", __o3, __k5, __arg9]];
 }});
 setenv("for", {_stash: true, macro: function (i, to) {
   var ____r63 = unstash(Array.prototype.slice.call(arguments, 2));

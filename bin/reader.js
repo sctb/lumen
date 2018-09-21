@@ -100,7 +100,8 @@ var hex_prefix63 = function (str) {
   var __e1 = undefined;
   if (__id2) {
     __i = __i + 1;
-    var __n = code(str, __i);
+    var __arg1 = code(str, __i);
+    var __n = __arg1;
     __e1 = __n === 120 || __n === 88;
   } else {
     __e1 = __id2;

@@ -338,7 +338,10 @@ c"
     (test= 42 ((at l 0)))
     (test= 42 ((get t 'f)))
     (test= nil ((fn () (return))))
-    (test= 10 ((fn (x) (- x 2)) 12))))
+    (test= 10 ((fn (x) (- x 2)) 12))
+    (let (r ()
+          l (list (add r 1) (if true (add r 2))))
+      (test= '(1 2) r))))
 
 (define-test id
   (let (a 10

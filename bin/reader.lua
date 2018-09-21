@@ -100,7 +100,8 @@ local function hex_prefix63(str)
   local __e1 = nil
   if __id2 then
     __i = __i + 1
-    local __n = code(str, __i)
+    local __arg1 = code(str, __i)
+    local __n = __arg1
     __e1 = __n == 120 or __n == 88
   else
     __e1 = __id2
