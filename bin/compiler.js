@@ -958,12 +958,15 @@ var lower_function = function (args) {
   var __body7 = cut(____id22, 1);
   return ["%function", __a4, lower_body(__body7, true)];
 };
-var lower_definition = function (kind, args, hoist) {
+var lower_definition = function (kind, args, hoist, stmt63, tail63) {
   var ____id23 = args;
   var __name4 = ____id23[0];
   var __args6 = ____id23[1];
   var __body8 = cut(____id23, 2);
-  return add(hoist, [kind, __name4, __args6, lower_body(__body8, true)]);
+  add(hoist, [kind, __name4, __args6, lower_body(__body8, true)]);
+  if (!( stmt63 && ! tail63)) {
+    return __name4;
+  }
 };
 var lower_call = function (form, hoist) {
   var __form2 = map(function (x) {
@@ -1050,7 +1053,7 @@ lower = function (form, hoist, stmt63, tail63) {
                           return lower_function(__args9);
                         } else {
                           if (__x131 === "%local-function" || __x131 === "%global-function") {
-                            return lower_definition(__x131, __args9, hoist);
+                            return lower_definition(__x131, __args9, hoist, stmt63, tail63);
                           } else {
                             if (in63(__x131, ["and", "or"])) {
                               return lower_short(__x131, __args9, hoist);
