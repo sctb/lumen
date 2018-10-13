@@ -517,28 +517,22 @@
   (let form (map (fn (x) (lower x hoist)) form)
     (if (some? form) form)))
 
-(define pairwise? (form)
-  (in? (hd form) '(< <= = >= >)))
-
-(define lower-pairwise (form)
-  (if (pairwise? form)
-      (let (e () (x rest: args) form)
-        (reduce (fn (a b)
-                  (add e `(,x ,a ,b)) a)
-                args)
-        `(and ,@(reverse e)))
-    form))
-
 (define lower-infix? (form)
-  (and (infix? (hd form)) (> (# form) 3)))
+  (and (> (# form) 3) (infix? (hd form))))
 
-(define lower-infix (form hoist)
-  (let (form (lower-pairwise form)
-        (x rest: args) form)
-    (lower (reduce (fn (a b)
-                     (list x b a))
-                   (reverse args))
-           hoist)))
+(define infix-form ((x a rest: bs))
+  (step b bs
+    (set a (list x a b)))
+  a)
+
+(define lower-pairwise? (form)
+  (and (> (# form) 3) (in? (hd form) '(< <= = >= >))))
+
+(define pairwise-form ((x a rest: bs))
+  (with e '(and)
+    (step b bs
+      (add e (list x a b))
+      (set a b))))
 
 (define lower-special (form hoist)
   (let e (lower-call form hoist)
@@ -548,7 +542,8 @@
   (if (atom? form) form
       (empty? form) '(%array)
       (nil? hoist) (lower-statement form)
-      (lower-infix? form) (lower-infix form hoist)
+      (lower-pairwise? form) (lower (pairwise-form form) hoist stmt? tail?)
+      (lower-infix? form) (lower (infix-form form) hoist stmt? tail?)
     (let ((x rest: args) form)
       (if (= x 'do) (lower-do args hoist stmt? tail?)
           (= x '%call) (lower args hoist stmt? tail?)
