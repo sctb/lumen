@@ -344,8 +344,9 @@
 (define compile-special (form stmt?)
   (let ((x rest: args) form
         (:special :stmt tr: self-tr?) (getenv x)
+        p (if (and stmt? (not stmt)) (indentation) "")
         tr (terminator (and stmt? (not self-tr?))))
-    (cat (apply special args) tr)))
+    (cat p (apply special args) tr)))
 
 (define parenthesize-call? (x)
   (or (and (not (atom? x))
