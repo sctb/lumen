@@ -1238,10 +1238,16 @@ var repl = function () {
   ___in.setEncoding("utf8");
   return ___in.on("data", rep1);
 };
-compile_file = function (path) {
+read_from_file = function (path) {
   var __s = reader.stream(system["read-file"](path));
-  var __body = reader["read-all"](__s);
-  var __form1 = compiler.expand(join(["do"], __body));
+  return reader["read-all"](__s);
+};
+expand_file = function (path) {
+  var __body = read_from_file(path);
+  return compiler.expand(join(["do"], __body));
+};
+compile_file = function (path) {
+  var __form1 = expand_file(path);
   return compiler.compile(__form1, {_stash: true, stmt: true});
 };
 _load = function (path) {
