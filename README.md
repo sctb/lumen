@@ -7,7 +7,7 @@ Every piece of code in Lumen is an expression, and expressions can be evaluated 
 > 17
 17
 > -5e4
--5000
+-50000
 > true
 true
 > false
