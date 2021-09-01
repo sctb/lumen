@@ -397,7 +397,7 @@ When you want to quote some parts of an expression, but want other parts to be e
 (1 5 10)
 ```
 
-The shorthand for quasiquotation is `` ` `` for `quasiquote` and `,` for `unquote`:
+The shorthand for `quasiquote` is `` ` `` and for `unquote` is `,`:
 ```
 > (let x 10 `(1 5 ,x))
 (1 5 10)
