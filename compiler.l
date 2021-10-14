@@ -510,9 +510,11 @@
   (let ((a rest: body) args)
     `(%function ,a ,(lower-body body true))))
 
-(define lower-definition (kind args hoist)
+(define lower-definition (kind args hoist stmt? tail?)
   (let ((name args rest: body) args)
-    (add hoist `(,kind ,name ,args ,(lower-body body true)))))
+    (add hoist `(,kind ,name ,args ,(lower-body body true)))
+    (unless (and stmt? (not tail?))
+      name)))
 
 (define lower-call (form hoist)
   (let form (map (fn (x) (lower x hoist)) form)
@@ -561,7 +563,7 @@
           (= x '%function) (lower-function args)
           (or (= x '%local-function)
               (= x '%global-function))
-          (lower-definition x args hoist)
+          (lower-definition x args hoist stmt? tail?)
           (in? x '(and or))
           (lower-short x args hoist)
           (statement? x) (lower-special form hoist)

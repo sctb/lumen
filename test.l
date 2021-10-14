@@ -581,7 +581,13 @@ c"
   (test= 42 (f))
   ((fn ()
      (define f () 38)
-     (test= 38 (f))))
+     (test= 38 (f))
+     (test= 21 ((define f (n)
+                  (if (< n 2) n
+                    (+ (f (- n 1))
+                       (f (- n 2)))))
+                8))
+     (test= 21 (f 8))))
   (test= 42 (f)))
 
 (define-test return

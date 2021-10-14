@@ -911,12 +911,15 @@ local function lower_function(args)
   local __body7 = cut(____id22, 1)
   return {"%function", __a4, lower_body(__body7, true)}
 end
-local function lower_definition(kind, args, hoist)
+local function lower_definition(kind, args, hoist, stmt63, tail63)
   local ____id23 = args
   local __name4 = ____id23[1]
   local __args6 = ____id23[2]
   local __body8 = cut(____id23, 2)
-  return add(hoist, {kind, __name4, __args6, lower_body(__body8, true)})
+  add(hoist, {kind, __name4, __args6, lower_body(__body8, true)})
+  if not( stmt63 and not tail63) then
+    return __name4
+  end
 end
 local function lower_call(form, hoist)
   local __form2 = map(function (x)
@@ -1003,7 +1006,7 @@ function lower(form, hoist, stmt63, tail63)
                           return lower_function(__args9)
                         else
                           if __x134 == "%local-function" or __x134 == "%global-function" then
-                            return lower_definition(__x134, __args9, hoist)
+                            return lower_definition(__x134, __args9, hoist, stmt63, tail63)
                           else
                             if in63(__x134, {"and", "or"}) then
                               return lower_short(__x134, __args9, hoist)
