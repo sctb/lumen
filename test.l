@@ -39,6 +39,8 @@
     (test= "nil" (read "nil"))
     (test= 17 (read "17"))
     (test= 0.015 (read "1.5e-2"))
+    (test= 511 (read "0777"))
+    (test= -777 (read "-0777"))
     (test= 15 (read "0xF"))
     (test= -15 (read "-0Xf"))
     (test= "0x" (read "0x"))
