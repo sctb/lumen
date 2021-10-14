@@ -326,7 +326,11 @@ c"
   (test= '(%array "quasiquote" (%array "x")) (macroexpand '``(x)))
   (test= '(%array "quasiquote" (%array "unquote" "a")) (macroexpand '``,a))
   (test= '(%array "quasiquote" (%array (%array "unquote" "x")))
-         (macroexpand '``(,x))))
+         (macroexpand '``(,x)))
+  (let l '(y z)
+    (test= '(quasiquote (x (unquote y z))) ``(x ,,@l))
+    (test= '(%array "x" y z) (macroexpand ``(x ,,@l))))
+  (test= '(x y z) (eval `(let (a 'y b 'z) `(x ,,@'(a b))))))
 
 (define-test calls
   (let (f (fn () 42)
