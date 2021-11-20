@@ -124,6 +124,9 @@ read_table[""] = function (s)
   while true do
     local __c3 = peek_char(s)
     if __c3 and (not whitespace[__c3] and not delimiters[__c3]) then
+      if __c3 == "\\" then
+        __str = __str .. read_char(s)
+      end
       __str = __str .. read_char(s)
     else
       break

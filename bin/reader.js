@@ -124,6 +124,9 @@ read_table[""] = function (s) {
   while (true) {
     var __c3 = peek_char(s);
     if (__c3 && (! whitespace[__c3] && ! delimiters[__c3])) {
+      if (__c3 === "\\") {
+        __str = __str + read_char(s);
+      }
       __str = __str + read_char(s);
     } else {
       break;
