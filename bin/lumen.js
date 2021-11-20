@@ -1218,17 +1218,18 @@ var eval_print = function (form) {
     }
   }
 };
-var rep = function (s) {
-  return eval_print(reader["read-string"](s));
+var read_eval = function (s) {
+  var __form = reader["read-string"](s);
+  return compiler["eval"](__form);
 };
 var repl = function () {
   var __buf = "";
   var rep1 = function (s) {
     __buf = __buf + s;
     var __more = [];
-    var __form = reader["read-string"](__buf, __more);
-    if (!( __form === __more)) {
-      eval_print(__form);
+    var __form1 = reader["read-string"](__buf, __more);
+    if (!( __form1 === __more)) {
+      eval_print(__form1);
       __buf = "";
       return system.write("> ");
     }
@@ -1241,8 +1242,8 @@ var repl = function () {
 compile_file = function (path) {
   var __s = reader.stream(system["read-file"](path));
   var __body = reader["read-all"](__s);
-  var __form1 = compiler.expand(join(["do"], __body));
-  return compiler.compile(__form1, {_stash: true, stmt: true});
+  var __form2 = compiler.expand(join(["do"], __body));
+  return compiler.compile(__form2, {_stash: true, stmt: true});
 };
 _load = function (path) {
   var __previous = target;
@@ -1267,6 +1268,7 @@ var usage = function () {
   print(" <arguments>\tPassed to program in system.argv");
   print(" <object files>\tLoaded before compiling <input>");
   print("options:");
+  print(" -l <input>\tLoad input file");
   print(" -c <input>\tCompile input file");
   print(" -o <output>\tOutput file");
   print(" -t <target>\tTarget language (default: lua)");
@@ -1289,23 +1291,28 @@ var main = function () {
       var __i = 0;
       while (__i < _35(__argv)) {
         var __a = __argv[__i];
-        if (__a === "-c" || __a === "-o" || __a === "-t" || __a === "-e") {
+        if (__a === "-l" || __a === "-c" || __a === "-o" || __a === "-t" || __a === "-e") {
           if (__i === edge(__argv)) {
             print("missing argument for " + __a);
           } else {
             __i = __i + 1;
             var __val = __argv[__i];
-            if (__a === "-c") {
-              __input = __val;
+            if (__a === "-l") {
+              _load(__val);
             } else {
-              if (__a === "-o") {
-                __output = __val;
+              if (__a === "-c") {
+                __input = __val;
               } else {
-                if (__a === "-t") {
-                  __target1 = __val;
+                if (__a === "-o") {
+                  __output = __val;
                 } else {
-                  if (__a === "-e") {
-                    __expr = __val;
+                  if (__a === "-t") {
+                    __target1 = __val;
+                  } else {
+                    if (__a === "-e") {
+                      __expr = __val;
+                      read_eval(__expr);
+                    }
                   }
                 }
               }
@@ -1327,7 +1334,9 @@ var main = function () {
       }
       if (nil63(__input)) {
         if (__expr) {
-          return rep(__expr);
+          if (is63(_37result)) {
+            return print(str(_37result));
+          }
         } else {
           return repl();
         }
