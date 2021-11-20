@@ -34,7 +34,7 @@ case $host in
         export NODE_PATH="$NODE_PATH:${home}:${dir}/lib:${dir}/node_modules";;
     *)
         code=lumen.lua
-        export LUA_PATH="$LUA_PATH;${home}/?.lua;${dir}/lib/?.lua;;";;
+        export LUA_PATH="$LUA_PATH;${home}/?.lua;${dir}/lib/?.lua;${dir}/lib/?/init.lua;${dir}/node_modules/?/init.lua;;";;
 esac
 
 exec ${host} "${home}/${code}" "$@"
