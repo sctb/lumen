@@ -32,10 +32,16 @@
            (let s ((get io 'read))
              (if s (rep1 (cat s "\n")) (break))))))
 
+(define-global read-from-file (path)
+  (let s ((get reader 'stream) ((get system 'read-file) path))
+    ((get reader 'read-all) s)))
+
+(define-global expand-file (path)
+  (let body (read-from-file path)
+    ((get compiler 'expand) `(do ,@body))))
+
 (define-global compile-file (path)
-  (let (s ((get reader 'stream) ((get system 'read-file) path))
-        body ((get reader 'read-all) s)
-        form ((get compiler 'expand) `(do ,@body)))
+  (let form (expand-file path)
     ((get compiler 'compile) form :stmt)))
 
 (define-global load (path)
