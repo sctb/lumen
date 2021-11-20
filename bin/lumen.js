@@ -156,12 +156,30 @@ string_literal63 = function (x) {
 id_literal63 = function (x) {
   return string63(x) && char(x, 0) === "|";
 };
-add = function (l, x) {
-  l.push(x);
+add = function (l, x, i) {
+  if (nil63(i)) {
+    l.push(x);
+  } else {
+    if (number63(i)) {
+      l.splice(i, 0, x);
+    } else {
+      l[i] = x;
+    }
+  }
   return undefined;
 };
-drop = function (l) {
-  return l.pop();
+drop = function (l, i) {
+  if (nil63(i)) {
+    return l.pop();
+  } else {
+    if (number63(i)) {
+      return l.splice(i, 1)[0];
+    } else {
+      var __x1 = l[i];
+      delete l[i];
+      return __x1;
+    }
+  }
 };
 last = function (l) {
   return l[edge(l)];
@@ -192,10 +210,10 @@ reduce = function (f, x) {
 join = function () {
   var __ls = unstash(Array.prototype.slice.call(arguments, 0));
   var __r38 = [];
-  var ____x1 = __ls;
+  var ____x2 = __ls;
   var ____i4 = 0;
-  while (____i4 < _35(____x1)) {
-    var __l11 = ____x1[____i4];
+  while (____i4 < _35(____x2)) {
+    var __l11 = ____x2[____i4];
     if (__l11) {
       var __n3 = _35(__r38);
       var ____o2 = __l11;
@@ -223,7 +241,7 @@ find = function (f, t) {
   var ____o3 = t;
   var ____i6 = undefined;
   for (____i6 in ____o3) {
-    var __x2 = ____o3[____i6];
+    var __x3 = ____o3[____i6];
     var __e5 = undefined;
     if (numeric63(____i6)) {
       __e5 = parseInt(____i6);
@@ -231,18 +249,18 @@ find = function (f, t) {
       __e5 = ____i6;
     }
     var ____i61 = __e5;
-    var __y = f(__x2);
+    var __y = f(__x3);
     if (__y) {
       return __y;
     }
   }
 };
 first = function (f, l) {
-  var ____x3 = l;
+  var ____x4 = l;
   var ____i7 = 0;
-  while (____i7 < _35(____x3)) {
-    var __x4 = ____x3[____i7];
-    var __y1 = f(__x4);
+  while (____i7 < _35(____x4)) {
+    var __x5 = ____x4[____i7];
+    var __y1 = f(__x5);
     if (__y1) {
       return __y1;
     }
@@ -279,10 +297,10 @@ sort = function (l, f) {
 };
 map = function (f, x) {
   var __t1 = [];
-  var ____x6 = x;
+  var ____x7 = x;
   var ____i9 = 0;
-  while (____i9 < _35(____x6)) {
-    var __v3 = ____x6[____i9];
+  while (____i9 < _35(____x7)) {
+    var __v3 = ____x7[____i9];
     var __y2 = f(__v3);
     if (is63(__y2)) {
       add(__t1, __y2);
@@ -338,7 +356,7 @@ empty63 = function (t) {
   var ____o6 = t;
   var ____i12 = undefined;
   for (____i12 in ____o6) {
-    var __x7 = ____o6[____i12];
+    var __x8 = ____o6[____i12];
     var __e9 = undefined;
     if (numeric63(____i12)) {
       __e9 = parseInt(____i12);
@@ -687,7 +705,7 @@ setenv = function (k) {
   var __keys = cut(____id1, 0);
   if (string63(__k18)) {
     var __e19 = undefined;
-    if (__keys.toplevel) {
+    if (drop(__keys, "toplevel")) {
       __e19 = hd(environment);
     } else {
       __e19 = last(environment);
