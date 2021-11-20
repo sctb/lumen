@@ -1,7 +1,8 @@
 environment = {{}}
 target = "lua"
+null = null or {"%null"}
 function nil63(x)
-  return x == nil
+  return x == nil or x == null
 end
 function is63(x)
   return not nil63(x)
@@ -178,10 +179,10 @@ end
 function join(...)
   local __ls = unstash({...})
   local __r37 = {}
-  local ____x2 = __ls
+  local ____x3 = __ls
   local ____i4 = 0
-  while ____i4 < _35(____x2) do
-    local __l11 = ____x2[____i4 + 1]
+  while ____i4 < _35(____x3) do
+    local __l11 = ____x3[____i4 + 1]
     if __l11 then
       local __n3 = _35(__r37)
       local ____o2 = __l11
@@ -202,19 +203,19 @@ function find(f, t)
   local ____o3 = t
   local ____i6 = nil
   for ____i6 in next, ____o3 do
-    local __x3 = ____o3[____i6]
-    local __y = f(__x3)
+    local __x4 = ____o3[____i6]
+    local __y = f(__x4)
     if __y then
       return __y
     end
   end
 end
 function first(f, l)
-  local ____x4 = l
+  local ____x5 = l
   local ____i7 = 0
-  while ____i7 < _35(____x4) do
-    local __x5 = ____x4[____i7 + 1]
-    local __y1 = f(__x5)
+  while ____i7 < _35(____x5) do
+    local __x6 = ____x5[____i7 + 1]
+    local __y1 = f(__x6)
     if __y1 then
       return __y1
     end
@@ -242,10 +243,10 @@ function sort(l, f)
 end
 function map(f, x)
   local __t1 = {}
-  local ____x7 = x
+  local ____x8 = x
   local ____i9 = 0
-  while ____i9 < _35(____x7) do
-    local __v3 = ____x7[____i9 + 1]
+  while ____i9 < _35(____x8) do
+    local __v3 = ____x8[____i9 + 1]
     local __y2 = f(__v3)
     if is63(__y2) then
       add(__t1, __y2)
@@ -287,7 +288,7 @@ function empty63(t)
   local ____o6 = t
   local ____i12 = nil
   for ____i12 in next, ____o6 do
-    local __x8 = ____o6[____i12]
+    local __x9 = ____o6[____i12]
     return false
   end
   return true
