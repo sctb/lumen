@@ -1070,6 +1070,7 @@ setenv("during-compilation", {_stash = true, macro = function (...)
   _eval(__form5)
   return __form5
 end})
+JSON = require("json")
 local reader = require("reader")
 local compiler = require("compiler")
 local system = require("system")
