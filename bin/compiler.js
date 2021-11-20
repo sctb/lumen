@@ -64,7 +64,7 @@ var literal = function (s) {
 };
 var stash42 = function (args) {
   if (keys63(args)) {
-    var __l = ["%object", "\"_stash\"", true];
+    var __l = ["%stash"];
     var ____o = args;
     var __k = undefined;
     for (__k in ____o) {
@@ -1361,6 +1361,10 @@ setenv("%object", {_stash: true, special: function () {
 setenv("%literal", {_stash: true, special: function () {
   var __args111 = unstash(Array.prototype.slice.call(arguments, 0));
   return apply(cat, map(compile, __args111));
+}});
+setenv("%stash", {_stash: true, special: function () {
+  var __args13 = unstash(Array.prototype.slice.call(arguments, 0));
+  return compile(join(["%object", "\"_stash\"", true], __args13));
 }});
 exports.run = run;
 exports["eval"] = _eval;
