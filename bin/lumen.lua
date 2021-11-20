@@ -922,24 +922,28 @@ setenv("apply", {_stash = true, macro = function (f, ...)
   local ____id49 = ____r57
   local __args9 = cut(____id49, 0)
   if _35(__args9) > 1 then
-    return {"%call", "apply", __f1, {"join", join({"list"}, almost(__args9)), last(__args9)}}
+    return {"%call", "apply", __f1, {"join", join({"list"}, almost(__args9)), last(__args9), join({"list"}, keys(__args9))}}
   else
-    return join({"%call", "apply", __f1}, __args9)
+    if keys63(__args9) then
+      return {"%call", "apply", __f1, join({"join"}, __args9, {join({"list"}, keys(__args9))})}
+    else
+      return join({"%call", "apply", __f1}, __args9)
+    end
   end
 end})
 setenv("guard", {_stash = true, macro = function (expr)
   if target == "js" then
     return {{"fn", join(), {"%try", {"list", true, expr}}}}
   else
-    local ____x252 = {"obj"}
-    ____x252.stack = {{"get", "debug", {"quote", "traceback"}}}
-    ____x252.message = {"if", {"string?", "m"}, {"clip", "m", {"+", {"or", {"search", "m", "\": \""}, -2}, 2}}, {"nil?", "m"}, "\"\"", {"str", "m"}}
-    return {"list", {"xpcall", {"fn", join(), expr}, {"fn", {"m"}, {"if", {"obj?", "m"}, "m", ____x252}}}}
+    local ____x262 = {"obj"}
+    ____x262.stack = {{"get", "debug", {"quote", "traceback"}}}
+    ____x262.message = {"if", {"string?", "m"}, {"clip", "m", {"+", {"or", {"search", "m", "\": \""}, -2}, 2}}, {"nil?", "m"}, "\"\"", {"str", "m"}}
+    return {"list", {"xpcall", {"fn", join(), expr}, {"fn", {"m"}, {"if", {"obj?", "m"}, "m", ____x262}}}}
   end
 end})
 setenv("each", {_stash = true, macro = function (x, t, ...)
   local ____r61 = unstash({...})
-  local __x279 = destash33(x, ____r61)
+  local __x289 = destash33(x, ____r61)
   local __t1 = destash33(t, ____r61)
   local ____id52 = ____r61
   local __body37 = cut(____id52, 0)
@@ -947,14 +951,14 @@ setenv("each", {_stash = true, macro = function (x, t, ...)
   local __n3 = unique("n")
   local __i3 = unique("i")
   local __e8 = nil
-  if atom63(__x279) then
-    __e8 = {__i3, __x279}
+  if atom63(__x289) then
+    __e8 = {__i3, __x289}
   else
     local __e9 = nil
-    if _35(__x279) > 1 then
-      __e9 = __x279
+    if _35(__x289) > 1 then
+      __e9 = __x289
     else
-      __e9 = {__i3, hd(__x279)}
+      __e9 = {__i3, hd(__x289)}
     end
     __e8 = __e9
   end
@@ -983,9 +987,9 @@ setenv("step", {_stash = true, macro = function (v, t, ...)
   local __t3 = destash33(t, ____r65)
   local ____id57 = ____r65
   local __body41 = cut(____id57, 0)
-  local __x313 = unique("x")
+  local __x323 = unique("x")
   local __i7 = unique("i")
-  return {"let", {__x313, __t3}, {"for", __i7, {"#", __x313}, join({"let", {__v9, {"at", __x313, __i7}}}, __body41)}}
+  return {"let", {__x323, __t3}, {"for", __i7, {"#", __x323}, join({"let", {__v9, {"at", __x323, __i7}}}, __body41)}}
 end})
 setenv("set-of", {_stash = true, macro = function (...)
   local __xs1 = unstash({...})
@@ -993,8 +997,8 @@ setenv("set-of", {_stash = true, macro = function (...)
   local ____o5 = __xs1
   local ____i9 = nil
   for ____i9 in next, ____o5 do
-    local __x324 = ____o5[____i9]
-    __l3[__x324] = true
+    local __x334 = ____o5[____i9]
+    __l3[__x334] = true
   end
   return join({"obj"}, __l3)
 end})
@@ -1038,8 +1042,8 @@ setenv("dec", {_stash = true, macro = function (n, by)
   return {"set", n, {"-", n, __e12}}
 end})
 setenv("with-indent", {_stash = true, macro = function (form)
-  local __x352 = unique("x")
-  return {"do", {"inc", "indent-level"}, {"with", __x352, form, {"dec", "indent-level"}}}
+  local __x362 = unique("x")
+  return {"do", {"inc", "indent-level"}, {"with", __x362, form, {"dec", "indent-level"}}}
 end})
 setenv("export", {_stash = true, macro = function (...)
   local __names5 = unstash({...})
@@ -1048,16 +1052,16 @@ setenv("export", {_stash = true, macro = function (...)
       return {"set", {"get", "exports", {"quote", k}}, k}
     end, __names5))
   else
-    local __x369 = {}
+    local __x379 = {}
     local ____o7 = __names5
     local ____i11 = nil
     for ____i11 in next, ____o7 do
       local __k6 = ____o7[____i11]
-      __x369[__k6] = __k6
+      __x379[__k6] = __k6
     end
     return {"return", join({"%object"}, mapo(function (x)
       return x
-    end, __x369))}
+    end, __x379))}
   end
 end})
 setenv("when-compiling", {_stash = true, macro = function (...)

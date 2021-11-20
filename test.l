@@ -1030,7 +1030,13 @@ c"
     (test= 17 (apply (fn a (get a 'foo)) t)))
   (test= 42 (apply (fn (:foo) foo) (list foo: 42)))
   (test= 42 (apply (fn ((:foo)) foo) (list (list foo: 42))))
-  (test= 116 (apply + 1 5 '(100 10))))
+  (test= 116 (apply + 1 5 '(100 10)))
+  (let f (fn (a :b) (+ (or a 1) b))
+    (test= 3 (apply f b: 2))
+    (test= 3 (apply f '(1) b: 2))
+    (test= 3 (apply f '(1 b: 42) b: 2))
+    (test= 3 (apply f 1 '(b: 42) b: 2))
+    (test= 3 (apply f 1 '(b: 2)))))
 
 (define-test eval
   (let eval (get compiler 'eval)
