@@ -1185,7 +1185,18 @@ setenv("new", {_stash = true, special = function (x)
   return "new " .. compile(x)
 end})
 setenv("typeof", {_stash = true, special = function (x)
-  return "typeof(" .. compile(x) .. ")"
+  if target == "lua" then
+    return compile({"type", x})
+  else
+    return "typeof(" .. compile(x) .. ")"
+  end
+end})
+setenv("instanceof", {_stash = true, special = function (x, t)
+  if target == "lua" then
+    return compile({"=", {"getmetatable", x}, t})
+  else
+    return "((" .. compile(x) .. ") instanceof " .. compile(t) .. ")"
+  end
 end})
 setenv("throw", {_stash = true, special = function (x)
   local __e49 = nil

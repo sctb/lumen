@@ -1232,7 +1232,18 @@ setenv("new", {_stash: true, special: function (x) {
   return "new " + compile(x);
 }});
 setenv("typeof", {_stash: true, special: function (x) {
-  return "typeof(" + compile(x) + ")";
+  if (target === "lua") {
+    return compile(["type", x]);
+  } else {
+    return "typeof(" + compile(x) + ")";
+  }
+}});
+setenv("instanceof", {_stash: true, special: function (x, t) {
+  if (target === "lua") {
+    return compile(["=", ["getmetatable", x], t]);
+  } else {
+    return "((" + compile(x) + ") instanceof " + compile(t) + ")";
+  }
 }});
 setenv("throw", {_stash: true, special: function (x) {
   var __e57 = undefined;
