@@ -131,7 +131,10 @@
     `(,x ,name ,args ,@(macroexpand body))))
 
 (define expand-macro (form)
-  (macroexpand (expand1 form)))
+  (let expr (expand1 form)
+    (if (hd? expr '%expansion)
+        (at expr 1)
+      (macroexpand expr))))
 
 (define-global expand1 ((name rest: body))
   (apply (macro-function name) body))

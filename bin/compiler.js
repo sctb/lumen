@@ -255,7 +255,12 @@ var expand_definition = function (__x46) {
   return ____x49;
 };
 var expand_macro = function (form) {
-  return macroexpand(expand1(form));
+  var __expr = expand1(form);
+  if (hd63(__expr, "%expansion")) {
+    return __expr[1];
+  } else {
+    return macroexpand(__expr);
+  }
 };
 expand1 = function (__x51) {
   var ____id4 = __x51;

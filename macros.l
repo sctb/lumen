@@ -132,7 +132,7 @@
     (map (fn ((name exp))
            (macroexpand `(define-symbol ,name ,exp)))
          (pair expansions))
-    `(do ,@(macroexpand body))))
+    `(%expansion ,(macroexpand `(do ,@body)))))
 
 (define-macro let-unique (names rest: body)
   (let bs (map (fn (n)
