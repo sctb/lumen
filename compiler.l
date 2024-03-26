@@ -124,11 +124,11 @@
 
 (define expand-function ((x args rest: body))
   (with-bindings (args)
-    `(%function ,args ,@(macroexpand body))))
+    `(%function ,args ,@(map macroexpand body))))
 
 (define expand-definition ((x name args rest: body))
   (with-bindings (args)
-    `(,x ,name ,args ,@(macroexpand body))))
+    `(,x ,name ,args ,@(map macroexpand body))))
 
 (define expand-macro (form)
   (macroexpand (expand1 form)))
