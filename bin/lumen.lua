@@ -879,7 +879,7 @@ setenv("let-macro", {_stash = true, macro = function (definitions, ...)
   map(function (m)
     return macroexpand(join({"define-macro"}, m))
   end, __definitions1)
-  local ____x185 = join({"do"}, macroexpand(__body29))
+  local ____x185 = macroexpand(join({"do"}, __body29))
   drop(environment)
   return ____x185
 end})
@@ -895,7 +895,7 @@ setenv("let-symbol", {_stash = true, macro = function (expansions, ...)
     local __exp1 = ____id43[2]
     return macroexpand({"define-symbol", __name9, __exp1})
   end, pair(__expansions1))
-  local ____x193 = join({"do"}, macroexpand(__body31))
+  local ____x193 = macroexpand(join({"do"}, __body31))
   drop(environment)
   return ____x193
 end})
