@@ -125,14 +125,14 @@
     (map (fn (m)
            (macroexpand `(define-macro ,@m)))
          definitions)
-    `(do ,@(macroexpand body))))
+    (macroexpand `(do ,@body))))
 
 (define-macro let-symbol (expansions rest: body)
   (with-frame
     (map (fn ((name exp))
            (macroexpand `(define-symbol ,name ,exp)))
          (pair expansions))
-    `(do ,@(macroexpand body))))
+    (macroexpand `(do ,@body))))
 
 (define-macro let-unique (names rest: body)
   (let bs (map (fn (n)

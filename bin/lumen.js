@@ -991,7 +991,7 @@ setenv("let-macro", {_stash: true, macro: function (definitions) {
   map(function (m) {
     return macroexpand(join(["define-macro"], m));
   }, __definitions1);
-  var ____x167 = join(["do"], macroexpand(__body29));
+  var ____x167 = macroexpand(join(["do"], __body29));
   drop(environment);
   return ____x167;
 }});
@@ -1007,7 +1007,7 @@ setenv("let-symbol", {_stash: true, macro: function (expansions) {
     var __exp1 = ____id43[1];
     return macroexpand(["define-symbol", __name9, __exp1]);
   }, pair(__expansions1));
-  var ____x174 = join(["do"], macroexpand(__body31));
+  var ____x174 = macroexpand(join(["do"], __body31));
   drop(environment);
   return ____x174;
 }});

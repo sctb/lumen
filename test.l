@@ -762,7 +762,9 @@ c"
                 (let (x 10)
                   (set x 20))
                 `(+ ,x 1)))
-    (test= 2 (a 1))))
+    (test= 2 (a 1)))
+  (test= '(do a 42)
+         (macroexpand '(let-macro ((a (x) `(+ ,x 1))) a 42))))
 
 (define-test let-symbol
   (let-symbol (a 17
@@ -775,7 +777,10 @@ c"
   (let-symbol (a 18)
     (let (b 20)
       (test= 18 a)
-      (test= 20 b))))
+      (test= 20 b)))
+  (test= '(do (do a 42))
+         (macroexpand '(let-macro ((a (x) `(+ ,x 1)))
+                         (let-symbol (b 42) a b)))))
 
 (define-test define-symbol
   (define-symbol zzz 42)
