@@ -64,7 +64,7 @@ local function literal(s)
 end
 local function stash42(args)
   if keys63(args) then
-    local __l = {"%object", "\"_stash\"", true}
+    local __l = {"%stash"}
     local ____o = args
     local __k = nil
     for __k in next, ____o do
@@ -1300,5 +1300,9 @@ end})
 setenv("%literal", {_stash = true, special = function (...)
   local __args111 = unstash({...})
   return apply(cat, map(compile, __args111))
+end})
+setenv("%stash", {_stash = true, special = function (...)
+  local __args13 = unstash({...})
+  return compile(join({"%object", "\"_stash\"", true}, __args13))
 end})
 return {run = run, ["eval"] = _eval, expand = expand, compile = compile}
