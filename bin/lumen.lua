@@ -1105,17 +1105,18 @@ local function eval_print(form)
     end
   end
 end
-local function rep(s)
-  return eval_print(reader["read-string"](s))
+local function read_eval(s)
+  local __form = reader["read-string"](s)
+  return compiler["eval"](__form)
 end
 local function repl()
   local __buf = ""
   local function rep1(s)
     __buf = __buf .. s
     local __more = {}
-    local __form = reader["read-string"](__buf, __more)
-    if not( __form == __more) then
-      eval_print(__form)
+    local __form1 = reader["read-string"](__buf, __more)
+    if not( __form1 == __more) then
+      eval_print(__form1)
       __buf = ""
       return system.write("> ")
     end
@@ -1133,8 +1134,8 @@ end
 function compile_file(path)
   local __s1 = reader.stream(system["read-file"](path))
   local __body = reader["read-all"](__s1)
-  local __form1 = compiler.expand(join({"do"}, __body))
-  return compiler.compile(__form1, {_stash = true, stmt = true})
+  local __form2 = compiler.expand(join({"do"}, __body))
+  return compiler.compile(__form2, {_stash = true, stmt = true})
 end
 function _load(path)
   local __previous = target
@@ -1159,6 +1160,7 @@ local function usage()
   print(" <arguments>\tPassed to program in system.argv")
   print(" <object files>\tLoaded before compiling <input>")
   print("options:")
+  print(" -l <input>\tLoad input file")
   print(" -c <input>\tCompile input file")
   print(" -o <output>\tOutput file")
   print(" -t <target>\tTarget language (default: lua)")
@@ -1181,23 +1183,28 @@ local function main()
       local __i = 0
       while __i < _35(__argv) do
         local __a = __argv[__i + 1]
-        if __a == "-c" or __a == "-o" or __a == "-t" or __a == "-e" then
+        if __a == "-l" or __a == "-c" or __a == "-o" or __a == "-t" or __a == "-e" then
           if __i == edge(__argv) then
             print("missing argument for " .. __a)
           else
             __i = __i + 1
             local __val = __argv[__i + 1]
-            if __a == "-c" then
-              __input = __val
+            if __a == "-l" then
+              _load(__val)
             else
-              if __a == "-o" then
-                __output = __val
+              if __a == "-c" then
+                __input = __val
               else
-                if __a == "-t" then
-                  __target1 = __val
+                if __a == "-o" then
+                  __output = __val
                 else
-                  if __a == "-e" then
-                    __expr = __val
+                  if __a == "-t" then
+                    __target1 = __val
+                  else
+                    if __a == "-e" then
+                      __expr = __val
+                      read_eval(__expr)
+                    end
                   end
                 end
               end
@@ -1219,7 +1226,9 @@ local function main()
       end
       if nil63(__input) then
         if __expr then
-          return rep(__expr)
+          if is63(_37result) then
+            return print(str(_37result))
+          end
         else
           return repl()
         end
