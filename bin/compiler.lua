@@ -220,7 +220,12 @@ local function expand_definition(__x46)
   return ____x49
 end
 local function expand_macro(form)
-  return macroexpand(expand1(form))
+  local __result = expand1(form)
+  if function63(__result) then
+    return __result(form)
+  else
+    return macroexpand(__result)
+  end
 end
 function expand1(__x51)
   local ____id4 = __x51
