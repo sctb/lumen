@@ -1,3 +1,4 @@
+(target lua: (define-global JSON (require 'json)))
 (define reader (require 'reader))
 (define compiler (require 'compiler))
 (define system (require 'system))
