@@ -72,9 +72,15 @@
          (let n (code str (inc i))
            (or (= n 120) (= n 88)))))) ; "x" or "X"
 
+(define octal-prefix? (str)
+  (and (= (code str 0) 48)             ; "0"
+       (number-code? (or (code str 1) 0))))
+
 (define maybe-number (str)
   (if (hex-prefix? str)
       (target js: (parseInt str 16) lua: (tonumber str))
+      (octal-prefix? str)
+      (target js: (parseInt str 8) lua: (tonumber str 8))
       (number-code? (code str (edge str)))
     (number str)))
 
