@@ -180,7 +180,9 @@
           ;; unquote
           (and (can-unquote? depth)
                (= (hd form) 'unquote))
-          (quasiexpand (at form 1))
+          (if (> (# form) 2)
+              `(%splice ,(map quasiexpand (tl form)))
+            (quasiexpand (at form 1)))
           ;; decrease quasiquoting depth
           (or (= (hd form) 'unquote)
               (= (hd form) 'unquote-splicing))

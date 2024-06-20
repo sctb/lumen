@@ -246,9 +246,19 @@ function map(f, x)
   local ____i9 = 0
   while ____i9 < _35(____x7) do
     local __v3 = ____x7[____i9 + 1]
-    local __y2 = f(__v3)
+    local __e3 = nil
+    if f then
+      __e3 = f(__v3)
+    else
+      __e3 = __v3
+    end
+    local __y2 = __e3
     if is63(__y2) then
-      add(__t1, __y2)
+      if hd63(__y2, "%splice") then
+        __t1 = join(__t1, __y2[2])
+      else
+        add(__t1, __y2)
+      end
     end
     ____i9 = ____i9 + 1
   end
@@ -257,8 +267,17 @@ function map(f, x)
   for __k3 in next, ____o4 do
     local __v4 = ____o4[__k3]
     if not number63(__k3) then
-      local __y3 = f(__v4)
+      local __e4 = nil
+      if f then
+        __e4 = f(__v4)
+      else
+        __e4 = __v4
+      end
+      local __y3 = __e4
       if is63(__y3) then
+        if hd63(__y3, "%splice") then
+          __y3 = __y3[2]
+        end
         __t1[__k3] = __y3
       end
     end
@@ -344,11 +363,11 @@ function destash33(l, args1)
   end
 end
 function search(s, pattern, start)
-  local __e3 = nil
+  local __e5 = nil
   if start then
-    __e3 = start + 1
+    __e5 = start + 1
   end
-  local __start = __e3
+  local __start = __e5
   local __i16 = string.find(s, pattern, __start, true)
   return __i16 and __i16 - 1
 end
@@ -471,31 +490,31 @@ function escape(s)
   local __i20 = 0
   while __i20 < _35(s) do
     local __c = char(s, __i20)
-    local __e4 = nil
+    local __e6 = nil
     if __c == "\n" then
-      __e4 = "\\n"
+      __e6 = "\\n"
     else
-      local __e5 = nil
+      local __e7 = nil
       if __c == "\r" then
-        __e5 = "\\r"
+        __e7 = "\\r"
       else
-        local __e6 = nil
+        local __e8 = nil
         if __c == "\"" then
-          __e6 = "\\\""
+          __e8 = "\\\""
         else
-          local __e7 = nil
+          local __e9 = nil
           if __c == "\\" then
-            __e7 = "\\\\"
+            __e9 = "\\\\"
           else
-            __e7 = __c
+            __e9 = __c
           end
-          __e6 = __e7
+          __e8 = __e9
         end
-        __e5 = __e6
+        __e7 = __e8
       end
-      __e4 = __e5
+      __e6 = __e7
     end
-    local __c1 = __e4
+    local __c1 = __e6
     __s1 = __s1 .. __c1
     __i20 = __i20 + 1
   end
@@ -594,13 +613,13 @@ function setenv(k, ...)
   local ____id1 = ____r73
   local __keys = cut(____id1, 0)
   if string63(__k9) then
-    local __e8 = nil
+    local __e10 = nil
     if __keys.toplevel then
-      __e8 = hd(environment)
+      __e10 = hd(environment)
     else
-      __e8 = last(environment)
+      __e10 = last(environment)
     end
-    local __frame = __e8
+    local __frame = __e10
     local __entry = __frame[__k9] or {}
     local ____o12 = __keys
     local __k10 = nil

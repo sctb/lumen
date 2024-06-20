@@ -163,11 +163,15 @@
     (step v x
       (let y (f v)
         (if (is? y)
-          (add t y))))
+          (if (hd? y '%splice)
+              (join! t (at y 1))
+            (add t y)))))
     (each (k v) x
       (unless (number? k)
         (let y (f v)
           (when (is? y)
+            (if (hd? y '%splice)
+              (set y (at y 1)))
             (set (get t k) y)))))))
 
 (define-global keep (f x)
