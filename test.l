@@ -598,6 +598,8 @@ c"
   (test= 1 ((fn () (return (if true (return 1) 2))))))
 
 (define-test guard
+  (let ((ok e) (guard (error "foo")))
+    (test= true (target js: (instanceof e Error) lua: (obj? e))))
   (let-macro ((guard1 (x)
                 (let-unique (ok v)
                   `(let ((,ok ,v) (guard ,x))
