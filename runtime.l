@@ -1,10 +1,10 @@
 (define-global environment (list (obj)))
 (define-global target (language))
 
+(target lua: (define-global null (or null '(%null))))
+
 (define-global nil? (x)
-  (target
-    js: (or (= x nil) (= x null))
-    lua: (= x nil)))
+  (or (= x nil) (= x null)))
 
 (define-global is? (x) (not (nil? x)))
 
