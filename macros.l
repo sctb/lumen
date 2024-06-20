@@ -146,7 +146,9 @@
 
 (define-macro apply (f rest: args)
   (if (> (# args) 1)
-      `(%call apply ,f (join (list ,@(almost args)) ,(last args)))
+      `(%call apply ,f (join (list ,@(almost args)) ,(last args) (list ,@(keys args))))
+      (keys? args)
+      `(%call apply ,f (join ,@args (list ,@(keys args))))
       `(%call apply ,f ,@args)))
 
 (define-macro guard (expr)
